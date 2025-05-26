@@ -1,0 +1,10 @@
+::selection {
+	background-color: #1f7fec; /* Color de fondo para la selección */
+	color: white; /* Color del texto seleccionado */
+}
+
+.ql-editor {
+	max-height: 300px;
+	overflow-y: auto;
+	scrollbar-width: thin !important;
+}

@@ -1,0 +1,9 @@
+dist
+.prettierrc
+eslint.config.js
+index.html
+jsconfig.json
+package-lock.json
+package.json
+postcss.config.js
+vite.config.js

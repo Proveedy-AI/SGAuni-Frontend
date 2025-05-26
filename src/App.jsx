@@ -1,35 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Route, Routes } from 'react-router';
+import { AdminLayout, AuthLayout } from './layouts';
+//import { PrivateRoute, ProtectedRoute } from './PrivateRoute ';
+import {
+	Home,
+} from './views/admin';
+import { Login, ResetPassword } from './views/auth';
+import { AccountProfile, SettingsLayout } from './views/admin/settings';
 
 function App() {
-  const [count, setCount] = useState(0)
+	return (
+		<>
+			<BrowserRouter>
+				<Routes>
+					<Route path='/auth' element={<AuthLayout />}>
+						<Route path='login' element={<Login />} />
+						<Route path='reset-password/:token' element={<ResetPassword />} />
+					</Route>
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+					<Route>
+						<Route path='/' element={<AdminLayout />}>
+							<Route index element={<Home />} />
+
+							{/* MARKETING */}
+
+							{/* SETTINGS */}
+							<Route path='settings' element={<SettingsLayout />}>
+								<Route path='profile' element={<AccountProfile />} />
+							</Route>
+						</Route>
+					</Route>
+				</Routes>
+			</BrowserRouter>
+		</>
+	);
 }
 
-export default App
+export default App;

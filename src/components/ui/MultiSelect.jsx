@@ -26,7 +26,7 @@ export const MultiSelect = ({
 				control: (provided) => ({
 					...provided,
 					border: '1px solid',
-					borderColor: 'its.secondary',
+					borderColor: 'uni.secondary',
 					borderRadius: 'md',
 					minWidth: '165px',
 					maxWidth: '180px',
@@ -37,27 +37,27 @@ export const MultiSelect = ({
 				menu: (provided) => ({
 					...provided,
 					border: '1px solid',
-					borderColor: 'its.secondary',
+					borderColor: 'uni.secondary',
 					borderRadius: 'md',
 				}),
 				menuList: (provided) => ({
 					...provided,
-					bg: { base: 'white', _dark: 'its.gray.500' },
+					bg: { base: 'white', _dark: 'uni.gray.500' },
 				}),
 				multiValue: (provided) => ({
 					...provided,
-					backgroundColor: 'its.500',
+					backgroundColor: 'uni.500',
 				}),
 				multiValueLabel: (provided) => ({
 					...provided,
-					color: 'its.secondary',
+					color: 'uni.secondary',
 				}),
 				multiValueRemove: (provided) => ({
 					...provided,
-					color: 'its.secondary',
+					color: 'uni.secondary',
 					':hover': {
-						backgroundColor: 'its.200',
-						color: 'its.secondary',
+						backgroundColor: 'uni.200',
+						color: 'uni.secondary',
 					},
 				}),
 				valueContainer: (provided) => ({

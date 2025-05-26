@@ -12,7 +12,7 @@ export const DashboardCard = ({
 	return (
 		<Box
 			w='full'
-			bg={{ base: 'white', _dark: 'its.gray.500' }}
+			bg={{ base: 'white', _dark: 'uni.gray.500' }}
 			p='4'
 			borderRadius='10px'
 			overflow='hidden'
@@ -34,9 +34,9 @@ export const DashboardCard = ({
 				<Flex
 					w='50px'
 					h='50px'
-					bg='its.200'
+					bg='uni.200'
 					borderRadius='lg'
-					color='its.primary'
+					color='uni.primary'
 					align='center'
 					justify='center'
 				>

@@ -235,7 +235,7 @@ export const DatePicker = ({
 					_focus={{ ring: 2, ringColor: 'blue.300' }}
 					isActive={openPopover}
 				>
-					<Box color='its.secondary' cursor='pointer'>
+					<Box color='uni.secondary' cursor='pointer'>
 						<FiFilter />
 					</Box>
 					{startDate && endDate
@@ -250,11 +250,11 @@ export const DatePicker = ({
 						css={{
 							'--popover-bg': {
 								base: 'white',
-								_dark: 'its.gray.500',
+								_dark: 'uni.gray.500',
 							},
 						}}
 						position='relative'
-						bg={{ base: 'white', _dark: 'its.gray.500' }}
+						bg={{ base: 'white', _dark: 'uni.gray.500' }}
 						w='auto'
 						boxShadow='lg'
 						borderRadius='md'

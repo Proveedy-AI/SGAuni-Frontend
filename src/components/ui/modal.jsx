@@ -34,7 +34,7 @@ export const Modal = ({
 		<DialogRoot {...props}>
 			<DialogTrigger asChild>{trigger}</DialogTrigger>
 			<DialogContent
-				bg={{ base: 'white', _dark: 'its.gray.500' }}
+				bg={{ base: 'white', _dark: 'uni.gray.500' }}
 				ref={contentRef}
 				w={size} // Ancho personalizado
 				maxW={size}
@@ -43,7 +43,7 @@ export const Modal = ({
 				pb='8px'
 			>
 				<DialogHeader>
-					{title && <DialogTitle color='its.secondary'>{title}</DialogTitle>}
+					{title && <DialogTitle color='uni.secondary'>{title}</DialogTitle>}
 				</DialogHeader>
 				<DialogBody
 					overflowY='auto'
@@ -63,7 +63,7 @@ export const Modal = ({
 						</DialogActionTrigger>
 						<Button
 							onClick={onSave}
-							bg='its.secondary'
+							bg='uni.secondary'
 							color='white'
 							loading={loading}
 							loadingText={loadingText ? loadingText : 'Guardando...'}
@@ -95,7 +95,7 @@ export const ModalSimple = ({
 		<DialogRoot {...props}>
 			<DialogTrigger asChild>{trigger}</DialogTrigger>
 			<DialogContent
-				bg={{ base: 'white', _dark: 'its.gray.500' }}
+				bg={{ base: 'white', _dark: 'uni.gray.500' }}
 				ref={contentRef}
 				w={size} // Ancho personalizado
 				maxW={size}
@@ -104,7 +104,7 @@ export const ModalSimple = ({
 				pb='8px'
 			>
 				<DialogHeader>
-					{title && <DialogTitle color='its.secondary'>{title}</DialogTitle>}
+					{title && <DialogTitle color='uni.secondary'>{title}</DialogTitle>}
 				</DialogHeader>
 				<DialogBody>{children}</DialogBody>
 				{!hiddenFooter && (
@@ -116,7 +116,7 @@ export const ModalSimple = ({
 						</DialogActionTrigger>
 						<Button
 							onClick={onSave}
-							bg='its.secondary'
+							bg='uni.secondary'
 							color='white'
 							loading={loading}
 							loadingText='Guardando...'
@@ -146,7 +146,7 @@ export const ConfirmModal = ({
 		<DialogRoot {...props}>
 			<DialogTrigger asChild>{trigger}</DialogTrigger>
 			<DialogContent
-				bg={{ base: 'white', _dark: 'its.gray.500' }}
+				bg={{ base: 'white', _dark: 'uni.gray.500' }}
 				ref={contentRef}
 			>
 				<DialogBody pt='4'>
@@ -165,7 +165,7 @@ export const ConfirmModal = ({
 					</DialogActionTrigger>
 					<Button
 						onClick={onConfirm}
-						bg='its.secondary'
+						bg='uni.secondary'
 						color='white'
 						loading={loading}
 						loadingText={loadingText ? loadingText : 'Eliminando...'}
@@ -200,7 +200,7 @@ export const ControlledModal = ({
 			</DialogTrigger>
 			<DialogContent
 				zIndex={1000} // 🔥 Debe ser menor que CallToast
-				bg={{ base: 'white', _dark: 'its.gray.500' }}
+				bg={{ base: 'white', _dark: 'uni.gray.500' }}
 				ref={contentRef}
 				w={size} // Ancho personalizado
 				maxW={size}
@@ -210,7 +210,7 @@ export const ControlledModal = ({
 				pb='8px'
 			>
 				<DialogHeader>
-					{title && <DialogTitle color='its.secondary'>{title}</DialogTitle>}
+					{title && <DialogTitle color='uni.secondary'>{title}</DialogTitle>}
 				</DialogHeader>
 				{ribbon && (
 					<Box
@@ -253,7 +253,7 @@ export const ControlledModal = ({
 						</DialogActionTrigger>
 						<Button
 							onClick={onSave}
-							bg='its.secondary'
+							bg='uni.secondary'
 							color='white'
 							loading={loading}
 							loadingText='Guardando...'

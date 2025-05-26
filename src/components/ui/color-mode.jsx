@@ -165,10 +165,10 @@ export const ColorModeToggle = React.forwardRef(
 						justifyContent='center'
 						border='1px solid'
 						borderColor={{
-							base: 'its.gray.100',
-							_dark: 'its.gray.300',
+							base: 'uni.gray.100',
+							_dark: 'uni.gray.300',
 						}}
-						bg={{ base: 'white', _dark: 'its.gray.500' }}
+						bg={{ base: 'white', _dark: 'uni.gray.500' }}
 						borderRadius='full'
 						w='14'
 						h='7'
@@ -185,8 +185,8 @@ export const ColorModeToggle = React.forwardRef(
 							position='absolute'
 							left='0'
 							fontSize='sm'
-							bg={colorMode === 'light' ? 'its.gray.100' : ''}
-							color={{ base: 'white', _dark: 'its.gray.100' }}
+							bg={colorMode === 'light' ? 'uni.gray.100' : ''}
+							color={{ base: 'white', _dark: 'uni.gray.100' }}
 							transition='all 0.3s ease-in-out'
 						>
 							<LuSun />
@@ -202,8 +202,8 @@ export const ColorModeToggle = React.forwardRef(
 							position='absolute'
 							right='0'
 							fontSize='sm'
-							bg={colorMode === 'dark' ? 'its.gray.300' : ''}
-							color={{ base: 'its.gray.100', _dark: 'white' }}
+							bg={colorMode === 'dark' ? 'uni.gray.300' : ''}
+							color={{ base: 'uni.gray.100', _dark: 'white' }}
 							transition='all 0.3s ease-in-out'
 						>
 							<LuMoon />
