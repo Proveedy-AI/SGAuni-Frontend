@@ -21,8 +21,6 @@ function App() {
 						<Route path='/' element={<AdminLayout />}>
 							<Route index element={<Home />} />
 
-							{/* MARKETING */}
-
 							{/* SETTINGS */}
 							<Route path='settings' element={<SettingsLayout />}>
 								<Route path='profile' element={<AccountProfile />} />
