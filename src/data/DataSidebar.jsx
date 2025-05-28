@@ -1,4 +1,4 @@
-import { FiGrid, FiSettings } from 'react-icons/fi';
+import { FiGrid, FiUsers, FiSettings } from 'react-icons/fi';
 
 export const DataSidebar = {
 	mainItems: [
@@ -8,6 +8,12 @@ export const DataSidebar = {
 			label: 'Mi panel',
 			permission: null,
 		},
+    {
+      href: '/usuarios',
+      icon: FiUsers,
+      label: 'Usuarios',
+      permission: null
+    }
 	],
 
 	bottomItems: [
