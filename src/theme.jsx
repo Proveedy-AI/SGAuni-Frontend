@@ -10,7 +10,7 @@ export const system = createSystem(defaultConfig, {
 					300: '#BAE4FF',
 					400: '#88CEFA',
 					primary: '#8B1F1F',   // Rojo oscuro profundo
-					secondary: '#B80F0F', // Rojo brillante oscuro
+					secondary: '#711610', // Rojo brillante oscuro
 					gray: {
 						100: '#BAC3CE',
 						200: '#788193',

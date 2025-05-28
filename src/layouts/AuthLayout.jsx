@@ -24,7 +24,7 @@ export const AuthLayout = () => {
 						? "url('/img/bg-dark.png')"
 						: " url('/img/bg-light.png')"
 				}
-				backgroundSize='cover'
+				backgroundSize='90%'
 				backgroundPosition='center'
 				zIndex={1}
 			/>
@@ -33,8 +33,7 @@ export const AuthLayout = () => {
 				h='100svh'
 				justifyContent={{ base: 'center', lg: 'flex-end' }}
 				zIndex={4}
-				p={4}
-				px={{ base: 4, md: 20 }}
+				
 			>
 				<Outlet />
 			</Flex>
