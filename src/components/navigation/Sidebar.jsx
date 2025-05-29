@@ -7,6 +7,7 @@ import {
 	Collapsible,
 	Flex,
 	IconButton,
+	Image,
 	Separator,
 	Stack,
 	Text,
@@ -72,18 +73,21 @@ export const Sidebar = () => {
 			<Flex justify='space-between' align='center' mb='6'>
 				{isCollapsed ? (
 					<Box w='40px' h='40px' px='1.5'>
-						SGA
+						<Image src='/img/logo-UNI.png' alt='Logo' />
 					</Box>
 				) : (
-					<Box h='40px' px='2'>
-						UNI SGA
+					<Box h='40px' >
+						<Flex  align='center'>
+							<Image  w='40px' src='/img/logo-UNI.png' alt='Logo'  mr='2' />
+							<Text fontWeight='bold' color='#5D5D5D'  fontSize='16px'>Portal Institucional</Text>
+						</Flex>
 					</Box>
 				)}
 				<IconButton
 					aria-label='Toggle Sidebar'
 					onClick={toggleSidebar}
-					bg={{ base: 'uni.gray.100', _dark: 'uni.gray.100' }}
-					color={{ base: 'uni.gray.300', _dark: 'uni.gray.400' }}
+					bg={{ base: 'gray.200', _dark: 'uni.gray.100' }}
+					color={{ base: 'uni.secondary', _dark: 'uni.gray.400' }}
 					position='fixed'
 					top='32px'
 					left={isCollapsed ? '80px' : '260px'}
@@ -94,15 +98,27 @@ export const Sidebar = () => {
 					transition='left 0.3s ease'
 					display={['none', 'none', 'none', 'flex']}
 				>
-					{isCollapsed ? <FiArrowRight /> : <FiArrowLeft />}
+					{isCollapsed ? <FiArrowRight/> : <FiArrowLeft />}
 				</IconButton>
 			</Flex>
-			<Flex direction='column' flex='1' maxHeight='calc(100svh - 130px)' justify='space-between'>
-				<Box align='start' overflowY='auto' h='full' css={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
+			<Flex
+				direction='column'
+				flex='1'
+				maxHeight='calc(100svh - 130px)'
+				justify='space-between'
+			>
+				<Box
+					align='start'
+					overflowY='auto'
+					h='full'
+					css={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}
+				>
 					{DataSidebar.mainItems
 						.filter((item) => hasPermission(item.permission))
 						.map((item, index) => {
-							const filteredSubItems = item.subItems?.filter((sub) => hasPermission(sub.permission)) || [];
+							const filteredSubItems =
+								item.subItems?.filter((sub) => hasPermission(sub.permission)) ||
+								[];
 							if (item.subItems && filteredSubItems.length === 0) return null;
 
 							return (
@@ -112,7 +128,9 @@ export const Sidebar = () => {
 									icon={item.icon}
 									label={item.label}
 									isCollapsed={isCollapsed}
-									subItems={filteredSubItems.length > 0 ? filteredSubItems : undefined}
+									subItems={
+										filteredSubItems.length > 0 ? filteredSubItems : undefined
+									}
 								/>
 							);
 						})}
@@ -146,19 +164,26 @@ export const Sidebar = () => {
 const SidebarItem = ({ href, icon, label, isCollapsed, subItems, ...atr }) => {
 	const { colorMode } = useColorMode();
 	const location = useLocation();
-	const [isExpanded, setIsExpanded] = useState(() => subItems?.some((i) => location.pathname === i.href));
+	const [isExpanded, setIsExpanded] = useState(() =>
+		subItems?.some((i) => location.pathname === i.href)
+	);
 
-	const isActive = location.pathname === href || (subItems && subItems.some((item) => location.pathname === item.href));
+	const isActive =
+		location.pathname === href ||
+		(subItems && subItems.some((item) => location.pathname === item.href));
 	const toggleExpand = () => setIsExpanded(!isExpanded);
 
 	const activeBg = colorMode === 'dark' ? 'uni.gray.400' : 'gray.200';
 	const hoverBg = colorMode === 'dark' ? 'uni.gray.400' : 'gray.300';
 	const activeColor = colorMode === 'dark' ? 'white' : 'black';
-	const activeIconColor = colorMode === 'dark' ? 'uni.secondary' : 'uni.secondary';
+	const activeIconColor =
+		colorMode === 'dark' ? 'uni.secondary' : 'uni.secondary';
 
 	const getHref = () => {
 		if (href === '/settings') {
-			return permissions.includes('settings.settings.view') ? '/settings' : '/settings/profile';
+			return permissions.includes('settings.settings.view')
+				? '/settings'
+				: '/settings/profile';
 		}
 		return href;
 	};
@@ -182,10 +207,23 @@ const SidebarItem = ({ href, icon, label, isCollapsed, subItems, ...atr }) => {
 								cursor='pointer'
 								{...atr}
 							>
-								{icon && <Box w='20px' h='20px' color={isActive ? activeIconColor : 'inherit'} as={icon} />}
+								{icon && (
+									<Box
+										w='20px'
+										h='20px'
+										color={isActive ? activeIconColor : 'inherit'}
+										as={icon}
+									/>
+								)}
 							</Flex>
 						</MenuTrigger>
-						<MenuContent bg={{ base: 'white', _dark: 'uni.gray.500' }} position='absolute' left='calc(100% + 8px)' zIndex='1000' boxShadow='md'>
+						<MenuContent
+							bg={{ base: 'white', _dark: 'uni.gray.500' }}
+							position='absolute'
+							left='calc(100% + 8px)'
+							zIndex='1000'
+							boxShadow='md'
+						>
 							<VStack align='start'>
 								{subItems.map((subItem, index) => (
 									<MenuItem
@@ -194,8 +232,16 @@ const SidebarItem = ({ href, icon, label, isCollapsed, subItems, ...atr }) => {
 										as={Link}
 										value={`menu-item-${index}`}
 										borderRadius='4px'
-										bg={location.pathname === subItem.href ? activeBg : 'transparent'}
-										color={location.pathname === subItem.href ? activeColor : 'inherit'}
+										bg={
+											location.pathname === subItem.href
+												? activeBg
+												: 'transparent'
+										}
+										color={
+											location.pathname === subItem.href
+												? activeColor
+												: 'inherit'
+										}
 										_hover={{ bg: hoverBg }}
 									>
 										{subItem.icon && (
@@ -203,7 +249,11 @@ const SidebarItem = ({ href, icon, label, isCollapsed, subItems, ...atr }) => {
 												mr='2'
 												w='16px'
 												h='16px'
-												color={location.pathname === subItem.href ? activeIconColor : 'inherit'}
+												color={
+													location.pathname === subItem.href
+														? activeIconColor
+														: 'inherit'
+												}
 												as={subItem.icon}
 											/>
 										)}
@@ -245,8 +295,16 @@ const SidebarItem = ({ href, icon, label, isCollapsed, subItems, ...atr }) => {
 											px='2'
 											fontWeight='medium'
 											borderRadius='10px'
-											bg={location.pathname === subItem.href ? activeBg : 'transparent'}
-											color={location.pathname === subItem.href ? activeColor : 'inherit'}
+											bg={
+												location.pathname === subItem.href
+													? activeBg
+													: 'transparent'
+											}
+											color={
+												location.pathname === subItem.href
+													? activeColor
+													: 'inherit'
+											}
 											_hover={{ bg: hoverBg }}
 										>
 											{subItem.icon && (
@@ -254,7 +312,11 @@ const SidebarItem = ({ href, icon, label, isCollapsed, subItems, ...atr }) => {
 													mr='2'
 													w='20px'
 													h='20px'
-													color={location.pathname === subItem.href ? activeIconColor : 'inherit'}
+													color={
+														location.pathname === subItem.href
+															? activeIconColor
+															: 'inherit'
+													}
 													as={subItem.icon}
 												/>
 											)}
