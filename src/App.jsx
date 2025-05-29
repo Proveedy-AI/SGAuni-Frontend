@@ -4,7 +4,7 @@ import { AdminLayout, AuthLayout } from './layouts';
 import {
 	Home,
 } from './views/admin';
-import { Login, ResetPassword } from './views/auth';
+import { Login, LoginAdmin, ResetPassword } from './views/auth';
 import { AccountProfile, SettingsLayout } from './views/admin/settings';
 
 function App() {
@@ -14,6 +14,7 @@ function App() {
 				<Routes>
 					<Route path='/auth' element={<AuthLayout />}>
 						<Route path='login' element={<Login />} />
+						<Route path='admin/login' element={<LoginAdmin />} />
 						<Route path='reset-password/:token' element={<ResetPassword />} />
 					</Route>
 

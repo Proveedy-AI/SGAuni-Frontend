@@ -16,7 +16,7 @@ import { useEffect, useState } from 'react';
 import { LuEye, LuEyeOff, LuLock, LuMail } from 'react-icons/lu';
 import { useLocation, useNavigate } from 'react-router';
 
-export const Login = () => {
+export const LoginAdmin = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [showPassword, setShowPassword] = useState(false);
@@ -74,6 +74,7 @@ export const Login = () => {
 			});
 		}
 	};
+
 	const navigate = useNavigate();
 	/*const { login, loading, error, getToken } = useAuth();
 	
@@ -337,11 +338,11 @@ export const Login = () => {
 							fontWeight={100}
 							textAlign='center'
 						>
-							Ingresa al portal administrativo
+							Ingresa al portal de estudiante
 						</Text>
 						<Button
 							type='button'
-							onClick={() => navigate('/auth/admin/login')}
+							onClick={() => navigate('/auth/login')}
 							w='full'
 							loadingText='Ingresando...'
 							variant='outline'
@@ -361,7 +362,7 @@ export const Login = () => {
 								boxShadow: '0 0 0 3px rgba(0, 123, 255, 0.5)',
 							}}
 						>
-							Soy usuario administrativo
+							Soy estudiante
 						</Button>
 					</VStack>
 				</VStack>
