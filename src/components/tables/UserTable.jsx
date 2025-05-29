@@ -63,9 +63,9 @@ export const UserTable = ({ users, setUsers, handleOpenModal }) => {
                   : { base: "white", _dark: "black" }
               }
             >
-              <Table.Cell color={{ base: "black", _dark: "white" }}>{(currentPage - 1) * rowsPerPage + idx + 1}</Table.Cell>
-              <Table.Cell color={{ base: "black", _dark: "white" }}>{item.username}</Table.Cell>
-              <Table.Cell color={{ base: "black", _dark: "white" }}>
+              <Table.Cell >{(currentPage - 1) * rowsPerPage + idx + 1}</Table.Cell>
+              <Table.Cell >{item.username}</Table.Cell>
+              <Table.Cell >
                 <Switch size="md" colorPalette="blue" pr={3} defaultChecked={item.isActive}
                   onChange={() => handleAvailableUsers(item.id)}
                 />
