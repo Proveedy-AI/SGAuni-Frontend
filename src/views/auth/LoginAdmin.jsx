@@ -125,7 +125,6 @@ export const LoginAdmin = () => {
 				pb={10}
 				w='full'
 				maxW='lg'
-				color='blackAlpha.800'
 			>
 				<VStack
 					as='form'
@@ -210,7 +209,6 @@ export const LoginAdmin = () => {
 											<Input
 												placeholder='Ingresar correo electrónico'
 												type='text'
-												borderColor={'gray.400'}
 												value={username}
 												onChange={(e) => setUsername(e.target.value)}
 												size='sm'
@@ -230,13 +228,11 @@ export const LoginAdmin = () => {
 													placeholder='Ingresar contraseña'
 													type={showPassword ? 'text' : 'password'}
 													value={password}
-													borderColor={'gray.400'}
 													onChange={(e) => setPassword(e.target.value)}
 													size='sm'
 													ps={`calc(var(--input-height))`}
 												/>
 												<InputAddon
-													borderColor={'gray.400'}
 													onClick={handleTogglePassword}
 													bg='transparent'
 												>
@@ -286,7 +282,6 @@ export const LoginAdmin = () => {
 										<Input
 											placeholder='Ingresar correo electrónico'
 											type='text'
-											borderColor={'gray.400'}
 											value={username}
 											onChange={(e) => setUsername(e.target.value)}
 											size='sm'

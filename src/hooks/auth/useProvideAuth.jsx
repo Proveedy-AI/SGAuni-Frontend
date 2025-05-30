@@ -19,7 +19,6 @@ export const useProvideAuth = () => {
 		return userCookie /* ?.refresh_token */ || null;
 	}, []);
 
-
 	const login = async (username, password) => {
 		setLoading(true);
 		setError(null);
@@ -92,7 +91,8 @@ export const useProvideAuth = () => {
 			// Redirigir a la página de login
 			navigate('/auth/login');
 		} catch (err) {
-			setError(err.response ? err.response.data.message : 'Error de red');
+			setError(err.response ? err.response.data.detail : 'Error de red');
+			throw err;
 		} finally {
 			setLoading(false);
 		}
@@ -118,7 +118,10 @@ export const useProvideAuth = () => {
 				accessToken: data['access'],
 				user,
 			}));
-			console.log('Estado actualizado en auth:', { accessToken: data['access'], user });
+			console.log('Estado actualizado en auth:', {
+				accessToken: data['access'],
+				user,
+			});
 
 			return response.data['access'];
 		} catch (err) {
@@ -152,7 +155,6 @@ export const useProvideAuth = () => {
 	const getAccessToken = useCallback(() => {
 		return auth?.accessToken;
 	}, []);
-
 
 	return {
 		login,

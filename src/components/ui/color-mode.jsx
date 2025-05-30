@@ -9,14 +9,20 @@ import { Switch } from './switch';
 
 export function ColorModeProvider(props) {
 	return (
-		<ThemeProvider attribute='class' disableTransitionOnChange {...props} />
+		<ThemeProvider
+			attribute='class'
+			defaultTheme='light'
+			disableTransitionOnChange
+			enableSystem={false}
+			{...props}
+		/>
 	);
 }
 
 export function useColorMode() {
 	const { resolvedTheme, setTheme } = useTheme();
 	const toggleColorMode = () => {
-		setTheme(resolvedTheme === 'light' ? 'dark' : 'light');
+		setTheme(resolvedTheme === 'light' ? 'light' : 'dark');
 	};
 	return {
 		colorMode: resolvedTheme,

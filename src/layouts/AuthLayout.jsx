@@ -11,12 +11,12 @@ export const AuthLayout = () => {
 		bgImage = "url('/img/bg-light.png')";
 	} else {
 		bgImage = "url('/img/bg-admin.png')";
-	};
+	}
 	return (
 		<Box
 			height='100svh'
 			position='relative'
-			bg={colorMode === 'dark' ? 'uni.gray.700' : 'uni.gray.200'}
+			bg={'uni.gray.200'}
 			display='flex'
 			alignItems='center'
 			justifyContent='center'
@@ -27,9 +27,7 @@ export const AuthLayout = () => {
 				left={0}
 				width='full'
 				height='full'
-				bgImage={
-					bgImage
-				}
+				bgImage={bgImage}
 				backgroundSize='100%'
 				backgroundPosition='center'
 				zIndex={1}
@@ -39,7 +37,6 @@ export const AuthLayout = () => {
 				h='100svh'
 				justifyContent={{ base: 'center', lg: 'flex-end' }}
 				zIndex={4}
-				
 			>
 				<Outlet />
 			</Flex>
