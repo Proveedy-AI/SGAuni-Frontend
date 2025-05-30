@@ -23,7 +23,12 @@ export const Login = () => {
 	const [fieldError, setFieldError] = useState({ email: '', password: '' });
 	const [fieldSuccess, setFieldSuccess] = useState('');
 	const [isForgotPassword, setIsForgotPassword] = useState(false);
-	const { login, loading: LoadingToken, error, getToken } = useProvideAuth();
+	const {
+		login,
+		loading: LoadingToken,
+		error,
+		getAccessToken,
+	} = useProvideAuth();
 	const [block, setBlock] = useState(false);
 
 	const location = useLocation();
@@ -75,19 +80,13 @@ export const Login = () => {
 		}
 	};
 	const navigate = useNavigate();
-	/*const { login, loading, error, getToken } = useAuth();
-	
-	const token = getToken();
-
-	
-
-	
-
+	const token = getAccessToken();
+	console.log('Token:', token);
 	useEffect(() => {
 		if (token) {
 			navigate('/');
 		}
-	}, [token, navigate]);*/
+	}, [token, navigate]);
 
 	const handleTogglePassword = () => {
 		setShowPassword(!showPassword);
