@@ -20,6 +20,7 @@ export const LoginAdmin = () => {
 	const [password, setPassword] = useState('');
 	const [showPassword, setShowPassword] = useState(false);
 	const [fieldError, setFieldError] = useState({ username: '', password: '' });
+	const [fieldErrorCredential, setFieldErrorCredential] = useState('');
 	const [fieldSuccess, setFieldSuccess] = useState('');
 	const [isForgotPassword, setIsForgotPassword] = useState(false);
 	const { login, loading: LoadingToken, getAccessToken } = useProvideAuth();
@@ -107,6 +108,7 @@ export const LoginAdmin = () => {
 		try {
 			await login(username, password);
 		} catch (e) {
+			setFieldErrorCredential(e.response.data.detail);
 			console.error(e);
 		}
 	};
@@ -191,6 +193,9 @@ export const LoginAdmin = () => {
 						)}
 
 						{/* Mostrar mensajes de error o éxito */}
+						{fieldErrorCredential && (
+							<Alert status='error' title={fieldErrorCredential} />
+						)}
 						{fieldSuccess && <Alert status='success' title={fieldSuccess} />}
 						{isVisible && successMessage && (
 							<Alert status='success' title={successMessage} />
@@ -198,7 +203,7 @@ export const LoginAdmin = () => {
 
 						{/* Formulario de inicio de sesión */}
 						{!isForgotPassword && (
-							<VStack w={'full'} gap='20px' mt={10}>
+							<VStack w={'full'} gap='20px'>
 								<Stack w='full'>
 									<Field
 										label='usuario o correo institucional'

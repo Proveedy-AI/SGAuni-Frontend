@@ -53,7 +53,8 @@ export const useProvideAuth = () => {
 
 			navigate('/');
 		} catch (err) {
-			setError(err.response ? err.response.data.message : 'Error de red');
+			setError(err.response ? err.response.data.detail : 'Error de red');
+			throw err;
 		} finally {
 			setLoading(false);
 		}
@@ -62,40 +63,59 @@ export const useProvideAuth = () => {
 	const logout = async () => {
 		setLoading(true);
 		setError(null);
+
 		const token = getRefreshToken();
-		console.log('Logout token:', token);
-		try {
-			// Enviar el refresh token a la API para revocar el acceso
-			await axios.post(
-				'api-auth/token/blacklist', // URL de la API que invalidará el refresh token
-				{ refresh: token }, // Se pasa el refresh token en el cuerpo de la solicitud
+		const accessToken = getAccessToken();
+
+		console.log('[1] Refresh token:', token);
+		console.log('[2] Access token:', accessToken);
+
+		const isProduction = import.meta.env.VITE_IS_PRODUCTION === 'true';
+		const cookieOptions = {
+			domain: isProduction ? import.meta.env.VITE_DOMAIN_AUTO_LOGIN : undefined,
+		};
+
+		axios
+			.post(
+				'api-auth/token/blacklist',
+				{ refresh: token },
 				{
 					headers: {
-						Authorization: `Bearer ${token}`, // El Authorization header con el refresh token
+						Authorization: `Bearer ${accessToken}`,
+						'X-CSRFToken': Cookies.get('csrftoken'), // Si tu cookie se llama así
 					},
+					withCredentials: true, // MUY IMPORTANTE para que se envíen cookies en CORS
 				}
-			);
+			)
+			.then((response) => {
+				console.log('[3] Token invalidado correctamente:', response.data);
 
-			// Una vez que la API responda correctamente, procederemos con el logout
-			const isProduction = import.meta.env.VITE_IS_PRODUCTION === 'true';
-			const cookieOptions = {
-				domain: isProduction
-					? import.meta.env.VITE_DOMAIN_AUTO_LOGIN
-					: undefined,
-			};
+				// Limpiar datos de sesión
+				setAuth(null);
+				Cookies.remove(import.meta.env.VITE_US_COOKIE, cookieOptions);
 
-			// Limpiar el estado de autenticación y eliminar las cookies
-			setAuth(null);
-			Cookies.remove(import.meta.env.VITE_US_COOKIE, cookieOptions);
-
-			// Redirigir a la página de login
-			navigate('/auth/login');
-		} catch (err) {
-			setError(err.response ? err.response.data.detail : 'Error de red');
-			throw err;
-		} finally {
-			setLoading(false);
-		}
+				console.log('[4] Cookie eliminada, redirigiendo al login...');
+				navigate('/auth/login');
+			})
+			.catch((err) => {
+				console.error('[ERROR] Error al invalidar token');
+				if (err.response) {
+					console.error('[Error response.data]', err.response.data);
+					setError(
+						err.response.data.detail || 'Error desconocido del servidor'
+					);
+				} else {
+					console.error('[Error general]', err.message);
+					setError('Error de red o token inválido');
+				}
+			})
+			.finally(() => {
+				console.log('[5] Logout completado (finally)');
+				setAuth(null);
+				Cookies.remove(import.meta.env.VITE_US_COOKIE, cookieOptions);
+				navigate('/auth/login');
+				setLoading(false);
+			});
 	};
 
 	const refresh = async () => {
@@ -113,15 +133,23 @@ export const useProvideAuth = () => {
 			console.log('Refrescando token:', data);
 			const user = jwtDecode(data['access']);
 
-			setAuth((prev) => ({
-				...prev,
-				accessToken: data['access'],
-				user,
-			}));
-			console.log('Estado actualizado en auth:', {
-				accessToken: data['access'],
-				user,
-			});
+			setAuth({ accessToken: data['access'], user });
+
+			const isProduction = import.meta.env.VITE_IS_PRODUCTION === 'true';
+			const cookieOptions = {
+				secure: true,
+				sameSite: 'strict',
+				httpOnly: false,
+			};
+			if (isProduction) {
+				cookieOptions.domain = import.meta.env.VITE_DOMAIN_AUTO_LOGIN;
+			}
+			Cookies.set(
+				import.meta.env.VITE_US_COOKIE,
+				/* JSON.stringify(data) */
+				data['refresh'],
+				cookieOptions
+			);
 
 			return response.data['access'];
 		} catch (err) {

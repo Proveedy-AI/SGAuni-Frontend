@@ -205,7 +205,7 @@ export const Login = () => {
 
 						{/* Formulario de inicio de sesión */}
 						{!isForgotPassword && (
-							<VStack w={'full'} gap='20px' mt={10}>
+							<VStack w={'full'} gap='20px'>
 								<Stack w='full'>
 									<Field
 										label='usuario o correo institucional'
