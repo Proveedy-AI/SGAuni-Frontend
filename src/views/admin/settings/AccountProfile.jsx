@@ -23,7 +23,7 @@ export const AccountProfile = () => {
 	const { changePassword, loading: loadingPassword } = useChangePassword();
 	const { data: dataUsers, fetchUsers, loading: loadingRead } = useReadUsers();
 
-	const userInfo = dataUsers.find((u) => u.id === user.sub) || {};
+	//const userInfo = dataUsers.find((u) => u.id === user.sub) || {};
 
 	// Estado el perfil del usuario
 	const [profile, setProfile] = useState({

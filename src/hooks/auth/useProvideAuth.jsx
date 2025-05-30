@@ -33,8 +33,6 @@ export const useProvideAuth = () => {
 
 			const user = jwtDecode(data['access']);
 
-			setAuth({ accessToken: data['access'], user });
-
 			const isProduction = import.meta.env.VITE_IS_PRODUCTION === 'true';
 			const cookieOptions = {
 				secure: true,
@@ -44,6 +42,11 @@ export const useProvideAuth = () => {
 			if (isProduction) {
 				cookieOptions.domain = import.meta.env.VITE_DOMAIN_AUTO_LOGIN;
 			}
+			Cookies.set(
+				import.meta.env.VITE_TOKEN_COOKIE,
+				JSON.stringify({ accessToken: data['access'], user }),
+				cookieOptions
+			);
 			Cookies.set(
 				import.meta.env.VITE_US_COOKIE,
 				/* JSON.stringify(data) */
@@ -111,8 +114,8 @@ export const useProvideAuth = () => {
 			})
 			.finally(() => {
 				console.log('[5] Logout completado (finally)');
-				setAuth(null);
 				Cookies.remove(import.meta.env.VITE_US_COOKIE, cookieOptions);
+				Cookies.remove(import.meta.env.VITE_TOKEN_COOKIE, cookieOptions);
 				navigate('/auth/login');
 				setLoading(false);
 			});
@@ -133,8 +136,6 @@ export const useProvideAuth = () => {
 			console.log('Refrescando token:', data);
 			const user = jwtDecode(data['access']);
 
-			setAuth({ accessToken: data['access'], user });
-
 			const isProduction = import.meta.env.VITE_IS_PRODUCTION === 'true';
 			const cookieOptions = {
 				secure: true,
@@ -145,6 +146,11 @@ export const useProvideAuth = () => {
 				cookieOptions.domain = import.meta.env.VITE_DOMAIN_AUTO_LOGIN;
 			}
 			Cookies.set(
+				import.meta.env.VITE_TOKEN_COOKIE,
+				JSON.stringify({ accessToken: data['access'], user }),
+				cookieOptions
+			);
+			Cookies.set(
 				import.meta.env.VITE_US_COOKIE,
 				/* JSON.stringify(data) */
 				data['refresh'],
@@ -153,9 +159,7 @@ export const useProvideAuth = () => {
 
 			return response.data['access'];
 		} catch (err) {
-			setError(err.response ? err.response.data.message : 'Error de red');
-
-			// Esto es clave para que PrivateRoute sepa que falló y actúe.
+			setError(err.response ? err.response.data.detail : 'Error de red');
 			throw err;
 		} finally {
 			isRefreshing.current = false;
@@ -164,8 +168,15 @@ export const useProvideAuth = () => {
 	};
 
 	const getUser = useCallback(() => {
-		const user = auth?.user;
-		return user;
+		try {
+			const cookie = Cookies.get(import.meta.env.VITE_TOKEN_COOKIE);
+			if (!cookie) return null;
+			const parsed = JSON.parse(cookie);
+			return parsed?.user || null;
+		} catch (err) {
+			console.error('[getAccessToken] Error al parsear cookie:', err);
+			return null;
+		}
 	}, []);
 
 	const getUserCookie = useCallback(() => {
@@ -181,7 +192,15 @@ export const useProvideAuth = () => {
 	}, []);
 
 	const getAccessToken = useCallback(() => {
-		return auth?.accessToken;
+		try {
+			const cookie = Cookies.get(import.meta.env.VITE_TOKEN_COOKIE);
+			if (!cookie) return null;
+			const parsed = JSON.parse(cookie);
+			return parsed?.accessToken || null;
+		} catch (err) {
+			console.error('[getAccessToken] Error al parsear cookie:', err);
+			return null;
+		}
 	}, []);
 
 	return {
