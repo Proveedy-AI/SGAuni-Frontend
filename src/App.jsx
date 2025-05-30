@@ -6,6 +6,7 @@ import { Login, LoginAdmin, ResetPassword } from './views/auth';
 import { AccountProfile, SettingsLayout } from './views/admin/settings';
 import { UserList } from './views/admin/UserList';
 import { PrivateRoute } from './PrivateRoute ';
+import { AdmissionMethod } from './views/admin/settings/AdmissionMethod';
 
 function App() {
 	return (
@@ -26,6 +27,7 @@ function App() {
 							{/* SETTINGS */}
 							<Route path='settings' element={<SettingsLayout />}>
 								<Route path='profile' element={<AccountProfile />} />
+                <Route path='methods' element={<AdmissionMethod />} />
 							</Route>
 						</Route>
 					</Route>

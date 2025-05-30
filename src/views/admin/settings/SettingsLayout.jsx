@@ -79,6 +79,11 @@ export const SettingsLayout = () => {
 		// 	label: 'Documentación',
 		// 	permission: null,
 		// },
+    {
+      href: '/settings/methods',
+      label: 'Modalidades',
+      permission: null,
+    }
 	];
 
 	return (
