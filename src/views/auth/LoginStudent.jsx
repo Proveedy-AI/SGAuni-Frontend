@@ -1,7 +1,5 @@
 import { Alert, Button, Field, InputGroup, toaster } from '@/components/ui';
-import {
-	useProvideAuth,
-} from '@/hooks/auth';
+import { useProvideAuth } from '@/hooks/auth';
 import {
 	Box,
 	Flex,
@@ -134,6 +132,7 @@ export const Login = () => {
 				pb={10}
 				w='full'
 				maxW='lg'
+				color='blackAlpha.800'
 			>
 				<VStack
 					as='form'
@@ -218,6 +217,7 @@ export const Login = () => {
 											<Input
 												placeholder='Ingresar correo electrónico'
 												type='email'
+												borderColor={'gray.400'}
 												value={email}
 												onChange={(e) => setEmail(e.target.value)}
 												size='sm'
@@ -237,6 +237,7 @@ export const Login = () => {
 													placeholder='Ingresar contraseña'
 													type={showPassword ? 'text' : 'password'}
 													value={password}
+													borderColor={'gray.400'}
 													onChange={(e) => setPassword(e.target.value)}
 													size='sm'
 													ps={`calc(var(--input-height))`}
@@ -244,6 +245,7 @@ export const Login = () => {
 												<InputAddon
 													onClick={handleTogglePassword}
 													bg='transparent'
+													borderColor={'gray.400'}
 												>
 													{showPassword ? <LuEye /> : <LuEyeOff />}
 												</InputAddon>
@@ -291,6 +293,7 @@ export const Login = () => {
 											placeholder='Ingresar correo electrónico'
 											type='email'
 											value={email}
+											borderColor={'gray.400'}
 											onChange={(e) => setEmail(e.target.value)}
 											size='sm'
 											ps={`calc(var(--input-height))`}

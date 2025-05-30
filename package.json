@@ -44,6 +44,7 @@
     "react-router": "^7.1.1",
     "react-select": "^5.10.0",
     "recharts": "^2.15.0",
+    "sgauni": "file:",
     "socket.io-client": "^4.8.1",
     "use-mask-input": "^3.4.2"
   },
