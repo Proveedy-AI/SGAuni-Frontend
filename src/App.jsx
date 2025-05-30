@@ -6,6 +6,7 @@ import {
 } from './views/admin';
 import { Login, LoginAdmin, ResetPassword } from './views/auth';
 import { AccountProfile, SettingsLayout } from './views/admin/settings';
+import { UserList } from './views/admin/UserList';
 
 function App() {
 	return (
@@ -21,7 +22,8 @@ function App() {
 					<Route>
 						<Route path='/' element={<AdminLayout />}>
 							<Route index element={<Home />} />
-
+            
+              <Route path='usuarios' element={<UserList />} />
 							{/* SETTINGS */}
 							<Route path='settings' element={<SettingsLayout />}>
 								<Route path='profile' element={<AccountProfile />} />
