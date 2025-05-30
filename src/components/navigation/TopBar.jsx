@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react';
 import {
 	Avatar,
-	ColorModeToggle,
+	//ColorModeToggle,
 	MenuContent,
 	MenuItem,
 	MenuRoot,
@@ -92,7 +92,7 @@ export const TopBar = () => {
 				
 			</HStack>
 			<HStack spacing='4'>
-			<ColorModeToggle />
+			{/*<ColorModeToggle />*/}
 				<MenuRoot>
 					<MenuTrigger asChild>
 						<HStack gap={['1', '3']} cursor='pointer'>
