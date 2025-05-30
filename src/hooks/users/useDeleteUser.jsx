@@ -1,35 +1,17 @@
-import { useState } from 'react';
-import axios from 'axios';
-import { useAuth } from '@/hooks/auth';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import useAxiosPrivate from '../axios/useAxiosPrivate';
 
 export const useDeleteUser = () => {
-	const [loading, setLoading] = useState(false);
-	const { getToken } = useAuth();
+	const axiosPrivate = useAxiosPrivate();
+	const queryClient = useQueryClient();
 
-	const remove = async (id) => {
-		setLoading(true);
-
-		try {
-			const token = getToken();
-			const response = await axios.delete(
-				import.meta.env.VITE_API_URL + `/user/${id}`,
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			);
-			return response.data;
-		} catch (err) {
-			const errorMessage =
-				err.response?.data?.message ||
-				err.response?.data?.error ||
-				err.message ||
-				'Ocurrió un error al intentar eliminar los datos.';
-
-			throw new Error(errorMessage);
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	return { remove, loading };
+	return useMutation({
+		mutationFn: async (id) => {
+			const res = await axiosPrivate.delete(`/user/${id}`);
+			return res.data;
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries(['users']);
+		},
+	});
 };

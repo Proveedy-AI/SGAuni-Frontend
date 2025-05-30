@@ -1,12 +1,12 @@
 import { useMutation } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useCreateUser = () => {
+export const useToggleUser = () => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useMutation({
-		mutationFn: async (payload) => {
-			const res = await axiosPrivate.post('/user', payload);
+		mutationFn: async (id) => {
+			const res = await axiosPrivate.post(`/user/toggle-status/${id}`);
 			return res.data;
 		},
 	});

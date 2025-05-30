@@ -1,50 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useAuth } from '@/hooks/auth';
-import axios from 'axios';
+import { useQuery } from '@tanstack/react-query';
+import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useReadUsers = () => {
-	const [loading, setLoading] = useState(false);
-	const [data, setData] = useState([]);
-	const [error, setError] = useState(null);
-	const { getToken } = useAuth();
+export const useReadUsers = (params = {}) => {
+	const axiosPrivate = useAxiosPrivate();
 
-	const fetchUsers = useCallback(
-		async (params) => {
-			setLoading(true);
-			setError(null);
-			try {
-				const token = getToken();
-
-				if (!token) {
-					throw new Error('El usuario no está autenticado.');
-				}
-
-				const response = await axios.get(
-					`${import.meta.env.VITE_API_URL}/user`,
-					{
-						headers: { Authorization: `Bearer ${token}` },
-						params,
-					}
-				);
-
-				setData(response.data);
-			} catch (err) {
-				setData([]);
-				setError(
-					err.response
-						? err.response.data
-						: 'A ocurrido un error al listar los datos.'
-				);
-			} finally {
-				setLoading(false);
-			}
+	return useQuery({
+		queryKey: ['users', params],
+		queryFn: async () => {
+			const response = await axiosPrivate.get('/user/internal', { params });
+			return response.data;
 		},
-		[getToken]
-	);
-
-	useEffect(() => {
-		fetchUsers();
-	}, []);
-
-	return { loading, data, error, fetchUsers };
+	});
 };
