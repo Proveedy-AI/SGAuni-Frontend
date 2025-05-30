@@ -1,5 +1,7 @@
 import { Alert, Button, Field, InputGroup, toaster } from '@/components/ui';
-import { useAuth, useGenerateTokenRecovery } from '@/hooks/auth';
+import {
+	useProvideAuth,
+} from '@/hooks/auth';
 import {
 	Box,
 	Flex,
@@ -23,7 +25,7 @@ export const Login = () => {
 	const [fieldError, setFieldError] = useState({ email: '', password: '' });
 	const [fieldSuccess, setFieldSuccess] = useState('');
 	const [isForgotPassword, setIsForgotPassword] = useState(false);
-	const { generate, loading: LoadingToken } = useGenerateTokenRecovery();
+	const { login, loading: LoadingToken, error, getToken } = useProvideAuth();
 	const [block, setBlock] = useState(false);
 
 	const location = useLocation();
@@ -64,7 +66,7 @@ export const Login = () => {
 		}
 
 		try {
-			await generate(email);
+			//await generate(email);
 			setFieldSuccess('Correo enviado, revise su Bandeja de entrada');
 			setBlock(true);
 		} catch (error) {
@@ -112,9 +114,7 @@ export const Login = () => {
 		}
 
 		try {
-			localStorage.removeItem('selectedDateType');
-			localStorage.removeItem('opportunitiesFilters');
-			//await login(email, password);
+			await login(email, password);
 		} catch (e) {
 			console.error(e);
 		}
@@ -156,21 +156,21 @@ export const Login = () => {
 						{!isForgotPassword ? (
 							<>
 								<Text
-									fontSize='24px' // Tamaño de fuente 16px
-									fontWeight={400} // Peso de fuente 400
-									lineHeight='100%' // Altura de línea 100%
-									letterSpacing='0%' // Espaciado de letras 0%
-									textAlign='center' // Alineación horizontal al centro
+									fontSize='24px'
+									fontWeight={400}
+									lineHeight='100%'
+									letterSpacing='0%'
+									textAlign='center'
 								>
 									Iniciar Sesión
 								</Text>
 
 								<Text
-									fontSize='16px' // Tamaño de fuente 16px
-									fontWeight={400} // Peso de fuente 400
-									lineHeight='100%' // Altura de línea 100%
-									letterSpacing='0%' // Espaciado de letras 0%
-									textAlign='center' // Alineación horizontal al centro
+									fontSize='16px'
+									fontWeight={400}
+									lineHeight='100%'
+									letterSpacing='0%'
+									textAlign='center'
 								>
 									Hola, por favor ingresa tus datos institucionales
 								</Text>
@@ -178,21 +178,21 @@ export const Login = () => {
 						) : (
 							<>
 								<Text
-									fontSize='24px' // Tamaño de fuente 16px
-									fontWeight={400} // Peso de fuente 400
-									lineHeight='100%' // Altura de línea 100%
-									letterSpacing='0%' // Espaciado de letras 0%
-									textAlign='center' // Alineación horizontal al centro
+									fontSize='24px'
+									fontWeight={400}
+									lineHeight='100%'
+									letterSpacing='0%'
+									textAlign='center'
 								>
 									Restablecer Contraseña
 								</Text>
 
 								<Text
-									fontSize='16px' // Tamaño de fuente 16px
-									fontWeight={400} // Peso de fuente 400
-									lineHeight='100%' // Altura de línea 100%
-									letterSpacing='0%' // Espaciado de letras 0%
-									textAlign='center' // Alineación horizontal al centro
+									fontSize='16px'
+									fontWeight={400}
+									lineHeight='100%'
+									letterSpacing='0%'
+									textAlign='center'
 								>
 									Ingresa tu correo para recibir instrucciones
 								</Text>

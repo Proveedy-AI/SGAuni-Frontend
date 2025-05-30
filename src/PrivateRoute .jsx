@@ -1,19 +1,20 @@
-import PropTypes from 'prop-types';
-import { Navigate, Outlet, useLocation } from 'react-router';
-import { useEffect, useState } from 'react';
 import { Flex, Spinner } from '@chakra-ui/react';
 import Cookies from 'js-cookie';
-import { useReadRolesAndPermissions } from './hooks/users';
-import { useAuth } from './hooks/auth';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import { Navigate, Outlet, useLocation } from 'react-router';
+import { useProvideAuth } from './hooks/auth';
 
 export const PrivateRoute = () => {
-	const { getToken, getUser } = useAuth();
+	const { getUser, getUserCookie, refresh, loading, getRefreshToken } =
+		useProvideAuth();
+
 	const [isAuthenticated, setIsAuthenticated] = useState(null);
 	const [expirationTimeout, setExpirationTimeout] = useState(null);
 
 	const checkTokenValidity = () => {
-		const token = getToken();
-		const user = getUser();
+		const token = getRefreshToken();
+		const user = getUserCookie();
 
 		if (!token || !user) {
 			setIsAuthenticated(false);
@@ -30,7 +31,7 @@ export const PrivateRoute = () => {
 				setIsAuthenticated(false);
 			} else {
 				// Verificar permisos (si es necesario)
-				if (user.sub) {
+				if (user.user_id) {
 					setIsAuthenticated(true);
 
 					const timeUntilExpiration = user.exp - currentTime;
@@ -59,8 +60,16 @@ export const PrivateRoute = () => {
 		}
 	};
 
+	const checkAuth = () => {
+		const user = getUser();
+		if (!user) {
+			refresh();
+		}
+	};
+
 	useEffect(() => {
 		checkTokenValidity();
+		checkAuth();
 
 		return () => {
 			if (expirationTimeout) {
@@ -70,29 +79,20 @@ export const PrivateRoute = () => {
 	}, []);
 
 	useEffect(() => {
-		const handleVisibilityChange = () => {
-			if (!document.hidden) {
-				checkTokenValidity();
-			}
-		};
-
-		const handleWakeUp = () => {
+		const onWakeUp = () => {
 			checkTokenValidity();
 		};
 
-		document.addEventListener('visibilitychange', handleVisibilityChange);
-		window.addEventListener('focus', handleWakeUp);
+		document.addEventListener('visibilitychange', onWakeUp);
+		window.addEventListener('focus', onWakeUp);
 
 		return () => {
-			document.removeEventListener(
-				'visibilitychange',
-				handleVisibilityChange
-			);
-			window.removeEventListener('focus', handleWakeUp);
+			document.removeEventListener('visibilitychange', onWakeUp);
+			window.removeEventListener('focus', onWakeUp);
 		};
 	}, []);
 
-	if (isAuthenticated === null) {
+	if (isAuthenticated === null || loading) {
 		return (
 			<Flex
 				height='100vh'
@@ -113,11 +113,22 @@ export const PrivateRoute = () => {
 };
 
 export const ProtectedRoute = ({ requiredPermission }) => {
-	const { permissions } = useReadRolesAndPermissions();
+	const { getUser } = useProvideAuth();
 	const location = useLocation();
+	const permissions = getUser()?.permissions;
 
 	if (!permissions || permissions.length === 0) {
-		return null;
+		// Opcional: puedes mostrar un loading mientras se obtienen los permisos
+		return (
+			<Flex
+				height='100vh'
+				alignItems='center'
+				justifyContent='center'
+				bg='gray.100'
+			>
+				<Spinner size='lg' color='blue.500' />
+			</Flex>
+		);
 	}
 
 	const hasPermission = Array.isArray(requiredPermission)
@@ -135,5 +146,5 @@ ProtectedRoute.propTypes = {
 	requiredPermission: PropTypes.oneOfType([
 		PropTypes.string,
 		PropTypes.arrayOf(PropTypes.string),
-	]),
+	]).isRequired,
 };

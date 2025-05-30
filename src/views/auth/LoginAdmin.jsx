@@ -1,10 +1,9 @@
-import { Alert, Button, Field, InputGroup, toaster } from '@/components/ui';
-import { useAuth, useGenerateTokenRecovery } from '@/hooks/auth';
+import { Alert, Button, Field, InputGroup } from '@/components/ui';
+import { useProvideAuth } from '@/hooks/auth';
 import {
 	Box,
 	Flex,
 	Group,
-	Heading,
 	Image,
 	Input,
 	InputAddon,
@@ -17,13 +16,13 @@ import { LuEye, LuEyeOff, LuLock, LuMail } from 'react-icons/lu';
 import { useLocation, useNavigate } from 'react-router';
 
 export const LoginAdmin = () => {
-	const [email, setEmail] = useState('');
+	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [showPassword, setShowPassword] = useState(false);
-	const [fieldError, setFieldError] = useState({ email: '', password: '' });
+	const [fieldError, setFieldError] = useState({ username: '', password: '' });
 	const [fieldSuccess, setFieldSuccess] = useState('');
 	const [isForgotPassword, setIsForgotPassword] = useState(false);
-	const { generate, loading: LoadingToken } = useGenerateTokenRecovery();
+	const { login, loading: LoadingToken, getAccessToken } = useProvideAuth();
 	const [block, setBlock] = useState(false);
 
 	const location = useLocation();
@@ -51,20 +50,20 @@ export const LoginAdmin = () => {
 		setIsForgotPassword(!isForgotPassword);
 		setFieldSuccess('');
 		setBlock(false);
-		setEmail('');
+		setUsername('');
 	};
 
-	const handleForgotPasswordSubmit = async (event) => {
-		event.preventDefault();
-		setFieldError({ email: '' });
+	const handleForgotPasswordSubmit = async () => {
+		/*event.preventDefault();
+		setFieldError({ username: '' });
 
-		if (!email) {
-			setFieldError({ email: 'El campo correo es obligatorio' });
+		if (!username) {
+			setFieldError({ username: 'El campo correo es obligatorio' });
 			return;
 		}
 
 		try {
-			await generate(email);
+			await generate(username);
 			setFieldSuccess('Correo enviado, revise su Bandeja de entrada');
 			setBlock(true);
 		} catch (error) {
@@ -72,35 +71,28 @@ export const LoginAdmin = () => {
 				title: error.message,
 				type: 'error',
 			});
-		}
+		}*/
 	};
 
+	const token = getAccessToken();
 	const navigate = useNavigate();
-	/*const { login, loading, error, getToken } = useAuth();
-	
-	const token = getToken();
-
-	
-
-	
-
 	useEffect(() => {
 		if (token) {
 			navigate('/');
 		}
-	}, [token, navigate]);*/
+	}, [token, navigate]);
 
 	const handleTogglePassword = () => {
 		setShowPassword(!showPassword);
 	};
 	const handleSubmit = async (event) => {
 		event.preventDefault();
-		setFieldError({ email: '', password: '' });
+		setFieldError({ username: '', password: '' });
 
-		if (!email) {
+		if (!username) {
 			setFieldError((prev) => ({
 				...prev,
-				email: 'El campo correo electrónico es requerido',
+				username: 'El campo correo electrónico es requerido',
 			}));
 			return;
 		}
@@ -113,9 +105,7 @@ export const LoginAdmin = () => {
 		}
 
 		try {
-			localStorage.removeItem('selectedDateType');
-			localStorage.removeItem('opportunitiesFilters');
-			//await login(email, password);
+			await login(username, password);
 		} catch (e) {
 			console.error(e);
 		}
@@ -157,21 +147,21 @@ export const LoginAdmin = () => {
 						{!isForgotPassword ? (
 							<>
 								<Text
-									fontSize='24px' // Tamaño de fuente 16px
-									fontWeight={400} // Peso de fuente 400
-									lineHeight='100%' // Altura de línea 100%
-									letterSpacing='0%' // Espaciado de letras 0%
-									textAlign='center' // Alineación horizontal al centro
+									fontSize='24px'
+									fontWeight={400} 
+									lineHeight='100%' 
+									letterSpacing='0%'
+									textAlign='center' 
 								>
 									Iniciar Sesión
 								</Text>
 
 								<Text
-									fontSize='16px' // Tamaño de fuente 16px
-									fontWeight={400} // Peso de fuente 400
-									lineHeight='100%' // Altura de línea 100%
-									letterSpacing='0%' // Espaciado de letras 0%
-									textAlign='center' // Alineación horizontal al centro
+									fontSize='16px' 
+									fontWeight={400} 
+									lineHeight='100%' 
+									letterSpacing='0%' 
+									textAlign='center' 
 								>
 									Hola, por favor ingresa tus datos institucionales
 								</Text>
@@ -179,21 +169,21 @@ export const LoginAdmin = () => {
 						) : (
 							<>
 								<Text
-									fontSize='24px' // Tamaño de fuente 16px
-									fontWeight={400} // Peso de fuente 400
-									lineHeight='100%' // Altura de línea 100%
-									letterSpacing='0%' // Espaciado de letras 0%
-									textAlign='center' // Alineación horizontal al centro
+									fontSize='24px'
+									fontWeight={400} 
+									lineHeight='100%' 
+									letterSpacing='0%'
+									textAlign='center' 
 								>
 									Restablecer Contraseña
 								</Text>
 
 								<Text
-									fontSize='16px' // Tamaño de fuente 16px
-									fontWeight={400} // Peso de fuente 400
-									lineHeight='100%' // Altura de línea 100%
-									letterSpacing='0%' // Espaciado de letras 0%
-									textAlign='center' // Alineación horizontal al centro
+									fontSize='16px' 
+									fontWeight={400} 
+									lineHeight='100%' 
+									letterSpacing='0%' 
+									textAlign='center' 
 								>
 									Ingresa tu correo para recibir instrucciones
 								</Text>
@@ -212,15 +202,15 @@ export const LoginAdmin = () => {
 								<Stack w='full'>
 									<Field
 										label='usuario o correo institucional'
-										invalid={!!fieldError.email}
-										errorText={fieldError.email}
+										invalid={!!fieldError.username}
+										errorText={fieldError.username}
 									>
 										<InputGroup width='100%' startElement={<LuMail />}>
 											<Input
 												placeholder='Ingresar correo electrónico'
-												type='email'
-												value={email}
-												onChange={(e) => setEmail(e.target.value)}
+												type='text'
+												value={username}
+												onChange={(e) => setUsername(e.target.value)}
 												size='sm'
 												ps={`calc(var(--input-height))`}
 											/>
@@ -260,6 +250,7 @@ export const LoginAdmin = () => {
 									bg='uni.secondary'
 									color='white'
 									size='sm'
+									loading={LoadingToken}
 								>
 									Iniciar sesión
 								</Button>
@@ -284,15 +275,15 @@ export const LoginAdmin = () => {
 							<VStack as='form' gap='20px' mt={10} w='full'>
 								<Field
 									label='Correo electrónico'
-									invalid={!!fieldError.email}
-									errorText={fieldError.email}
+									invalid={!!fieldError.username}
+									errorText={fieldError.username}
 								>
 									<InputGroup width='100%' startElement={<LuMail />}>
 										<Input
 											placeholder='Ingresar correo electrónico'
-											type='email'
-											value={email}
-											onChange={(e) => setEmail(e.target.value)}
+											type='text'
+											value={username}
+											onChange={(e) => setUsername(e.target.value)}
 											size='sm'
 											ps={`calc(var(--input-height))`}
 										/>

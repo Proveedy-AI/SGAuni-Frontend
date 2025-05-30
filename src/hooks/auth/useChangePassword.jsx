@@ -1,36 +1,17 @@
-import { useState } from 'react';
-import axios from 'axios';
-import { useAuth } from '@/hooks/auth';
+// src/hooks/auth/useChangePassword.jsx
+import { useMutation } from '@tanstack/react-query';
+import useAxiosPrivate from '../axios/useAxiosPrivate';
 
 export const useChangePassword = () => {
-	const [loading, setLoading] = useState(false);
-	const { getToken } = useAuth();
+	const axiosPrivate = useAxiosPrivate();
 
-	const changePassword = async (payload) => {
-		setLoading(true);
-
-		try {
-			const token = getToken();
-			const response = await axios.post(
-				import.meta.env.VITE_API_URL + '/auth/change-password',
-				payload,
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
+	return useMutation({
+		mutationFn: async (payload) => {
+			const response = await axiosPrivate.post(
+				'/auth/change-password',
+				payload
 			);
 			return response.data;
-		} catch (err) {
-			const errorMessage =
-				err.response?.data?.message ||
-				err.response?.data?.error ||
-				err.message ||
-				'Ocurrió un error al intentar cambiar la contraseña.';
-
-			throw new Error(errorMessage);
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	return { changePassword, loading };
+		},
+	});
 };

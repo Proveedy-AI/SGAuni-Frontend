@@ -12,19 +12,18 @@ import {
 } from '@chakra-ui/react';
 import { toaster, Field, Button, InputGroup } from '@/components/ui';
 import { LuArrowLeft, LuLock } from 'react-icons/lu';
-import { useFindTokenRecovery, useResetPassword } from '@/hooks/auth';
 
 export const ResetPassword = () => {
 	const { token } = useParams();
 	const navigate = useNavigate();
 
-	const {
+	/*const {
 		loading: loadingFind,
 		data,
 		error,
 		fetchTokenRecovery,
-	} = useFindTokenRecovery();
-	const { reset, loading: loadingReset } = useResetPassword();
+	} = useFindTokenRecovery();*/
+	//const { reset, loading: loadingReset } = useResetPassword();
 
 	const [password, setPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
@@ -33,14 +32,14 @@ export const ResetPassword = () => {
 		confirmPassword: '',
 	});
 
-	useEffect(() => {
+	/*useEffect(() => {
 		if (token && token.trim() !== '') {
 			fetchTokenRecovery(token);
 		}
-	}, [token, fetchTokenRecovery]);
+	}, [token, fetchTokenRecovery]);*/
 
 	const handleSubmit = async (e) => {
-		e.preventDefault();
+	/*	e.preventDefault();
 		setFieldError({ password: '', confirmPassword: '' });
 
 		if (!password) {
@@ -100,10 +99,10 @@ export const ResetPassword = () => {
 				description: error.message,
 				type: 'error',
 			});
-		}
+		}*/
 	};
 
-	if (loadingFind) {
+	/*if (loadingFind) {
 		return (
 			<Container maxW='md' py={12}>
 				<Box
@@ -152,7 +151,7 @@ export const ResetPassword = () => {
 				</Box>
 			</Container>
 		);
-	}
+	}*/
 
 	return (
 		<Container maxW='md' py={12}>
@@ -234,7 +233,7 @@ export const ResetPassword = () => {
 							<Button
 								type='submit'
 								w='full'
-								loading={loadingReset}
+								//loading={loadingReset}
 								loadingText='Guardando...'
 								bg='uni.secondary'
 								color='white'

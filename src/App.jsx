@@ -1,12 +1,11 @@
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { AdminLayout, AuthLayout } from './layouts';
 //import { PrivateRoute, ProtectedRoute } from './PrivateRoute ';
-import {
-	Home,
-} from './views/admin';
+import { Home } from './views/admin';
 import { Login, LoginAdmin, ResetPassword } from './views/auth';
 import { AccountProfile, SettingsLayout } from './views/admin/settings';
 import { UserList } from './views/admin/UserList';
+import { PrivateRoute } from './PrivateRoute ';
 
 function App() {
 	return (
@@ -19,11 +18,11 @@ function App() {
 						<Route path='reset-password/:token' element={<ResetPassword />} />
 					</Route>
 
-					<Route>
+					<Route element={<PrivateRoute />}>
 						<Route path='/' element={<AdminLayout />}>
 							<Route index element={<Home />} />
-            
-              <Route path='usuarios' element={<UserList />} />
+
+							<Route path='usuarios' element={<UserList />} />
 							{/* SETTINGS */}
 							<Route path='settings' element={<SettingsLayout />}>
 								<Route path='profile' element={<AccountProfile />} />

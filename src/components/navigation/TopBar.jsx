@@ -22,6 +22,7 @@ import {
 	useContrastingColor,
 } from '../ui';
 import { FiChevronDown, FiLogOut } from 'react-icons/fi';
+import { useProvideAuth } from '@/hooks/auth';
 
 export const TopBar = () => {
 	// Datos simulados
@@ -54,7 +55,7 @@ export const TopBar = () => {
 	const [color, setColor] = useState('#F2F2F2');
 	const { colorMode } = useColorMode();
 	const { contrast } = useContrastingColor();
-
+	const { logout } = useProvideAuth(); // Asegúrate de importar correctamente el hook
 	const mensaje = import.meta.env.VITE_IS_DEMO === 'true' ? 'SGAUNI - DEMO' : '';
 
 	useEffect(() => {
@@ -66,7 +67,7 @@ export const TopBar = () => {
 	}, []);
 
 	const handleLogout = () => {
-		console.log(`Cerrar sesión de ${mockUser.email}`);
+		logout();
 	};
 
 	const menuItems = [{ label: 'Configurar cuenta', href: '/settings/profile' }];
