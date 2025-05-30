@@ -4,15 +4,16 @@ import { useAuth, useProvideAuth } from '../auth';
 import { useNavigate } from 'react-router';
 
 const useAxiosPrivate = () => {
-	const { refresh } = useProvideAuth();
+	const { refresh, getAccessToken } = useProvideAuth();
 	const { auth } = useAuth();
 	const navigate = useNavigate();
 
 	useEffect(() => {
 		const requestIntercept = axiosPrivate.interceptors.request.use(
 			(config) => {
+				const token = getAccessToken();
 				if (!config.headers['Authorization']) {
-					config.headers['Authorization'] = `Bearer ${auth?.accessToken}`;
+					config.headers['Authorization'] = `Bearer ${token}`;
 				}
 				return config;
 			},
@@ -27,7 +28,7 @@ const useAxiosPrivate = () => {
 					prevRequest.sent = true;
 					const newAccessToken = await refresh();
 					if (error?.response?.status === 401 && !newAccessToken) {
-						navigate('/auth/login'); // 👈 redirige si no se pudo refrescar
+						navigate('/auth/login');
 						return Promise.reject(error);
 					}
 					// setAuth({ accessToken: newAccessToken });

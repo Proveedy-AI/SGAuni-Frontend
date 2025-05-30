@@ -9,7 +9,7 @@ export const useProvideAuth = () => {
 	const [error, setError] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
-	const { setAuth, auth } = useAuth();
+	const { setAuth } = useAuth();
 	const isRefreshing = useRef(false);
 
 	const getRefreshToken = useCallback(() => {
@@ -32,6 +32,7 @@ export const useProvideAuth = () => {
 			const data = response.data;
 
 			const user = jwtDecode(data['access']);
+			setAuth({ accessToken: data['access'], user });
 
 			const isProduction = import.meta.env.VITE_IS_PRODUCTION === 'true';
 			const cookieOptions = {
@@ -93,10 +94,8 @@ export const useProvideAuth = () => {
 			.then((response) => {
 				console.log('[3] Token invalidado correctamente:', response.data);
 
-				// Limpiar datos de sesión
-				setAuth(null);
 				Cookies.remove(import.meta.env.VITE_US_COOKIE, cookieOptions);
-
+				Cookies.remove(import.meta.env.VITE_TOKEN_COOKIE, cookieOptions);
 				console.log('[4] Cookie eliminada, redirigiendo al login...');
 				navigate('/auth/login');
 			})
@@ -116,6 +115,7 @@ export const useProvideAuth = () => {
 				console.log('[5] Logout completado (finally)');
 				Cookies.remove(import.meta.env.VITE_US_COOKIE, cookieOptions);
 				Cookies.remove(import.meta.env.VITE_TOKEN_COOKIE, cookieOptions);
+				setAuth(null);
 				navigate('/auth/login');
 				setLoading(false);
 			});
@@ -133,7 +133,7 @@ export const useProvideAuth = () => {
 			});
 
 			const data = response.data;
-			console.log('Refrescando token:', data);
+			setAuth({ accessToken: data['access'], user });
 			const user = jwtDecode(data['access']);
 
 			const isProduction = import.meta.env.VITE_IS_PRODUCTION === 'true';
