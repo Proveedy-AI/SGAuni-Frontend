@@ -6,7 +6,7 @@ export const useToggleUser = () => {
 
 	return useMutation({
 		mutationFn: async (id) => {
-			const res = await axiosPrivate.post(`/user/toggle-status/${id}`);
+			const res = await axiosPrivate.post(`/api/v1/users/${id}/toggle_active/`);
 			return res.data;
 		},
 	});
