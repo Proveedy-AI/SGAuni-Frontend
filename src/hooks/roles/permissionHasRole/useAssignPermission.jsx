@@ -6,7 +6,7 @@ export const useAssignPermission = () => {
 
 	return useMutation({
 		mutationFn: async (payload) => {
-			const res = await axiosPrivate.post('/role-has-permission', payload);
+			const res = await axiosPrivate.post(`api/v1/roles/${payload.role_id}/assign_permissions/`, payload);
 			return res.data;
 		},
 	});

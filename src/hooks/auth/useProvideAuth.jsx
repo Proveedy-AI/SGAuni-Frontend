@@ -134,8 +134,8 @@ export const useProvideAuth = () => {
 
 			const data = response.data;
 			const user = jwtDecode(data['access']);
-
 			setAuth({ accessToken: data['access'], user });
+		
 
 			const isProduction = import.meta.env.VITE_IS_PRODUCTION === 'true';
 			const cookieOptions = {
@@ -146,7 +146,6 @@ export const useProvideAuth = () => {
 			if (isProduction) {
 				cookieOptions.domain = import.meta.env.VITE_DOMAIN_AUTO_LOGIN;
 			}
-
 			Cookies.set(
 				import.meta.env.VITE_TOKEN_COOKIE,
 				JSON.stringify({ accessToken: data['access'], user }),
@@ -154,31 +153,14 @@ export const useProvideAuth = () => {
 			);
 			Cookies.set(
 				import.meta.env.VITE_US_COOKIE,
+				/* JSON.stringify(data) */
 				data['refresh'],
 				cookieOptions
 			);
 
-			return data['access'];
+			return response.data['access'];
 		} catch (err) {
-			// Manejar error de refresh: borrar todo y redirigir
-			console.warn('Error refrescando token, cerrando sesión...');
-
-			const isProduction = import.meta.env.VITE_IS_PRODUCTION === 'true';
-			const cookieOptions = {
-				domain: isProduction
-					? import.meta.env.VITE_DOMAIN_AUTO_LOGIN
-					: undefined,
-			};
-
-			// Limpiar estado y cookies
-			setAuth(null);
-			Cookies.remove(import.meta.env.VITE_TOKEN_COOKIE, cookieOptions);
-			Cookies.remove(import.meta.env.VITE_US_COOKIE, cookieOptions);
-
-			// Redirigir al login
-			navigate('/auth/login');
-
-			// Lanza el error para posibles manejos arriba
+			setError(err.response ? err.response.data.detail : 'Error de red');
 			throw err;
 		} finally {
 			isRefreshing.current = false;

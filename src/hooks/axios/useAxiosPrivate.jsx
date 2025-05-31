@@ -1,19 +1,18 @@
 import { axiosPrivate } from '@/api/axios';
+import Cookies from 'js-cookie';
 import { useEffect } from 'react';
 import { useAuth, useProvideAuth } from '../auth';
-import { useNavigate } from 'react-router';
+import { Navigate } from 'react-router';
 
 const useAxiosPrivate = () => {
-	const { refresh, getAccessToken } = useProvideAuth();
+	const { refresh, error: authError } = useProvideAuth();
 	const { auth } = useAuth();
-	const navigate = useNavigate();
 
 	useEffect(() => {
 		const requestIntercept = axiosPrivate.interceptors.request.use(
 			(config) => {
-				const token = getAccessToken();
 				if (!config.headers['Authorization']) {
-					config.headers['Authorization'] = `Bearer ${token}`;
+					config.headers['Authorization'] = `Bearer ${auth?.accessToken}`;
 				}
 				return config;
 			},
@@ -27,8 +26,16 @@ const useAxiosPrivate = () => {
 				if (error?.response?.status === 401 && !prevRequest?.sent) {
 					prevRequest.sent = true;
 					const newAccessToken = await refresh();
-					if (error?.response?.status === 401 && !newAccessToken) {
-						navigate('/auth/login');
+					if (!newAccessToken) {
+						const isProduction = import.meta.env.VITE_IS_PRODUCTION === 'true';
+						const cookieOptions = {
+							domain: isProduction
+								? import.meta.env.VITE_DOMAIN_AUTO_LOGIN
+								: undefined,
+						};
+						Cookies.remove(import.meta.env.VITE_US_COOKIE, cookieOptions);
+						Cookies.remove(import.meta.env.VITE_TOKEN_COOKIE, cookieOptions);
+						Navigate('/auth/login')
 						return Promise.reject(error);
 					}
 					// setAuth({ accessToken: newAccessToken });

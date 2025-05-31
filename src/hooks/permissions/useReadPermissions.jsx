@@ -1,13 +1,14 @@
+// src/hooks/permissions/useReadPermissions.jsx
 import { useQuery } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useReadRoles = (params = {}) => {
+export const useReadPermissions = (params = {}) => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useQuery({
-		queryKey: ['roles', params],
+		queryKey: ['permissions', params],
 		queryFn: async () => {
-			const res = await axiosPrivate.get('/api/v1/roles/', { params });
+			const res = await axiosPrivate.get('/api/v1/permissions/', { params });
 			return res.data;
 		},
 	});

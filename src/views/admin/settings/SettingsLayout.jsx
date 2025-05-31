@@ -38,11 +38,7 @@ export const SettingsLayout = () => {
 			label: 'Tratamiento de datos',
 			permission: 'settings.data-processing.view',
 		},
-		{
-			href: '/settings/roles',
-			label: 'Roles y permisos',
-			permission: 'settings.roles.view',
-		},
+
 		// {
 		// 	href: '/settings/availability-status',
 		// 	label: 'Estado de disponibilidad',
@@ -80,10 +76,20 @@ export const SettingsLayout = () => {
 		// 	permission: null,
 		// },
     {
-      href: '/settings/methods',
+      href: '/settings/Modalities',
       label: 'Modalidades',
       permission: null,
-    }
+    },
+	{
+		href: '/settings/roles',
+		label: 'Roles y permisos',
+		permission: null,
+	},
+	{
+		href: '/settings/regional',
+		label: 'Región y países',
+		permission: null,
+	},
 	];
 
 	return (
