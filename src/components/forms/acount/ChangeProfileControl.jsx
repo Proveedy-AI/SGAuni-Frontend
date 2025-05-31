@@ -7,10 +7,10 @@ export const ChangeProfileControl = ({ profile, isChangesMade, handleUpdateProfi
   return (
     <HStack justify='space-between' w='full'>
       <HStack>
-        <Avatar bgColor={profile.color} color={contrast(profile.color)} name={profile.fullname} shape='rounded' size='xl'
+        <Avatar bgColor={profile.color} color={contrast(profile.color)} name={profile.full_name} shape='rounded' size='xl'
         />
         <Stack gap='0'>
-          <Text fontWeight='medium'>{profile.fullname}</Text>
+          <Text fontWeight='medium'>{profile.full_name}</Text>
         </Stack>
       </HStack>
       <Button
