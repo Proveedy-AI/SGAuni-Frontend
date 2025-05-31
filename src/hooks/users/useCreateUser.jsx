@@ -6,7 +6,7 @@ export const useCreateUser = () => {
 
 	return useMutation({
 		mutationFn: async (payload) => {
-			const res = await axiosPrivate.post('/user', payload);
+			const res = await axiosPrivate.post('/api/v1/users/', payload);
 			return res.data;
 		},
 	});
