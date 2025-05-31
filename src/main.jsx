@@ -9,10 +9,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 window.onload = () => {
 	const favicon = document.getElementById('favicon');
 	if (favicon) {
-		const iconPath = import.meta.env.VITE_FAVICON || '/favicon.svg'; // Usa la variable o el valor por defecto
+		const iconPath = import.meta.env.VITE_FAVICON || '/favicon.png'; // Usa la variable o el valor por defecto
 		favicon.href = iconPath;
 	}
-	document.title = import.meta.env.VITE_APP_TITLE || 'CRM';
+	document.title = import.meta.env.VITE_APP_TITLE || 'SGA - UNI';
 };
 
 const queryClient = new QueryClient();
