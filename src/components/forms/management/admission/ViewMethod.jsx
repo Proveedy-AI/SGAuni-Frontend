@@ -1,12 +1,10 @@
 import { ControlledModal, Field } from "@/components/ui"
 import { Stack, Text } from "@chakra-ui/react"
 
-export const ViewUserModal = ({ selectedUser, isViewModalOpen, setIsModalOpen, handleCloseModal}) => {
+export const ViewMethod = ({ selectedMethod, isViewModalOpen, setIsModalOpen, handleCloseModal }) => {
   return (
     <Stack css={{ '--field-label-width': '140px' }}>
-      <Field
-        orientation={{ base: 'vertical', sm: 'horizontal' }}
-      >
+      <Field orientation={{ base: 'vertical', sm: 'horizontal' }}>
         <ControlledModal
           title='Ver Usuario'
           placement='center'
@@ -17,23 +15,23 @@ export const ViewUserModal = ({ selectedUser, isViewModalOpen, setIsModalOpen, h
           hiddenFooter={true}
         >
           <Stack>
-            <Field label='Nombres y apellidos'>
+            <Field label='Nombre de la modalidad'>
               <Text
                 w='full'
                 py={2}
                 px={3}
                 border={'1px solid #E2E8F0'}
                 borderRadius='md'
-              >{ selectedUser?.username }</Text>
+              >{ selectedMethod?.name }</Text>
             </Field>
-            <Field label='Correo'>
+            <Field label='Descripción'>
               <Text
                 w='full'
                 py={2}
                 px={3}
                 border={'1px solid #E2E8F0'}
                 borderRadius='md'
-              >{ selectedUser?.email }</Text>
+              >{ selectedMethod?.description }</Text>
             </Field>
           </Stack>
         </ControlledModal>

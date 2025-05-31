@@ -10,63 +10,51 @@ import {
 } from '@chakra-ui/react';
 import { Field, FileInput, FileUploadRoot } from '@/components/ui';
 
-export const ChangeDataProfileForm = ({ user, profile, updateProfileField }) => {
+const FieldWithInputText = ({ label, field, value, updateProfileField }) => {
+  if (!value || value.length === 0) return null;
+
+  return (
+    <Field
+      orientation={{
+        base: 'vertical',
+        sm: 'horizontal',
+      }}
+      label={ label }
+    >
+      <Input
+        value={value}
+        onChange={(e) => updateProfileField(field, e.target.value)}
+        variant='flushed'
+        flex='1'
+        size='sm'
+      />
+    </Field>
+  )
+}
+
+export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
 
   return (
    <Grid w='full' templateColumns={{ base: '1fr', lg: 'repeat(2, 1fr)' }} gap='6'>
       <Box minW='50%'>
         <Stack css={{ '--field-label-width': '140px' }}>
-          <Field
-            orientation={{
-              base: 'vertical',
-              sm: 'horizontal',
-            }}
-            label='Nombre y Apellidos:'
-          >
-            <Input
-              value={profile.fullname}
-              onChange={(e) => updateProfileField('fullname', e.target.value)}
-              variant='flushed'
-              flex='1'
-              size='sm'
-            />
-          </Field>
+          <FieldWithInputText label='Nombres:' field='first_name' value={profile.first_name} updateProfileField={updateProfileField} /> 
 
-          <Field
-            orientation={{
-              base: 'vertical',
-              sm: 'horizontal',
-            }}
-            label='Correo electrónico:'
-          >
-            <Input
-              value={profile.email}
-              onChange={(e) => updateProfileField('email', e.target.value)}
-              variant='flushed'
-              flex='1'
-              size='sm'
-            />
-          </Field>
-
-          <Field
-            orientation={{
-              base: 'vertical',
-              sm: 'horizontal',
-            }}
-            label='Nro. de documento de identidad:'
-          >
-            <Input
-              value={profile.numDoc}
-              onChange={(e) => updateProfileField('numDoc', e.target.value)}
-              variant='flushed'
-              flex='1'
-              size='sm'
-            />
-          </Field>
+          <FieldWithInputText label='Apellidos:' field='last_name' value={profile.last_name} updateProfileField={updateProfileField} /> 
+          
+          {/* <FieldWithInputText label='Correo electrónico:' field='email' value={profile.email} updateProfileField={updateProfileField} /> */}
+          
+          <FieldWithInputText label='Nro. de documento de identidad:' field='num_doc' value={profile.num_doc} updateProfileField={updateProfileField} />
+          
+          {/* <FieldWithInputText label='País:' field='country' value={profile.country.label || user.country.name} updateProfileField={updateProfileField} /> */}
+          
+          <FieldWithInputText label='Correo institucional:' field='uni_email' value={profile.uni_email}  updateProfileField={updateProfileField} />
+          
+          <FieldWithInputText label='Categoría:' field='category' value={profile.category} updateProfileField={updateProfileField} />
         </Stack>
-
+        {/* 
         <Stack css={{ '--field-label-width': '140px' }}>
-          {/* País */}
+          
           <Field
             orientation={{
               base: 'vertical',
@@ -83,7 +71,6 @@ export const ChangeDataProfileForm = ({ user, profile, updateProfileField }) => 
             />
           </Field>
 
-          {/* Correo institucional */}
           <Field
             orientation={{
               base: 'vertical',
@@ -100,7 +87,6 @@ export const ChangeDataProfileForm = ({ user, profile, updateProfileField }) => 
             />
           </Field>
 
-          {/* Categoría */}
           <Field
             orientation={{
               base: 'vertical',
@@ -117,7 +103,6 @@ export const ChangeDataProfileForm = ({ user, profile, updateProfileField }) => 
             />
           </Field>
 
-          {/* Estado */}
           <Field
             orientation={{
               base: 'vertical',
@@ -137,35 +122,17 @@ export const ChangeDataProfileForm = ({ user, profile, updateProfileField }) => 
             </Flex>
           </Field>
         </Stack>
-      </Box>
+        */}
+      </Box> 
 
       <Box minW='50%'>
         <Stack css={{ '--field-label-width': '140px' }}>
-          <Field
-            orientation={{
-              base: 'vertical',
-              sm: 'horizontal',
-            }}
-            label='Teléfono:'
-          >
-            <Input
-              value={profile.phoneNumber}
-              onChange={(e) => updateProfileField('phoneNumber', e.target.value)}
-              variant='flushed'
-              flex='1'
-              size='sm'
-            />
-          </Field>
+    
+          <FieldWithInputText label='Teléfono:' field='phone' value={profile.phone} updateProfileField={updateProfileField} />
 
-          <Field 
-            orientation={{
-              base: 'vertical',
-              sm: 'horizontal',
-            }}
-            label='CV:'
-          >
+          <Field orientation={{ base: 'vertical', sm: 'horizontal', }} label='CV:'>
             {
-              !profile.pathCv
+              !profile.path_cv
                 ? (
                   <FileUploadRoot>
                     <FileInput
@@ -182,7 +149,7 @@ export const ChangeDataProfileForm = ({ user, profile, updateProfileField }) => 
                       size='xs'
                       colorScheme='blue'
                       as='a'
-                      href={profile.pathCv || '#'}
+                      href={profile.path_cv || '#'}
                       target='_blank'
                       rel='noopener noreferrer'
                     >
@@ -191,7 +158,7 @@ export const ChangeDataProfileForm = ({ user, profile, updateProfileField }) => 
                     <Button
                       size='xs'
                       colorScheme='red'
-                      onClick={() => updateProfileField('pathCv', '')}
+                      onClick={() => updateProfileField('path_cv', '')}
                     >
                       Quitar CV
                     </Button>
@@ -200,15 +167,9 @@ export const ChangeDataProfileForm = ({ user, profile, updateProfileField }) => 
             }
           </Field>
 
-          <Field 
-            orientation={{
-              base: 'vertical',
-              sm: 'horizontal',
-            }}
-            label='Contrato:'
-          >
+          <Field orientation={{ base: 'vertical', sm: 'horizontal', }} label='Contrato:'>
             {
-              !profile.pathContract
+              !profile.path_grade
                 ? (
                   <FileUploadRoot>
                     <FileInput
@@ -225,7 +186,7 @@ export const ChangeDataProfileForm = ({ user, profile, updateProfileField }) => 
                       size='xs'
                       colorScheme='blue'
                       as='a'
-                      href={profile.pathContract || '#'}
+                      href={profile.path_grade || '#'}
                       target='_blank'
                       rel='noopener noreferrer'
                     >
