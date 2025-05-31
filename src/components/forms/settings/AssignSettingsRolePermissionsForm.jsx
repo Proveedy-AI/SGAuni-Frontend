@@ -29,7 +29,7 @@ export const AssignSettingsRolePermissionsForm = ({ data, fetchData }) => {
 	// Cargar permisos actuales al abrir modal
 	useEffect(() => {
 		if (permissionsInRole) {
-			const assigned = permissionsInRole?.permissions.map((p) => p.permission.id);
+			const assigned = permissionsInRole?.permissions?.map((p) => p.permission.id);
 			setSelectedPermissions(assigned);
 		}
 	}, [permissionsInRole]);
