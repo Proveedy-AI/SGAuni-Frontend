@@ -23,7 +23,7 @@ export const AdmissionMethod = () => {
 
   const handleCloseModal = (modalType) => {
     setIsModalOpen(prev => ({...prev, [modalType]: false }));
-    setSelectedUser(null);
+    setSelectedMethod(null);
   }
 
   return (
@@ -31,7 +31,7 @@ export const AdmissionMethod = () => {
       <Heading size={{ xs: 'xs', sm: 'sm', md: 'md', }}>Usuarios</Heading>
       
       <VStack py='4' align='start' gap='3'>
-        <CreateMethod handleOpenModal={handleOpenModal} isCreateModalOpen={isModalOpen.create} setIsModalOpen={setIsModalOpen} />
+        <CreateMethod setAdmissionMethods={setAdmissionMethods} handleOpenModal={handleOpenModal} isCreateModalOpen={isModalOpen.create} setIsModalOpen={setIsModalOpen} handleCloseModal={handleCloseModal} />
 
         <AdmissionMethodTable methods={admissionMethods} handleOpenModal={handleOpenModal} handleCloseModal={handleCloseModal } />
 
