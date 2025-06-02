@@ -1,4 +1,5 @@
 import { CreateMethod } from "@/components/forms/management/admission/CreateMethod"
+import { DeleteMethodModal } from "@/components/forms/management/admission/DeleteMethod"
 import { ViewMethod } from "@/components/forms/management/admission/ViewMethod"
 import { AdmissionMethodTable } from "@/components/tables/AdmissionMethodTable"
 import { ADMISSION_METHODS } from "@/data"
@@ -33,11 +34,13 @@ export const AdmissionMethod = () => {
       <VStack py='4' align='start' gap='3'>
         <CreateMethod setAdmissionMethods={setAdmissionMethods} handleOpenModal={handleOpenModal} isCreateModalOpen={isModalOpen.create} setIsModalOpen={setIsModalOpen} handleCloseModal={handleCloseModal} />
 
-        <AdmissionMethodTable methods={admissionMethods} handleOpenModal={handleOpenModal} handleCloseModal={handleCloseModal } />
+        <AdmissionMethodTable setMethods={setAdmissionMethods} methods={admissionMethods} handleOpenModal={handleOpenModal} handleCloseModal={handleCloseModal } />
 
       </VStack>
 
       <ViewMethod selectedMethod={selectedMethod} isViewModalOpen={isModalOpen.view} setIsModalOpen={setIsModalOpen} handleCloseModal={handleCloseModal} />
+      
+      <DeleteMethodModal selectedMethod={selectedMethod} setMethods={setAdmissionMethods} isDeleteModalOpen={isModalOpen.delete} setIsModalOpen={setIsModalOpen} handleCloseModal={handleCloseModal} />
     </Box>
   )
 }

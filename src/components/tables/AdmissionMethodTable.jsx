@@ -1,17 +1,48 @@
-import { Button, Switch } from "@/components/ui"
-import { Box, Heading, HStack, Table } from "@chakra-ui/react"
+import { Button, Pagination } from "@/components/ui"
+import { HStack, Table, Switch } from "@chakra-ui/react"
 import { useState } from "react"
-import { FiSettings } from "react-icons/fi"
-import { HiPlus, HiEye, HiPencil, HiTrash } from "react-icons/hi2"
+import { HiEye, HiPencil, HiTrash } from "react-icons/hi2"
+import { RowsPerPageSelect } from "../select"
 
-export const AdmissionMethodTable = ({ methods, handleOpenModal }) => {
-  const [rowsPerPage, setRowsPerPage] = useState(methods.length);
+export const AdmissionMethodTable = ({ setMethods, methods, handleOpenModal }) => {
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
 
+  const rowsPerPageOptions = [
+    { label: '5', value: '5' },
+		{ label: '10', value: '10' },
+		{ label: '20', value: '20' },
+		{ label: '50', value: '50' },
+	];
+  
   const handleRowsPerPageChange = (option) => {
     setRowsPerPage(Number(option.value));
     setCurrentPage(1);
   };
+
+  const paginatedData = methods.slice(
+		(currentPage - 1) * rowsPerPage,
+		currentPage * rowsPerPage
+	);
+
+  //const { mutateAsync: toggleMethod, isPending: isPendingToggle } = useToggleMethod();
+  const [isPendingToggle, setIsPendingToggle] = useState(false); // Simulación de estado de carga
+
+  const handleStatusChange = async (methodId) => {
+    //simulación de llamada a la API
+    setIsPendingToggle(true);
+    setTimeout(() => {
+      setMethods((prevMethods) => 
+        prevMethods.map((m) => 
+          m.id === methodId ? { ...m, is_active: !m.is_active } : m
+        )
+      );
+      setIsPendingToggle(false);
+    }, 1500);
+
+
+    // Hacer su try/catch para await toggleMethod(methodId)
+  }
   
   return (
     <HStack
@@ -33,7 +64,7 @@ export const AdmissionMethodTable = ({ methods, handleOpenModal }) => {
 
         <Table.Body>
           {
-            methods.map((method, index) => (
+            paginatedData.map((method, index) => (
               <Table.Row
                 key={index}
                 background={
@@ -45,8 +76,25 @@ export const AdmissionMethodTable = ({ methods, handleOpenModal }) => {
                 <Table.Cell>{index + 1}</Table.Cell>
                 <Table.Cell>{method.name}</Table.Cell>
                 <Table.Cell >
-                  <Switch size="md" colorPalette="blue" pr={3} defaultChecked={method.isActive} />
-                  {method.isActive ? "Activo" : "Inactivo"}
+                  <Switch.Root
+                    checked={method.is_active}
+                    display='flex'
+                    justifyContent='space-between'
+                    onCheckedChange={() => handleStatusChange(method.id)}
+                    disabled={isPendingToggle}
+                  >
+                    <Switch.Label>{method.is_active ? 'Activo' : 'Inactivo'}</Switch.Label>
+                    <Switch.HiddenInput />
+                  
+                    <Switch.Control
+                      _checked={{
+                        bg: 'uni.secondary',
+                      }}
+                      bg='uni.red.400'
+                    />
+                  </Switch.Root>
+                  {/* <Switch size="md" colorPalette="blue" pr={3} defaultChecked={method.isActive} />
+                  {method.isActive ? "Activo" : "Inactivo"} */}
                 </Table.Cell>
                 <Table.Cell>
                   <HStack spacing={2}>
@@ -92,6 +140,27 @@ export const AdmissionMethodTable = ({ methods, handleOpenModal }) => {
             ))
           }
         </Table.Body>
+        <Table.Footer>
+          <Table.Row>
+            <Table.ColumnHeader colSpan={1}>
+              {/* Aquí va la paginación */}
+              <HStack spacing={2}>
+                <RowsPerPageSelect
+                  options={rowsPerPageOptions}
+                  onChange={(value) => handleRowsPerPageChange({ value })}
+                />
+              </HStack>
+            </Table.ColumnHeader>
+            <Table.ColumnHeader colSpan={4}>
+              <Pagination
+                count={methods.length}
+                pageSize={rowsPerPage}
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
+              />
+            </Table.ColumnHeader>
+          </Table.Row>
+        </Table.Footer>
       </Table.Root>
     </HStack>
   )

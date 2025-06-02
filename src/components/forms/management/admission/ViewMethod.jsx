@@ -27,67 +27,67 @@ export const ViewMethod = ({ selectedMethod, isViewModalOpen, setIsModalOpen, ha
             </Field>
             <Flex gap={6} flexDir={{ base: 'column', sm: 'row' }}>
               <Field label='Activo'>
-                <Badge colorScheme={selectedMethod?.isActive ? 'green' : 'red'}>
-                  {selectedMethod?.isActive ? 'Sí' : 'No'}
+                <Badge bg={selectedMethod?.is_active ? 'green' : 'red'} color='white'>
+                  {selectedMethod?.is_active ? 'Sí' : 'No'}
                 </Badge>
               </Field>
               <Field label='Requiere pre-maestría'>
-                <Badge colorScheme={selectedMethod?.requiresPreMasterExam ? 'green' : 'red'}>
-                  {selectedMethod?.requiresPreMasterExam ? 'Sí' : 'No'}
+                <Badge bg={selectedMethod?.requires_pre_master_exam ? 'green' : 'red'} color='white'>
+                  {selectedMethod?.requires_pre_master_exam ? 'Sí' : 'No'}
                 </Badge>
               </Field>
             </Flex>
             <Flex gap={6} flexDir={{ base: 'column', sm: 'row' }}>
               <Field label='Requiere entrevista'>
-                <Badge colorScheme={selectedMethod?.requiresInterview ? 'green' : 'red'}>
-                  {selectedMethod?.requiresInterview ? 'Sí' : 'No'}
+                <Badge bg={selectedMethod?.requires_interview ? 'green' : 'red'} color='white'>
+                  {selectedMethod?.requires_interview ? 'Sí' : 'No'}
                 </Badge>
               </Field>
               <Field label='Requiere ensayo'>
-                <Badge colorScheme={selectedMethod?.requiresEssay ? 'green' : 'red'}>
-                  {selectedMethod?.requiresEssay ? 'Sí' : 'No'}
+                <Badge bg={selectedMethod?.requires_essay ? 'green' : 'red'} color='white'>
+                  {selectedMethod?.requires_essay ? 'Sí' : 'No'}
                 </Badge>
               </Field>
             </Flex>
             <Field label='Fechas de examen'>
               <Text w='full' py={2} px={3} border='1px solid #E2E8F0' borderRadius='md'>
-                {selectedMethod?.examStartDate
-                  ? new Date(selectedMethod.examStartDate).toLocaleDateString()
+                {selectedMethod?.exam_start_date
+                  ? new Date(selectedMethod.exam_start_date).toLocaleDateString()
                   : ''}{" "}
                 -{" "}
-                {selectedMethod?.examEndDate
-                  ? new Date(selectedMethod.examEndDate).toLocaleDateString()
+                {selectedMethod?.exam_end_date
+                  ? new Date(selectedMethod.exam_end_date).toLocaleDateString()
                   : ''}
               </Text>
             </Field>
             <Flex gap={6} flexDir={{ base: 'column', sm: 'row' }}>
               <Field label='Requiere documento'>
-                <Badge colorScheme={selectedMethod?.requiresDocument ? 'green' : 'red'}>
-                  {selectedMethod?.requiresDocument ? 'Sí' : 'No'}
+                <Badge bg={selectedMethod?.requires_document ? 'green' : 'red'} color='white'>
+                  {selectedMethod?.requires_document ? 'Sí' : 'No'}
                 </Badge>
               </Field>
-              {selectedMethod?.requiresDocument && (
+              {selectedMethod?.requires_document && (
                 <Field label='Nombre del documento'>
                   <Text w='full' py={2} px={3} border='1px solid #E2E8F0' borderRadius='md'>
-                    {selectedMethod?.documentName}
+                    {selectedMethod?.document_name}
                   </Text>
                 </Field>
               )}
             </Flex>
             <Field label='Campo obligatorio'>
               <Text w='full' py={2} px={3} border='1px solid #E2E8F0' borderRadius='md'>
-                {selectedMethod?.requiredField}
+                {selectedMethod?.required_field}
               </Text>
             </Field>
             <Flex gap={6} flexDir={{ base: 'column', sm: 'row' }}>
               <Field label='Ancho ensayo'>
                 <Text w='full' py={2} px={3} border='1px solid #E2E8F0' borderRadius='md'>
-                  {selectedMethod?.essayWidth}
+                  {selectedMethod?.essay_width}
                 </Text>
               </Field>
               <Field label='Ancho entrevista'>
                 <Text w='full' py={2} px={3} border='1px solid #E2E8F0' borderRadius='md'>
-                  {selectedMethod?.interviewWidth}
+                  {selectedMethod?.interview_width}
                 </Text>
               </Field>
             </Flex>
@@ -99,15 +99,15 @@ export const ViewMethod = ({ selectedMethod, isViewModalOpen, setIsModalOpen, ha
             <Flex gap={6} flexDir={{ base: 'column', sm: 'row' }}>
               <Field label='Creado'>
                 <Text w='full' py={2} px={3} border='1px solid #E2E8F0' borderRadius='md'>
-                  {selectedMethod?.createdAt
-                    ? new Date(selectedMethod.createdAt).toLocaleString()
+                  {selectedMethod?.created_at
+                    ? new Date(selectedMethod.created_at).toLocaleString()
                     : ''}
                 </Text>
               </Field>
               <Field label='Actualizado'>
                 <Text w='full' py={2} px={3} border='1px solid #E2E8F0' borderRadius='md'>
-                  {selectedMethod?.updatedAt
-                    ? new Date(selectedMethod.updatedAt).toLocaleString()
+                  {selectedMethod?.updated_at
+                    ? new Date(selectedMethod.updated_at).toLocaleString()
                     : ''}
                 </Text>
               </Field>

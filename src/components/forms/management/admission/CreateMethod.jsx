@@ -45,7 +45,6 @@ export const CreateMethod = ({ setAdmissionMethods, handleOpenModal, isCreateMod
   const handleExamDateChange = (range) => setExamDates(range);
 
   const handleFieldChange = (value) => {
-    console.log(value);
     setSelectedField(value);
   }
 
@@ -56,21 +55,21 @@ export const CreateMethod = ({ setAdmissionMethods, handleOpenModal, isCreateMod
     const newMethod = {
       id: Math.random().toString(36).substring(2, 15),
       name: elements.namedItem('name').value,
-      isActive: true,
-      requiresPreMasterExam: true, //<- Campo no incluido en el formulario por el momento
-      requiresInterview: requiresInterview === "true",
-      requiresEssay: requiresEssay === "true",
+      is_active: true,
+      requires_pre_master_exam: true, //<- Campo no incluido en el formulario por el momento
+      requires_interview: requiresInterview === "true",
+      requires_essay: requiresEssay === "true",
       description: elements.namedItem('description').value,
-      examStartDate: examDates.startDate,
-      examEndDate: examDates.endDate,
-      requiresDocument: requiresDocument === "true",
-      documentName: requiresDocument === "true" ? elements.documentName.value : null,
-      requiredField: selectedField ? selectedField.value : null,
-      essayWidth: 500, //<- Campo no incluido en el formulario por el momento
-      interviewWidth: 300, //<- Campo no incluido en el formulario por el momento
+      exam_start_date: examDates.startDate,
+      exam_end_date: examDates.endDate,
+      requires_document: requiresDocument === "true",
+      document_name: requiresDocument === "true" ? elements.documentName.value : null,
+      required_field: selectedField ? selectedField.value : null,
+      essay_width: 500, //<- Campo no incluido en el formulario por el momento
+      interview_width: 300, //<- Campo no incluido en el formulario por el momento
       min_grade: 75, //<- Campo no incluido en el formulario por el momento
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     }
 
     setAdmissionMethods(prevMethods => [...prevMethods, newMethod]);
