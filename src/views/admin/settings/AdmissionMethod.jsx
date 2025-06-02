@@ -1,5 +1,6 @@
 import { CreateMethod } from "@/components/forms/management/admission/CreateMethod"
 import { DeleteMethodModal } from "@/components/forms/management/admission/DeleteMethod"
+import { EditMethodModal } from "@/components/forms/management/admission/EditMethod"
 import { ViewMethod } from "@/components/forms/management/admission/ViewMethod"
 import { AdmissionMethodTable } from "@/components/tables/AdmissionMethodTable"
 import { ADMISSION_METHODS } from "@/data"
@@ -40,6 +41,8 @@ export const AdmissionMethod = () => {
 
       <ViewMethod selectedMethod={selectedMethod} isViewModalOpen={isModalOpen.view} setIsModalOpen={setIsModalOpen} handleCloseModal={handleCloseModal} />
       
+      <EditMethodModal setMethods={setAdmissionMethods} selectedMethod={selectedMethod} setSelectedMethod={setSelectedMethod} isEditModalOpen={isModalOpen.edit} setIsModalOpen={setIsModalOpen} handleCloseModal={handleCloseModal} />
+
       <DeleteMethodModal selectedMethod={selectedMethod} setMethods={setAdmissionMethods} isDeleteModalOpen={isModalOpen.delete} setIsModalOpen={setIsModalOpen} handleCloseModal={handleCloseModal} />
     </Box>
   )

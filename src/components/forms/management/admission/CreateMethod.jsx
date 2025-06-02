@@ -1,36 +1,9 @@
 import CustomSelect from "@/components/select/customSelect";
-import { Field, Button, ControlledModal, Radio, RadioGroup, DatePicker } from "@/components/ui"
+import { Field, Button, ControlledModal, Radio, RadioGroup, DatePicker, toaster } from "@/components/ui"
 import { Flex, HStack, Input, Stack } from "@chakra-ui/react"
 import { useState } from "react";
 import { HiPlus } from "react-icons/hi2"
-
-const OPTIONS = [
-  {
-    id: 1,
-    label: 'Todos los campos',
-    value: 'all',
-  },
-  {
-    id: 2,
-    label: 'Campo 1',
-    value: 'field1',
-  },
-  {
-    id: 3,
-    label: 'Campo 2',
-    value: 'field2',
-  },
-  {
-    id: 4,
-    label: 'Campo 3',
-    value: 'field3',
-  },
-  {
-    id: 5,
-    label: 'Campo 4',
-    value: 'field4',
-  }
-]
+import { OPTIONS } from "@/data"; // Asegúrate de que este archivo exista y contenga las opciones
 
 export const CreateMethod = ({ setAdmissionMethods, handleOpenModal, isCreateModalOpen, setIsModalOpen, handleCloseModal }) => {
   const [requiresEssay, setRequiresEssay] = useState("true");
@@ -47,6 +20,9 @@ export const CreateMethod = ({ setAdmissionMethods, handleOpenModal, isCreateMod
   const handleFieldChange = (value) => {
     setSelectedField(value);
   }
+
+  //const { mutateAsync: createMethod, isPending } = useCreateMethod();
+  const [isPending, setIsPending] = useState(false);
 
   const handleCreateMethod = (e) => {
     e.preventDefault();
@@ -72,11 +48,29 @@ export const CreateMethod = ({ setAdmissionMethods, handleOpenModal, isCreateMod
       updated_at: new Date().toISOString(),
     }
 
-    setAdmissionMethods(prevMethods => [...prevMethods, newMethod]);
+    try {
+      setIsPending(true);
+      console.log/newMethod
+      //await createMethod(newMethod); // Cuando la API esté lista,
 
-    //await createAdmissionMethod(newMethod); // Cuando la API esté lista,
+      setTimeout(() => {
+        setAdmissionMethods(prevMethods => [...prevMethods, newMethod]);
+        
+        setIsPending(false);
+        handleCloseModal('create');
 
-    handleCloseModal('create');
+        toaster.create({
+          title: 'Modalidad creada correctamente',
+          type: 'success',
+        });
+      }, 1500); // Simulación de la API
+      
+    } catch (error) {
+      toaster.create({
+        title: error?.response?.data?.message || 'Error al crear modalidad',
+        type: 'error',
+      });
+    }
   }
 
   return (

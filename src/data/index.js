@@ -3,3 +3,4 @@ export * from './DataSidebar';
 export * from './LocalUser';
 export * from './LocalRoles'
 export * from './LocalAdmissionMethods';
+export * from './LocalFields';
