@@ -30,7 +30,7 @@ export const AdmissionMethod = () => {
 
   return (
     <Box>
-      <Heading size={{ xs: 'xs', sm: 'sm', md: 'md', }}>Usuarios</Heading>
+      <Heading size={{ xs: 'xs', sm: 'sm', md: 'md', }}>Modalidades</Heading>
       
       <VStack py='4' align='start' gap='3'>
         <CreateMethod setAdmissionMethods={setAdmissionMethods} handleOpenModal={handleOpenModal} isCreateModalOpen={isModalOpen.create} setIsModalOpen={setIsModalOpen} handleCloseModal={handleCloseModal} />

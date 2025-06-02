@@ -80,6 +80,11 @@ export const SettingsLayout = () => {
       label: 'Modalidades',
       permission: null,
     },
+    {
+      href: '/settings/Programs',
+      label: 'Programas de Postgrado',
+      permission: null,
+    },
 	{
 		href: '/settings/roles',
 		label: 'Roles y permisos',

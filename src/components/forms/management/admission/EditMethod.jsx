@@ -3,7 +3,6 @@ import { ControlledModal, DatePicker, Field, Radio, RadioGroup, toaster } from "
 import { Flex, Input, Stack, Textarea } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { OPTIONS } from "@/data/"; // Asegúrate de que este archivo exista y contenga las opciones
-import { se } from "date-fns/locale";
 
 export const EditMethodModal = ({ setMethods, selectedMethod, setSelectedMethod, isEditModalOpen, setIsModalOpen, handleCloseModal }) => {
   //const { mutateAsync: updateMethod, isPending } = useUpdateMethod();
