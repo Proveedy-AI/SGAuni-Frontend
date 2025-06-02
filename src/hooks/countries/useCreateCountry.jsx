@@ -1,12 +1,13 @@
+// src/hooks/countries/useCreateCountry.jsx
 import { useMutation } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useToggleUser = () => {
+export const useCreateCountry = () => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useMutation({
-		mutationFn: async (id) => {
-			const res = await axiosPrivate.post(`/api/v1/users/${id}/toggle_active/`);
+		mutationFn: async (payload) => {
+			const res = await axiosPrivate.post('/country', payload);
 			return res.data;
 		},
 	});

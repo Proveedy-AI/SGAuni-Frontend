@@ -7,7 +7,7 @@ export const useReadUserLogged = () => {
   return useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      const response = await axiosPrivate.get('/api/v1/users/me/');
+      const response = await axiosPrivate.get('/api/v1/users/profile/');
       return response.data;
     },
   });

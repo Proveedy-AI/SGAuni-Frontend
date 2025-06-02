@@ -7,7 +7,7 @@ export const useDeleteRole = () => {
 
 	return useMutation({
 		mutationFn: async (id) => {
-			const res = await axiosPrivate.delete(`/role/${id}`);
+			const res = await axiosPrivate.delete(`/api/v1/roles/${id}/`);
 			return res.data;
 		},
 	});

@@ -6,7 +6,7 @@ export const useUpdateRole = () => {
 
 	return useMutation({
 		mutationFn: async (payload) => {
-			const res = await axiosPrivate.patch(`/role/${payload.id}`, payload);
+			const res = await axiosPrivate.patch(`/api/v1/roles/${payload.id}/`, payload);
 			return res.data;
 		},
 	});

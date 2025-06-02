@@ -1,13 +1,16 @@
+import useAxiosPrivate from '@/hooks/axios/useAxiosPrivate';
 import { useMutation } from '@tanstack/react-query';
-import useAxiosPrivate from '../../axios/useAxiosPrivate';
+
 
 export const useAssignUserRole = () => {
-	const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useAxiosPrivate();
 
-	return useMutation({
-		mutationFn: async (payload) => {
-			const res = await axiosPrivate.post('/user-has-role', payload);
-			return res.data;
-		},
-	});
+  return useMutation({
+    mutationFn: async ({ userId, roleIds }) => {
+      const res = await axiosPrivate.post(`/api/v1/users/${userId}/assign_roles/`, {
+        roles_ids: roleIds
+      });
+      return res.data;
+    }
+  });
 };

@@ -3,7 +3,7 @@ import { AdminLayout, AuthLayout } from './layouts';
 //import { PrivateRoute, ProtectedRoute } from './PrivateRoute ';
 import { Home } from './views/admin';
 import { Login, LoginAdmin, ResetPassword } from './views/auth';
-import { AccountProfile, SettingsLayout } from './views/admin/settings';
+import { AccountProfile, SettingsCountries, SettingsLayout, SettingsRoles } from './views/admin/settings';
 import { UserList } from './views/admin/UserList';
 import { PrivateRoute } from './PrivateRoute ';
 import { AdmissionMethod } from './views/admin/settings/AdmissionMethod';
@@ -27,7 +27,9 @@ function App() {
 							{/* SETTINGS */}
 							<Route path='settings' element={<SettingsLayout />}>
 								<Route path='profile' element={<AccountProfile />} />
-                <Route path='methods' element={<AdmissionMethod />} />
+								<Route path='modalities' element={<AdmissionMethod />} />
+								<Route path='roles' element={<SettingsRoles />} />
+								<Route path='regional' element={<SettingsCountries />} />
 							</Route>
 						</Route>
 					</Route>

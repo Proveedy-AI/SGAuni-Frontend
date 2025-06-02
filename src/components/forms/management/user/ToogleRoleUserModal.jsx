@@ -1,51 +1,86 @@
-import { Checkbox, ControlledModal, Field } from "@/components/ui"
-import { ROLES } from "@/data";
-import { Stack, Text, VStack } from "@chakra-ui/react"
+import { Checkbox, ControlledModal, Field, toaster } from '@/components/ui';
+import { Stack, Text, VStack } from '@chakra-ui/react';
+import PropTypes from 'prop-types';
+import { useAssignUserRole, useReadRoles } from '@/hooks';
 
-export const ToogleRoleUserModal = ({ users, setUsers, selectedUser, setSelectedUser, handleCloseModal, isToogleRoleModalOpen, setIsModalOpen }) => {
-  const handleToogleRole = () => {
-    const user = users.find(u => u.id === selectedUser.id);
+export const ToogleRoleUserModal = ({
+  users,
+  fetchUsers,
+  selectedUser,
+  setSelectedUser,
+  handleCloseModal,
+  isToogleRoleModalOpen,
+  setIsModalOpen,
+}) => {
+  const { data: roles = [] } = useReadRoles(); // Asume que roles es un array plano
+  const { mutateAsync: assignRoles, isPending } = useAssignUserRole();
 
-    const updatedUser = {
-      ...user,
-      role: selectedUser.role || []
+  const handleToogleRole = async () => {
+    const selectedRoleObjects = roles?.results?.filter((role) =>
+      selectedUser.role?.includes(role.name)
+    );
+    const roleIds = selectedRoleObjects.map((r) => r.id);
+
+    try {
+      await assignRoles({ userId: selectedUser.id, roleIds });
+
+      toaster.create({
+        title: 'Roles actualizados correctamente',
+        type: 'success',
+      });
+
+      fetchUsers();
+      setSelectedUser(null);
+      handleCloseModal('toogleRole');
+    } catch (error) {
+      toaster.create({
+        title: error?.message || 'Error al asignar roles',
+        type: 'error',
+      });
     }
-    setUsers(prev => prev.map(u => u.id === user.id ? updatedUser : u));
-    setSelectedUser(null);
-    handleCloseModal('toogleRole');
-  }
+  };
 
   const handleChangeRole = (role, isChecked) => {
-    setSelectedUser(prev => {
+    setSelectedUser((prev) => {
+      const currentRoles = Array.isArray(prev.role) ? prev.role : [];
+
       const newRoles = isChecked
-        ? [...prev.role, role.label]
-        : prev.role.filter(r => r !== role.label);
+        ? [...currentRoles, role.name]
+        : currentRoles.filter((r) => r !== role.name);
+
       return { ...prev, role: newRoles };
     });
-  }
+  };
 
   return (
     <Stack css={{ '--field-label-width': '140px' }}>
       <Field orientation={{ base: 'vertical', sm: 'horizontal' }}>
         <ControlledModal
-          title='Asignar rol'
-          placement='center'
-          size='xl'
+          title="Asignar rol"
+          placement="center"
+          size="xl"
           open={isToogleRoleModalOpen}
-          onOpenChange={e => setIsModalOpen(s => ({ ...s, toogleRole: e.open }))}
-          onSave={() => handleToogleRole()}
+          onOpenChange={(e) =>
+            setIsModalOpen((s) => ({ ...s, toogleRole: e.open }))
+          }
+          onSave={handleToogleRole}
+          loading={isPending}
         >
           <Stack>
-            <Field label='Roles'>
-              <VStack align='start'>
-                {/* Checkboxes para agregar o quitar roles */}
-                {ROLES.map((role, index) => (
-                  <Field key={index} orientation='horizontal'>
+            <Field label="Roles">
+              <VStack align="start">
+                {roles?.results?.map((role) => (
+                  <Field key={role.id} orientation="horizontal">
                     <Checkbox
-                      onChange={(e) => handleChangeRole(role, e.target.checked)}
-                      checked={selectedUser?.role?.includes(role.label)}
+                      onChange={(e) =>
+                        handleChangeRole(role, e.target.checked)
+                      }
+                      checked={
+                        Array.isArray(selectedUser?.role) &&
+                        selectedUser.role.includes(role.name)
+                      }
                     >
-                      <Text>{role.label}</Text>
+                      <Text>{role.name}</Text>
                     </Checkbox>
                   </Field>
                 ))}
@@ -55,5 +90,15 @@ export const ToogleRoleUserModal = ({ users, setUsers, selectedUser, setSelected
         </ControlledModal>
       </Field>
     </Stack>
-  )
-}
+  );
+};
+
+ToogleRoleUserModal.propTypes = {
+  users: PropTypes.array,
+  fetchUsers: PropTypes.func,
+  selectedUser: PropTypes.object,
+  setSelectedUser: PropTypes.func,
+  handleCloseModal: PropTypes.func,
+  isToogleRoleModalOpen: PropTypes.bool,
+  setIsModalOpen: PropTypes.func,
+};

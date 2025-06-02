@@ -133,8 +133,9 @@ export const useProvideAuth = () => {
 			});
 
 			const data = response.data;
-			setAuth({ accessToken: data['access'], user });
 			const user = jwtDecode(data['access']);
+			setAuth({ accessToken: data['access'], user });
+		
 
 			const isProduction = import.meta.env.VITE_IS_PRODUCTION === 'true';
 			const cookieOptions = {

@@ -1,13 +1,14 @@
+// src/hooks/countries/useReadCountries.jsx
 import { useQuery } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useReadRoles = (params = {}) => {
+export const useReadCountries = (params = {}) => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useQuery({
-		queryKey: ['roles', params],
+		queryKey: ['countries', params],
 		queryFn: async () => {
-			const res = await axiosPrivate.get('/api/v1/roles/', { params });
+			const res = await axiosPrivate.get('/country', { params });
 			return res.data;
 		},
 	});

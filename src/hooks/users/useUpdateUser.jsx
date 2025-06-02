@@ -6,7 +6,7 @@ export const useUpdateUser = () => {
 
 	return useMutation({
 		mutationFn: async ({ id, payload }) => {
-			const response = await axiosPrivate.patch(`/user/${id}`, payload);
+			const response = await axiosPrivate.patch(`/api/v1/users/${id}/`, payload);
 			return response.data;
 		},
 	});

@@ -1,12 +1,12 @@
 import { useMutation } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useToggleUser = () => {
+export const useDeleteCountry = () => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useMutation({
 		mutationFn: async (id) => {
-			const res = await axiosPrivate.post(`/api/v1/users/${id}/toggle_active/`);
+			const res = await axiosPrivate.delete(`/country/${id}`);
 			return res.data;
 		},
 	});

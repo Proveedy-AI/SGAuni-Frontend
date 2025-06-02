@@ -81,7 +81,7 @@ export const Login = () => {
 	};
 	const navigate = useNavigate();
 	const token = getAccessToken();
-	console.log('Token:', token);
+
 	useEffect(() => {
 		if (token) {
 			navigate('/');

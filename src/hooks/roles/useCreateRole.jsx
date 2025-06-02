@@ -7,7 +7,7 @@ export const useCreateRole = () => {
 
 	return useMutation({
 		mutationFn: async (payload) => {
-			const res = await axiosPrivate.post('/role', payload);
+			const res = await axiosPrivate.post('/api/v1/roles/', payload);
 			return res.data;
 		},
 	});

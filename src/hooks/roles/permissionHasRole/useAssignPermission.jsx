@@ -5,8 +5,11 @@ export const useAssignPermission = () => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useMutation({
-		mutationFn: async (payload) => {
-			const res = await axiosPrivate.post('/role-has-permission', payload);
+		mutationFn: async ({ role_id, permission_ids }) => {
+			const res = await axiosPrivate.post(
+				`api/v1/roles/${role_id}/assign_permissions/`,
+				{ permission_ids }
+			);
 			return res.data;
 		},
 	});
