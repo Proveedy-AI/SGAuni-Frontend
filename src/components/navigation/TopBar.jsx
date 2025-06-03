@@ -12,24 +12,15 @@ import {
 	VStack,
 	Spinner,
 } from '@chakra-ui/react';
-import {
-	Avatar,
-	MenuContent,
-	MenuItem,
-	MenuRoot,
-	MenuTrigger,
-	useColorMode,
-	useContrastingColor,
-} from '../ui';
+import { Avatar, MenuContent, MenuItem, MenuRoot, MenuTrigger } from '../ui';
 import { FiChevronDown, FiLogOut } from 'react-icons/fi';
 import { useProvideAuth } from '@/hooks/auth';
 
 export const TopBar = () => {
 	const { getProfile, logout } = useProvideAuth();
 	const profile = getProfile();
-	console.log(profile);
+
 	const [fullname, setFullname] = useState('');
-	const { colorMode } = useColorMode();
 	const mensaje =
 		import.meta.env.VITE_IS_DEMO === 'true' ? 'SGAUNI - DEMO' : '';
 
@@ -85,11 +76,7 @@ export const TopBar = () => {
 					<MenuTrigger asChild>
 						<HStack gap={['1', '3']} cursor='pointer'>
 							<Box position='relative'>
-								<Avatar
-									name={fullname}
-									variant={colorMode === 'dark' ? 'solid' : 'subtle'}
-									size='sm'
-								/>
+								{fullname && <Avatar name={fullname} size='sm' />}
 								<Float placement='bottom-end' offsetX='1' offsetY='1'>
 									<Circle
 										bg='green.500'

@@ -31,13 +31,9 @@ import { useSidebarState } from '@/hooks';
 import { DataSidebar } from '@/data';
 import { useProvideAuth } from '@/hooks/auth';
 
-const handleLogout = () => {
-	console.log('Logout:'); // Simulación
-};
-
 export const Sidebar = () => {
 	const { isCollapsed, toggleSidebar } = useSidebarState();
-	const { getProfile } = useProvideAuth();
+	const { getProfile, logout } = useProvideAuth();
 
 	// Obtener permisos desde el profile
 	const profile = getProfile();
@@ -50,6 +46,10 @@ export const Sidebar = () => {
 		if (!requiredPermission) return true;
 		if (!permissions || permissions.length === 0) return false;
 		return permissions.includes(requiredPermission.trim());
+	};
+
+	const handleLogout = () => {
+		logout();
 	};
 
 	return (
