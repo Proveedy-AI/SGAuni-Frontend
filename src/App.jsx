@@ -1,7 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { AdminLayout, AuthLayout } from './layouts';
 //import { PrivateRoute, ProtectedRoute } from './PrivateRoute ';
-import { Home } from './views/admin';
 import { Login, LoginAdmin, ResetPassword } from './views/auth';
 import {
 	AccountProfile,

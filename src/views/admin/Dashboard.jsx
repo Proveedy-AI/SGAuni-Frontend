@@ -4,9 +4,10 @@ import { dashboardsByPermission } from './dashboards';
 import { useProvideAuth } from '@/hooks/auth';
 
 export const Dashboard = () => {
-	const { getProfle } = useProvideAuth();
+	const { getProfile } = useProvideAuth();
+	const profile = getProfile();
 
-	if (!getProfle) {
+	if (!profile) {
 		return (
 			<Flex align='center' justify='center' h='100vh'>
 				<Spinner size='xl' />
@@ -15,7 +16,7 @@ export const Dashboard = () => {
 	}
 
 	const userPermissions =
-		getProfle.roles?.[0]?.permissions?.map((perm) => perm.guard_name) || [];
+		profile.roles?.[0]?.permissions?.map((perm) => perm.guard_name) || [];
 
 	const allowedDashboards = dashboardsByPermission
 		.filter(({ permission }) => userPermissions.includes(permission))
