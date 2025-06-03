@@ -1,10 +1,29 @@
-import { ControlledModal, Field } from "@/components/ui"
+import { ControlledModal, Field, toaster } from "@/components/ui"
+import { useDeleteModality } from "@/hooks/modalities/useDeleteModality";
 import { Button, Flex, Stack, Text } from "@chakra-ui/react"
 
-export const DeleteMethodModal = ({ selectedMethod, setMethods, handleCloseModal, isDeleteModalOpen, setIsModalOpen }) => {
+export const DeleteModality = ({ selectedMethod, setMethods, handleCloseModal, isDeleteModalOpen, setIsModalOpen }) => {
+  const { mutateAsync: deleteModality, isPending: loading } = useDeleteModality();
+
   const handleDeleteMethod = () => {
-    setMethods(prev => prev.filter(method => method.id !== selectedMethod?.id));
-    handleCloseModal('delete');
+    
+    deleteModality(selectedMethod?.id, {
+      onSuccess: () => {
+        toaster.create({
+          title: 'Modalidad eliminada correctamente',
+          type: 'success',
+        });
+        setMethods(prev => prev.filter(method => method.id !== selectedMethod?.id));
+        handleCloseModal('delete');
+      },
+      onError: (error) => {
+        toaster.create({
+          title: error.message || 'Error al eliminar la modalidad',
+          type: 'error',
+        });
+      },
+    });
+
   }
 
   return (

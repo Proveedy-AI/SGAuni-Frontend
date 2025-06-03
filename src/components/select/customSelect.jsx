@@ -68,19 +68,19 @@ const CustomSelect = ({ options, value, onChange, isDisabled, isLoading, isSearc
 			>
 				{isSearchable && (
 					<Input
-						value={search}
+						value={isOpen ? search : selectedLabel}
 						onChange={(e) => {
 							setSearch(e.target.value);
 							setIsOpen(true);
 							e.stopPropagation();
 						}}
-						placeholder=''
+						placeholder='Seleccionar'
 						isDisabled={isDisabled || isLoading}
 						border='none'
 						cursor={isDisabled ? 'not-allowed' : 'pointer'}
 						_focus={{ outline: 'none' }}
 						flex='1'
-						color={{ base: 'white', _dark: 'black' }}
+						color={{ base: 'black', _dark: 'white' }}
 						bg='transparent'
 						autoComplete='off'
 						pr='30px'
@@ -89,10 +89,10 @@ const CustomSelect = ({ options, value, onChange, isDisabled, isLoading, isSearc
 				)}
 
 				{/* Mostrar la opción seleccionada si no hay búsqueda */}
-				{!isSearchable && search === '' && selectedLabel && (
+				{!isSearchable && search === '' && (
 					<Text
 						flex='1'
-						color={{ base: 'white', _dark: 'black' }}
+						color={{ base: 'black', _dark: 'white' }}
 						whiteSpace='nowrap'
 						overflow='hidden'
 						textOverflow='ellipsis'
@@ -130,7 +130,7 @@ const CustomSelect = ({ options, value, onChange, isDisabled, isLoading, isSearc
 					borderRadius='md'
 					boxShadow='sm'
 					zIndex='99999'
-					bg={{ base: 'gray.700', _dark: 'white' }}
+					bg={{ base: 'white', _dark: 'gray.700' }}
 					borderColor={{ base: 'gray.500', _dark: 'gray.400' }}
 				>
 					{/* Opción para limpiar selección */}
