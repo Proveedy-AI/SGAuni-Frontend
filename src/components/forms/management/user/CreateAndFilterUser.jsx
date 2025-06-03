@@ -16,7 +16,7 @@ export const CreateAndFilterUser = ({
 	handleOpenModal,
 	isCreateModalOpen,
 	setIsModalOpen,
-  fetchUsers
+	fetchUsers,
 }) => {
 	const { mutateAsync: createUser, isPending } = useCreateUser();
 	const handleCreateUser = async (e) => {
@@ -35,11 +35,7 @@ export const CreateAndFilterUser = ({
 			},
 		};
 
-		const optionalFields = [
-			'num_doc',
-			'uni_email',
-			'phone',
-		];
+		const optionalFields = ['num_doc', 'uni_email', 'phone'];
 		optionalFields.forEach((field) => {
 			const value = elements.namedItem(field)?.value.trim();
 			if (value) {
@@ -53,7 +49,7 @@ export const CreateAndFilterUser = ({
 				title: 'Usuario creado correctamente',
 				type: 'success',
 			});
-      fetchUsers(); // Assuming fetchUsers is defined to refresh the user list
+			fetchUsers(); // Assuming fetchUsers is defined to refresh the user list
 			setIsModalOpen((s) => ({ ...s, create: false }));
 		} catch (error) {
 			const message =
@@ -73,7 +69,7 @@ export const CreateAndFilterUser = ({
 		<>
 			<HStack justify='space-between' w='full' align='stretch' flexWrap='wrap'>
 				<InputGroup
-					minWidth='250px'
+					minWidth={{ base: 'full', md: '250px' }}
 					w='2/5'
 					endElement={<HiMagnifyingGlass size={24} />}
 				>
@@ -151,7 +147,12 @@ export const CreateAndFilterUser = ({
 									>
 										Cancelar
 									</Button>
-									<Button type='submit' bg='uni.secondary' color='white' loading={isPending}>
+									<Button
+										type='submit'
+										bg='uni.secondary'
+										color='white'
+										loading={isPending}
+									>
 										Crear
 									</Button>
 								</Flex>
@@ -172,5 +173,5 @@ CreateAndFilterUser.propTypes = {
 	setIsModalOpen: PropTypes.func,
 	setUsers: PropTypes.func,
 	handleCloseModal: PropTypes.func,
-  fetchUsers: PropTypes.func,
+	fetchUsers: PropTypes.func,
 };
