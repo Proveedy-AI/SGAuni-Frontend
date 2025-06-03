@@ -1,5 +1,5 @@
 import { useColorMode } from '@/components/ui';
-import { useReadRolesAndPermissions } from '@/hooks/users';
+import { useProvideAuth } from '@/hooks/auth';
 import {
 	Box,
 	Grid,
@@ -12,12 +12,17 @@ import {
 import { Link, Outlet, useLocation } from 'react-router';
 
 export const SettingsLayout = () => {
-	const { permissions } = useReadRolesAndPermissions();
 	const { colorMode } = useColorMode();
 	const location = useLocation();
 
+	const { getProfile } = useProvideAuth();
+	const profile = getProfile();
+
 	const hasPermission = (permission) => {
-		return !permission || permissions.includes(permission);
+		if (!permission) return true;
+		const roles = profile?.roles || [];
+		const permissions = roles.flatMap((r) => r.permissions || []);
+		return permissions.some((p) => p.guard_name === permission);
 	};
 
 	const activeBg = colorMode === 'dark' ? 'uni.gray.400' : 'gray.200';
@@ -75,26 +80,26 @@ export const SettingsLayout = () => {
 		// 	label: 'Documentación',
 		// 	permission: null,
 		// },
-    {
-      href: '/settings/Modalities',
-      label: 'Modalidades',
-      permission: null,
-    },
-    {
-      href: '/settings/Programs',
-      label: 'Programas de Postgrado',
-      permission: null,
-    },
-	{
-		href: '/settings/roles',
-		label: 'Roles y permisos',
-		permission: null,
-	},
-	{
-		href: '/settings/regional',
-		label: 'Región y países',
-		permission: null,
-	},
+		{
+			href: '/settings/Modalities',
+			label: 'Modalidades',
+			permission: 'settings.modalities.view',
+		},
+		{
+			href: '/settings/Programs',
+			label: 'Programas de Postgrado',
+			permission: 'settings.program.view',
+		},
+		{
+			href: '/settings/roles',
+			label: 'Roles y permisos',
+			permission: 'settings.roles.view',
+		},
+		{
+			href: '/settings/regional',
+			label: 'Región y países',
+			permission: null,
+		},
 	];
 
 	return (
