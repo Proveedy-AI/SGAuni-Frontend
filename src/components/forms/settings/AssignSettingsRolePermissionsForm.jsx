@@ -165,6 +165,8 @@ const groupTitles = {
 	},
 	subCategory: {
 		program: 'Programas',
+		coord: 'Coordinador Académico',
+		admin: 'Administrador',
 		users: 'Usuarios',
 		modalities: 'Modalidades',
 		countries: 'Regiones - Paises',
