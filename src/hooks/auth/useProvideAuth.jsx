@@ -85,55 +85,41 @@ export const useProvideAuth = () => {
 		const token = getRefreshToken();
 		const accessToken = getAccessToken();
 
-		console.log('[1] Refresh token:', token);
-		console.log('[2] Access token:', accessToken);
-
 		const isProduction = import.meta.env.VITE_IS_PRODUCTION === 'true';
 		const cookieOptions = {
 			domain: isProduction ? import.meta.env.VITE_DOMAIN_AUTO_LOGIN : undefined,
 		};
 
-		axios
-			.post(
-				'api-auth/token/blacklist/',
+		try {
+			const response = await axios.post(
+				'/api-auth/token/blacklist/',
 				{ refresh: token },
 				{
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
-						'X-CSRFToken': Cookies.get('csrftoken'), // Si tu cookie se llama así
 					},
-					withCredentials: true, // MUY IMPORTANTE para que se envíen cookies en CORS
 				}
-			)
-			.then((response) => {
-				console.log('[3] Token invalidado correctamente:', response.data);
+			);
 
-				Cookies.remove(import.meta.env.VITE_US_COOKIE, cookieOptions);
-				Cookies.remove(import.meta.env.VITE_TOKEN_COOKIE, cookieOptions);
-				Cookies.remove('user');
-				console.log('[4] Cookie eliminada, redirigiendo al login...');
-				navigate('/auth/login');
-			})
-			.catch((err) => {
-				console.error('[ERROR] Error al invalidar token');
-				if (err.response) {
-					console.error('[Error response.data]', err.response.data);
-					setError(
-						err.response.data.detail || 'Error desconocido del servidor'
-					);
-				} else {
-					console.error('[Error general]', err.message);
-					setError('Error de red o token inválido');
-				}
-			})
-			.finally(() => {
-				console.log('[5] Logout completado (finally)');
-				Cookies.remove(import.meta.env.VITE_US_COOKIE, cookieOptions);
-				Cookies.remove(import.meta.env.VITE_TOKEN_COOKIE, cookieOptions);
-				setAuth(null);
-				navigate('/auth/login');
-				setLoading(false);
-			});
+			console.log('[3] Token invalidado correctamente:', response.data);
+		} catch (err) {
+			console.error('[ERROR] Error al invalidar token');
+			if (err.response) {
+				console.error('[Error response.data]', err.response.data);
+				setError(err.response.data.detail || 'Error desconocido del servidor');
+			} else {
+				console.error('[Error general]', err.message);
+				setError('Error de red o token inválido');
+			}
+		} finally {
+			console.log('[5] Logout completado (finally)');
+			Cookies.remove(import.meta.env.VITE_US_COOKIE, cookieOptions);
+			Cookies.remove(import.meta.env.VITE_TOKEN_COOKIE, cookieOptions);
+			Cookies.remove('user');
+			setAuth(null);
+			navigate('/auth/login');
+			setLoading(false);
+		}
 	};
 
 	const refresh = async () => {
