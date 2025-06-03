@@ -85,16 +85,18 @@ export const UserTable = ({ fetchUsers, users, handleOpenModal }) => {
 								<Table.Cell>
 									{item.roles.length > 0 ? (
 										<HStack spacing={1} wrap='wrap'>
-											{item.roles.map((role) => (
+											<Badge bg='uni.secondary' color='white' fontSize='0.8em'>
+												{item.roles[0].name}
+											</Badge>
+											{item.roles.length > 1 && (
 												<Badge
-													key={role.id}
-													bg={'uni.secondary'}
-													color={'white'}
+													bg='uni.secondary'
+													color='white'
 													fontSize='0.8em'
 												>
-													{role.name}
+													{' ...'}
 												</Badge>
-											))}
+											)}
 										</HStack>
 									) : (
 										<Badge colorScheme='gray' fontSize='0.8em'>
