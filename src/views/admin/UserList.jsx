@@ -1,6 +1,6 @@
 import { UserTable } from '@/components/tables';
 import { Box, Heading, Text, VStack } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { CreateAndFilterUser } from '@/components/forms/management/user/CreateAndFilterUser';
 import { ViewUserModal } from '@/components/forms/management/user/ViewUserModal';
 import { EditUserModal } from '@/components/forms/management/user/EditUserModal';
@@ -16,7 +16,6 @@ export const UserList = () => {
 		isLoading,
 		error,
 	} = useReadUsers();
-
 
 	const [selectedUser, setSelectedUser] = useState(null);
 	const [isModalOpen, setIsModalOpen] = useState({
