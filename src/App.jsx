@@ -3,10 +3,17 @@ import { AdminLayout, AuthLayout } from './layouts';
 //import { PrivateRoute, ProtectedRoute } from './PrivateRoute ';
 import { Home } from './views/admin';
 import { Login, LoginAdmin, ResetPassword } from './views/auth';
-import { AccountProfile, SettingsCountries, SettingsLayout, SettingsPrograms, SettingsRoles } from './views/admin/settings';
+import {
+	AccountProfile,
+	SettingsCountries,
+	SettingsLayout,
+	SettingsPrograms,
+	SettingsRoles,
+} from './views/admin/settings';
 import { UserList } from './views/admin/UserList';
-import { PrivateRoute } from './PrivateRoute ';
+import { PrivateRoute, ProtectedRoute } from './PrivateRoute ';
 import { AdmissionMethod } from './views/admin/settings/AdmissionMethod';
+import { Dashboard } from './views/admin/Dashboard';
 
 function App() {
 	return (
@@ -21,16 +28,48 @@ function App() {
 
 					<Route element={<PrivateRoute />}>
 						<Route path='/' element={<AdminLayout />}>
-							<Route index element={<Home />} />
+							<Route index element={<Dashboard />} />
 
-							<Route path='usuarios' element={<UserList />} />
+							<Route
+								element={
+									<ProtectedRoute requiredPermission='users.users.view' />
+								}
+							>
+								<Route path='users' element={<UserList />} />
+							</Route>
+
 							{/* SETTINGS */}
 							<Route path='settings' element={<SettingsLayout />}>
 								<Route path='profile' element={<AccountProfile />} />
-								<Route path='modalities' element={<AdmissionMethod />} />
-                <Route path='programs' element={<SettingsPrograms />} />
-								<Route path='roles' element={<SettingsRoles />} />
-								<Route path='regional' element={<SettingsCountries />} />
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='settings.modalities.view' />
+									}
+								>
+									<Route path='modalities' element={<AdmissionMethod />} />
+								</Route>
+
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='settings.program.view' />
+									}
+								>
+									<Route path='programs' element={<SettingsPrograms />} />
+								</Route>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='settings.roles.view' />
+									}
+								>
+									<Route path='roles' element={<SettingsRoles />} />
+								</Route>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='settings.countries.view' />
+									}
+								>
+									<Route path='regional' element={<SettingsCountries />} />
+								</Route>
 							</Route>
 						</Route>
 					</Route>

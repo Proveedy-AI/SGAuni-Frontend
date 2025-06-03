@@ -29,33 +29,28 @@ import {
 } from 'react-icons/fi';
 import { useSidebarState } from '@/hooks';
 import { DataSidebar } from '@/data';
-
-// ✅ Datos simulados en memoria
-const user = {
-	email: 'ejemplo@correo.com',
-};
-
-const permissions = [
-	'dashboard.view',
-	'students.view',
-	'settings.settings.view',
-	// Agrega más permisos aquí si lo necesitas
-];
-
-const hasPermission = (permission) => {
-	if (!permission) return true;
-	if (Array.isArray(permission)) {
-		return permission.some((perm) => permissions.includes(perm));
-	}
-	return permissions.includes(permission);
-};
+import { useProvideAuth } from '@/hooks/auth';
 
 const handleLogout = () => {
-	console.log('Logout:', user.email); // Simulación
+	console.log('Logout:'); // Simulación
 };
 
 export const Sidebar = () => {
 	const { isCollapsed, toggleSidebar } = useSidebarState();
+	const { getProfile } = useProvideAuth();
+
+	// Obtener permisos desde el profile
+	const profile = getProfile();
+	const roles = profile?.roles || [];
+	const permissions = roles
+		.flatMap((r) => r.permissions || [])
+		.map((p) => p.guard_name);
+
+	const hasPermission = (requiredPermission) => {
+		if (!requiredPermission) return true;
+		if (!permissions || permissions.length === 0) return false;
+		return permissions.includes(requiredPermission.trim());
+	};
 
 	return (
 		<Box
@@ -76,10 +71,12 @@ export const Sidebar = () => {
 						<Image src='/img/logo-UNI.png' alt='Logo' />
 					</Box>
 				) : (
-					<Box h='40px' >
-						<Flex  align='center'>
-							<Image  w='40px' src='/img/logo-UNI.png' alt='Logo'  mr='2' />
-							<Text fontWeight='bold' color='#5D5D5D'  fontSize='16px'>Portal Institucional</Text>
+					<Box h='40px'>
+						<Flex align='center'>
+							<Image w='40px' src='/img/logo-UNI.png' alt='Logo' mr='2' />
+							<Text fontWeight='bold' color='#5D5D5D' fontSize='16px'>
+								Portal Institucional
+							</Text>
 						</Flex>
 					</Box>
 				)}
@@ -98,7 +95,7 @@ export const Sidebar = () => {
 					transition='left 0.3s ease'
 					display={['none', 'none', 'none', 'flex']}
 				>
-					{isCollapsed ? <FiArrowRight/> : <FiArrowLeft />}
+					{isCollapsed ? <FiArrowRight /> : <FiArrowLeft />}
 				</IconButton>
 			</Flex>
 			<Flex
@@ -179,9 +176,22 @@ const SidebarItem = ({ href, icon, label, isCollapsed, subItems, ...atr }) => {
 	const activeIconColor =
 		colorMode === 'dark' ? 'uni.secondary' : 'uni.secondary';
 
+	const { getProfile } = useProvideAuth();
+	const profile = getProfile();
+	const roles = profile?.roles || [];
+	const permissions = roles
+		.flatMap((r) => r.permissions || [])
+		.map((p) => p.name);
+
+	const hasPermission = (requiredPermission) => {
+		if (!requiredPermission) return true;
+		if (!permissions || permissions.length === 0) return false;
+		return permissions.includes(requiredPermission.trim());
+	};
+
 	const getHref = () => {
 		if (href === '/settings') {
-			return permissions.includes('settings.settings.view')
+			return hasPermission.includes('settings.settings.view')
 				? '/settings'
 				: '/settings/profile';
 		}

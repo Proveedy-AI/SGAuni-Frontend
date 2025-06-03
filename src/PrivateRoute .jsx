@@ -113,12 +113,17 @@ export const PrivateRoute = () => {
 };
 
 export const ProtectedRoute = ({ requiredPermission }) => {
-	const { getUser } = useProvideAuth();
+	const { getProfile } = useProvideAuth();
 	const location = useLocation();
-	const permissions = getUser()?.permissions;
+	const profile = getProfile();
 
-	if (!permissions || permissions.length === 0) {
-		// Opcional: puedes mostrar un loading mientras se obtienen los permisos
+	const roles = profile?.roles || [];
+	const permissions = roles
+		.flatMap((r) => r.permissions || [])
+		.map((p) => p.guard_name);
+
+	// Mostrar spinner si aún no hay permisos disponibles
+	if (!profile || roles.length === 0) {
 		return (
 			<Flex
 				height='100vh'
