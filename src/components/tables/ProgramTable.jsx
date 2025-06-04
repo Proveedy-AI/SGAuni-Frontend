@@ -5,51 +5,22 @@ import {
 	createListCollection,
 	Group,
 	HStack,
-	IconButton,
-	Span,
 	Stack,
 	Table,
-	Text,
 } from '@chakra-ui/react';
 import {
-  Button,
-
-  ConfirmModal,
   Pagination,
   SelectContent,
   SelectItem,
   SelectRoot,
   SelectTrigger,
   SelectValueText,
-  toaster,
 } from '@/components/ui'
-import { HiEye, HiPencil, HiTrash } from "react-icons/hi2";
-import { RowsPerPageSelect } from "../select";
-import { COORDINADORES } from "@/data";
-import { FiArrowDown, FiArrowUp, FiTrash2 } from "react-icons/fi";
+import { ViewProgram } from '../forms/management/programs/ViewProgram';
+import { DeleteProgram } from '../forms/management/programs/DeleteProgram';
+import { EditProgram } from '../forms/management/programs/EditProgram';
 
-const Row = memo(({ item, fetchData, startIndex, index }) => {
-  const [open, setOpen] = useState(false);
-
-  //const { mutateAsync: remove, isPending: loadingDelete } = useDeleteRole();
-
-  const handleDelete = async (id) => {
-    try {
-      //await remove(id);
-      console.log(`Programa ${id} eliminado`);
-      toaster.create({
-        title: 'Rol eliminado correctamente',
-        type: 'success',
-      });
-      setOpen(false);
-      fetchData();
-    } catch (error) {
-      toaster.create({
-        title: error.message,
-        type: 'error',
-      });
-    }
-  };
+const Row = memo(({ item, fetchData, startIndex, index, programTypesOptions, coordinatorsOptions }) => {
 
   return (
     <Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
@@ -59,27 +30,9 @@ const Row = memo(({ item, fetchData, startIndex, index }) => {
       <Table.Cell>
         <HStack justify='space-between'>
           <Group>
-            <ConfirmModal
-              title='Eliminar programa'
-              placement='center'
-              trigger={
-                <IconButton colorPalette='red' size='xs'>
-                  <FiTrash2 />
-                </IconButton>
-              }
-              open={open}
-              onOpenChange={(e) => setOpen(e.open)}
-              onConfirm={() => handleDelete(item.id)}
-              //loading={loadingDelete}
-            >
-              <Text>
-                ¿Estás seguro que quieres eliminar el
-                <Span fontWeight='semibold' px='1'>
-                  {item.name}
-                </Span>
-                de la lista de programas?
-              </Text>
-            </ConfirmModal>
+            <ViewProgram item={item} />
+            <EditProgram fetchData={fetchData} item={item} programTypesOptions={programTypesOptions} coordinatorsOptions={coordinatorsOptions} />
+            <DeleteProgram item={item} fetchData={fetchData} />
           </Group>
         </HStack>
       </Table.Cell>
@@ -96,7 +49,7 @@ Row.propTypes = {
   index: PropTypes.number,
 };
 
-export const ProgramTable = ({ data, fetchData }) => {
+export const ProgramTable = ({ data, fetchData, programTypesOptions, coordinatorsOptions }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState('10');
 
@@ -143,6 +96,8 @@ export const ProgramTable = ({ data, fetchData }) => {
                 fetchData={fetchData}
                 startIndex={startIndex}
                 index={index}
+                programTypesOptions={programTypesOptions}
+                coordinatorsOptions={coordinatorsOptions}
               />
             ))}
           </Table.Body>

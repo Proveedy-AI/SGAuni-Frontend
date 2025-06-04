@@ -1,41 +1,28 @@
-import { ControlledModal, Field } from "@/components/ui";
-import { Badge, Flex, Stack, Text } from "@chakra-ui/react";
-import { COORDINADORES } from "@/data";
+import { Field, ModalSimple } from "@/components/ui";
+import { IconButton, Stack, Text } from "@chakra-ui/react";
+import { useState } from "react";
+import { HiEye } from "react-icons/hi2";
 
-export const ViewProgram = ({ selectedProgram, isViewModalOpen, setIsModalOpen, handleCloseModal }) => {
-  
-  const coordinatorList = COORDINADORES;
-  const coordinatorName = coordinatorList.find(
-    (c) => c.id === selectedProgram?.coordinador_id
-  )?.name;
-
+export const ViewProgram = ({ item }) => {
+  const [open, setOpen] = useState(false);
   return (
     <Stack css={{ "--field-label-width": "180px" }}>
       <Field orientation={{ base: "vertical", sm: "horizontal" }}>
-        <ControlledModal
+        <ModalSimple
+          trigger={
+            <IconButton colorPalette='blue' size='xs'>
+              <HiEye />
+            </IconButton>
+          }
           title="Ver Programa"
           placement="center"
           size="xl"
-          open={isViewModalOpen}
-          onOpenChange={(e) =>
-            setIsModalOpen((s) => ({ ...s, view: e.open }))
-          }
-          onSave={() => handleCloseModal("view")}
+          open={open}
+          onOpenChange={(e) => setOpen(e.open)}
+          onSave={() => {}}
           hiddenFooter={true}
         >
           <Stack spacing={4}>
-            <Field label="Código">
-              <Text
-                w="full"
-                py={2}
-                px={3}
-                border="1px solid #E2E8F0"
-                borderRadius="md"
-              >
-                {selectedProgram?.code}
-              </Text>
-            </Field>
-
             <Field label="Nombre">
               <Text
                 w="full"
@@ -44,11 +31,11 @@ export const ViewProgram = ({ selectedProgram, isViewModalOpen, setIsModalOpen, 
                 border="1px solid #E2E8F0"
                 borderRadius="md"
               >
-                {selectedProgram?.name}
+                {item.name}
               </Text>
             </Field>
 
-            <Field label="Descripción">
+            <Field label="Tipo">
               <Text
                 w="full"
                 py={2}
@@ -56,88 +43,9 @@ export const ViewProgram = ({ selectedProgram, isViewModalOpen, setIsModalOpen, 
                 border="1px solid #E2E8F0"
                 borderRadius="md"
               >
-                {selectedProgram?.description}
+                {item.type_detail.name}
               </Text>
             </Field>
-
-            <Flex gap={6} flexDir={{ base: "column", sm: "row" }}>
-              <Field label="Duración (meses)">
-                <Text
-                  w="full"
-                  py={2}
-                  px={3}
-                  border="1px solid #E2E8F0"
-                  borderRadius="md"
-                >
-                  {selectedProgram?.duration_months}
-                </Text>
-              </Field>
-
-              <Field label="Precio por crédito">
-                <Text
-                  w="full"
-                  py={2}
-                  px={3}
-                  border="1px solid #E2E8F0"
-                  borderRadius="md"
-                >
-                  S/ {selectedProgram?.price_credit}
-                </Text>
-              </Field>
-            </Flex>
-
-            <Flex gap={6} flexDir={{ base: "column", sm: "row" }}>
-              <Field label="Tipo de grado">
-                <Text
-                  w="full"
-                  py={2}
-                  px={3}
-                  border="1px solid #E2E8F0"
-                  borderRadius="md"
-                >
-                  {selectedProgram?.degree_type}
-                </Text>
-              </Field>
-
-              <Field label="Tipo">
-                <Text
-                  w="full"
-                  py={2}
-                  px={3}
-                  border="1px solid #E2E8F0"
-                  borderRadius="md"
-                >
-                  {selectedProgram?.type}
-                </Text>
-              </Field>
-            </Flex>
-
-            <Flex gap={6} flexDir={{ base: "column", sm: "row" }}>
-              <Field label="Modalidad">
-                <Text
-                  w="full"
-                  py={2}
-                  px={3}
-                  border="1px solid #E2E8F0"
-                  borderRadius="md"
-                >
-                  {selectedProgram?.modality}
-                </Text>
-              </Field>
-
-              <Field label="Estado">
-                <Badge
-                  bg={
-                    selectedProgram?.status === "Activo"
-                      ? "green"
-                      : "red"
-                  }
-                  color="white"
-                >
-                  {selectedProgram?.status}
-                </Badge>
-              </Field>
-            </Flex>
 
             <Field label="Coordinador">
               <Text
@@ -147,42 +55,24 @@ export const ViewProgram = ({ selectedProgram, isViewModalOpen, setIsModalOpen, 
                 border="1px solid #E2E8F0"
                 borderRadius="md"
               >
-                {coordinatorName || "-"}
+                {item.coordinator_name}
               </Text>
             </Field>
 
-            <Flex gap={6} flexDir={{ base: "column", sm: "row" }}>
-              <Field label="Creado">
-                <Text
-                  w="full"
-                  py={2}
-                  px={3}
-                  border="1px solid #E2E8F0"
-                  borderRadius="md"
-                >
-                  {selectedProgram?.create_at
-                    ? new Date(selectedProgram.create_at).toLocaleString()
-                    : ""}
-                </Text>
-              </Field>
-
-              <Field label="Actualizado">
-                <Text
-                  w="full"
-                  py={2}
-                  px={3}
-                  border="1px solid #E2E8F0"
-                  borderRadius="md"
-                >
-                  {selectedProgram?.update_at
-                    ? new Date(selectedProgram.update_at).toLocaleString()
-                    : ""}
-                </Text>
-              </Field>
-            </Flex>
+            <Field label="Precio por crédito">
+              <Text
+                w="full"
+                py={2}
+                px={3}
+                border="1px solid #E2E8F0"
+                borderRadius="md"
+              >
+                {item.price_credit}
+              </Text>
+            </Field>
           </Stack>
-        </ControlledModal>
+        </ModalSimple>
       </Field>
     </Stack>
   );
-};
+}

@@ -1,48 +1,52 @@
-import { ControlledModal, Field } from "@/components/ui";
-import { Button, Flex, Stack, Text } from "@chakra-ui/react";
+import { ConfirmModal, toaster } from "@/components/ui";
+import { useDeleteProgram } from "@/hooks";
+import { IconButton, Span, Text } from "@chakra-ui/react";
+import { useState } from "react";
+import { FiTrash2 } from "react-icons/fi";
 
-export const DeleteProgram = ({ selectedProgram, setPrograms, handleCloseModal, isDeleteModalOpen, setIsModalOpen }) => {
-  const handleDeleteProgram = () => {
-    if (!selectedProgram) return;
-    setPrograms((prev) =>
-      prev.filter((program) => program.id !== selectedProgram.id)
-    );
-    handleCloseModal("delete");
+export const DeleteProgram = ({ item, fetchData }) => {
+  const [open, setOpen] = useState(false);
+  const { mutateAsync: remove, isPending: loadingDelete } = useDeleteProgram();
+
+  const handleDelete = async (id) => {
+    try {
+      console.log('eliminando', id)
+      await remove(id);
+      toaster.create({
+        title: 'Programa eliminado correctamente',
+        type: 'success',
+      });
+      setOpen(false);
+      fetchData();
+    } catch (error) {
+      toaster.create({
+        title: error.message,
+        type: 'error',
+      });
+    }
   };
 
   return (
-    <Stack css={{ "--field-label-width": "140px" }}>
-      <Field orientation={{ base: "vertical", sm: "horizontal" }}>
-        <ControlledModal
-          title="Eliminar Programa"
-          placement="center"
-          size="xl"
-          open={isDeleteModalOpen}
-          onOpenChange={(e) =>
-            setIsModalOpen((s) => ({ ...s, delete: e.open }))
-          }
-          hiddenFooter={true}
-        >
-          <Text>
-            ¿Deseas eliminar el programa{" "}
-            <b>{selectedProgram?.name || ""}</b>?
-          </Text>
-          <Flex justify="end" mt="6" gap="2">
-            <Button
-              variant="outline"
-              colorPalette="red"
-              onClick={() =>
-                setIsModalOpen((s) => ({ ...s, delete: false }))
-              }
-            >
-              Cancelar
-            </Button>
-            <Button onClick={handleDeleteProgram} bg="uni.secondary" color="white">
-              Eliminar
-            </Button>
-          </Flex>
-        </ControlledModal>
-      </Field>
-    </Stack>
-  );
-};
+    <ConfirmModal
+      title='Eliminar programa'
+      placement='center'
+      trigger={
+        <IconButton colorPalette='red' size='xs'>
+          <FiTrash2 />
+        </IconButton>
+      }
+      open={open}
+      onOpenChange={(e) => setOpen(e.open)}
+      onConfirm={() => handleDelete(item.id)}
+      loading={loadingDelete}
+    >
+      <Text>
+        ¿Estás seguro que quieres eliminar el
+        <Span fontWeight='semibold' px='1'>
+          {item.name}
+        </Span>
+        de la lista de programas?
+      </Text>
+    </ConfirmModal>
+  )
+} 
