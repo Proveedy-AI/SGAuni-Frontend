@@ -162,6 +162,7 @@ const groupTitles = {
 		panel: 'Panel de Control',
 		settings: 'Configuración',
 		users: 'Usuarios',
+		admissions: 'Admisiones',
 	},
 	subCategory: {
 		program: 'Programas',
@@ -170,6 +171,7 @@ const groupTitles = {
 		users: 'Usuarios',
 		modalities: 'Modalidades',
 		countries: 'Regiones - Paises',
+		proccess: 'Procesos Admisión',
 		properties: 'Propiedades de producto',
 	},
 };

@@ -109,6 +109,7 @@ export const Sidebar = () => {
 					overflowY='auto'
 					h='full'
 					css={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}
+					spaceY='1'
 				>
 					{DataSidebar.mainItems
 						.filter((item) => hasPermission(item.permission))
@@ -132,8 +133,8 @@ export const Sidebar = () => {
 							);
 						})}
 				</Box>
-				<Separator size='md' variant='solid' />
-				<Box mt='auto'>
+				<Separator size='xs' variant='solid' bg='uni.gray.200' />
+				<Box mt='auto' spaceY='1' overflow={'clip'}>
 					{DataSidebar.bottomItems
 						.filter((item) => hasPermission(item.permission))
 						.map((item, index) => (
