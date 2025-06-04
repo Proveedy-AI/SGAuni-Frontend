@@ -17,8 +17,9 @@ import {
 	SettingsCountryManagementTable,
 	SettingsPermissionsTable,
 } from '@/components/tables/settings';
-import { AddSettingsCountryForm } from '@/components/forms/settings';
+
 import { useReadCountries } from '@/hooks';
+import { AddSettingsCountryForm } from '@/components/forms/settings';
 
 export const SettingsCountries = () => {
 	const [tab, setTab] = useState(1);

@@ -26,11 +26,10 @@ export * from './UpdateSettingsGoalForm';
 export * from './UpdateSettingsLeadsForm';
 export * from './UpdateSettingsLossReasonsForm';
 */
-export * from './AddSettingsCountryForm';
-export * from './UpdateSettingsCountryForm';
+
 export * from './AddSettingsPermissionForm';
 export * from './AddSettingsRoleForm';
 export * from './AssignSettingsRolePermissionsForm';
 export * from './UpdateSettingsRoleForm';
 export * from './UpdateSettingsPermissionForm';
-
+export * from './regiones';
