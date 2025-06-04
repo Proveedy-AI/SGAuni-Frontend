@@ -24,7 +24,7 @@ export const DataSidebar = {
 					href: '/admissions/proccess',
 					icon: FiCheck,
 					label: 'Procesos Admisión',
-					permission: 'admisions.proccess.view',
+					permission: 'admissions.proccess.view',
 				},
 				{
 					href: '/admissions/applicants',

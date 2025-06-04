@@ -8,11 +8,12 @@ import {
 	SettingsLayout,
 	SettingsPrograms,
 	SettingsRoles,
-  SettingsAdmissionModality
+	SettingsAdmissionModality,
 } from './views/admin/settings';
 import { UserList } from './views/admin/UserList';
 import { PrivateRoute, ProtectedRoute } from './PrivateRoute ';
 import { Dashboard } from './views/admin/Dashboard';
+import { AdmissionsProccess } from './views/admin/admissions';
 
 function App() {
 	return (
@@ -37,6 +38,16 @@ function App() {
 								<Route path='users' element={<UserList />} />
 							</Route>
 
+							<Route path='admissions'>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='admissions.proccess.view' />
+									}
+								>
+									<Route path='proccess' element={<AdmissionsProccess />} />
+								</Route>
+							</Route>
+
 							{/* SETTINGS */}
 							<Route path='settings' element={<SettingsLayout />}>
 								<Route path='profile' element={<AccountProfile />} />
@@ -45,7 +56,10 @@ function App() {
 										<ProtectedRoute requiredPermission='settings.modalities.view' />
 									}
 								>
-									<Route path='modalities' element={<SettingsAdmissionModality />} />
+									<Route
+										path='modalities'
+										element={<SettingsAdmissionModality />}
+									/>
 								</Route>
 
 								<Route
