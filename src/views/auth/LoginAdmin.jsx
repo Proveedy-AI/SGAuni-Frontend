@@ -1,5 +1,6 @@
-import { Alert, Button, Field, InputGroup } from '@/components/ui';
+import { Alert, Button, Field, InputGroup, toaster } from '@/components/ui';
 import { useProvideAuth } from '@/hooks/auth';
+import { useRecoveryPass } from '@/hooks/users/recoverypass';
 import {
 	Box,
 	Flex,
@@ -28,6 +29,12 @@ export const LoginAdmin = () => {
 
 	const location = useLocation();
 	const [isVisible, setIsVisible] = useState(false);
+	const redirectUrl = 'https://sguni.vercel.app/auth/admin/recovery-pass/';
+
+	const { refetch: validateUser, isFetching } = useRecoveryPass({
+		email: username,
+		password_redirect_url: redirectUrl,
+	});
 
 	// Acceder al mensaje si está presente en el estado
 	const successMessage = location.state?.successMessage;
@@ -55,24 +62,27 @@ export const LoginAdmin = () => {
 	};
 
 	const handleForgotPasswordSubmit = async () => {
-		/*event.preventDefault();
-		setFieldError({ username: '' });
-
 		if (!username) {
-			setFieldError({ username: 'El campo correo es obligatorio' });
+			setFieldError((prev) => ({
+				...prev,
+				username: 'El campo correo electrónico es requerido',
+			}));
 			return;
 		}
 
 		try {
-			await generate(username);
-			setFieldSuccess('Correo enviado, revise su Bandeja de entrada');
-			setBlock(true);
-		} catch (error) {
+			const result = await validateUser();
+			if (result?.status == 'success') {
+				setFieldSuccess('Correo enviado, revise su bandeja de entrada');
+			} else {
+				setFieldErrorCredential(result?.error?.response?.data?.error);
+			}
+		} catch (err) {
 			toaster.create({
-				title: error.message,
+				title: err.message || 'Error al validar el correo',
 				type: 'error',
 			});
-		}*/
+		}
 	};
 
 	const token = getAccessToken();
@@ -280,13 +290,13 @@ export const LoginAdmin = () => {
 							<VStack as='form' gap='20px' mt={10} w='full'>
 								<Field
 									label='Correo electrónico'
-									invalid={!!fieldError.username}
-									errorText={fieldError.username}
+									invalid={!!fieldError?.username}
+									errorText={fieldError?.username}
 								>
 									<InputGroup width='100%' startElement={<LuMail />}>
 										<Input
 											placeholder='Ingresar correo electrónico'
-											type='text'
+											type='email'
 											value={username}
 											onChange={(e) => setUsername(e.target.value)}
 											size='sm'
@@ -302,7 +312,7 @@ export const LoginAdmin = () => {
 									size='sm'
 									loadingText='Enviando...'
 									disabled={block}
-									loading={LoadingToken}
+									loading={isFetching}
 									onClick={handleForgotPasswordSubmit}
 								>
 									Enviar
