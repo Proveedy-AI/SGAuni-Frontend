@@ -8,12 +8,12 @@ export const DataSidebar = {
 			label: 'Mi panel',
 			permission: null,
 		},
-    {
-      href: '/usuarios',
-      icon: FiUsers,
-      label: 'Usuarios',
-      permission: null
-    }
+		{
+			href: '/users',
+			icon: FiUsers,
+			label: 'Usuarios',
+			permission: 'users.users.view',
+		},
 	],
 
 	bottomItems: [

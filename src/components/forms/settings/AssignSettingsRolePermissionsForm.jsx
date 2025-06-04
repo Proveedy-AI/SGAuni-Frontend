@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
 import { Checkbox, Modal, toaster } from '@/components/ui';
 import {
-	Button,
 	CheckboxGroup,
 	Fieldset,
 	Grid,
-	IconButton,
 	Separator,
 	Stack,
 	VStack,
 	Flex,
+	IconButton,
+	Spinner,
 } from '@chakra-ui/react';
 import { useRef, useState, useEffect } from 'react';
 import { FiCheckSquare } from 'react-icons/fi';
@@ -19,17 +19,21 @@ import { useAssignPermission, useReadPermissionHasRole } from '@/hooks';
 export const AssignSettingsRolePermissionsForm = ({ data, fetchData }) => {
 	const contentRef = useRef();
 	const roleId = data?.id;
+	const [open, setOpen] = useState(false);
 
-	const { data: dataPermissions } = useReadPermissions();
-	const { data: permissionsInRole } = useReadPermissionHasRole(roleId);
+	const { data: dataPermissions, isLoading: loadingPermissions } =
+		useReadPermissions();
+	const { data: permissionsInRole, isLoading: loadingAssigned } =
+		useReadPermissionHasRole(roleId);
+	const { mutateAsync: assignPermissionsBulk, isPending: isSaving } =
+		useAssignPermission();
 
 	const [selectedPermissions, setSelectedPermissions] = useState([]);
-	const { mutateAsync: assignPermissionsBulk, isPending } = useAssignPermission();
 
 	// Cargar permisos actuales al abrir modal
 	useEffect(() => {
 		if (permissionsInRole) {
-			const assigned = permissionsInRole?.permissions?.map((p) => p.permission.id);
+			const assigned = permissionsInRole?.map((p) => p.id);
 			setSelectedPermissions(assigned);
 		}
 	}, [permissionsInRole]);
@@ -46,12 +50,12 @@ export const AssignSettingsRolePermissionsForm = ({ data, fetchData }) => {
 				role_id: roleId,
 				permission_ids: selectedPermissions,
 			});
-
 			toaster.create({
 				title: 'Permisos actualizados correctamente',
 				type: 'success',
 			});
 			fetchData();
+			setOpen(false);
 		} catch (error) {
 			toaster.create({
 				title: error?.message || 'Error al actualizar permisos',
@@ -61,13 +65,16 @@ export const AssignSettingsRolePermissionsForm = ({ data, fetchData }) => {
 	};
 
 	// Agrupar permisos
-	const groupedPermissions = dataPermissions?.results?.reduce((acc, permission) => {
-		const [category, subcategory] = permission.guard_name.split('.');
-		if (!acc[category]) acc[category] = {};
-		if (!acc[category][subcategory]) acc[category][subcategory] = [];
-		acc[category][subcategory].push(permission);
-		return acc;
-	}, {});
+	const groupedPermissions = dataPermissions?.results?.reduce(
+		(acc, permission) => {
+			const [category, subcategory] = permission.guard_name.split('.');
+			if (!acc[category]) acc[category] = {};
+			if (!acc[category][subcategory]) acc[category][subcategory] = [];
+			acc[category][subcategory].push(permission);
+			return acc;
+		},
+		{}
+	);
 
 	return (
 		<Modal
@@ -80,62 +87,67 @@ export const AssignSettingsRolePermissionsForm = ({ data, fetchData }) => {
 				</IconButton>
 			}
 			contentRef={contentRef}
-			footer={
-				<Flex justify='end' w='full' gap={2}>
-					<Button variant='outline' onClick={() => contentRef.current?.close()}>
-						Cancelar
-					</Button>
-					<Button
-						bg='uni.secondary'
-						color='white'
-						isLoading={isPending}
-						onClick={handleSavePermissions}
-					>
-						Guardar cambios
-					</Button>
-				</Flex>
-			}
+			onSave={handleSavePermissions}
+			loading={isSaving}
+			open={open}
+			onOpenChange={(e) => setOpen(e.open)}
 		>
-			{groupedPermissions &&
-				Object.entries(groupedPermissions).map(([category, subcategories], idx) => (
-					<Stack key={category} gap={4}>
-						<Fieldset.Root>
-							<Fieldset.Legend
-								fontSize='md'
-								textTransform='capitalize'
-								color={{ base: 'its.primary', _dark: 'its.secondary' }}
-							>
-								{groupTitles.category[category] || category}
-							</Fieldset.Legend>
+			{loadingPermissions || loadingAssigned ? (
+				<Flex justify='center' align='center' minH='200px'>
+					<Spinner size='xl' />
+				</Flex>
+			) : (
+				groupedPermissions &&
+				Object.entries(groupedPermissions).map(
+					([category, subcategories], idx) => (
+						<Stack key={category} gap={4}>
+							<Fieldset.Root>
+								<Fieldset.Legend
+									fontSize='md'
+									textTransform='capitalize'
+									color={{ base: 'its.primary', _dark: 'its.secondary' }}
+								>
+									{groupTitles.category[category] || category}
+								</Fieldset.Legend>
 
-							<Grid
-								w='full'
-								templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }}
-								gap={4}
-							>
-								{Object.entries(subcategories).map(([subcategory, perms]) => (
-									<VStack key={subcategory} align='start' gap='4'>
-										<Fieldset.Legend fontSize='md' textTransform='capitalize'>
-											{groupTitles.subCategory[subcategory] || subcategory}
-										</Fieldset.Legend>
-										<CheckboxGroup>
-											{perms.map((permission) => (
-												<Checkbox
-													key={permission.id}
-													isChecked={selectedPermissions.includes(permission.id)}
-													onChange={() => handlePermissionToggle(permission.id)}
-												>
-													{permission.name}
-												</Checkbox>
-											))}
-										</CheckboxGroup>
-									</VStack>
-								))}
-							</Grid>
-						</Fieldset.Root>
-						{idx < Object.keys(groupedPermissions).length - 1 && <Separator mb={4} />}
-					</Stack>
-				))}
+								<Grid
+									w='full'
+									templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }}
+									gap={4}
+								>
+									{Object.entries(subcategories).map(([subcategory, perms]) => (
+										<VStack key={subcategory} align='start' gap='4'>
+											<Fieldset.Legend fontSize='sm' textTransform='capitalize'>
+												{groupTitles.subCategory[subcategory] || subcategory}
+											</Fieldset.Legend>
+											<CheckboxGroup>
+												{perms.map((permission) => (
+													<Checkbox
+														key={permission.id}
+														defaultValue={permission.id}
+														checked={
+															Array.isArray(selectedPermissions) &&
+															selectedPermissions.includes(permission.id)
+														}
+														onChange={() =>
+															handlePermissionToggle(permission.id)
+														}
+													>
+														{permission.name}
+													</Checkbox>
+												))}
+											</CheckboxGroup>
+										</VStack>
+									))}
+								</Grid>
+							</Fieldset.Root>
+							{idx < Object.keys(groupedPermissions).length - 1 && (
+								<Separator mb={4} />
+							)}
+						</Stack>
+					)
+				)
+			)}
 		</Modal>
 	);
 };
@@ -149,11 +161,15 @@ const groupTitles = {
 	category: {
 		panel: 'Panel de Control',
 		settings: 'Configuración',
+		users: 'Usuarios',
 	},
 	subCategory: {
-		benefits: 'Beneficios',
-		products: 'Productos',
-		accreditations: 'Acreditaciones',
+		program: 'Programas',
+		coord: 'Coordinador Académico',
+		admin: 'Administrador',
+		users: 'Usuarios',
+		modalities: 'Modalidades',
+		countries: 'Regiones - Paises',
 		properties: 'Propiedades de producto',
 	},
 };

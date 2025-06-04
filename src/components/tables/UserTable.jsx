@@ -1,5 +1,5 @@
 import { Button, Pagination, toaster } from '@/components/ui';
-import { Box, HStack, Switch, Table } from '@chakra-ui/react';
+import { Badge, Box, HStack, Switch, Table } from '@chakra-ui/react';
 import { useState } from 'react';
 import { FiUserPlus } from 'react-icons/fi';
 import { HiEye, HiPencil } from 'react-icons/hi2';
@@ -57,7 +57,7 @@ export const UserTable = ({ fetchUsers, users, handleOpenModal }) => {
 			border='1px solid'
 			borderColor={{ base: '#E2E8F0', _dark: 'gray.700' }}
 			borderRadius='lg'
-			p={2}
+			px={2}
 			overflow='hidden'
 			boxShadow='md'
 		>
@@ -66,8 +66,9 @@ export const UserTable = ({ fetchUsers, users, handleOpenModal }) => {
 					<Table.Header>
 						<Table.Row>
 							<Table.ColumnHeader>Nº</Table.ColumnHeader>
-							<Table.ColumnHeader>Nombre de usuario</Table.ColumnHeader>
+							<Table.ColumnHeader>Nombre</Table.ColumnHeader>
 							<Table.ColumnHeader>Correo UNI</Table.ColumnHeader>
+							<Table.ColumnHeader>Rol</Table.ColumnHeader>
 							<Table.ColumnHeader>Estado</Table.ColumnHeader>
 							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 						</Table.Row>
@@ -81,18 +82,41 @@ export const UserTable = ({ fetchUsers, users, handleOpenModal }) => {
 								</Table.Cell>
 								<Table.Cell>{item.full_name}</Table.Cell>
 								<Table.Cell>{item.uni_email}</Table.Cell>
-								<Table.Cell width='150px'>
+								<Table.Cell>
+									{item.roles.length > 0 ? (
+										<HStack spacing={1} wrap='wrap'>
+											<Badge bg='uni.secondary' color='white' fontSize='0.8em'>
+												{item.roles[0].name}
+											</Badge>
+											{item.roles.length > 1 && (
+												<Badge
+													bg='uni.secondary'
+													color='white'
+													fontSize='0.8em'
+												>
+													{' ...'}
+												</Badge>
+											)}
+										</HStack>
+									) : (
+										<Badge colorScheme='gray' fontSize='0.8em'>
+											Sin rol
+										</Badge>
+									)}
+								</Table.Cell>
+								<Table.Cell>
 									<Switch.Root
 										checked={item.is_active}
 										display='flex'
 										justifyContent='space-between'
 										onCheckedChange={() => handleStatusChange(item.id)}
 										disabled={isPendingToggle}
-									>	<Switch.Label>
-                  {item.is_active ? 'Activo' : 'Inactivo'}
-                </Switch.Label>
+									>
+										{' '}
+										<Switch.Label>
+											{item.is_active ? 'Activo' : 'Inactivo'}
+										</Switch.Label>
 										<Switch.HiddenInput />
-									
 										<Switch.Control
 											_checked={{
 												bg: 'uni.secondary',
@@ -101,53 +125,51 @@ export const UserTable = ({ fetchUsers, users, handleOpenModal }) => {
 										/>
 									</Switch.Root>
 								</Table.Cell>
-								<Table.Cell
-									
-								>
-                  	<HStack>
-									<Button
-										background={{ base: '#0661D8', _dark: '#3182ce' }}
-										color='white'
-										width='1'
-										variant='outline'
-										size='sm'
-										borderRadius='md'
-										onClick={() => handleOpenModal('view', item)}
-										_hover={{
-											background: { base: '#054ca6', _dark: '#2563eb' },
-										}}
-									>
-										<HiEye />
-									</Button>
-									<Button
-										background={{ base: '#2D9F2D', _dark: '#38a169' }}
-										color='white'
-										width='1'
-										variant='outline'
-										size='sm'
-										borderRadius='md'
-										onClick={() => handleOpenModal('edit', item)}
-										_hover={{
-											background: { base: '#217821', _dark: '#276749' },
-										}}
-									>
-										<HiPencil />
-									</Button>
-									<Button
-										background={{ base: '#9049DB', _dark: '#805ad5' }}
-										color='white'
-										width='1'
-										variant='outline'
-										size='sm'
-										borderRadius='md'
-										onClick={() => handleOpenModal('toogleRole', item)}
-										_hover={{
-											background: { base: '#6c32a6', _dark: '#6b46c1' },
-										}}
-									>
-										<FiUserPlus />
-									</Button>
-                  </HStack>
+								<Table.Cell>
+									<HStack>
+										<Button
+											background={{ base: '#0661D8', _dark: '#3182ce' }}
+											color='white'
+											width='1'
+											variant='outline'
+											size='xs'
+											borderRadius='md'
+											onClick={() => handleOpenModal('view', item)}
+											_hover={{
+												background: { base: '#054ca6', _dark: '#2563eb' },
+											}}
+										>
+											<HiEye />
+										</Button>
+										<Button
+											background={{ base: '#2D9F2D', _dark: '#38a169' }}
+											color='white'
+											width='1'
+											variant='outline'
+											size='xs'
+											borderRadius='md'
+											onClick={() => handleOpenModal('edit', item)}
+											_hover={{
+												background: { base: '#217821', _dark: '#276749' },
+											}}
+										>
+											<HiPencil />
+										</Button>
+										<Button
+											background={{ base: '#9049DB', _dark: '#805ad5' }}
+											color='white'
+											width='1'
+											variant='outline'
+											size='xs'
+											borderRadius='md'
+											onClick={() => handleOpenModal('toogleRole', item)}
+											_hover={{
+												background: { base: '#6c32a6', _dark: '#6b46c1' },
+											}}
+										>
+											<FiUserPlus />
+										</Button>
+									</HStack>
 								</Table.Cell>
 							</Table.Row>
 						))}

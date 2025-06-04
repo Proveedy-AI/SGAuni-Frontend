@@ -10,67 +10,47 @@ import {
 	Box,
 	MenuSeparator,
 	VStack,
+	Spinner,
 } from '@chakra-ui/react';
-import {
-	Avatar,
-	//ColorModeToggle,
-	MenuContent,
-	MenuItem,
-	MenuRoot,
-	MenuTrigger,
-	useColorMode,
-	useContrastingColor,
-} from '../ui';
+import { Avatar, MenuContent, MenuItem, MenuRoot, MenuTrigger } from '../ui';
 import { FiChevronDown, FiLogOut } from 'react-icons/fi';
 import { useProvideAuth } from '@/hooks/auth';
 
 export const TopBar = () => {
-	// Datos simulados
-	const mockUser = {
-		username: 'Juan Pérez',
-		email: 'juan.perez@example.com',
-		sub: 'user123',
-	};
+	const { getProfile, logout } = useProvideAuth();
+	const profile = getProfile();
 
-	const mockUsers = [
-		{
-			id: 'user123',
-			fullname: 'Juan Pérez',
-			color: '#3182CE', // azul
-		},
-	];
-
-	const mockRoles = [
-		{
-			name: 'Coordinador Académico',
-			permissions_count: 15,
-		},
-		{
-			name: 'Docente',
-			permissions_count: 5,
-		},
-	];
-
-	const [fullname, setFullname] = useState(mockUser.username);
-	const [color, setColor] = useState('#F2F2F2');
-	const { colorMode } = useColorMode();
-	const { contrast } = useContrastingColor();
-	const { logout } = useProvideAuth(); // Asegúrate de importar correctamente el hook
-	const mensaje = import.meta.env.VITE_IS_DEMO === 'true' ? 'SGAUNI - DEMO' : '';
+	const [fullname, setFullname] = useState('');
+	const mensaje =
+		import.meta.env.VITE_IS_DEMO === 'true' ? 'SGAUNI - DEMO' : '';
 
 	useEffect(() => {
-		const userInfo = mockUsers.find((u) => u.id === mockUser.sub);
-		if (userInfo) {
-			setFullname(userInfo.fullname);
-			setColor(userInfo.color);
+		if (profile) {
+			setFullname(profile.full_name || '');
 		}
-	}, []);
+	}, [profile]);
 
-	const handleLogout = () => {
-		logout();
-	};
+	if (!profile) {
+		return (
+			<Flex align='center' justify='center' h='100vh'>
+				<Spinner size='xl' />
+			</Flex>
+		);
+	}
 
 	const menuItems = [{ label: 'Configurar cuenta', href: '/settings/profile' }];
+	const username = profile.user?.username || '';
+	const email = profile.uni_email || '';
+	const roles = profile.roles || [];
+
+	const mainRole =
+		roles.length > 0
+			? roles.reduce((max, curr) =>
+					(curr.permissions?.length || 0) > (max.permissions?.length || 0)
+						? curr
+						: max
+				)
+			: null;
 
 	return (
 		<Flex
@@ -90,21 +70,13 @@ export const TopBar = () => {
 				>
 					{mensaje}
 				</Text>
-				
 			</HStack>
 			<HStack spacing='4'>
-			{/*<ColorModeToggle />*/}
 				<MenuRoot>
 					<MenuTrigger asChild>
 						<HStack gap={['1', '3']} cursor='pointer'>
 							<Box position='relative'>
-								<Avatar
-									bgColor={color ?? '#F2F2F2'}
-									color={contrast(color)}
-									name={fullname}
-									variant={colorMode === 'dark' ? 'solid' : 'subtle'}
-									size='sm'
-								/>
+								{fullname && <Avatar name={fullname} size='sm' />}
 								<Float placement='bottom-end' offsetX='1' offsetY='1'>
 									<Circle
 										bg='green.500'
@@ -120,17 +92,10 @@ export const TopBar = () => {
 
 							<Stack gap='0' display={['none', 'none', 'none', 'flex']}>
 								<Text fontWeight='medium'>
-									{mockUser.username.split(' ').slice(0, 2).join(' ')}
+									{fullname?.split(' ').slice(0, 2).join(' ')}
 								</Text>
 								<Text color='fg.muted' textStyle='sm' lineHeight='1'>
-									{mockRoles.length > 0
-										? mockRoles.reduce((maxRole, currentRole) =>
-												currentRole.permissions_count >
-												maxRole.permissions_count
-													? currentRole
-													: maxRole
-											).name
-										: 'Aún no tienes rol'}
+									{mainRole?.name || 'Aún no tienes rol'}
 								</Text>
 							</Stack>
 
@@ -144,17 +109,17 @@ export const TopBar = () => {
 						pt='2'
 					>
 						<Stack gap='0' px='4'>
-							<Text fontWeight='medium'>{mockUser.username}</Text>
+							<Text fontWeight='medium'>{username}</Text>
 							<Text textStyle='sm' color='fg.muted'>
-								{mockUser.email}
+								{email}
 							</Text>
 						</Stack>
 						<MenuSeparator />
 						<Box px='4' my='2'>
 							<Text textStyle='sm'>
-								{mockRoles.length === 1 ? `Rol:` : `Roles:`}
+								{roles.length === 1 ? `Rol:` : `Roles:`}
 							</Text>
-							{mockRoles.map((role) => (
+							{roles.map((role) => (
 								<Text
 									key={role.name}
 									color='fg.muted'
@@ -204,7 +169,7 @@ export const TopBar = () => {
 							</MenuItem>
 
 							<MenuItem
-								onClick={handleLogout}
+								onClick={logout}
 								bg={{ base: 'uni.100', _dark: 'uni.gray.400' }}
 								color={{ base: 'red', _dark: 'red.400' }}
 								cursor='pointer'

@@ -9,7 +9,7 @@ export const useProvideAuth = () => {
 	const [error, setError] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
-	const { setAuth } = useAuth();
+	const { auth, setAuth } = useAuth();
 	const isRefreshing = useRef(false);
 
 	const getRefreshToken = useCallback(() => {
@@ -24,7 +24,7 @@ export const useProvideAuth = () => {
 		setError(null);
 
 		try {
-			const response = await axios.post('api-auth/token/obtain/', {
+			const response = await axios.post('/api-auth/token/obtain/', {
 				username,
 				password,
 			});
@@ -55,6 +55,20 @@ export const useProvideAuth = () => {
 				cookieOptions
 			);
 
+			const axiosPrivate = axios.create({
+				baseURL: import.meta.env.VITE_API_URL,
+				headers: { Authorization: `Bearer ${data['access']}` },
+			});
+
+			const res = await axiosPrivate.get('/api/v1/users/profile/');
+			const userProfile = res.data;
+
+			Cookies.set('user', JSON.stringify(userProfile), {
+				secure: true,
+				sameSite: 'strict',
+				httpOnly: false,
+			});
+
 			navigate('/');
 		} catch (err) {
 			setError(err.response ? err.response.data.detail : 'Error de red');
@@ -71,54 +85,41 @@ export const useProvideAuth = () => {
 		const token = getRefreshToken();
 		const accessToken = getAccessToken();
 
-		console.log('[1] Refresh token:', token);
-		console.log('[2] Access token:', accessToken);
-
 		const isProduction = import.meta.env.VITE_IS_PRODUCTION === 'true';
 		const cookieOptions = {
 			domain: isProduction ? import.meta.env.VITE_DOMAIN_AUTO_LOGIN : undefined,
 		};
 
-		axios
-			.post(
-				'api-auth/token/blacklist',
+		try {
+			const response = await axios.post(
+				'/api-auth/token/blacklist/',
 				{ refresh: token },
 				{
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
-						'X-CSRFToken': Cookies.get('csrftoken'), // Si tu cookie se llama así
 					},
-					withCredentials: true, // MUY IMPORTANTE para que se envíen cookies en CORS
 				}
-			)
-			.then((response) => {
-				console.log('[3] Token invalidado correctamente:', response.data);
+			);
 
-				Cookies.remove(import.meta.env.VITE_US_COOKIE, cookieOptions);
-				Cookies.remove(import.meta.env.VITE_TOKEN_COOKIE, cookieOptions);
-				console.log('[4] Cookie eliminada, redirigiendo al login...');
-				navigate('/auth/login');
-			})
-			.catch((err) => {
-				console.error('[ERROR] Error al invalidar token');
-				if (err.response) {
-					console.error('[Error response.data]', err.response.data);
-					setError(
-						err.response.data.detail || 'Error desconocido del servidor'
-					);
-				} else {
-					console.error('[Error general]', err.message);
-					setError('Error de red o token inválido');
-				}
-			})
-			.finally(() => {
-				console.log('[5] Logout completado (finally)');
-				Cookies.remove(import.meta.env.VITE_US_COOKIE, cookieOptions);
-				Cookies.remove(import.meta.env.VITE_TOKEN_COOKIE, cookieOptions);
-				setAuth(null);
-				navigate('/auth/login');
-				setLoading(false);
-			});
+			console.log('[3] Token invalidado correctamente:', response.data);
+		} catch (err) {
+			console.error('[ERROR] Error al invalidar token');
+			if (err.response) {
+				console.error('[Error response.data]', err.response.data);
+				setError(err.response.data.detail || 'Error desconocido del servidor');
+			} else {
+				console.error('[Error general]', err.message);
+				setError('Error de red o token inválido');
+			}
+		} finally {
+			console.log('[5] Logout completado (finally)');
+			Cookies.remove(import.meta.env.VITE_US_COOKIE, cookieOptions);
+			Cookies.remove(import.meta.env.VITE_TOKEN_COOKIE, cookieOptions);
+			Cookies.remove('user');
+			setAuth(null);
+			navigate('/auth/login');
+			setLoading(false);
+		}
 	};
 
 	const refresh = async () => {
@@ -135,7 +136,6 @@ export const useProvideAuth = () => {
 			const data = response.data;
 			const user = jwtDecode(data['access']);
 			setAuth({ accessToken: data['access'], user });
-		
 
 			const isProduction = import.meta.env.VITE_IS_PRODUCTION === 'true';
 			const cookieOptions = {
@@ -158,6 +158,20 @@ export const useProvideAuth = () => {
 				cookieOptions
 			);
 
+			const axiosPrivate = axios.create({
+				baseURL: import.meta.env.VITE_API_URL,
+				headers: { Authorization: `Bearer ${data['access']}` },
+			});
+
+			const res = await axiosPrivate.get('/api/v1/users/profile/');
+			const userProfile = res.data;
+
+			Cookies.set('user', JSON.stringify(userProfile), {
+				secure: true,
+				sameSite: 'strict',
+				httpOnly: false,
+			});
+
 			return response.data['access'];
 		} catch (err) {
 			setError(err.response ? err.response.data.detail : 'Error de red');
@@ -169,11 +183,16 @@ export const useProvideAuth = () => {
 	};
 
 	const getUser = useCallback(() => {
+		const user = auth?.user;
+		return user;
+	}, []);
+
+	const getProfile = useCallback(() => {
 		try {
-			const cookie = Cookies.get(import.meta.env.VITE_TOKEN_COOKIE);
+			const cookie = Cookies.get('user');
 			if (!cookie) return null;
 			const parsed = JSON.parse(cookie);
-			return parsed?.user || null;
+			return parsed || null;
 		} catch (err) {
 			console.error('[getAccessToken] Error al parsear cookie:', err);
 			return null;
@@ -212,6 +231,7 @@ export const useProvideAuth = () => {
 		getUserCookie,
 		getAccessToken,
 		getRefreshToken,
+		getProfile,
 		error,
 		loading,
 	};
