@@ -7,7 +7,7 @@ export const useCreateCountry = () => {
 
 	return useMutation({
 		mutationFn: async (payload) => {
-			const res = await axiosPrivate.post('/country', payload);
+			const res = await axiosPrivate.post('/api/v1/countries/', payload);
 			return res.data;
 		},
 	});

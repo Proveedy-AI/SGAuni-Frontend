@@ -7,7 +7,7 @@ export const useUpdateCountry = () => {
 
 	return useMutation({
 		mutationFn: async ({ id, payload }) => {
-			const res = await axiosPrivate.patch(`/country/${id}`, payload);
+			const res = await axiosPrivate.patch(`/api/v1/countries/${id}/`, payload);
 			return res.data;
 		},
 	});

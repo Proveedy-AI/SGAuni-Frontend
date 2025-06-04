@@ -10,15 +10,28 @@ export const AddSettingsCountryForm = ({ fetchData }) => {
 	const [open, setOpen] = useState(false);
 	const [name, setName] = useState('');
 	const [code, setCode] = useState('');
+	const [isoCode, setIsoCode] = useState('');
+	const [dialCode, setDialCode] = useState('');
 
 	const { mutate: createCountry, isPending } = useCreateCountry();
 
 	const handleSubmitData = (e) => {
 		e.preventDefault();
 
+		// Validación de campos vacíos
+		if (!name.trim() || !code.trim() || !isoCode.trim() || !dialCode.trim()) {
+			toaster.create({
+				title: 'Por favor completa todos los campos',
+				type: 'warning',
+			});
+			return;
+		}
+
 		const payload = {
 			name: name.trim(),
-			code: code.trim().toLowerCase(),
+			code: code.trim(),
+			iso_code: isoCode.trim().toLowerCase(),
+			dial_code: dialCode.trim(),
 		};
 
 		createCountry(payload, {
@@ -31,10 +44,13 @@ export const AddSettingsCountryForm = ({ fetchData }) => {
 				fetchData?.();
 				setName('');
 				setCode('');
+				setDialCode('');
+				setIsoCode('');
 			},
 			onError: (error) => {
+				console.log(error);
 				toaster.create({
-					title: error.message || 'Error al registrar el país',
+					title: error.response?.data?.[0] || 'Error al registrar el país',
 					type: 'error',
 				});
 			},
@@ -73,14 +89,36 @@ export const AddSettingsCountryForm = ({ fetchData }) => {
 						size='xs'
 					/>
 				</Field>
+				<Field
+					orientation={{ base: 'vertical', sm: 'horizontal' }}
+					label='Nacionalidad:'
+				>
+					<Input
+						value={code}
+						onChange={(e) => setCode(e.target.value)}
+						placeholder='Peruano'
+						size='xs'
+					/>
+				</Field>
+				<Field
+					orientation={{ base: 'vertical', sm: 'horizontal' }}
+					label='Prefijo'
+				>
+					<Input
+						value={dialCode}
+						onChange={(e) => setDialCode(e.target.value)}
+						placeholder='+51'
+						size='xs'
+					/>
+				</Field>
 
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
 					label='Código de país:'
 				>
 					<Input
-						value={code}
-						onChange={(e) => setCode(e.target.value)}
+						value={isoCode}
+						onChange={(e) => setIsoCode(e.target.value)}
 						placeholder='pe'
 						size='xs'
 					/>

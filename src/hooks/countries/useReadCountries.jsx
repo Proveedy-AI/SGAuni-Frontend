@@ -8,7 +8,7 @@ export const useReadCountries = (params = {}) => {
 	return useQuery({
 		queryKey: ['countries', params],
 		queryFn: async () => {
-			const res = await axiosPrivate.get('/country', { params });
+			const res = await axiosPrivate.get('/api/v1/countries/', { params });
 			return res.data;
 		},
 	});

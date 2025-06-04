@@ -17,7 +17,6 @@ import {
 	createListCollection,
 	HStack,
 	IconButton,
-	Skeleton,
 	Span,
 	Stack,
 	Table,
@@ -40,6 +39,7 @@ const Row = memo(({ item, fetchData, startIndex, index }) => {
 					type: 'success',
 				});
 				fetchData();
+				setOpen(false);
 			},
 			onError: (error) => {
 				toaster.create({
@@ -55,6 +55,7 @@ const Row = memo(({ item, fetchData, startIndex, index }) => {
 			<Table.Cell>{item.name}</Table.Cell>
 			<Table.Cell>{item.code}</Table.Cell>
 			<Table.Cell>{item.dial_code}</Table.Cell>
+			<Table.Cell>{item.iso_code}</Table.Cell>
 			<Table.Cell>
 				<HStack>
 					<UpdateSettingsCountryForm data={item} fetchData={fetchData} />
@@ -94,11 +95,7 @@ Row.propTypes = {
 	index: PropTypes.number,
 };
 
-export const SettingsCountryManagementTable = ({
-	data,
-	fetchData,
-	loading,
-}) => {
+export const SettingsCountryManagementTable = ({ data, fetchData }) => {
 	const smallOptions = useMemo(
 		() => [
 			{ label: '6', value: '6' },
@@ -199,98 +196,93 @@ export const SettingsCountryManagementTable = ({
 	};
 
 	return (
-		<Skeleton
-			asChild
-			loading={loading}
-			height={loading ? tableHeight + 56 : 'auto'}
+		<Box
+			bg={{ base: 'white', _dark: 'its.gray.500' }}
+			p='3'
+			borderRadius='10px'
+			overflow='hidden'
+			boxShadow='md'
 		>
-			<Box
-				bg={{ base: 'white', _dark: 'its.gray.500' }}
-				p='3'
-				borderRadius='10px'
-				overflow='hidden'
-				boxShadow='md'
+			<Table.ScrollArea
+				style={{
+					maxHeight: tableHeight,
+				}}
 			>
-				<Table.ScrollArea
-					style={{
-						maxHeight: tableHeight,
-					}}
-				>
-					<Table.Root size='sm' w='full' striped>
-						<Table.Header>
-							<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
-								<Table.ColumnHeader>N°</Table.ColumnHeader>
-								<Table.ColumnHeader>Nombre del país</Table.ColumnHeader>
-								<Table.ColumnHeader>Código de país</Table.ColumnHeader>
-								<Table.ColumnHeader>Código de marcación</Table.ColumnHeader>
-								<Table.ColumnHeader>Acciones</Table.ColumnHeader>
-							</Table.Row>
-						</Table.Header>
-						<Table.Body>
-							{visibleRows?.map((item, index) => (
-								<Row
-									key={item.id}
-									item={item}
-									fetchData={fetchData}
-									startIndex={startIndex}
-									index={index}
-								/>
-							))}
-						</Table.Body>
-					</Table.Root>
-				</Table.ScrollArea>
+				<Table.Root size='sm' w='full' striped>
+					<Table.Header>
+						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
+							<Table.ColumnHeader>N°</Table.ColumnHeader>
+							<Table.ColumnHeader>Nombre del país</Table.ColumnHeader>
+							<Table.ColumnHeader>Nacionalidad</Table.ColumnHeader>
+							<Table.ColumnHeader>Prefijo</Table.ColumnHeader>
+							<Table.ColumnHeader>Iso</Table.ColumnHeader>
+							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
+						</Table.Row>
+					</Table.Header>
+					<Table.Body>
+						{visibleRows?.map((item, index) => (
+							<Row
+								key={item.id}
+								item={item}
+								fetchData={fetchData}
+								startIndex={startIndex}
+								index={index}
+							/>
+						))}
+					</Table.Body>
+				</Table.Root>
+			</Table.ScrollArea>
 
-				<Stack
-					w='full'
-					direction={{ base: 'column', sm: 'row' }}
-					justify={{ base: 'center', sm: 'space-between' }}
-					pt='2'
+			<Stack
+				w='full'
+				direction={{ base: 'column', sm: 'row' }}
+				justify={{ base: 'center', sm: 'space-between' }}
+				pt='2'
+			>
+				<SelectRoot
+					collection={createListCollection({
+						items: pageSizeOptions,
+					})}
+					size='xs'
+					w='150px'
+					display={{ base: 'none', sm: 'block' }}
+					defaultValue={pageSize}
+					onChange={(event) => handlePageSizeChange(event.target.value)}
 				>
-					<SelectRoot
-						collection={createListCollection({
-							items: pageSizeOptions,
-						})}
-						size='xs'
-						w='150px'
-						display={{ base: 'none', sm: 'block' }}
-						defaultValue={pageSize}
-						onChange={(event) => handlePageSizeChange(event.target.value)}
-					>
-						<SelectTrigger>
-							<SelectValueText placeholder='Seleccionar filas' />
-						</SelectTrigger>
-						<SelectContent bg={{ base: 'white', _dark: 'its.gray.500' }}>
-							{pageSizeOptions.map((option) => (
-								<SelectItem
-									_hover={{
-										bg: {
-											base: 'its.100',
-											_dark: 'its.gray.400',
-										},
-									}}
-									key={option.value}
-									item={option}
-								>
-									{option.label}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</SelectRoot>
+					<SelectTrigger>
+						<SelectValueText placeholder='Seleccionar filas' />
+					</SelectTrigger>
+					<SelectContent bg={{ base: 'white', _dark: 'its.gray.500' }}>
+						{pageSizeOptions.map((option) => (
+							<SelectItem
+								_hover={{
+									bg: {
+										base: 'its.100',
+										_dark: 'its.gray.400',
+									},
+								}}
+								key={option.value}
+								item={option}
+							>
+								{option.label}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</SelectRoot>
 
-					<Pagination
-						count={data?.length}
-						pageSize={pageSize}
-						currentPage={currentPage}
-						onPageChange={(page) => setCurrentPage(page)}
-					/>
-				</Stack>
-			</Box>
-		</Skeleton>
+				<Pagination
+					count={data?.length}
+					pageSize={pageSize}
+					currentPage={currentPage}
+					onPageChange={(page) => setCurrentPage(page)}
+				/>
+			</Stack>
+		</Box>
 	);
 };
 
 SettingsCountryManagementTable.propTypes = {
-	data: PropTypes.arrayOf(PropTypes.object),
+	data: PropTypes.array,
 	fetchData: PropTypes.func,
 	loading: PropTypes.bool,
 };
