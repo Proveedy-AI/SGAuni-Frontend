@@ -1,166 +1,223 @@
-import CustomSelect from "@/components/select/customSelect";
-import { ControlledModal, Field, Radio, RadioGroup, toaster } from "@/components/ui";
-import { Flex, Input, Stack, Textarea } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { OPTIONS } from "@/data/"; // Asegúrate de que este archivo exista y contenga las opciones
-import { useReadOneModality, useUpdateModality } from "@/hooks/modalities";
+import {
+  ControlledModal,
+  Field,
+  Radio,
+  RadioGroup,
+  toaster,
+} from '@/components/ui';
+import { Flex, Input, Stack, Textarea } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
+import { useUpdateModality } from '@/hooks/modalities';
+import PropTypes from 'prop-types';
 
-export const EditModality = ({ setMethods, selectedMethod, setSelectedMethod, isEditModalOpen, setIsModalOpen, handleCloseModal }) => {
-  const { data: dataModality, refetch: fetchModality } = useReadOneModality({
-    id: selectedMethod?.id,
-    enabled: false
-  });
-
+export const EditModality = ({
+  setMethods,
+  selectedMethod,
+  isEditModalOpen,
+  setIsModalOpen,
+  handleCloseModal,
+}) => {
   const [modalityEditable, setModalityEditable] = useState(null);
-  useEffect(() => {
-    if (isEditModalOpen && selectedMethod) {
-      fetchModality();
-      setModalityEditable(dataModality);
-    }
 
-  }, [dataModality, isEditModalOpen, selectedMethod?.id, fetchModality])
+  useEffect(() => {
+    if (selectedMethod) {
+      setModalityEditable(selectedMethod);
+    }
+  }, [selectedMethod]);
 
   const { mutateAsync: updateMethod, isPending } = useUpdateModality();
 
   const handleEditMethod = async () => {
-    if (modalityEditable === dataModality) return;
+    if (!modalityEditable) return;
 
     const {
       name,
       description,
-      essay_weight,
-      interview_weight,
+      requires_pre_master_exam,
       min_grade,
-    } = modalityEditable
+      requires_essay,
+      essay_weight,
+      requires_interview,
+      interview_weight,
+    } = modalityEditable;
 
-    if (!name && !description && !essay_weight && !interview_weight && !min_grade) return;
+    // Validación mínima
+    if (!name || !description) {
+      toaster.create({
+        title: 'Completa los campos obligatorios',
+        type: 'warning',
+      });
+      return;
+    }
 
-    const { id:_, rules:__, total_rules:___, enabled:____,...payload} = modalityEditable;
+    const payload = {
+      name,
+      description,
+      requires_pre_master_exam,
+      min_grade: Number(min_grade),
+      requires_essay,
+      essay_weight: requires_essay ? Number(essay_weight) : null,
+      requires_interview,
+      interview_weight: requires_interview ? Number(interview_weight) : null,
+    };
 
-    await updateMethod({ id: selectedMethod.id, payload }, {
-			onSuccess: (newMethod) => {
-				toaster.create({
-					title: 'Modalidad actualizada correctamente',
-					type: 'success',
-				});
-        // Desestructuración para eliminar el campo description
-        const { description:_, essay_weight:__, interview_weight:___, rules:____, ...methodSaved } = newMethod;
-        setMethods(prev => [...prev.filter(m => m.id !== methodSaved.id), methodSaved]);
-        handleCloseModal('edit');
-			},
-			onError: (error) => {
-				toaster.create({
-					title: error.message || 'Error al actualizar la modalidad',
-					type: 'error',
-				});
-			},
-		});
+    await updateMethod(
+      { id: selectedMethod.id, payload },
+      {
+        onSuccess: () => {
+          toaster.create({
+            title: 'Modalidad actualizada correctamente',
+            type: 'success',
+          });
+          handleCloseModal('edit');
+          setMethods(); // refetch de la tabla
+        },
+        onError: (error) => {
+          toaster.create({
+            title: error.message || 'Error al actualizar la modalidad',
+            type: 'error',
+          });
+        },
+      }
+    );
+  };
 
-  }
+  const handleRadioChange = (field, value) => {
+    setModalityEditable((prev) => ({
+      ...prev,
+      [field]: value === 'true', // Convertir 'true' a true y 'false' a false
+    }));
+  };
 
   return (
     <Stack css={{ '--field-label-width': '180px' }}>
       <Field orientation={{ base: 'vertical', sm: 'horizontal' }}>
         <ControlledModal
-          title='Editar Modalidad'
-          placement='center'
-          size='xl'
+          title="Editar Modalidad"
+          placement="center"
+          size="xl"
           open={isEditModalOpen}
-          onOpenChange={e => setIsModalOpen(s => ({ ...s, edit: e.open }))}
-          onSave={() => handleEditMethod()}
+          onOpenChange={(e) => setIsModalOpen((s) => ({ ...s, edit: e.open }))}
+          onSave={handleEditMethod}
           isLoading={isPending}
         >
           <Stack spacing={4}>
-            <Field label='Nombre de la modalidad'>
+            <Field label="Nombre de la modalidad">
               <Input
-                disabled={!dataModality}
                 value={modalityEditable?.name || ''}
-                onChange={(e) => setModalityEditable(prev => ({ ...prev, name: e.target.value }))}
+                onChange={(e) =>
+                  setModalityEditable((prev) => ({
+                    ...prev,
+                    name: e.target.value,
+                  }))
+                }
               />
             </Field>
-            <Field label='Descripción'>
+
+            <Field label="Descripción">
               <Textarea
-                disabled={!dataModality}
                 value={modalityEditable?.description || ''}
-                onChange={(e) => setModalityEditable(prev => ({ ...prev, description: e.target.value }))}
+                onChange={(e) =>
+                  setModalityEditable((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
               />
             </Field>
+
             <Flex gap={6} flexDir={{ base: 'column', sm: 'row' }}>
-              <Field label='Requiere pre-maestría'>
+              <Field label="Requiere pre-maestría">
                 <RadioGroup
-                  value={modalityEditable?.requires_pre_master_exam ? "true" : "false"}
-                  onChange={(e) => setModalityEditable(prev => ({ ...prev, requires_pre_master_exam: e.target.value === "true" }))}
+                  value={modalityEditable?.requires_pre_master_exam ? 'true' : 'false'}
+                  onChange={(e) => handleRadioChange('requires_pre_master_exam', e)}
                   direction="row"
                 >
                   <Flex gap="5">
-                    <Radio value={"true"}>Sí</Radio>
-                    <Radio value={"false"}>No</Radio>
+                    <Radio value="true" colorScheme="teal" size="lg">Sí</Radio>
+                    <Radio value="false" colorScheme="teal" size="lg">No</Radio>
                   </Flex>
                 </RadioGroup>
               </Field>
-              <Field label='Grado mínimo'>
+
+              <Field label="Grado mínimo">
                 <Input
-                  disabled={!dataModality}
                   type="number"
                   value={modalityEditable?.min_grade || ''}
-                  onChange={(e) => setModalityEditable(prev => ({ ...prev, min_grade: e.target.value }))}
-                  placeholder='Ingrese el grado mínimo'
+                  onChange={(e) =>
+                    setModalityEditable((prev) => ({
+                      ...prev,
+                      min_grade: e.target.value,
+                    }))
+                  }
+                  placeholder="Ingrese el grado mínimo"
                 />
               </Field>
             </Flex>
+
             <Flex direction={{ base: 'column', sm: 'row' }} gap={4}>
-               <Field label='Requiere ensayo'>
+              <Field label="Requiere ensayo">
                 <RadioGroup
-                  value={modalityEditable?.requires_essay ? "true" : "false"}
-                  onChange={(e) => setModalityEditable(prev => ({ ...prev, requires_essay: e.target.value === "true" }))}
+                  value={modalityEditable?.requires_essay ? 'true' : 'false'}
+                  onChange={(e) => handleRadioChange('requires_essay', e)}
                   direction="row"
                 >
                   <Flex gap="5">
-                    <Radio value={"true"}>Sí</Radio>
-                    <Radio value={"false"}>No</Radio>
+                    <Radio value="true" colorScheme="teal" size="lg">Sí</Radio>
+                    <Radio value="false" colorScheme="teal" size="lg">No</Radio>
                   </Flex>
                 </RadioGroup>
               </Field>
+
               {modalityEditable?.requires_essay && (
-                <Field label='Peso del ensayo (0 a 1)'>
+                <Field label="Peso del ensayo (0 a 1)">
                   <Input
-                    required
                     type="number"
-                    name="essay_weight"
-                    placeholder='Ej: 0.5'
-                    value={modalityEditable?.essay_weight || '' }
-                    onChange={(e) => setModalityEditable(prev => ({ ...prev, essay_weight: e.target.value}))}
+                    value={modalityEditable?.essay_weight || ''}
+                    onChange={(e) =>
+                      setModalityEditable((prev) => ({
+                        ...prev,
+                        essay_weight: e.target.value,
+                      }))
+                    }
                     min={0}
                     max={1}
                     step={0.01}
+                    placeholder="Ej: 0.5"
                   />
                 </Field>
               )}
             </Flex>
+
             <Flex direction={{ base: 'column', sm: 'row' }} gap={4}>
-              <Field label='Requiere entrevista personal'>
+              <Field label="Requiere entrevista personal">
                 <RadioGroup
-                  value={modalityEditable?.requires_interview ? "true" : "false"}
-                  onChange={(e) => setModalityEditable(prev => ({ ...prev, requires_interview: e.target.value === "true" }))}
+                  value={modalityEditable?.requires_interview ? 'true' : 'false'}
+                  onChange={(e) => handleRadioChange('requires_interview', e)}
                   direction="row"
                 >
                   <Flex gap="5">
-                    <Radio value={"true"}>Sí</Radio>
-                    <Radio value={"false"}>No</Radio>
+                    <Radio value="true" colorScheme="teal" size="lg">Sí</Radio>
+                    <Radio value="false" colorScheme="teal" size="lg">No</Radio>
                   </Flex>
                 </RadioGroup>
               </Field>
+
               {modalityEditable?.requires_interview && (
-                <Field label='Peso de la entrevista (0 a 1)'>
+                <Field label="Peso de la entrevista (0 a 1)">
                   <Input
-                    required
                     type="number"
                     value={modalityEditable?.interview_weight || ''}
-                    onChange={(e) => setModalityEditable(prev => ({ ...prev, interview_weight: e.target.value}))}
-                    placeholder='Ej: 0.5'
+                    onChange={(e) =>
+                      setModalityEditable((prev) => ({
+                        ...prev,
+                        interview_weight: e.target.value,
+                      }))
+                    }
                     min={0}
                     max={1}
                     step={0.01}
+                    placeholder="Ej: 0.5"
                   />
                 </Field>
               )}
@@ -169,5 +226,13 @@ export const EditModality = ({ setMethods, selectedMethod, setSelectedMethod, is
         </ControlledModal>
       </Field>
     </Stack>
-  )
-}
+  );
+};
+
+EditModality.propTypes = {
+  selectedMethod: PropTypes.object,
+  isEditModalOpen: PropTypes.bool,
+  setIsModalOpen: PropTypes.func,
+  handleCloseModal: PropTypes.func,
+  setMethods: PropTypes.func,
+};
