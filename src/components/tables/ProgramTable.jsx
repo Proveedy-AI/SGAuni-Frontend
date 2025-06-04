@@ -1,11 +1,208 @@
-import { Button, Pagination } from "@/components/ui";
-import { HStack, Table, Switch } from "@chakra-ui/react";
-import { useState } from "react";
+import PropTypes from 'prop-types';
+import { memo, useState } from "react";
+import {
+	Box,
+	createListCollection,
+	Group,
+	HStack,
+	IconButton,
+	Span,
+	Stack,
+	Table,
+	Text,
+} from '@chakra-ui/react';
+import {
+  Button,
+
+  ConfirmModal,
+  Pagination,
+  SelectContent,
+  SelectItem,
+  SelectRoot,
+  SelectTrigger,
+  SelectValueText,
+  toaster,
+} from '@/components/ui'
 import { HiEye, HiPencil, HiTrash } from "react-icons/hi2";
 import { RowsPerPageSelect } from "../select";
 import { COORDINADORES } from "@/data";
+import { FiArrowDown, FiArrowUp, FiTrash2 } from "react-icons/fi";
 
-export const ProgramTable = ({ programs, handleOpenModal }) => {
+const Row = memo(({ item, fetchData, startIndex, index }) => {
+  const [open, setOpen] = useState(false);
+
+  //const { mutateAsync: remove, isPending: loadingDelete } = useDeleteRole();
+
+  const handleDelete = async (id) => {
+    try {
+      //await remove(id);
+      console.log(`Programa ${id} eliminado`);
+      toaster.create({
+        title: 'Rol eliminado correctamente',
+        type: 'success',
+      });
+      setOpen(false);
+      fetchData();
+    } catch (error) {
+      toaster.create({
+        title: error.message,
+        type: 'error',
+      });
+    }
+  };
+
+  return (
+    <Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
+      <Table.Cell>{startIndex + index + 1}</Table.Cell>
+      <Table.Cell>{item.name}</Table.Cell>
+      <Table.Cell>{item.type_detail.name}</Table.Cell>
+      <Table.Cell>
+        <HStack justify='space-between'>
+          <Group>
+            <ConfirmModal
+              title='Eliminar programa'
+              placement='center'
+              trigger={
+                <IconButton colorPalette='red' size='xs'>
+                  <FiTrash2 />
+                </IconButton>
+              }
+              open={open}
+              onOpenChange={(e) => setOpen(e.open)}
+              onConfirm={() => handleDelete(item.id)}
+              //loading={loadingDelete}
+            >
+              <Text>
+                ¿Estás seguro que quieres eliminar el
+                <Span fontWeight='semibold' px='1'>
+                  {item.name}
+                </Span>
+                de la lista de programas?
+              </Text>
+            </ConfirmModal>
+          </Group>
+        </HStack>
+      </Table.Cell>
+    </Table.Row>
+  );
+});
+
+Row.displayName = 'Row';
+
+Row.propTypes = {
+  item: PropTypes.object,
+  fetchData: PropTypes.func,
+  startIndex: PropTypes.number,
+  index: PropTypes.number,
+};
+
+export const ProgramTable = ({ data, fetchData }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState('10');
+
+  const startIndex = (currentPage - 1) * parseInt(pageSize);
+  const endIndex = startIndex + parseInt(pageSize);
+  const visibleRows = data?.slice(startIndex, endIndex);
+
+  const handlePageSizeChange = (newPageSize) => {
+    setPageSize(newPageSize);
+    setCurrentPage(1);
+  };
+
+  const pageSizeOptions = [
+    { label: '5 filas', value: '5' },
+    { label: '10 filas', value: '10' },
+    { label: '15 filas', value: '15' },
+    { label: '20 filas', value: '20' },
+    { label: '25 filas', value: '25' },
+  ];
+
+  return (
+    <Box
+      bg={{ base: 'white', _dark: 'its.gray.500' }}
+      p='3'
+      borderRadius='10px'
+      overflow='hidden'
+      boxShadow='md'
+    >
+      <Table.ScrollArea>
+        <Table.Root size='sm' w='full' striped>
+          <Table.Header>
+            <Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
+              <Table.ColumnHeader>N°</Table.ColumnHeader>
+              <Table.ColumnHeader>Nombre del programa</Table.ColumnHeader>
+              <Table.ColumnHeader>Tipo</Table.ColumnHeader>
+              <Table.ColumnHeader>Acciones</Table.ColumnHeader>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {visibleRows?.map((item, index) => (
+              <Row
+                key={item.id}
+                item={item}
+                fetchData={fetchData}
+                startIndex={startIndex}
+                index={index}
+              />
+            ))}
+          </Table.Body>
+        </Table.Root>
+      </Table.ScrollArea>
+      <Stack
+        w='full'
+        direction={{ base: 'column', sm: 'row' }}
+        justify={{ base: 'center', sm: 'space-between' }}
+        pt='2'
+      >
+        <SelectRoot
+          collection={createListCollection({
+            items: pageSizeOptions,
+          })}
+          size='xs'
+          w='150px'
+          display={{ base: 'none', sm: 'block' }}
+          defaultValue={pageSize}
+          onChange={(event) => handlePageSizeChange(event.target.value)}
+        >
+          <SelectTrigger>
+            <SelectValueText placeholder='Seleccionar filas' />
+          </SelectTrigger>
+          <SelectContent bg={{ base: 'white', _dark: 'its.gray.500' }}>
+            {pageSizeOptions.map((option) => (
+              <SelectItem
+                _hover={{
+                  bg: {
+                    base: 'its.100',
+                    _dark: 'its.gray.400',
+                  },
+                }}
+                key={option.value}
+                item={option}
+              >
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </SelectRoot>
+
+        <Pagination
+          count={data?.length}
+          pageSize={pageSize}
+          currentPage={currentPage}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      </Stack>
+    </Box>
+  )
+}
+
+ProgramTable.propTypes = {
+  data: PropTypes.array,
+  fetchData: PropTypes.func,
+};
+
+
+/*export const ProgramTable2 = ({ programs, handleOpenModal }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -129,4 +326,4 @@ export const ProgramTable = ({ programs, handleOpenModal }) => {
       </Table.Root>
     </HStack>
   );
-};
+};*/
