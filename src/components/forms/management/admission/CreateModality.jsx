@@ -3,7 +3,7 @@ import { Field, Button, ControlledModal, Radio, RadioGroup, DatePicker, toaster 
 import { Flex, HStack, Input, Stack } from "@chakra-ui/react"
 import { useState } from "react";
 import { HiPlus } from "react-icons/hi2"
-import { useCreateModality } from "@/hooks/modalities";
+import { useCreateModality } from "@/hooks";
 
 export const CreateModality = ({ setAdmissionMethods, handleOpenModal, isCreateModalOpen, setIsModalOpen, handleCloseModal }) => {
   const { mutateAsync: register, isPending: loading } = useCreateModality();

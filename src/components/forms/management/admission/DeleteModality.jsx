@@ -1,5 +1,5 @@
 import { ControlledModal, Field, toaster } from "@/components/ui"
-import { useDeleteModality } from "@/hooks/modalities/useDeleteModality";
+import { useDeleteModality } from "@/hooks";
 import { Button, Flex, Stack, Text } from "@chakra-ui/react"
 
 export const DeleteModality = ({ selectedMethod, setMethods, handleCloseModal, isDeleteModalOpen, setIsModalOpen }) => {

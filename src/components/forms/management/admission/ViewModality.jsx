@@ -1,5 +1,5 @@
 import { ControlledModal, Field } from "@/components/ui"
-import { useReadOneModality } from "@/hooks/modalities"
+import { useReadOneModality } from "@/hooks";
 import { Badge, Flex, Stack, Text } from "@chakra-ui/react"
 import { useEffect } from "react";
 

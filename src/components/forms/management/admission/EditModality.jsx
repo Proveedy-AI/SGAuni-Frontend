@@ -6,7 +6,7 @@ import {
 } from '@/components/ui';
 import { Flex, Input, Stack, Textarea } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { useUpdateModality } from '@/hooks/modalities';
+import { useUpdateModality } from '@/hooks';
 import PropTypes from 'prop-types';
 
 export const EditModality = ({
