@@ -91,7 +91,7 @@ export const useProvideAuth = () => {
 		};
 
 		try {
-			const response = await axios.post(
+			await axios.post(
 				'/api-auth/token/blacklist/',
 				{ refresh: token },
 				{
@@ -100,19 +100,13 @@ export const useProvideAuth = () => {
 					},
 				}
 			);
-
-			console.log('[3] Token invalidado correctamente:', response.data);
 		} catch (err) {
-			console.error('[ERROR] Error al invalidar token');
 			if (err.response) {
-				console.error('[Error response.data]', err.response.data);
 				setError(err.response.data.detail || 'Error desconocido del servidor');
 			} else {
-				console.error('[Error general]', err.message);
 				setError('Error de red o token inválido');
 			}
 		} finally {
-			console.log('[5] Logout completado (finally)');
 			Cookies.remove(import.meta.env.VITE_US_COOKIE, cookieOptions);
 			Cookies.remove(import.meta.env.VITE_TOKEN_COOKIE, cookieOptions);
 			Cookies.remove('user');
