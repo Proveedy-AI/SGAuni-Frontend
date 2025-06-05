@@ -32,12 +32,11 @@ export const CreateProgram = ({ fetchData, programTypesOptions, coordinatorsOpti
 
     const payload = programeRequest;
     register(payload, {
-      onSuccess: (newProgram) => {
+      onSuccess: () => {
         toaster.create({
           title: 'Programa creado correctamente',
           type: 'success',
         });
-        console.log('nueva programa', newProgram);
         setOpen(false);
         fetchData();
         setProgramRequest({
@@ -87,7 +86,6 @@ export const CreateProgram = ({ fetchData, programTypesOptions, coordinatorsOpti
             onChange={(e) => setProgramRequest({ ...programeRequest, name: e.target.value })}
           />
         </Field>
-        {/* cambiar para fetch de tipos de programa */}
         <Field label='Tipo de Programa'>
           <RadioGroup
             name='type'
@@ -104,7 +102,6 @@ export const CreateProgram = ({ fetchData, programTypesOptions, coordinatorsOpti
             </Flex>
           </RadioGroup>
         </Field>
-        {/* cambiar para fetch de coordinadores */}
         <Field label='Coordinador'>
           <CustomSelect
             required
