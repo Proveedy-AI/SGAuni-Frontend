@@ -1,5 +1,5 @@
 //import { UpdateSettingsCountryForm } from '@/components/forms';
-import { UpdateSettingsCountryForm } from '@/components/forms/settings';
+import { UpdateSettingsDistrictForm } from '@/components/forms/settings';
 import {
 	ConfirmModal,
 	Pagination,
@@ -10,7 +10,7 @@ import {
 	SelectValueText,
 	toaster,
 } from '@/components/ui';
-import { useDeleteCountry } from '@/hooks';
+import { useDeleteDistrict } from '@/hooks';
 
 import {
 	Box,
@@ -26,16 +26,16 @@ import PropTypes from 'prop-types';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { FiTrash2 } from 'react-icons/fi';
 
-const Row = memo(({ item, fetchData, startIndex, index }) => {
+const Row = memo(({ item, fetchData, startIndex, index, dataProvince }) => {
 	const [open, setOpen] = useState(false);
 
-	const { mutate: deleteCountry, isPending } = useDeleteCountry();
+	const { mutate: deleteDistrict, isPending } = useDeleteDistrict();
 
 	const handleDelete = () => {
-		deleteCountry(item.id, {
+		deleteDistrict(item.id, {
 			onSuccess: () => {
 				toaster.create({
-					title: 'País eliminado correctamente',
+					title: 'Distrito eliminado correctamente',
 					type: 'success',
 				});
 				fetchData();
@@ -54,11 +54,14 @@ const Row = memo(({ item, fetchData, startIndex, index }) => {
 			<Table.Cell>{startIndex + index + 1}</Table.Cell>
 			<Table.Cell>{item.name}</Table.Cell>
 			<Table.Cell>{item.code}</Table.Cell>
-			<Table.Cell>{item.dial_code}</Table.Cell>
-			<Table.Cell>{item.iso_code}</Table.Cell>
+			<Table.Cell>{item.province}</Table.Cell>
 			<Table.Cell>
 				<HStack>
-					<UpdateSettingsCountryForm data={item} fetchData={fetchData} />
+					<UpdateSettingsDistrictForm
+						data={item}
+						dataProvince={dataProvince}
+						fetchData={fetchData}
+					/>
 
 					<ConfirmModal
 						placement='center'
@@ -77,7 +80,7 @@ const Row = memo(({ item, fetchData, startIndex, index }) => {
 							<Span fontWeight='semibold' px='1'>
 								{item.name}
 							</Span>
-							de la lista de países?
+							de la lista de distritos?
 						</Text>
 					</ConfirmModal>
 				</HStack>
@@ -93,9 +96,10 @@ Row.propTypes = {
 	fetchData: PropTypes.func,
 	startIndex: PropTypes.number,
 	index: PropTypes.number,
+	dataProvince: PropTypes.array,
 };
 
-export const SettingsDistrictTable = ({ data, fetchData }) => {
+export const SettingsDistrictTable = ({ data, fetchData, dataProvince }) => {
 	const smallOptions = useMemo(
 		() => [
 			{ label: '6', value: '6' },
@@ -212,10 +216,9 @@ export const SettingsDistrictTable = ({ data, fetchData }) => {
 					<Table.Header>
 						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
 							<Table.ColumnHeader>N°</Table.ColumnHeader>
-							<Table.ColumnHeader>Nombre del país</Table.ColumnHeader>
-							<Table.ColumnHeader>Nacionalidad</Table.ColumnHeader>
-							<Table.ColumnHeader>Prefijo</Table.ColumnHeader>
-							<Table.ColumnHeader>Iso</Table.ColumnHeader>
+							<Table.ColumnHeader>Distrito</Table.ColumnHeader>
+							<Table.ColumnHeader>Código</Table.ColumnHeader>
+							<Table.ColumnHeader>Provincia</Table.ColumnHeader>
 							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
@@ -224,6 +227,7 @@ export const SettingsDistrictTable = ({ data, fetchData }) => {
 							<Row
 								key={item.id}
 								item={item}
+								dataProvince={dataProvince}
 								fetchData={fetchData}
 								startIndex={startIndex}
 								index={index}
@@ -285,4 +289,5 @@ SettingsDistrictTable.propTypes = {
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
 	loading: PropTypes.bool,
+	dataProvince: PropTypes.array,
 };

@@ -3,22 +3,22 @@ import { useEffect, useRef, useState } from 'react';
 import { IconButton, Input, Stack } from '@chakra-ui/react';
 import { Field, Modal, toaster } from '@/components/ui';
 import { FiEdit2 } from 'react-icons/fi';
-import { useUpdateCountry } from '@/hooks';
+import { useUpdateDistrict } from '@/hooks';
 import { ReactSelect } from '@/components/select';
 
-export const UpdateSettingsProvinceForm = ({
+export const UpdateSettingsDistrictForm = ({
 	data,
 	fetchData,
-	dataDepartment,
+	dataProvince,
 }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 
 	const [name, setName] = useState(data?.name);
 	const [code, setCode] = useState(data?.code);
-	const [selectedDepartment, setselectedDepartment] = useState(null);
+	const [selectedProvince, setselectedProvince] = useState(null);
 
-	const { mutateAsync: updateCountry, isPending } = useUpdateCountry();
+	const { mutateAsync: updateDistrict, isPending } = useUpdateDistrict();
 
 	const handleSubmitData = async (e) => {
 		e.preventDefault();
@@ -26,13 +26,13 @@ export const UpdateSettingsProvinceForm = ({
 		const payload = {
 			name: name.trim(),
 			code: code.trim(),
-			department: selectedDepartment.value,
+			province: selectedProvince.value,
 		};
 
 		try {
-			await updateCountry({ id: data.id, payload });
+			await updateDistrict({ id: data.id, payload });
 			toaster.create({
-				title: 'Provincia editado correctamente',
+				title: 'Distrito editado correctamente',
 				type: 'success',
 			});
 			setOpen(false);
@@ -45,22 +45,22 @@ export const UpdateSettingsProvinceForm = ({
 		}
 	};
 
-	const DepartmentOptions = dataDepartment?.map((department) => ({
-		label: department.name,
-		value: department.id,
+	const ProvinceOptions = dataProvince?.map((province) => ({
+		label: province.name,
+		value: province.id,
 	}));
 
 	useEffect(() => {
-		if (data && data.department && dataDepartment?.length) {
-			const matchedDepartment = dataDepartment.find((c) => c.id === data.department);
-			if (matchedDepartment) {
-				setselectedDepartment({
-					label: matchedDepartment.name,
-					value: matchedDepartment.id,
+		if (data && data.province && dataProvince?.length) {
+			const matchedProvince = dataProvince.find((c) => c.id === data.province);
+			if (matchedProvince) {
+				setselectedProvince({
+					label: matchedProvince.name,
+					value: matchedProvince.id,
 				});
 			}
 		}
-	}, [data, dataDepartment]);
+	}, [data, dataProvince]);
 
 	return (
 		<Modal
@@ -80,12 +80,12 @@ export const UpdateSettingsProvinceForm = ({
 			<Stack css={{ '--field-label-width': '150px' }}>
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Provincia:'
+					label='Distrito:'
 				>
 					<Input
 						value={name}
 						onChange={(e) => setName(e.target.value)}
-						placeholder='Lima'
+						placeholder='San Miguel'
 						size='xs'
 					/>
 				</Field>
@@ -97,24 +97,24 @@ export const UpdateSettingsProvinceForm = ({
 					<Input
 						value={code}
 						onChange={(e) => setCode(e.target.value)}
-						placeholder='Lima'
+						placeholder='San miguel'
 						size='xs'
 					/>
 				</Field>
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Departamento'
+					label='Provincia'
 				>
 					<ReactSelect
-						value={selectedDepartment}
+						value={selectedProvince}
 						onChange={(select) => {
-							setselectedDepartment(select);
+							setselectedProvince(select);
 						}}
 						variant='flushed'
 						size='xs'
 						isSearchable={true}
-						name='departamento'
-						options={DepartmentOptions}
+						name='provincia'
+						options={ProvinceOptions}
 					/>
 				</Field>
 			</Stack>
@@ -122,8 +122,8 @@ export const UpdateSettingsProvinceForm = ({
 	);
 };
 
-UpdateSettingsProvinceForm.propTypes = {
+UpdateSettingsDistrictForm.propTypes = {
 	data: PropTypes.object,
 	fetchData: PropTypes.func,
-	dataDepartment: PropTypes.array,
+	dataProvince: PropTypes.array,
 };

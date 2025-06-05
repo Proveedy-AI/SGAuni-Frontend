@@ -49,7 +49,7 @@ const Row = memo(({ item, fetchData, startIndex, index, dataDepartments }) => {
 			},
 		});
 	};
-	console.log(dataDepartments);
+
 	return (
 		<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
 			<Table.Cell>{startIndex + index + 1}</Table.Cell>

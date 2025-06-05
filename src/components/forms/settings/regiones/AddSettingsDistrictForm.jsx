@@ -3,23 +3,28 @@ import { useRef, useState } from 'react';
 import { Button, Input, Stack } from '@chakra-ui/react';
 import { Field, Modal, toaster } from '@/components/ui';
 import { FiPlus } from 'react-icons/fi';
-import { useCreateCountry } from '@/hooks';
+import { ReactSelect } from '@/components/select';
+import { useCreateDistrict } from '@/hooks';
 
-export const AddSettingsDistrictForm = ({ fetchData }) => {
+
+export const AddSettingsDistrictForm = ({
+	fetchData,
+	isLoading,
+	dataProvince,
+}) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 	const [name, setName] = useState('');
 	const [code, setCode] = useState('');
-	const [isoCode, setIsoCode] = useState('');
-	const [dialCode, setDialCode] = useState('');
+	const [selectedProvince, setSelectedProvince] = useState(null);
 
-	const { mutate: createCountry, isPending } = useCreateCountry();
+	const { mutate: createDistrict, isPending } = useCreateDistrict();
 
 	const handleSubmitData = (e) => {
 		e.preventDefault();
 
 		// Validación de campos vacíos
-		if (!name.trim() || !code.trim() || !isoCode.trim() || !dialCode.trim()) {
+		if (!name.trim() || !code.trim() || !selectedProvince) {
 			toaster.create({
 				title: 'Por favor completa todos los campos',
 				type: 'warning',
@@ -30,36 +35,39 @@ export const AddSettingsDistrictForm = ({ fetchData }) => {
 		const payload = {
 			name: name.trim(),
 			code: code.trim(),
-			iso_code: isoCode.trim().toLowerCase(),
-			dial_code: dialCode.trim(),
+			province: selectedProvince.value,
 		};
 
-		createCountry(payload, {
+		createDistrict(payload, {
 			onSuccess: () => {
 				toaster.create({
-					title: 'Distrito registrado correctamente',
+					title: 'Provincia registrado correctamente',
 					type: 'success',
 				});
 				setOpen(false);
-				fetchData?.();
+				fetchData();
 				setName('');
 				setCode('');
-				setDialCode('');
-				setIsoCode('');
+				setSelectedProvince(null)
 			},
 			onError: (error) => {
 				console.log(error);
 				toaster.create({
-					title: error.response?.data?.[0] || 'Error al registrar el distrito',
+					title: error.response?.data?.[0] || 'Error al registrar la provincia',
 					type: 'error',
 				});
 			},
 		});
 	};
 
+	const ProvinceOptions = dataProvince?.map((province) => ({
+		label: province.name,
+		value: province.id,
+	}));
+
 	return (
 		<Modal
-			title='Agregar nuevo Distrito'
+			title='Agregar nuevo distrito'
 			placement='center'
 			trigger={
 				<Button
@@ -80,47 +88,42 @@ export const AddSettingsDistrictForm = ({ fetchData }) => {
 			<Stack css={{ '--field-label-width': '150px' }}>
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Nombre de país:'
+					label='Distrito:'
 				>
 					<Input
 						value={name}
 						onChange={(e) => setName(e.target.value)}
-						placeholder='Perú'
+						placeholder='San Miguel'
 						size='xs'
 					/>
 				</Field>
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Nacionalidad:'
+					label='Código:'
 				>
 					<Input
 						value={code}
 						onChange={(e) => setCode(e.target.value)}
-						placeholder='Peruano'
+						placeholder=''
 						size='xs'
 					/>
 				</Field>
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Prefijo'
+					label='Provincia:'
 				>
-					<Input
-						value={dialCode}
-						onChange={(e) => setDialCode(e.target.value)}
-						placeholder='+51'
+					<ReactSelect
+						value={selectedProvince}
+						onChange={(select) => {
+							setSelectedProvince(select);
+						}}
+						variant='flushed'
 						size='xs'
-					/>
-				</Field>
-
-				<Field
-					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Código de país:'
-				>
-					<Input
-						value={isoCode}
-						onChange={(e) => setIsoCode(e.target.value)}
-						placeholder='pe'
-						size='xs'
+						isDisabled={isLoading}
+						isLoading={isLoading}
+						isSearchable={true}
+						name='provincia'
+						options={ProvinceOptions}
 					/>
 				</Field>
 			</Stack>
@@ -130,4 +133,6 @@ export const AddSettingsDistrictForm = ({ fetchData }) => {
 
 AddSettingsDistrictForm.propTypes = {
 	fetchData: PropTypes.func,
+	dataProvince: PropTypes.array,
+	isLoading: PropTypes.bool,
 };
