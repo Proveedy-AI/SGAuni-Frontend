@@ -56,8 +56,8 @@ export const SettingsAdmissionModality = () => {
       >
         <Heading size={{ xs: 'xs', sm: 'sm', md: 'md' }}>Modalidades de Admisión</Heading>
 
-        {tab === 1 && <AddModalityForm fetchModalities={fetchModalities} />}
-        {tab === 2 && <AddModalityRuleForm fetchModalities={fetchModalities} />}
+        {tab === 1 && <AddModalityForm fetchData={fetchModalities} />}
+        {tab === 2 && <AddModalityRuleForm fetchData={fetchModalityRules} />}
       </Stack>
       {isLoading && <Spinner mt={4} />}
       {!isLoading && (

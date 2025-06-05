@@ -11,10 +11,10 @@ import { Flex, Input, Stack } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { FiPlus } from "react-icons/fi";
 import { useCreateProgram } from "@/hooks";
-import { useCreateProgramType } from "@/hooks/ProgramTypes/useCreateProgramTypes";
+import { useCreateProgramType } from "@/hooks/ProgramTypes/useCreateProgramType";
 import PropTypes from "prop-types";
 
-export const CreateProgram = ({ fetchData, programTypesOptions, coordinatorsOptions }) => {
+export const AddProgram = ({ fetchData, programTypesOptions, coordinatorsOptions }) => {
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
 
@@ -131,14 +131,14 @@ export const CreateProgram = ({ fetchData, programTypesOptions, coordinatorsOpti
 
 }
 
-CreateProgram.propTypes = {
+AddProgram.propTypes = {
   fetchData: PropTypes.func,
   programTypesOptions: PropTypes.array,
   coordinatorsOptions: PropTypes.array,
 };
 
 
-export const AddProgramType = () => {
+export const AddProgramType = ({ fetchData }) => {
   const { mutate: register, isPending: loading } = useCreateProgramType()
 
   const [open, setOpen] = useState(false);
@@ -164,6 +164,7 @@ export const AddProgramType = () => {
           type: 'success',
         });
         setOpen(false);
+        fetchData();
         setProgramType({
           name: '',
           code: '',
@@ -223,4 +224,8 @@ export const AddProgramType = () => {
       </Stack>
     </Modal>
   )
+}
+
+AddProgramType.propTypes = {
+  fetchData: PropTypes.func,
 }
