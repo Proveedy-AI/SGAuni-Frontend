@@ -1,38 +1,86 @@
-import { AddSettingsCountryForm } from '@/components/forms/settings';
-import { SettingsCountryManagementTable } from '@/components/tables/settings';
-import { useReadCountries } from '@/hooks';
+import { useState } from 'react';
+//import { SettingsPermissionsTable, SettingsRolesTable } from '@/components';
 import {
 	Box,
 	Heading,
 	HStack,
-	InputGroup,
 	Input,
+	Spinner,
 	Stack,
+	Tabs,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { InputGroup } from '@/components/ui';
 import { FiSearch } from 'react-icons/fi';
+import {
+	SettingsCountryManagementTable,
+	SettingsDepartmentTable,
+	SettingsDistrictTable,
+	SettingsProvinceTable,
+	SettingsUbigeosTable,
+} from '@/components/tables/settings';
+
+import { useReadCountries, useReadDepartments } from '@/hooks';
+import {
+	AddSettingsCountryForm,
+	AddSettingsDepartmentForm,
+	AddSettingsDistrictForm,
+	AddSettingsProvinceForm,
+	AddSettingsUbigeoForm,
+} from '@/components/forms/settings';
+import { useReadProvince } from '@/hooks/provincies';
+import { useReadDistrict } from '@/hooks/district';
 
 export const SettingsCountries = () => {
-	const { data: dataCountries, refetch: fetchCountries } = useReadCountries();
+	const [tab, setTab] = useState(1);
 
-	const [searchValue, setSearchValue] = useState('');
+	const [searchCountryValue, setSearchCountryValue] = useState('');
+	const [searchDepartmentsValue, setSearchDepartmentValue] = useState('');
+	const [searchProvincesValue, setSearchProvincesValue] = useState('');
+	const [searchDistrictValue, setSearchDistrictValue] = useState('');
 
-	const [loading, setInitialLoading] = useState(true);
+	const {
+		data: dataCountries,
+		refetch: fetchCountry,
+		isLoading,
+	} = useReadCountries();
 
-	const filteredCountries = dataCountries?.filter((item) =>
-		item.name.toLowerCase().includes(searchValue.toLowerCase())
+	const {
+		data: dataDepartments,
+		refetch: fetchDepartmetns,
+		isLoading: loadingDepartments,
+	} = useReadDepartments();
+
+	const {
+		data: dataProvince,
+		refetch: fetchProvince,
+		isLoading: loadingProvince,
+	} = useReadProvince();
+
+	const {
+		data: dataDistrict,
+		refetch: fetchDistrict,
+		isLoading: loadingDistrict,
+	} = useReadDistrict();
+
+	const filteredCountry = dataCountries?.results?.filter((item) =>
+		item?.name?.toLowerCase().includes(searchCountryValue.toLowerCase())
 	);
 
-	useEffect(() => {
-		if (loading && filteredCountries?.length > 0) {
-			setInitialLoading(false);
-		}
-	}, [loading, filteredCountries]);
+	const filteredDepartment = dataDepartments?.results?.filter((item) =>
+		item?.name?.toLowerCase().includes(searchDepartmentsValue.toLowerCase())
+	);
+
+	const filteredProvinces = dataProvince?.results?.filter((item) =>
+		item?.name?.toLowerCase().includes(searchDepartmentsValue.toLowerCase())
+	);
+
+	const filteredDistricts = dataDistrict?.results?.filter((item) =>
+		item?.name?.toLowerCase().includes(searchDistrictValue.toLowerCase())
+	);
 
 	return (
 		<Box spaceY='5'>
 			<Stack
-				Stack
 				direction={{ base: 'column', sm: 'row' }}
 				align={{ base: 'start', sm: 'center' }}
 				justify='space-between'
@@ -44,29 +92,239 @@ export const SettingsCountries = () => {
 						md: 'md',
 					}}
 				>
-					Configuración regional
+					Gestión de Regiones
 				</Heading>
 
-				<HStack>
-					<InputGroup flex='1' startElement={<FiSearch />}>
-						<Input
-							ml='1'
-							size='sm'
-							placeholder='Buscar por nombre'
-							value={searchValue}
-							onChange={(e) => setSearchValue(e.target.value)}
-						/>
-					</InputGroup>
-
-					<AddSettingsCountryForm fetchData={fetchCountries} />
-				</HStack>
+				{tab === 1 && <AddSettingsCountryForm fetchData={fetchCountry} />}
+				{tab === 2 && (
+					<AddSettingsDepartmentForm
+						fetchData={fetchDepartmetns}
+						isLoading={isLoading}
+						dataCountries={dataCountries?.results}
+					/>
+				)}
+				{tab === 3 && (
+					<AddSettingsProvinceForm
+						fetchData={fetchProvince}
+						isLoading={loadingDepartments}
+						dataDepartments={dataDepartments?.results}
+					/>
+				)}
+				{tab === 4 && (
+					<AddSettingsDistrictForm
+						fetchData={fetchDistrict}
+						isLoading={loadingProvince}
+						dataProvince={dataProvince?.results}
+					/>
+				)}
+				{tab === 5 && (
+					<AddSettingsUbigeoForm
+						fetchData={fetchCountry}
+						isLoading={loadingDistrict}
+					/>
+				)}
 			</Stack>
 
-			<SettingsCountryManagementTable
-				data={filteredCountries}
-				fetchData={fetchCountries}
-				loading={loading}
-			/>
+			{isLoading && <Spinner mt={4} />}
+			{!isLoading && (
+				<Tabs.Root
+					value={tab}
+					onValueChange={(e) => setTab(e.value)}
+					size={{ base: 'sm', md: 'md' }}
+				>
+					<>
+						<Box
+							overflowX='auto'
+							whiteSpace='nowrap'
+							css={{
+								'&::-webkit-scrollbar': { height: '6px' },
+								'&::-webkit-scrollbar-thumb': {
+									background: '#A0AEC0', // Color del thumb
+									borderRadius: '4px',
+								},
+							}}
+						>
+							<Tabs.List minW='max-content' colorPalette='cyan'>
+								<Tabs.Trigger
+									value={1}
+									color={tab === 1 ? 'uni.secondary' : ''}
+								>
+									Países
+								</Tabs.Trigger>
+
+								<Tabs.Trigger
+									value={2}
+									color={tab === 2 ? 'uni.secondary' : ''}
+								>
+									Departamentos
+								</Tabs.Trigger>
+								<Tabs.Trigger
+									value={3}
+									color={tab === 3 ? 'uni.secondary' : ''}
+								>
+									Provincias
+								</Tabs.Trigger>
+								<Tabs.Trigger
+									value={4}
+									color={tab === 4 ? 'uni.secondary' : ''}
+								>
+									Distritos
+								</Tabs.Trigger>
+								<Tabs.Trigger
+									value={5}
+									color={tab === 5 ? 'uni.secondary' : ''}
+								>
+									Ubigeos
+								</Tabs.Trigger>
+							</Tabs.List>
+						</Box>
+					</>
+					<Tabs.Content value={1}>
+						<Stack>
+							<Stack
+								direction={{ base: 'column', sm: 'row' }}
+								align={{ base: 'start', sm: 'center' }}
+								justify='space-between'
+							>
+								<Heading size='md'>Gestión Países</Heading>
+
+								<HStack>
+									<InputGroup flex='1' startElement={<FiSearch />}>
+										<Input
+											ml='1'
+											size='sm'
+											placeholder='Buscar por nombre'
+											value={searchCountryValue}
+											onChange={(e) => setSearchCountryValue(e.target.value)}
+										/>
+									</InputGroup>
+								</HStack>
+							</Stack>
+
+							<SettingsCountryManagementTable
+								data={filteredCountry}
+								fetchData={fetchCountry}
+							/>
+						</Stack>
+					</Tabs.Content>
+
+					<Tabs.Content value={2}>
+						<Stack>
+							<Stack
+								direction={{ base: 'column', sm: 'row' }}
+								align={{ base: 'start', sm: 'center' }}
+								justify='space-between'
+							>
+								<Heading size='md'>Gestión Departamentos</Heading>
+
+								<HStack>
+									<InputGroup flex='1' startElement={<FiSearch />}>
+										<Input
+											ml='1'
+											size='sm'
+											placeholder='Buscar ...'
+											value={searchDepartmentsValue}
+											onChange={(e) => setSearchDepartmentValue(e.target.value)}
+										/>
+									</InputGroup>
+								</HStack>
+							</Stack>
+
+							<SettingsDepartmentTable
+								data={filteredDepartment}
+								dataCountries={dataCountries?.results}
+								fetchData={fetchDepartmetns}
+							/>
+						</Stack>
+					</Tabs.Content>
+					<Tabs.Content value={3}>
+						<Stack>
+							<Stack
+								direction={{ base: 'column', sm: 'row' }}
+								align={{ base: 'start', sm: 'center' }}
+								justify='space-between'
+							>
+								<Heading size='md'>Gestión Provincias</Heading>
+
+								<HStack>
+									<InputGroup flex='1' startElement={<FiSearch />}>
+										<Input
+											ml='1'
+											size='sm'
+											placeholder='Buscar ...'
+											value={searchProvincesValue}
+											onChange={(e) => setSearchProvincesValue(e.target.value)}
+										/>
+									</InputGroup>
+								</HStack>
+							</Stack>
+
+							<SettingsProvinceTable
+								data={filteredProvinces}
+								dataProvince={dataProvince?.results}
+								fetchData={fetchProvince}
+							/>
+						</Stack>
+					</Tabs.Content>
+					<Tabs.Content value={4}>
+						<Stack>
+							<Stack
+								direction={{ base: 'column', sm: 'row' }}
+								align={{ base: 'start', sm: 'center' }}
+								justify='space-between'
+							>
+								<Heading size='md'>Gestión Distritos</Heading>
+
+								<HStack>
+									<InputGroup flex='1' startElement={<FiSearch />}>
+										<Input
+											ml='1'
+											size='sm'
+											placeholder='Buscar por nombre'
+											value={setSearchDistrictValue}
+											onChange={(e) => setSearchDistrictValue(e.target.value)}
+										/>
+									</InputGroup>
+								</HStack>
+							</Stack>
+
+							<SettingsDistrictTable
+								data={filteredDistricts}
+								dataProvince={dataProvince?.results}
+								fetchData={fetchDistrict}
+							/>
+						</Stack>
+					</Tabs.Content>
+					<Tabs.Content value={5}>
+						<Stack>
+							<Stack
+								direction={{ base: 'column', sm: 'row' }}
+								align={{ base: 'start', sm: 'center' }}
+								justify='space-between'
+							>
+								<Heading size='md'>Gestión Ubigeos</Heading>
+
+								<HStack>
+									<InputGroup flex='1' startElement={<FiSearch />}>
+										<Input
+											ml='1'
+											size='sm'
+											placeholder='Buscar por nombre'
+											value={searchCountryValue}
+											onChange={(e) => setSearchCountryValue(e.target.value)}
+										/>
+									</InputGroup>
+								</HStack>
+							</Stack>
+
+							<SettingsUbigeosTable
+								data={filteredCountry}
+								fetchData={fetchCountry}
+							/>
+						</Stack>
+					</Tabs.Content>
+				</Tabs.Root>
+			)}
 		</Box>
 	);
 };

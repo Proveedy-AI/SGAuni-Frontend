@@ -95,7 +95,7 @@ Row.propTypes = {
 	index: PropTypes.number,
 };
 
-export const SettingsCountryManagementTable = ({ data, fetchData }) => {
+export const SettingsUbigeosTable = ({ data, fetchData }) => {
 	const smallOptions = useMemo(
 		() => [
 			{ label: '6', value: '6' },
@@ -281,7 +281,7 @@ export const SettingsCountryManagementTable = ({ data, fetchData }) => {
 	);
 };
 
-SettingsCountryManagementTable.propTypes = {
+SettingsUbigeosTable.propTypes = {
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
 	loading: PropTypes.bool,

@@ -11,20 +11,19 @@ export const UpdateSettingsCountryForm = ({ data, fetchData }) => {
 
 	const [name, setName] = useState(data?.name);
 	const [code, setCode] = useState(data?.code);
+	const [isoCode, setIsoCode] = useState(data?.iso_code);
+	const [dialCode, setDialCode] = useState(data?.dial_code);
 
-	const {
-		mutateAsync: updateCountry,
-		isPending,
-		isSuccess,
-		error,
-	} = useUpdateCountry();
+	const { mutateAsync: updateCountry, isPending } = useUpdateCountry();
 
 	const handleSubmitData = async (e) => {
 		e.preventDefault();
 
 		const payload = {
-			name: name,
-			code: code,
+			name: name.trim(),
+			code: code.trim(),
+			iso_code: isoCode.trim().toLowerCase(),
+			dial_code: dialCode.trim(),
 		};
 
 		try {
@@ -73,14 +72,36 @@ export const UpdateSettingsCountryForm = ({ data, fetchData }) => {
 
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Código de país:'
+					label='Nacionalidad:'
 				>
 					<Input
 						value={code}
 						onChange={(e) => setCode(e.target.value)}
+						placeholder='Peruano'
+						size='xs'
+					/>
+				</Field>
+				<Field
+					orientation={{ base: 'vertical', sm: 'horizontal' }}
+					label='Prefijo'
+				>
+					<Input
+						value={dialCode}
+						onChange={(e) => setDialCode(e.target.value)}
+						placeholder='+51'
+						size='xs'
+					/>
+				</Field>
+
+				<Field
+					orientation={{ base: 'vertical', sm: 'horizontal' }}
+					label='Código de país:'
+				>
+					<Input
+						value={isoCode}
+						onChange={(e) => setIsoCode(e.target.value)}
 						placeholder='pe'
 						size='xs'
-						disabled
 					/>
 				</Field>
 			</Stack>

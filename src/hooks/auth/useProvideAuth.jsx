@@ -168,8 +168,18 @@ export const useProvideAuth = () => {
 
 			return response.data['access'];
 		} catch (err) {
-			setError(err.response ? err.response.data.detail : 'Error de red');
-			throw err;
+			const isProduction = import.meta.env.VITE_IS_PRODUCTION === 'true';
+			const cookieOptions = {
+				domain: isProduction
+					? import.meta.env.VITE_DOMAIN_AUTO_LOGIN
+					: undefined,
+			};
+			Cookies.remove(import.meta.env.VITE_US_COOKIE, cookieOptions);
+			Cookies.remove(import.meta.env.VITE_TOKEN_COOKIE, cookieOptions);
+			Cookies.remove('user');
+			setAuth(null);
+			navigate('/auth/login');
+			setLoading(false);
 		} finally {
 			isRefreshing.current = false;
 			setLoading(false);

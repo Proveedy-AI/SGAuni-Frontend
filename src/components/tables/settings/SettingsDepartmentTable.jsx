@@ -1,5 +1,5 @@
 //import { UpdateSettingsCountryForm } from '@/components/forms';
-import { UpdateSettingsCountryForm } from '@/components/forms/settings';
+import { UpdateSettingsDepartmentForm } from '@/components/forms/settings';
 import {
 	ConfirmModal,
 	Pagination,
@@ -10,7 +10,7 @@ import {
 	SelectValueText,
 	toaster,
 } from '@/components/ui';
-import { useDeleteCountry } from '@/hooks';
+import { useDeleteDepartments } from '@/hooks';
 
 import {
 	Box,
@@ -26,16 +26,16 @@ import PropTypes from 'prop-types';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { FiTrash2 } from 'react-icons/fi';
 
-const Row = memo(({ item, fetchData, startIndex, index }) => {
+const Row = memo(({ item, fetchData, startIndex, index, dataCountries }) => {
 	const [open, setOpen] = useState(false);
 
-	const { mutate: deleteCountry, isPending } = useDeleteCountry();
+	const { mutate: deleteDepartment, isPending } = useDeleteDepartments();
 
 	const handleDelete = () => {
-		deleteCountry(item.id, {
+		deleteDepartment(item.id, {
 			onSuccess: () => {
 				toaster.create({
-					title: 'País eliminado correctamente',
+					title: 'Departamento eliminado correctamente',
 					type: 'success',
 				});
 				fetchData();
@@ -54,11 +54,14 @@ const Row = memo(({ item, fetchData, startIndex, index }) => {
 			<Table.Cell>{startIndex + index + 1}</Table.Cell>
 			<Table.Cell>{item.name}</Table.Cell>
 			<Table.Cell>{item.code}</Table.Cell>
-			<Table.Cell>{item.dial_code}</Table.Cell>
-			<Table.Cell>{item.iso_code}</Table.Cell>
+			<Table.Cell>{item.country}</Table.Cell>
 			<Table.Cell>
 				<HStack>
-					<UpdateSettingsCountryForm data={item} fetchData={fetchData} />
+					<UpdateSettingsDepartmentForm
+						dataCountries={dataCountries}
+						data={item}
+						fetchData={fetchData}
+					/>
 
 					<ConfirmModal
 						placement='center'
@@ -77,7 +80,7 @@ const Row = memo(({ item, fetchData, startIndex, index }) => {
 							<Span fontWeight='semibold' px='1'>
 								{item.name}
 							</Span>
-							de la lista de países?
+							de la lista de los departamentos?
 						</Text>
 					</ConfirmModal>
 				</HStack>
@@ -92,10 +95,11 @@ Row.propTypes = {
 	item: PropTypes.object,
 	fetchData: PropTypes.func,
 	startIndex: PropTypes.number,
+	dataCountries: PropTypes.array,
 	index: PropTypes.number,
 };
 
-export const SettingsCountryManagementTable = ({ data, fetchData }) => {
+export const SettingsDepartmentTable = ({ data, fetchData, dataCountries }) => {
 	const smallOptions = useMemo(
 		() => [
 			{ label: '6', value: '6' },
@@ -212,10 +216,9 @@ export const SettingsCountryManagementTable = ({ data, fetchData }) => {
 					<Table.Header>
 						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
 							<Table.ColumnHeader>N°</Table.ColumnHeader>
-							<Table.ColumnHeader>Nombre del país</Table.ColumnHeader>
-							<Table.ColumnHeader>Nacionalidad</Table.ColumnHeader>
-							<Table.ColumnHeader>Prefijo</Table.ColumnHeader>
-							<Table.ColumnHeader>Iso</Table.ColumnHeader>
+							<Table.ColumnHeader>Departamento</Table.ColumnHeader>
+							<Table.ColumnHeader>code</Table.ColumnHeader>
+							<Table.ColumnHeader>País</Table.ColumnHeader>
 							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
@@ -224,6 +227,7 @@ export const SettingsCountryManagementTable = ({ data, fetchData }) => {
 							<Row
 								key={item.id}
 								item={item}
+								dataCountries={dataCountries}
 								fetchData={fetchData}
 								startIndex={startIndex}
 								index={index}
@@ -281,8 +285,9 @@ export const SettingsCountryManagementTable = ({ data, fetchData }) => {
 	);
 };
 
-SettingsCountryManagementTable.propTypes = {
+SettingsDepartmentTable.propTypes = {
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
 	loading: PropTypes.bool,
+	dataCountries: PropTypes.array,
 };

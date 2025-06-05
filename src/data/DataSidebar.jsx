@@ -1,4 +1,11 @@
-import { FiGrid, FiUsers, FiSettings } from 'react-icons/fi';
+import {
+	FiGrid,
+	FiUsers,
+	FiSettings,
+	FiCheckSquare,
+	FiCheck,
+	FiUserCheck,
+} from 'react-icons/fi';
 
 export const DataSidebar = {
 	mainItems: [
@@ -7,6 +14,25 @@ export const DataSidebar = {
 			icon: FiGrid,
 			label: 'Mi panel',
 			permission: null,
+		},
+		{
+			href: '/admissions',
+			icon: FiCheckSquare,
+			label: 'Admisiones',
+			subItems: [
+				{
+					href: '/admissions/proccess',
+					icon: FiCheck,
+					label: 'Procesos Admisión',
+					permission: 'admissions.proccess.view',
+				},
+				{
+					href: '/admissions/applicants',
+					icon: FiUserCheck,
+					label: 'Postulantes',
+					permission: null,
+				},
+			],
 		},
 		{
 			href: '/users',

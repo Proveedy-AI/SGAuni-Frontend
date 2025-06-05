@@ -1,13 +1,13 @@
-// src/hooks/countries/useUpdateCountry.jsx
+// src/hooks/countries/useCreateCountry.jsx
 import { useMutation } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useUpdateCountry = () => {
+export const useCreateDepartments = () => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useMutation({
-		mutationFn: async ({ id, payload }) => {
-			const res = await axiosPrivate.patch(`/api/v1/countries/${id}/`, payload);
+		mutationFn: async (payload) => {
+			const res = await axiosPrivate.post('/api/v1/departments/', payload);
 			return res.data;
 		},
 	});

@@ -2,13 +2,13 @@
 import { useQuery } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useReadCountries = (params = {}) => {
+export const useReadProvince = (params = {}) => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useQuery({
-		queryKey: ['countries', params],
+		queryKey: ['provinces', params],
 		queryFn: async () => {
-			const res = await axiosPrivate.get('/api/v1/countries/', { params });
+			const res = await axiosPrivate.get('/api/v1/provinces/', { params });
 			return res.data;
 		},
 	});

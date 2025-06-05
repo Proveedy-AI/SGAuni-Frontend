@@ -6,7 +6,7 @@ export const useDeleteCountry = () => {
 
 	return useMutation({
 		mutationFn: async (id) => {
-			const res = await axiosPrivate.delete(`/country/${id}`);
+			const res = await axiosPrivate.delete(`/api/v1/countries/${id}/`);
 			return res.data;
 		},
 	});
