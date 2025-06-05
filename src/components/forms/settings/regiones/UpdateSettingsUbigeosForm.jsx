@@ -18,7 +18,7 @@ export const UpdateSettingsUbigeosForm = ({
 	const [selectedDistrict, setselectedDistrict] = useState(null);
 
 	const { mutateAsync: updateUbigeos, isPending } = useUpdateUbigeos();
-console.log(data)
+
 	const handleSubmitData = async (e) => {
 		e.preventDefault();
 
