@@ -212,8 +212,8 @@ export const SettingsCountryManagementTable = ({ data, fetchData }) => {
 					<Table.Header>
 						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
 							<Table.ColumnHeader>N°</Table.ColumnHeader>
-							<Table.ColumnHeader>Nombre del país</Table.ColumnHeader>
-							<Table.ColumnHeader>Nacionalidad</Table.ColumnHeader>
+							<Table.ColumnHeader>País</Table.ColumnHeader>
+							<Table.ColumnHeader>Código</Table.ColumnHeader>
 							<Table.ColumnHeader>Prefijo</Table.ColumnHeader>
 							<Table.ColumnHeader>Iso</Table.ColumnHeader>
 							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
