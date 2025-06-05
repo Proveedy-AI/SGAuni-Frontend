@@ -19,7 +19,7 @@ import {
 	SettingsUbigeosTable,
 } from '@/components/tables/settings';
 
-import { useReadCountries } from '@/hooks';
+import { useReadCountries, useReadDepartments } from '@/hooks';
 import {
 	AddSettingsCountryForm,
 	AddSettingsDepartmentForm,
@@ -27,11 +27,14 @@ import {
 	AddSettingsProvinceForm,
 	AddSettingsUbigeoForm,
 } from '@/components/forms/settings';
+import { useReadProvince } from '@/hooks/provincies';
 
 export const SettingsCountries = () => {
 	const [tab, setTab] = useState(1);
 
 	const [searchCountryValue, setSearchCountryValue] = useState('');
+	const [searchDepartmentsValue, setSearchDepartmentValue] = useState('');
+	const [searchProvincesValue, setSearchProvincesValue] = useState('');
 
 	const {
 		data: dataCountries,
@@ -39,8 +42,24 @@ export const SettingsCountries = () => {
 		isLoading,
 	} = useReadCountries();
 
+	const {
+		data: dataDepartments,
+		refetch: fetchDepartmetns,
+		isLoading: loadingDepartments,
+	} = useReadDepartments();
+
+	const { data: dataProvince, refetch: fetchProvince } = useReadProvince();
+
 	const filteredCountry = dataCountries?.results?.filter((item) =>
 		item?.name?.toLowerCase().includes(searchCountryValue.toLowerCase())
+	);
+
+	const filteredDepartment = dataDepartments?.results?.filter((item) =>
+		item?.name?.toLowerCase().includes(searchDepartmentsValue.toLowerCase())
+	);
+
+	const filteredDProvinces = dataProvince?.results?.filter((item) =>
+		item?.name?.toLowerCase().includes(searchDepartmentsValue.toLowerCase())
 	);
 
 	return (
@@ -61,8 +80,20 @@ export const SettingsCountries = () => {
 				</Heading>
 
 				{tab === 1 && <AddSettingsCountryForm fetchData={fetchCountry} />}
-				{tab === 2 && <AddSettingsDepartmentForm fetchData={fetchCountry} />}
-				{tab === 3 && <AddSettingsProvinceForm fetchData={fetchCountry} />}
+				{tab === 2 && (
+					<AddSettingsDepartmentForm
+						fetchData={fetchDepartmetns}
+						isLoading={isLoading}
+						dataCountries={dataCountries?.results}
+					/>
+				)}
+				{tab === 3 && (
+					<AddSettingsProvinceForm
+						fetchData={fetchProvince}
+						isLoading={loadingDepartments}
+						dataDepartments ={dataDepartments?.results}
+					/>
+				)}
 				{tab === 4 && <AddSettingsDistrictForm fetchData={fetchCountry} />}
 				{tab === 5 && <AddSettingsUbigeoForm fetchData={fetchCountry} />}
 			</Stack>
@@ -164,17 +195,18 @@ export const SettingsCountries = () => {
 										<Input
 											ml='1'
 											size='sm'
-											placeholder='Buscar por nombre'
-											value={searchCountryValue}
-											onChange={(e) => setSearchCountryValue(e.target.value)}
+											placeholder='Buscar ...'
+											value={searchDepartmentsValue}
+											onChange={(e) => setSearchDepartmentValue(e.target.value)}
 										/>
 									</InputGroup>
 								</HStack>
 							</Stack>
 
 							<SettingsDepartmentTable
-								data={filteredCountry}
-								fetchData={fetchCountry}
+								data={filteredDepartment}
+								dataCountries={dataCountries?.results}
+								fetchData={fetchDepartmetns}
 							/>
 						</Stack>
 					</Tabs.Content>
@@ -192,17 +224,18 @@ export const SettingsCountries = () => {
 										<Input
 											ml='1'
 											size='sm'
-											placeholder='Buscar por nombre'
-											value={searchCountryValue}
-											onChange={(e) => setSearchCountryValue(e.target.value)}
+											placeholder='Buscar ...'
+											value={searchProvincesValue}
+											onChange={(e) => setSearchProvincesValue(e.target.value)}
 										/>
 									</InputGroup>
 								</HStack>
 							</Stack>
 
 							<SettingsProvinceTable
-								data={filteredCountry}
-								fetchData={fetchCountry}
+								data={filteredDProvinces}
+								dataDepartments={dataDepartments?.results}
+								fetchData={fetchProvince}
 							/>
 						</Stack>
 					</Tabs.Content>

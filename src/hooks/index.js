@@ -7,3 +7,5 @@ export * from './permissions';
 export * from './modalities';
 export * from './programs';
 export * from './ProgramTypes';
+export * from './departments';
+export * from './provincies';

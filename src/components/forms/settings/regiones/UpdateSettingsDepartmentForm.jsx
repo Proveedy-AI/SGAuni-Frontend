@@ -1,81 +1,75 @@
 import PropTypes from 'prop-types';
-import { useRef, useState } from 'react';
-import { Button, Input, Stack } from '@chakra-ui/react';
+import { useEffect, useRef, useState } from 'react';
+import { IconButton, Input, Stack } from '@chakra-ui/react';
 import { Field, Modal, toaster } from '@/components/ui';
-import { FiPlus } from 'react-icons/fi';
-import { useCreateDepartments } from '@/hooks';
+import { FiEdit2 } from 'react-icons/fi';
+import { useUpdateCountry } from '@/hooks';
 import { ReactSelect } from '@/components/select';
 
-export const AddSettingsDepartmentForm = ({
+export const UpdateSettingsDepartmentForm = ({
+	data,
 	fetchData,
 	dataCountries,
-	isLoading,
 }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
-	const [name, setName] = useState('');
-	const [code, setCode] = useState('');
+
+	const [name, setName] = useState(data?.name);
+	const [code, setCode] = useState(data?.code);
 	const [selectedCountry, setSelectedCountry] = useState(null);
 
-	const { mutate: createDepartment, isPending } = useCreateDepartments();
+	const { mutateAsync: updateCountry, isPending } = useUpdateCountry();
 
-	const handleSubmitData = (e) => {
+	const handleSubmitData = async (e) => {
 		e.preventDefault();
-
-		// Validación de campos vacíos
-		if (!name.trim() || !code.trim() || !selectedCountry) {
-			toaster.create({
-				title: 'Por favor completa todos los campos',
-				type: 'warning',
-			});
-			return;
-		}
 
 		const payload = {
 			name: name.trim(),
 			code: code.trim(),
-			country: selectedCountry.value
+			country: selectedCountry.value,
 		};
 
-		createDepartment(payload, {
-			onSuccess: () => {
-				toaster.create({
-					title: 'Departamento registrado correctamente',
-					type: 'success',
-				});
-				setOpen(false);
-				fetchData();
-				setName('');
-				setCode('');
-				setSelectedCountry(null);
-			},
-			onError: (error) => {
-				console.log(error);
-				toaster.create({
-					title:
-						error.response?.data?.[0] || 'Error al registrar el departamento',
-					type: 'error',
-				});
-			},
-		});
+		try {
+			await updateCountry({ id: data.id, payload });
+			toaster.create({
+				title: 'País editado correctamente',
+				type: 'success',
+			});
+			setOpen(false);
+			fetchData();
+		} catch (error) {
+			toaster.create({
+				title: error.message,
+				type: 'error',
+			});
+		}
 	};
+
 	const CountriesOptions = dataCountries?.map((country) => ({
 		label: country.name,
 		value: country.id,
 	}));
+
+	useEffect(() => {
+		if (data && data.country && dataCountries?.length) {
+			const matchedCountry = dataCountries.find((c) => c.id === data.country);
+			if (matchedCountry) {
+				setSelectedCountry({
+					label: matchedCountry.name,
+					value: matchedCountry.id,
+				});
+			}
+		}
+	}, [data, dataCountries]);
+
 	return (
 		<Modal
-			title='Agregar nuevo departamento'
+			title='Editar propiedades'
 			placement='center'
 			trigger={
-				<Button
-					bg='uni.secondary'
-					color='white'
-					size='xs'
-					w={{ base: 'full', sm: 'auto' }}
-				>
-					<FiPlus /> Agregar Departamento
-				</Button>
+				<IconButton colorPalette='cyan' size='xs'>
+					<FiEdit2 />
+				</IconButton>
 			}
 			onSave={handleSubmitData}
 			loading={isPending}
@@ -95,6 +89,7 @@ export const AddSettingsDepartmentForm = ({
 						size='xs'
 					/>
 				</Field>
+
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
 					label='Código:'
@@ -108,7 +103,7 @@ export const AddSettingsDepartmentForm = ({
 				</Field>
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='País'
+					label='País:'
 				>
 					<ReactSelect
 						value={selectedCountry}
@@ -117,8 +112,6 @@ export const AddSettingsDepartmentForm = ({
 						}}
 						variant='flushed'
 						size='xs'
-						isDisabled={isLoading}
-						isLoading={isLoading}
 						isSearchable={true}
 						name='paises'
 						options={CountriesOptions}
@@ -129,8 +122,8 @@ export const AddSettingsDepartmentForm = ({
 	);
 };
 
-AddSettingsDepartmentForm.propTypes = {
+UpdateSettingsDepartmentForm.propTypes = {
+	data: PropTypes.object,
 	fetchData: PropTypes.func,
-	isLoading: PropTypes.bool,
 	dataCountries: PropTypes.array,
 };

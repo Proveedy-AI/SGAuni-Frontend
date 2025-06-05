@@ -3,23 +3,27 @@ import { useRef, useState } from 'react';
 import { Button, Input, Stack } from '@chakra-ui/react';
 import { Field, Modal, toaster } from '@/components/ui';
 import { FiPlus } from 'react-icons/fi';
-import { useCreateCountry } from '@/hooks';
+import { useCreateProvince } from '@/hooks';
+import { ReactSelect } from '@/components/select';
 
-export const AddSettingsProvinceForm = ({ fetchData }) => {
+export const AddSettingsProvinceForm = ({
+	fetchData,
+	isLoading,
+	dataDepartments,
+}) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 	const [name, setName] = useState('');
 	const [code, setCode] = useState('');
-	const [isoCode, setIsoCode] = useState('');
-	const [dialCode, setDialCode] = useState('');
+	const [selectedDepartment, setSelectedDepartment] = useState(null);
 
-	const { mutate: createCountry, isPending } = useCreateCountry();
+	const { mutate: createProvince, isPending } = useCreateProvince();
 
 	const handleSubmitData = (e) => {
 		e.preventDefault();
 
 		// Validación de campos vacíos
-		if (!name.trim() || !code.trim() || !isoCode.trim() || !dialCode.trim()) {
+		if (!name.trim() || !code.trim() || !selectedDepartment) {
 			toaster.create({
 				title: 'Por favor completa todos los campos',
 				type: 'warning',
@@ -30,11 +34,10 @@ export const AddSettingsProvinceForm = ({ fetchData }) => {
 		const payload = {
 			name: name.trim(),
 			code: code.trim(),
-			iso_code: isoCode.trim().toLowerCase(),
-			dial_code: dialCode.trim(),
+			department: selectedDepartment.value,
 		};
 
-		createCountry(payload, {
+		createProvince(payload, {
 			onSuccess: () => {
 				toaster.create({
 					title: 'Provincia registrado correctamente',
@@ -44,8 +47,6 @@ export const AddSettingsProvinceForm = ({ fetchData }) => {
 				fetchData?.();
 				setName('');
 				setCode('');
-				setDialCode('');
-				setIsoCode('');
 			},
 			onError: (error) => {
 				console.log(error);
@@ -56,6 +57,11 @@ export const AddSettingsProvinceForm = ({ fetchData }) => {
 			},
 		});
 	};
+
+	const DepartmentOptions = dataDepartments?.map((department) => ({
+		label: department.name,
+		value: department.id,
+	}));
 
 	return (
 		<Modal
@@ -80,7 +86,7 @@ export const AddSettingsProvinceForm = ({ fetchData }) => {
 			<Stack css={{ '--field-label-width': '150px' }}>
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Nombre de país:'
+					label='Provincia:'
 				>
 					<Input
 						value={name}
@@ -91,7 +97,7 @@ export const AddSettingsProvinceForm = ({ fetchData }) => {
 				</Field>
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Nacionalidad:'
+					label='Código:'
 				>
 					<Input
 						value={code}
@@ -102,25 +108,20 @@ export const AddSettingsProvinceForm = ({ fetchData }) => {
 				</Field>
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Prefijo'
+					label='Departamento:'
 				>
-					<Input
-						value={dialCode}
-						onChange={(e) => setDialCode(e.target.value)}
-						placeholder='+51'
+					<ReactSelect
+						value={selectedDepartment}
+						onChange={(select) => {
+							setSelectedDepartment(select);
+						}}
+						variant='flushed'
 						size='xs'
-					/>
-				</Field>
-
-				<Field
-					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Código de país:'
-				>
-					<Input
-						value={isoCode}
-						onChange={(e) => setIsoCode(e.target.value)}
-						placeholder='pe'
-						size='xs'
+						isDisabled={isLoading}
+						isLoading={isLoading}
+						isSearchable={true}
+						name='paises'
+						options={DepartmentOptions}
 					/>
 				</Field>
 			</Stack>
@@ -130,4 +131,6 @@ export const AddSettingsProvinceForm = ({ fetchData }) => {
 
 AddSettingsProvinceForm.propTypes = {
 	fetchData: PropTypes.func,
+	dataDepartments: PropTypes.array,
+	isLoading: PropTypes.bool,
 };
