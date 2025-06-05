@@ -1,61 +1,57 @@
-import { ControlledModal, Field, toaster } from "@/components/ui"
+import { ConfirmModal, toaster } from "@/components/ui"
 import { useDeleteModality } from "@/hooks";
-import { Button, Flex, Stack, Text } from "@chakra-ui/react"
+import { IconButton, Span, Text } from "@chakra-ui/react"
+import PropTypes from "prop-types";
+import { useState } from "react";
+import { FiTrash2 } from "react-icons/fi";
 
-export const DeleteModality = ({ selectedMethod, setMethods, handleCloseModal, isDeleteModalOpen, setIsModalOpen }) => {
-  const { mutateAsync: deleteModality, isPending: loading } = useDeleteModality();
+export const DeleteModality = ({ item, fetchData }) => {
+  const [open, setOpen] = useState(false);
+  const { mutateAsync: remove, isPending: loadingDelete } = useDeleteModality();
 
-  const handleDeleteMethod = () => {
-    
-    deleteModality(selectedMethod?.id, {
-      onSuccess: () => {
-        toaster.create({
-          title: 'Modalidad eliminada correctamente',
-          type: 'success',
-        });
-        setMethods(prev => prev.filter(method => method.id !== selectedMethod?.id));
-        handleCloseModal('delete');
-      },
-      onError: (error) => {
-        toaster.create({
-          title: error.message || 'Error al eliminar la modalidad',
-          type: 'error',
-        });
-      },
-    });
-
-  }
+  const handleDelete = async (id) => {
+    try {
+      await remove(id);
+      toaster.create({
+        title: 'Modalidad eliminada correctamente',
+        type: 'success',
+      });
+      setOpen(false);
+      fetchData();
+    } catch (error) {
+      toaster.create({
+        title: error.message,
+        type: 'error',
+      });
+    }
+  };
 
   return (
-    <Stack css={{ '--field-label-width': '140px' }}>
-      <Field
-        orientation={{ base: 'vertical', sm: 'horizontal' }}
-      >
-        <ControlledModal
-          title='Eliminar Modalidad'
-          placement='center'
-          size='xl'
-          open={isDeleteModalOpen}
-          onOpenChange={e => setIsModalOpen(s => ({ ...s, delete: e.open }))}
-          hiddenFooter={true}
-        >
-          <Text>¿Quieres eliminar la modalidad {selectedMethod?.name}?</Text>
-          <Flex justify='end' mt='6' gap='2'>
-            <Button
-              variant='outline'
-              colorPalette='red'
-              onClick={() =>
-                setIsModalOpen((s) => ({ ...s, delete: false }))
-              }
-            >
-              Cancelar
-            </Button>
-            <Button onClick={handleDeleteMethod} bg='uni.secondary' color='white'>
-              Eliminar
-            </Button>
-          </Flex>
-        </ControlledModal>
-      </Field>
-    </Stack>
+    <ConfirmModal
+      title='Eliminar Modalidad'
+      placement='center'
+      trigger={
+        <IconButton colorPalette='red' size='xs'>
+          <FiTrash2 />
+        </IconButton>
+      }
+      open={open}
+      onOpenChange={(e) => setOpen(e.open)}
+      onConfirm={() => handleDelete(item.id)}
+      loading={loadingDelete}
+    >
+      <Text>
+        ¿Estás seguro que quieres eliminar el
+        <Span fontWeight='semibold' px='1'>
+          {item.name}
+        </Span>
+        de la lista de modalidades?
+      </Text>
+    </ConfirmModal>
   )
 }
+
+DeleteModality.propTypes = {
+  item: PropTypes.object,
+  fetchData: PropTypes.func
+};
