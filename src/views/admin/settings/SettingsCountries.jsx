@@ -273,7 +273,7 @@ export const SettingsCountries = () => {
 
 							<SettingsProvinceTable
 								data={filteredProvinces}
-								dataProvince={dataProvince?.results}
+								dataDepartments={dataDepartments?.results}
 								fetchData={fetchProvince}
 							/>
 						</Stack>

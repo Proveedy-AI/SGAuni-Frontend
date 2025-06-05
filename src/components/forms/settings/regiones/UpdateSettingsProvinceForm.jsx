@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { IconButton, Input, Stack } from '@chakra-ui/react';
 import { Field, Modal, toaster } from '@/components/ui';
 import { FiEdit2 } from 'react-icons/fi';
-import { useUpdateCountry } from '@/hooks';
+import { useUpdateProvince } from '@/hooks';
 import { ReactSelect } from '@/components/select';
 
 export const UpdateSettingsProvinceForm = ({
@@ -18,7 +18,7 @@ export const UpdateSettingsProvinceForm = ({
 	const [code, setCode] = useState(data?.code);
 	const [selectedDepartment, setselectedDepartment] = useState(null);
 
-	const { mutateAsync: updateCountry, isPending } = useUpdateCountry();
+	const { mutateAsync: updateProvince, isPending } = useUpdateProvince();
 
 	const handleSubmitData = async (e) => {
 		e.preventDefault();
@@ -30,7 +30,7 @@ export const UpdateSettingsProvinceForm = ({
 		};
 
 		try {
-			await updateCountry({ id: data.id, payload });
+			await updateProvince({ id: data.id, payload });
 			toaster.create({
 				title: 'Provincia editado correctamente',
 				type: 'success',
