@@ -47,6 +47,8 @@ Row.propTypes = {
   fetchData: PropTypes.func,
   startIndex: PropTypes.number,
   index: PropTypes.number,
+  programTypesOptions: PropTypes.array,
+  coordinatorsOptions: PropTypes.array,
 };
 
 export const ProgramTable = ({ data, fetchData, programTypesOptions, coordinatorsOptions }) => {
@@ -154,6 +156,8 @@ export const ProgramTable = ({ data, fetchData, programTypesOptions, coordinator
 ProgramTable.propTypes = {
   data: PropTypes.array,
   fetchData: PropTypes.func,
+  programTypesOptions: PropTypes.array,
+  coordinatorsOptions: PropTypes.array,
 };
 
 

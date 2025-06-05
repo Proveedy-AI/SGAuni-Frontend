@@ -10,6 +10,7 @@ import { Flex, IconButton, Input, Stack } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { useUpdateProgram } from "@/hooks";
 import { HiPencil } from "react-icons/hi2";
+import PropTypes from "prop-types";
 
 export const EditProgram = ({ fetchData, item, programTypesOptions, coordinatorsOptions }) => {
   const contentRef = useRef();
@@ -18,11 +19,16 @@ export const EditProgram = ({ fetchData, item, programTypesOptions, coordinators
   const [programRequest, setProgramRequest] = useState(item)
   
   const handleUpdate = async () => {
-    const { id:_, type_detail:__, coordinator_name:___,...payload } = programRequest;
+    const payload = {
+      coordinator: programRequest.coordinator,
+      name: programRequest.name,
+      type: programRequest.type,
+      price_credit: programRequest.price_credit,
+    }
   
     if (!payload.name || payload.price_credit <= 0 || payload.coordinator === 0 || payload.coordinator === null) return;
 
-    await update({ id: item.id, ...payload }, {
+    await update({ id: item.id, payload }, {
       onSuccess: () => {
         toaster.create({
           title: 'Programa actualizado correctamente',
@@ -121,3 +127,10 @@ export const EditProgram = ({ fetchData, item, programTypesOptions, coordinators
     </Modal>
   )
 }
+
+EditProgram.propTypes = {
+  fetchData: PropTypes.func,
+  item: PropTypes.object,
+  programTypesOptions: PropTypes.array,
+  coordinatorsOptions: PropTypes.array,
+};

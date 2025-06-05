@@ -1,6 +1,7 @@
 import { ConfirmModal, toaster } from "@/components/ui";
 import { useDeleteProgram } from "@/hooks";
 import { IconButton, Span, Text } from "@chakra-ui/react";
+import PropTypes from "prop-types";
 import { useState } from "react";
 import { FiTrash2 } from "react-icons/fi";
 
@@ -49,4 +50,9 @@ export const DeleteProgram = ({ item, fetchData }) => {
       </Text>
     </ConfirmModal>
   )
-} 
+}
+
+DeleteProgram.propTypes = {
+  item: PropTypes.object,
+  fetchData: PropTypes.func
+};
