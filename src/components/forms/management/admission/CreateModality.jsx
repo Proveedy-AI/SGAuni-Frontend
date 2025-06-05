@@ -1,184 +1,181 @@
-import CustomSelect from "@/components/select/customSelect";
-import { Field, Button, ControlledModal, Radio, RadioGroup, DatePicker, toaster } from "@/components/ui"
-import { Flex, HStack, Input, Stack } from "@chakra-ui/react"
-import { useState } from "react";
-import { HiPlus } from "react-icons/hi2"
+import { Field, Button, Radio, RadioGroup, toaster, Modal } from "@/components/ui"
+import { Flex, Input, Stack } from "@chakra-ui/react"
+import { useRef, useState } from "react";
 import { useCreateModality } from "@/hooks";
+import PropTypes from "prop-types";
+import { FiPlus } from "react-icons/fi";
 
-export const CreateModality = ({ setAdmissionMethods, handleOpenModal, isCreateModalOpen, setIsModalOpen, handleCloseModal }) => {
-  const { mutateAsync: register, isPending: loading } = useCreateModality();
+export const AddModalityForm = ({ fetchData }) => {
+  const contentRef = useRef(null);
+  const [open, setOpen] = useState(false);
+  const [modalityRequest, setModalityRequest] = useState({
+    name: '',
+    requires_pre_master_exam: false,
+    requires_interview: false,
+    requires_essay: false,
+    description: '',
+    essay_weight: 0.5,
+    interview_weight: 0.5,
+    min_grade: 0,
+  })
 
-  const [requieresPreMasterExam, setRequiresPreMasterExam] = useState("true");
-  const [requiresEssay, setRequiresEssay] = useState("true");
-  const [requiresInterview, setRequiresInterview] = useState("true");
-  const [minGrade, setMinGrade] = useState("20");
+  const { mutate: create, isPending: loading } = useCreateModality();
 
-  const handleCreateMethod = async (e) => {
+  const handleSubmitData = (e) => {
     e.preventDefault();
-    const { elements } = e.currentTarget;
 
-    if (!minGrade) return toaster.create({
-      title: 'Debe seleccionar un grado mínimo',
-      type: 'error',
+    create(modalityRequest, {
+      onSuccess: () => {
+        toaster.create({
+          title: 'Modalidad registrada correctamente',
+          type: 'success'
+        })
+        setOpen(false);
+				fetchData();
+        setModalityRequest({
+          name: '',
+          requires_pre_master_exam:false,
+        })
+      }
     })
-
-    const payload = {
-      name: elements.namedItem('name')?.value,
-      requires_pre_master_exam: requieresPreMasterExam === "true",
-      requires_interview: requiresInterview === "true",
-      requires_essay: requiresEssay === "true",
-      description: elements.namedItem('description')?.value,
-      essay_weight: elements.namedItem('essay_weight')?.value || "0.5",
-      interview_weight: elements.namedItem('interview_weight')?.value || "0.5",
-      min_grade: minGrade, //<- Corregir este campo
-    }
-
-    await register(payload, {
-			onSuccess: (newMethod) => {
-				toaster.create({
-					title: 'Modalidad registrado correctamente',
-					type: 'success',
-				});
-        // Desestructuración para eliminar el campo description
-        const { description:_, essay_weight:__, interview_weight:___, rules:____, ...methodSaved } = newMethod;
-        setAdmissionMethods(prev => [...prev, methodSaved]);
-        handleCloseModal('create');
-			},
-			onError: (error) => {
-				toaster.create({
-					title: error.message || 'Error al registrar la modalidad',
-					type: 'error',
-				});
-			},
-		});
   }
 
   return (
-    <>
-      <HStack w="full" justify="flex-end">
-        <Button fontSize='16px' minWidth='150px' color='white' background='#711610' borderRadius={8} onClick={() => handleOpenModal('create')}>
-          <HiPlus size={12} /> Crear modalidad
+    <Modal
+      title='Crear Programa'
+      placement='center'
+      trigger={
+        <Button
+          bg='uni.secondary'
+          color='white'
+          size='xs'
+          w={{ base: 'full', sm: 'auto' }}
+        >
+          <FiPlus /> Crear Programa
         </Button>
-      </HStack>
-
-      <Stack css={{ '--field-label-width': '140px' }}>
-        <Field orientation={{ base: 'vertical', sm: 'horizontal' }}>
-          <ControlledModal
-            title='Crear Modalidad'
-            placement='center'
-            size='xl'
-            open={isCreateModalOpen}
-            onOpenChange={e => setIsModalOpen(s => ({ ...s, create: e.open }))}
-            hiddenFooter={true}
-          >
-            <Stack>
-              <form onSubmit={handleCreateMethod}>
-                <Field label='Nombre de la modalidad' helperText='Ingrese el nombre de la modalidad de admisión'>
-                  <Input required type="text" name="name" placeholder='Ingrese nombres y apellidos' />
-                </Field>
-                <Field label='Descripción' helperText='Ingrese una breve descripción de la modalidad'>
-                  <Input required type="text" name="description" placeholder='Descripción de la modalidad' />
-                </Field>
-                <Flex marginBottom="4" alignItems="start" direction={{ base: 'column', sm: 'row' }} gap={4}>
-                  <Field marginBottom="4" label='Requiere pre-maestría'>
-                    <RadioGroup
-                      name="requiresPreMasterExam"
-                      value={requieresPreMasterExam}
-                      onChange={(e) => setRequiresPreMasterExam(e.target.value)}
-                      direction="row"
-                    >
-                      <Flex gap="5">
-                        <Radio value={"true"}>Sí</Radio>
-                        <Radio value={"false"}>No</Radio>
-                      </Flex>
-                    </RadioGroup>
-                  </Field>
-                  <Field marginBottom="4" label='Grado mínimo'>
-                    <Input
-                      required
-                      type="number"
-                      name="min_grade"
-                      placeholder='Ingrese el grado mínimo'
-                      value={minGrade}
-                      onChange={e => setMinGrade(e.target.value)}
-                      min={0}
-                      max={20}
-                      step={0.5}
-                    />
-                  </Field>
-                </Flex>
-                <Flex marginBottom="4" alignItems="start" direction={{ base: 'column', sm: 'row' }} gap={4}>
-                  <Field label='Requiere ensayo'>
-                    <RadioGroup
-                      name="requiresEssay"
-                      value={requiresEssay}
-                      onChange={(e) => setRequiresEssay(e.target.value)}
-                      direction="row"
-                    >
-                      <Flex gap="5">
-                        <Radio value={"true"}>Sí</Radio>
-                        <Radio value={"false"}>No</Radio>
-                      </Flex>
-                    </RadioGroup>
-                  </Field>
-                  {requiresEssay === "true" && (
-                    <Field label='Peso del ensayo (0 a 1)'>
-                      <Input
-                        required
-                        type="number"
-                        name="essay_weight"
-                        placeholder='Ej: 0.5'
-                        setValue={0.5}
-                        min={0}
-                        max={1}
-                        step={0.01}
-                      />
-                    </Field>
-                  )}
-                </Flex>
-                <Flex marginBottom="4" alignItems="start" direction={{ base: 'column', sm: 'row' }} gap={4}>
-                  <Field label='Requiere entrevista personal'>
-                    <RadioGroup
-                      name="requiresInterview"
-                      value={requiresInterview}
-                      onChange={(e) => setRequiresInterview(e.target.value)}
-                      direction="row"
-                    >
-                      <Flex gap="5">
-                        <Radio value={"true"}>Sí</Radio>
-                        <Radio value={"false"}>No</Radio>
-                      </Flex>
-                    </RadioGroup>
-                  </Field>
-                  {requiresInterview === "true" && (
-                    <Field label='Peso de la entrevista (0 a 1)'>
-                      <Input
-                        required
-                        type="number"
-                        name="interview_weight"
-                        setValue={0.5}
-                        placeholder='Ej: 0.5'
-                        min={0}
-                        max={1}
-                        step={0.01}
-                      />
-                    </Field>
-                  )}
-                </Flex>
-                
-                <Flex justify='end' mt='6' gap='2'>
-                  <Button disabled={loading} variant='outline' colorPalette='red' onClick={() => setIsModalOpen((s) => ({ ...s, create: false }))}>
-                    Cancelar
-                  </Button>
-                  <Button disabled={loading} type='submit' bg='uni.secondary' color='white'>
-                    Crear
-                  </Button>
-                </Flex>
-              </form>
-            </Stack>
-          </ControlledModal>
+      }
+      onSave={handleSubmitData}
+      loading={loading}
+      open={open}
+      onOpenChange={(e) => setOpen(e.open)}
+      contentRef={contentRef}
+    >
+      <Stack css={{ '--field-label-width': '120px' }}>
+        <Field label='Nombre de la modalidad' helperText='Ingrese el nombre de la modalidad de admisión'>
+          <Input
+            required
+            type="text"
+            name="name"
+            placeholder='Ingrese nombres y apellidos'
+            value={modalityRequest.name}
+            onChange={e => setModalityRequest({ ...modalityRequest, name: e.target.value })}
+          />
         </Field>
+        <Field label='Descripción' helperText='Ingrese una breve descripción de la modalidad'>
+          <Input
+            required
+            type="text"
+            name="description"
+            placeholder='Descripción de la modalidad'
+            value={modalityRequest.description}
+            onChange={e => setModalityRequest({ ...modalityRequest, description: e.target.value })}
+          />
+        </Field>
+        <Flex marginBottom="4" alignItems="start" direction={{ base: 'column', sm: 'row' }} gap={4}>
+          <Field marginBottom="4" label='Requiere pre-maestría'>
+            <RadioGroup
+              name="requiresPreMasterExam"
+              value={modalityRequest.requires_pre_master_exam ? "true" : "false"}
+              onChange={(e) => setModalityRequest({ ...modalityRequest, requires_pre_master_exam: e.target.value === "true" })}
+              direction="row"
+            >
+              <Flex gap="5">
+                <Radio value={"true"}>Sí</Radio>
+                <Radio value={"false"}>No</Radio>
+              </Flex>
+            </RadioGroup>
+          </Field>
+          <Field marginBottom="4" label='Grado mínimo'>
+            <Input
+              required
+              type="number"
+              name="min_grade"
+              placeholder='Ingrese el grado mínimo'
+              value={modalityRequest.min_grade}
+              onChange={e => setModalityRequest({ ...modalityRequest, min_grade: e.target.value })}
+              min={0}
+              max={20}
+              step={0.5}
+            />
+          </Field>
+        </Flex>
+        <Flex marginBottom="4" alignItems="start" direction={{ base: 'column', sm: 'row' }} gap={4}>
+          <Field label='Requiere ensayo'>
+            <RadioGroup
+              name="requiresEssay"
+              value={modalityRequest.requires_essay ? "true" : "false"}
+              onChange={(e) => setModalityRequest({ ...modalityRequest, requires_essay: e.target.value === "true" })}
+              direction="row"
+            >
+              <Flex gap="5">
+                <Radio value={"true"}>Sí</Radio>
+                <Radio value={"false"}>No</Radio>
+              </Flex>
+            </RadioGroup>
+          </Field>
+          {
+            modalityRequest.requires_essay && (
+              <Field label='Peso del ensayo (0 a 1)'>
+                <Input
+                  required
+                  type="number"
+                  name="essay_weight"
+                  placeholder='Ej: 0.5'
+                  value={modalityRequest.essay_weight}
+                  onChange={e => setModalityRequest({ ...modalityRequest, essay_weight: e.target.value })}
+                  min={0}
+                  max={1}
+                  step={0.01}
+                />
+              </Field>
+            )
+          }
+        </Flex>
+        <Flex marginBottom="4" alignItems="start" direction={{ base: 'column', sm: 'row' }} gap={4}>
+          <Field label='Requiere entrevista personal'>
+            <RadioGroup
+              name="requiresInterview"
+              value={modalityRequest.requires_interview ? "true" : "false"}
+              onChange={(e) => setModalityRequest({ ...modalityRequest, requires_interview: e.target.value === "true" })}
+              direction="row"
+            >
+              <Flex gap="5">
+                <Radio value={"true"}>Sí</Radio>
+                <Radio value={"false"}>No</Radio>
+              </Flex>
+            </RadioGroup>
+          </Field>
+          {modalityRequest.requires_interview && (
+            <Field label='Peso de la entrevista (0 a 1)'>
+              <Input
+                required
+                type="number"
+                name="interview_weight"
+                value={modalityRequest.interview_weight}
+                onChange={e => setModalityRequest({ ...modalityRequest, interview_weight: e.target.value })}
+                placeholder='Ej: 0.5'
+                min={0}
+                max={1}
+                step={0.01}
+              />
+            </Field>
+          )}
+        </Flex>
       </Stack>
-    </>
+    </Modal>
   )
 }
+
+AddModalityForm.propTypes = {
+  fetchData: PropTypes.func,
+};

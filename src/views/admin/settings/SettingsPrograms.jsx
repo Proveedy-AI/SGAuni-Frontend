@@ -1,4 +1,4 @@
-import { AddProgramType, CreateProgram } from "@/components/forms/management/programs/CreateProgram";
+import { /*AddProgramType,*/ CreateProgram } from "@/components/forms/management/programs/CreateProgram";
 import { ProgramTable } from "@/components/tables/ProgramTable";
 import { InputGroup } from "@/components/ui";
 import { useReadPrograms, useReadProgramTypes } from "@/hooks";

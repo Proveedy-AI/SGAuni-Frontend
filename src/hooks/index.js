@@ -10,3 +10,4 @@ export * from './ProgramTypes';
 export * from './departments';
 export * from './provincies';
 export * from './district';
+export * from './modalityRules';

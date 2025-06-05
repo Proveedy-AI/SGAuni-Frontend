@@ -1,93 +1,131 @@
-import { CreateModality } from '@/components/forms/management/admission/CreateModality';
-import { DeleteModality } from '@/components/forms/management/admission/DeleteModality';
-import { EditModality } from '@/components/forms/management/admission/EditModality';
-import { ViewModality } from '@/components/forms/management/admission/ViewModality';
-import { AdmissionMethodTable } from '@/components/tables/AdmissionMethodTable';
-import { useReadModalities } from '@/hooks/modalities';
-import { Box, Heading, VStack, Spinner, Text } from '@chakra-ui/react';
+import { AddModalityForm } from '@/components/forms/management/admission';
+import { AdmissionModalitiesTable } from '@/components/tables';
+import { InputGroup } from '@/components/ui';
+import { useReadModalities, /*useReadModalityRules*/ } from '@/hooks';
+import { Box, Heading, Spinner, Stack, Tabs, HStack, Input } from '@chakra-ui/react';
 import { useState } from 'react';
+import { FiSearch } from 'react-icons/fi';
 
 export const SettingsAdmissionModality = () => {
+  const [tab, setTab] = useState(1);
+
+  const [searchModalityValue, setSearchModalityValue] = useState('');
+  const [searchModalityRulesValue, setSearchModalityRulesValue] = useState('');
+
 	const { data: dataModalities, refetch: fetchModalities, isLoading } = useReadModalities();
+  //const { data: dataModalityRules, refetch: fetchModalityRules, isLoading: isLoadingModalityRules } = useReadModalityRules();
+  //console.log(dataModalityRules ? 'Cargado' : 'cargando reglas de modalidades')
 
-	const [selectedMethod, setSelectedMethod] = useState(null);
-	const [isModalOpen, setIsModalOpen] = useState({
-		create: false,
-		view: false,
-		edit: false,
-		delete: false,
-	});
+  const filteredModality = dataModalities?.results?.filter((item) => 
+    item?.name?.toLowerCase().includes(searchModalityValue.toLowerCase())
+  )
 
-	const handleOpenModal = (modalType, method) => {
-		if (method) setSelectedMethod(method);
-		setIsModalOpen((prev) => ({ ...prev, [modalType]: true }));
-	};
+  // const filteredModalityRules = dataModalityRules?.results?.filter((item) =>
+  //   item?.name?.toLowerCase().includes(searchModalityRulesValue.toLowerCase())
+  // )
 
-	const handleCloseModal = (modalType) => {
-		setSelectedMethod(null);
-		setIsModalOpen((prev) => ({ ...prev, [modalType]: false }));
-	};
+  return (
+    <Box SpaceY='5'>
+      <Stack
+        direction={{ base: 'column', md: 'row' }}
+        align={{ base: 'start', sm: 'center' }}
+        justifyContent='space-between'
+      >
+        <Heading size={{ xs: 'xs', sm: 'sm', md: 'md' }}>Modalidades de Admisión</Heading>
 
-	const modalities = dataModalities?.results ?? [];
+        {tab === 1 && <AddModalityForm fetchModalities={fetchModalities} />}
+        {tab === 2 && <AddModalityForm fetchModalities={fetchModalities} /> /* Cambiar a otro para reglas */}
+      </Stack>
+      {isLoading && <Spinner mt={4} />}
+      {!isLoading && (
+        <Tabs.Root
+          value={tab}
+          onValueChange={(e) => setTab(e.value)}
+          size={{ base: 'sm', md: 'md' }}
+        >
+          <>
+            <Box
+              overflowX='auto'
+              whiteSpace='nowrap'
+              css={{
+                '&::-webkit-scrollbar': { height: '6px' },
+                '&::-webkit-scrollbar-thumb': {
+                  background: '#A0AEC0', // Color del thumb
+                  borderRadius: '4px',
+                },
+              }}
+            >
+              <Tabs.List minW='max-content' colorPalette='cyan'>
+                <Tabs.Trigger
+                  value={1}
+                  color={tab === 1 ? 'uni.secondary' : ''}
+                >
+                  Modalidades
+                </Tabs.Trigger>
 
-	return (
-		<Box>
-			<Heading size={{ xs: 'xs', sm: 'sm', md: 'md' }}>Modalidades</Heading>
+                <Tabs.Trigger
+                  value={2}
+                  color={tab === 2 ? 'uni.secondary' : ''}
+                >
+                  Reglas de Modalidades
+                </Tabs.Trigger>
+              </Tabs.List>
+            </Box>
+          </>
+          <Tabs.Content value={1}>
+            <Stack>
+              <Stack
+                direction={{ base: 'column', sm: 'row' }}
+                align={{ base: 'start', sm: 'center' }}
+                justify='space-between'
+              >
+                <Heading size='md'>Gestión de Modalidades</Heading>
 
-			{isLoading && <Spinner mt={4} />}
+                <HStack>
+                  <InputGroup flex='1' startElement={<FiSearch />}>
+                    <Input
+                      ml='1'
+                      size='sm'
+                      placeholder='Buscar por nombre'
+                      value={searchModalityValue}
+                      onChange={(e) => setSearchModalityValue(e.target.value)}
+                    />
+                  </InputGroup>
+                </HStack>
+              </Stack>
 
-			{!isLoading && (
-				<VStack py='4' align='start' gap='3'>
-					<CreateModality
-						setAdmissionMethods={fetchModalities}
-						handleOpenModal={handleOpenModal}
-						isCreateModalOpen={isModalOpen.create}
-						setIsModalOpen={setIsModalOpen}
-						handleCloseModal={handleCloseModal}
-					/>
+              <AdmissionModalitiesTable data={filteredModality} fetchData={fetchModalities} />
+            </Stack>
+          </Tabs.Content>
+          <Tabs.Content value={2}>
+            <Stack>
+              <Stack
+                direction={{ base: 'column', sm: 'row' }}
+                align={{ base: 'start', sm: 'center' }}
+                justify='space-between'
+              >
+                <Heading size='md'>Gestión de Reglas de Modalidades</Heading>
 
-					{modalities.length > 0 ? (
-						<AdmissionMethodTable
-							setMethods={fetchModalities}
-							methods={modalities}
-							handleOpenModal={handleOpenModal}
-							handleCloseModal={handleCloseModal}
-						/>
-					) : (
-						<Text>No hay modalidades registradas.</Text>
-					)}
-				</VStack>
-			)}
+                <HStack>
+                  <InputGroup flex='1' startElement={<FiSearch />}>
+                    <Input
+                      ml='1'
+                      size='sm'
+                      placeholder='Buscar por nombre'
+                      value={searchModalityRulesValue}
+                      onChange={(e) => setSearchModalityRulesValue(e.target.value)}
+                    />
+                  </InputGroup>
+                </HStack>
+              </Stack>
 
-			{isModalOpen.view && selectedMethod && (
-				<ViewModality
-					selectedMethod={selectedMethod}
-					isViewModalOpen={isModalOpen.view}
-					setIsModalOpen={setIsModalOpen}
-					handleCloseModal={handleCloseModal}
-				/>
-			)}
+              {/* tabla de reglas modalidades ↓ */}
+              
+            </Stack>
+          </Tabs.Content>
+        </Tabs.Root>
+      )}
+    </Box>
+  )
 
-			{isModalOpen.edit && selectedMethod && (
-				<EditModality
-					setMethods={fetchModalities}
-					selectedMethod={selectedMethod}
-					setSelectedMethod={setSelectedMethod}
-					isEditModalOpen={isModalOpen.edit}
-					setIsModalOpen={setIsModalOpen}
-					handleCloseModal={handleCloseModal}
-				/>
-			)}
-
-			{isModalOpen.delete && selectedMethod && (
-				<DeleteModality
-					selectedMethod={selectedMethod}
-					setMethods={fetchModalities}
-					isDeleteModalOpen={isModalOpen.delete}
-					setIsModalOpen={setIsModalOpen}
-					handleCloseModal={handleCloseModal}
-				/>
-			)}
-		</Box>
-	);
 };

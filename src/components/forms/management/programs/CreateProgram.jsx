@@ -12,6 +12,7 @@ import { useRef, useState } from "react";
 import { FiPlus } from "react-icons/fi";
 import { useCreateProgram } from "@/hooks";
 import { useCreateProgramType } from "@/hooks/ProgramTypes/useCreateProgramTypes";
+import PropTypes from "prop-types";
 
 export const CreateProgram = ({ fetchData, programTypesOptions, coordinatorsOptions }) => {
   const contentRef = useRef();
@@ -129,6 +130,13 @@ export const CreateProgram = ({ fetchData, programTypesOptions, coordinatorsOpti
   )
 
 }
+
+CreateProgram.propTypes = {
+  fetchData: PropTypes.func,
+  programTypesOptions: PropTypes.array,
+  coordinatorsOptions: PropTypes.array,
+};
+
 
 export const AddProgramType = () => {
   const { mutate: register, isPending: loading } = useCreateProgramType()

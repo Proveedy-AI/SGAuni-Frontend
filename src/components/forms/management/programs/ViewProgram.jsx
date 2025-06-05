@@ -2,6 +2,8 @@ import { Field, ModalSimple } from "@/components/ui";
 import { IconButton, Stack, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { HiEye } from "react-icons/hi2";
+import PropTypes from "prop-types";
+
 
 export const ViewProgram = ({ item }) => {
   const [open, setOpen] = useState(false);
@@ -76,3 +78,7 @@ export const ViewProgram = ({ item }) => {
     </Stack>
   );
 }
+
+ViewProgram.propTypes = {
+  item: PropTypes.object
+};
