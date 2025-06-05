@@ -1,5 +1,5 @@
 //import { UpdateSettingsCountryForm } from '@/components/forms';
-import { UpdateSettingsCountryForm } from '@/components/forms/settings';
+import { UpdateSettingsUbigeosForm } from '@/components/forms/settings';
 import {
 	ConfirmModal,
 	Pagination,
@@ -10,7 +10,7 @@ import {
 	SelectValueText,
 	toaster,
 } from '@/components/ui';
-import { useDeleteCountry } from '@/hooks';
+import { useDeleteUbigeos } from '@/hooks/ubigeos';
 
 import {
 	Box,
@@ -26,16 +26,16 @@ import PropTypes from 'prop-types';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { FiTrash2 } from 'react-icons/fi';
 
-const Row = memo(({ item, fetchData, startIndex, index }) => {
+const Row = memo(({ item, fetchData, startIndex, index, dataDistrict }) => {
 	const [open, setOpen] = useState(false);
 
-	const { mutate: deleteCountry, isPending } = useDeleteCountry();
+	const { mutate: deleteUbigeos, isPending } = useDeleteUbigeos();
 
 	const handleDelete = () => {
-		deleteCountry(item.id, {
+		deleteUbigeos(item.id, {
 			onSuccess: () => {
 				toaster.create({
-					title: 'País eliminado correctamente',
+					title: 'Ubigeo eliminado correctamente',
 					type: 'success',
 				});
 				fetchData();
@@ -52,13 +52,15 @@ const Row = memo(({ item, fetchData, startIndex, index }) => {
 	return (
 		<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
 			<Table.Cell>{startIndex + index + 1}</Table.Cell>
-			<Table.Cell>{item.name}</Table.Cell>
 			<Table.Cell>{item.code}</Table.Cell>
-			<Table.Cell>{item.dial_code}</Table.Cell>
-			<Table.Cell>{item.iso_code}</Table.Cell>
+			<Table.Cell>{item.distric_name}</Table.Cell>
 			<Table.Cell>
 				<HStack>
-					<UpdateSettingsCountryForm data={item} fetchData={fetchData} />
+					<UpdateSettingsUbigeosForm
+						dataDistrict={dataDistrict}
+						data={item}
+						fetchData={fetchData}
+					/>
 
 					<ConfirmModal
 						placement='center'
@@ -77,7 +79,7 @@ const Row = memo(({ item, fetchData, startIndex, index }) => {
 							<Span fontWeight='semibold' px='1'>
 								{item.name}
 							</Span>
-							de la lista de países?
+							de la lista de ubigeos?
 						</Text>
 					</ConfirmModal>
 				</HStack>
@@ -93,9 +95,10 @@ Row.propTypes = {
 	fetchData: PropTypes.func,
 	startIndex: PropTypes.number,
 	index: PropTypes.number,
+	dataDistrict: PropTypes.array,
 };
 
-export const SettingsUbigeosTable = ({ data, fetchData }) => {
+export const SettingsUbigeosTable = ({ data, fetchData, dataDistrict }) => {
 	const smallOptions = useMemo(
 		() => [
 			{ label: '6', value: '6' },
@@ -212,10 +215,8 @@ export const SettingsUbigeosTable = ({ data, fetchData }) => {
 					<Table.Header>
 						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
 							<Table.ColumnHeader>N°</Table.ColumnHeader>
-							<Table.ColumnHeader>Nombre del país</Table.ColumnHeader>
-							<Table.ColumnHeader>Nacionalidad</Table.ColumnHeader>
-							<Table.ColumnHeader>Prefijo</Table.ColumnHeader>
-							<Table.ColumnHeader>Iso</Table.ColumnHeader>
+							<Table.ColumnHeader>Codigo</Table.ColumnHeader>
+							<Table.ColumnHeader>Distrito</Table.ColumnHeader>
 							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
@@ -224,6 +225,7 @@ export const SettingsUbigeosTable = ({ data, fetchData }) => {
 							<Row
 								key={item.id}
 								item={item}
+								dataDistrict={dataDistrict}
 								fetchData={fetchData}
 								startIndex={startIndex}
 								index={index}
@@ -285,4 +287,5 @@ SettingsUbigeosTable.propTypes = {
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
 	loading: PropTypes.bool,
+	dataDistrict: PropTypes.array,
 };
