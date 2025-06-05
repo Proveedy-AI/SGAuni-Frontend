@@ -23,8 +23,6 @@ export const ToogleRoleUserModal = ({
 		}
 	}, [selectedUser]);
 
-	console.log(rolesData);
-	// Maneja cambios en los checkboxes
 	const handleCheckboxChange = (roleId, isChecked) => {
 		setSelectedRoleIds((prev) =>
 			isChecked ? [...prev, roleId] : prev.filter((id) => id !== roleId)
