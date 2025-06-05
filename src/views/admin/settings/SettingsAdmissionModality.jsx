@@ -1,7 +1,8 @@
 import { AddModalityForm } from '@/components/forms/management/admission';
-import { AdmissionModalitiesTable } from '@/components/tables';
+import { AddModalityRuleForm } from '@/components/forms/management/modalitiesRules';
+import { AdmissionModalitiesTable, ModalityRulesTable } from '@/components/tables';
 import { InputGroup } from '@/components/ui';
-import { useReadModalities, /*useReadModalityRules*/ } from '@/hooks';
+import { useReadModalities, useReadModalityRules } from '@/hooks';
 import { Box, Heading, Spinner, Stack, Tabs, HStack, Input } from '@chakra-ui/react';
 import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
@@ -13,16 +14,38 @@ export const SettingsAdmissionModality = () => {
   const [searchModalityRulesValue, setSearchModalityRulesValue] = useState('');
 
 	const { data: dataModalities, refetch: fetchModalities, isLoading } = useReadModalities();
-  //const { data: dataModalityRules, refetch: fetchModalityRules, isLoading: isLoadingModalityRules } = useReadModalityRules();
-  //console.log(dataModalityRules ? 'Cargado' : 'cargando reglas de modalidades')
+  const { data: dataModalityRules, refetch: fetchModalityRules } = useReadModalityRules();
+  console.log(dataModalityRules ? 'Cargado' : 'cargando reglas de modalidades')
 
   const filteredModality = dataModalities?.results?.filter((item) => 
     item?.name?.toLowerCase().includes(searchModalityValue.toLowerCase())
   )
 
-  // const filteredModalityRules = dataModalityRules?.results?.filter((item) =>
-  //   item?.name?.toLowerCase().includes(searchModalityRulesValue.toLowerCase())
-  // )
+  const filteredModalityRules = dataModalityRules?.results?.filter((item) =>
+     item?.name?.toLowerCase().includes(searchModalityRulesValue.toLowerCase())
+  )
+  console.log(filteredModalityRules)
+
+  /*
+   Hasta que se arregle el error de las reglas de modalidades, se utilizará un arreglo local que cuenta
+   con las 2 primeras reglas que está en la base de datos, las funciones de actualizar y eliminar están
+   implementadas. Tener en cuenta que al realizarse una de estas funciones, se descuadra lo que está en
+   la base de datos con lo que hay en este arreglo local.
+  */
+  const localModalityRules = [
+    {
+      id: 1,
+      field_name: "Ensayo",
+      is_required: true,
+      is_visible: true
+    },
+    {
+      id: 2,
+      field_name: "Curriculum",
+      is_required: true,
+      is_visible: true
+    }
+  ]
 
   return (
     <Box SpaceY='5'>
@@ -34,7 +57,7 @@ export const SettingsAdmissionModality = () => {
         <Heading size={{ xs: 'xs', sm: 'sm', md: 'md' }}>Modalidades de Admisión</Heading>
 
         {tab === 1 && <AddModalityForm fetchModalities={fetchModalities} />}
-        {tab === 2 && <AddModalityForm fetchModalities={fetchModalities} /> /* Cambiar a otro para reglas */}
+        {tab === 2 && <AddModalityRuleForm fetchModalities={fetchModalities} />}
       </Stack>
       {isLoading && <Spinner mt={4} />}
       {!isLoading && (
@@ -119,8 +142,7 @@ export const SettingsAdmissionModality = () => {
                 </HStack>
               </Stack>
 
-              {/* tabla de reglas modalidades ↓ */}
-              
+              <ModalityRulesTable data={localModalityRules} fetchData={fetchModalityRules} />
             </Stack>
           </Tabs.Content>
         </Tabs.Root>

@@ -42,7 +42,7 @@ export const AddModalityForm = ({ fetchData }) => {
 
   return (
     <Modal
-      title='Crear Programa'
+      title='Crear Modalidad'
       placement='center'
       trigger={
         <Button
@@ -51,7 +51,7 @@ export const AddModalityForm = ({ fetchData }) => {
           size='xs'
           w={{ base: 'full', sm: 'auto' }}
         >
-          <FiPlus /> Crear Programa
+          <FiPlus /> Crear Modalidad
         </Button>
       }
       onSave={handleSubmitData}
@@ -66,7 +66,7 @@ export const AddModalityForm = ({ fetchData }) => {
             required
             type="text"
             name="name"
-            placeholder='Ingrese nombres y apellidos'
+            placeholder='Ingrese nombres de la modalidad'
             value={modalityRequest.name}
             onChange={e => setModalityRequest({ ...modalityRequest, name: e.target.value })}
           />
