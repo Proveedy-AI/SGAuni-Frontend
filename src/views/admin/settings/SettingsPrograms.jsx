@@ -1,6 +1,7 @@
 import { AddProgram } from "@/components/forms/management/programs/CreateProgram";
 import { AddProgramType } from "@/components/forms/management/programTypes";
 import { ProgramTable } from "@/components/tables/ProgramTable";
+import { ProgramTypesTable } from "@/components/tables/ProgramTypesTable";
 import { InputGroup } from "@/components/ui";
 import { useReadPrograms, useReadProgramTypes } from "@/hooks";
 import { useReadUsers } from "@/hooks/users";
@@ -37,6 +38,10 @@ export const SettingsPrograms = () => {
   
   const filteredPrograms = dataPrograms?.results?.filter((item) => 
     item?.name?.toLowerCase().includes(searchProgramValue.toLowerCase())
+  );
+
+  const filteredProgramTypes = dataProgramTypes?.results?.filter((item) =>
+    item?.name?.toLowerCase().includes(searchProgramTypesValue.toLowerCase())
   );
 
   return (
@@ -153,6 +158,10 @@ export const SettingsPrograms = () => {
               </Stack>
 
               {/* Cargar la tabla de Tipos de Programas */}
+              <ProgramTypesTable
+                data={filteredProgramTypes}
+                fetchData={fetchProgramTypes}
+              />
             </Stack>
           </Tabs.Content>
         </Tabs.Root>
