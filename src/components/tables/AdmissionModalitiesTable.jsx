@@ -18,7 +18,7 @@ import {
 } from '@/components/ui'
 import { AssignModalityRules, DeleteModality, EditModality, ViewModality } from '../forms/management/admission';
 
-const Row = memo(({ item, fetchData, startIndex, index, modalityRules }) => {
+const Row = memo(({ item, fetchData, startIndex, index }) => {
 
   return (
     <Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
@@ -29,7 +29,7 @@ const Row = memo(({ item, fetchData, startIndex, index, modalityRules }) => {
           <Group>
             <ViewModality item={item} />
             <EditModality fetchData={fetchData} item={item} />
-            <AssignModalityRules item={item} modalityRules={modalityRules} fetchData={fetchData} />
+            <AssignModalityRules item={item} fetchData={fetchData} />
             <DeleteModality item={item} fetchData={fetchData} />
           </Group>
         </HStack>
@@ -48,7 +48,7 @@ Row.propTypes = {
   modalityRules: PropTypes.array,
 };
 
-export const AdmissionModalitiesTable = ({ data, fetchData, modalityRules }) => {
+export const AdmissionModalitiesTable = ({ data, fetchData }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState('10');
 
@@ -94,7 +94,6 @@ export const AdmissionModalitiesTable = ({ data, fetchData, modalityRules }) => 
                 fetchData={fetchData}
                 startIndex={startIndex}
                 index={index}
-                modalityRules={modalityRules}
               />
             ))}
           </Table.Body>
@@ -151,5 +150,4 @@ export const AdmissionModalitiesTable = ({ data, fetchData, modalityRules }) => 
 AdmissionModalitiesTable.propTypes = {
   data: PropTypes.array,
   fetchData: PropTypes.func,
-  modalityRules: PropTypes.array,
 };

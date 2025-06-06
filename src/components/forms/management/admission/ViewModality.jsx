@@ -1,5 +1,5 @@
 import { Field, ModalSimple } from "@/components/ui"
-import { Badge, Flex, IconButton, Stack, Text } from "@chakra-ui/react"
+import { Badge, Flex, IconButton, Span, Stack, Text } from "@chakra-ui/react"
 import PropTypes from "prop-types";
 import { useState } from "react";
 import { HiEye } from "react-icons/hi2";
@@ -103,9 +103,9 @@ export const ViewModality = ({ item }) => {
             </Field>
             <Field label='Reglas'>
               <Text w='full' py={2} px={3} border='1px solid #E2E8F0' borderRadius='md'>
-                {Array.isArray(item.rules) && item.rules.length > 0
+                {item?.rules && item?.rules.length > 0
                   ? item.rules.map((rule, idx) => (
-                      <span key={idx}>{rule}{idx < item.rules.length - 1 ? ', ' : ''}</span>
+                     <Span key={idx}>{rule.field_name}{idx < item.rules.length - 1 ? ', ' : ''}</Span>
                     ))
                   : 'Sin reglas'}
               </Text>

@@ -29,7 +29,7 @@ export const EditModalityRule = ({ fetchData, item }) => {
 
     if (!payload.field_name) return;
 
-    await update({ id: item.id, payload }, {
+    await update({ id: item?.id, payload }, {
       onSuccess: () => {
         toaster.create({
           title: 'Programa actualizado correctamente',
