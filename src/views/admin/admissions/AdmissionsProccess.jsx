@@ -1,34 +1,34 @@
-import { AddSettingsCountryForm } from '@/components/forms/settings';
-import { SettingsCountryManagementTable } from '@/components/tables/settings';
-import { useReadCountries } from '@/hooks';
+import { AddAdmissionsProccessForm } from '@/components/forms/admissions';
+import { AdmissionsListTable } from '@/components/tables/admissions';
+import { useReadAdmissions } from '@/hooks/admissions_proccess';
+import { useProvideAuth } from '@/hooks/auth';
 
-import {
-	Box,
-	Heading,
-	HStack,
-	InputGroup,
-	Input,
-	Stack,
-} from '@chakra-ui/react';
+import { Box, Heading, InputGroup, Input, Stack } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 
 export const AdmissionsProccess = () => {
-	const { data: dataCountries, refetch: fetchCountries } = useReadCountries();
+	const { data: dataAdmissions, refetch: fetchCountries } = useReadAdmissions();
+	const { getProfile } = useProvideAuth();
+	const profile = getProfile();
+	const roles = profile?.roles || [];
+	const permissions = roles
+		.flatMap((r) => r.permissions || [])
+		.map((p) => p.guard_name);
 
 	const [searchValue, setSearchValue] = useState('');
 
 	const [loading, setInitialLoading] = useState(true);
 
-	const filteredCountries = dataCountries?.results?.filter((item) =>
+	const filteredAdmissions = dataAdmissions?.results?.filter((item) =>
 		item.name.toLowerCase().includes(searchValue.toLowerCase())
 	);
 
 	useEffect(() => {
-		if (loading && filteredCountries?.length > 0) {
+		if (loading && filteredAdmissions?.length > 0) {
 			setInitialLoading(false);
 		}
-	}, [loading, filteredCountries]);
+	}, [loading, filteredAdmissions]);
 
 	return (
 		<Box spaceY='5'>
@@ -47,27 +47,34 @@ export const AdmissionsProccess = () => {
 				>
 					Procesos de Admisión
 				</Heading>
-
-				<HStack>
-					<InputGroup flex='1' startElement={<FiSearch />}>
-						<Input
-							ml='1'
-							size='sm'
-							placeholder='Buscar por nombre'
-							value={searchValue}
-							onChange={(e) => setSearchValue(e.target.value)}
-						/>
-					</InputGroup>
-
-					{/*<AddSettingsCountryForm fetchData={fetchCountries} />*/}
-				</HStack>
 			</Stack>
 
-			{/*<SettingsCountryManagementTable
-				data={filteredCountries}
+			<Stack
+				Stack
+				direction={{ base: 'column', sm: 'row' }}
+				align={{ base: 'center', sm: 'center' }}
+				justify='space-between'
+			>
+				<InputGroup flex='1' startElement={<FiSearch />}>
+					<Input
+						ml='1'
+						size='sm'
+						bg={'white'}
+						maxWidth={'550px'}
+						placeholder='Buscar por título ...'
+						value={searchValue}
+						onChange={(e) => setSearchValue(e.target.value)}
+					/>
+				</InputGroup>
+
+				<AddAdmissionsProccessForm fetchData={fetchCountries} />
+			</Stack>
+
+			<AdmissionsListTable
+				data={filteredAdmissions}
 				fetchData={fetchCountries}
-				loading={loading}
-			/>*/}
+				permissions={permissions}
+			/>
 		</Box>
 	);
 };
