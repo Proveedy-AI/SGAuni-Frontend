@@ -54,7 +54,7 @@ const Row = memo(({ item, fetchData, startIndex, index, dataCountries }) => {
 			<Table.Cell>{startIndex + index + 1}</Table.Cell>
 			<Table.Cell>{item.name}</Table.Cell>
 			<Table.Cell>{item.code}</Table.Cell>
-			<Table.Cell>{item.country}</Table.Cell>
+			<Table.Cell>{item.country_name}</Table.Cell>
 			<Table.Cell>
 				<HStack>
 					<UpdateSettingsDepartmentForm
