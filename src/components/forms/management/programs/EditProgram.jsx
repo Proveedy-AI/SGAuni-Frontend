@@ -1,28 +1,31 @@
-import CustomSelect from "@/components/select/customSelect";
 import {
   Field,
   Modal,
-  Radio,
-  RadioGroup,
   toaster,
 } from "@/components/ui";
-import { Flex, IconButton, Input, Stack } from "@chakra-ui/react";
+import { IconButton, Input, Stack } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { useUpdateProgram } from "@/hooks";
 import { HiPencil } from "react-icons/hi2";
 import PropTypes from "prop-types";
+import { ReactSelect } from "@/components/select";
 
-export const EditProgram = ({ fetchData, item, programTypesOptions, coordinatorsOptions }) => {
+export const EditProgram = ({ fetchData, item, programTypesOptions, coordinatorsOptions, loadingProgramTypes, loadingCoordinators }) => {
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
   const { mutateAsync: update, isPending: loadingUpdate } = useUpdateProgram();
-  const [programRequest, setProgramRequest] = useState(item)
-  
+  const [programRequest, setProgramRequest] = useState({
+    name: item.name,
+    type: programTypesOptions?.find((t) => t.value === item.type.toString()),
+    coordinator: coordinatorsOptions?.find((c) => c.value === item.coordinator.toString()) ,
+    price_credit: item.price_credit,
+  })
+
   const handleUpdate = async () => {
     const payload = {
-      coordinator: programRequest.coordinator,
+      coordinator: Number(programRequest.coordinator.value),
       name: programRequest.name,
-      type: programRequest.type,
+      type: Number(programRequest.type.value),
       price_credit: programRequest.price_credit,
     }
   
@@ -75,37 +78,30 @@ export const EditProgram = ({ fetchData, item, programTypesOptions, coordinators
         </Field>
 
         <Field label="Tipo de programa">
-          <RadioGroup
-            name="type"
-            value={programRequest.type.toString()}
-            onChange={(e) =>
-              setProgramRequest({
-                ...programRequest,
-                type: Number(e.target.value),
-              })
-            }
-            direction='row'
-          >
-            <Flex gap={5}>
-              {programTypesOptions?.map((option, index) => (
-                <Radio key={index} value={option.value}>
-                  {option.label}
-                </Radio>
-              ))}
-            </Flex>
-          </RadioGroup>
+          <ReactSelect
+            value={programRequest.type}
+            onChange={(select) => { setProgramRequest({ ...programRequest, type: select }) }}
+            variant='flushed'
+            size='xs'
+            isDisabled={loadingProgramTypes}
+            isLoading={loadingProgramTypes}
+            isSearchable={true}
+            name='Tipos de programa'
+            options={programTypesOptions}
+          />
         </Field>
 
         <Field label="Coordinador">
-          <CustomSelect
+          <ReactSelect
+            value={programRequest.coordinator}
+            onChange={(select) => { setProgramRequest({ ...programRequest, coordinator: select }) }}
+            variant='flushed'
+						size='xs'
+						isDisabled={loadingCoordinators}
+						isLoading={loadingCoordinators}
+						isSearchable={true}
+						name='Coordinadores'
             options={coordinatorsOptions}
-            value={programRequest.coordinator?.toString()}
-            onChange={(value) =>
-              setProgramRequest({
-                ...programRequest,
-                coordinator: Number(value),
-              })
-            }
           />
         </Field>
         <Field label='Precio por crédito'>
@@ -133,4 +129,6 @@ EditProgram.propTypes = {
   item: PropTypes.object,
   programTypesOptions: PropTypes.array,
   coordinatorsOptions: PropTypes.array,
+  loadingProgramTypes: PropTypes.bool,
+  loadingCoordinators: PropTypes.bool,
 };

@@ -1,28 +1,28 @@
-import { AddModalityForm } from '@/components/forms/management/admission';
-import { AdmissionModalitiesTable } from '@/components/tables';
+import { AddModalityForm } from '@/components/forms/management/modalities';
+import { AddModalityRuleForm } from '@/components/forms/management/modalitiesRules';
+import { AdmissionModalitiesTable, ModalityRulesTable } from '@/components/tables';
 import { InputGroup } from '@/components/ui';
-import { useReadModalities, /*useReadModalityRules*/ } from '@/hooks';
-import { Box, Heading, Spinner, Stack, Tabs, HStack, Input } from '@chakra-ui/react';
+import { useReadModalities, useReadModalityRules } from '@/hooks';
+import { Box, Heading, Spinner, Stack, Tabs, HStack, Input, Text } from '@chakra-ui/react';
 import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 
-export const SettingsAdmissionModality = () => {
+export const SettingsModalities = () => {
   const [tab, setTab] = useState(1);
 
   const [searchModalityValue, setSearchModalityValue] = useState('');
   const [searchModalityRulesValue, setSearchModalityRulesValue] = useState('');
 
 	const { data: dataModalities, refetch: fetchModalities, isLoading } = useReadModalities();
-  //const { data: dataModalityRules, refetch: fetchModalityRules, isLoading: isLoadingModalityRules } = useReadModalityRules();
-  //console.log(dataModalityRules ? 'Cargado' : 'cargando reglas de modalidades')
+  const { data: dataModalityRules, refetch: fetchModalityRules } = useReadModalityRules();
 
   const filteredModality = dataModalities?.results?.filter((item) => 
     item?.name?.toLowerCase().includes(searchModalityValue.toLowerCase())
   )
 
-  // const filteredModalityRules = dataModalityRules?.results?.filter((item) =>
-  //   item?.name?.toLowerCase().includes(searchModalityRulesValue.toLowerCase())
-  // )
+  const filteredModalityRules = dataModalityRules?.results?.filter((item) =>
+     item?.field_name?.toLowerCase().includes(searchModalityRulesValue.toLowerCase())
+  )
 
   return (
     <Box SpaceY='5'>
@@ -33,8 +33,8 @@ export const SettingsAdmissionModality = () => {
       >
         <Heading size={{ xs: 'xs', sm: 'sm', md: 'md' }}>Modalidades de Admisión</Heading>
 
-        {tab === 1 && <AddModalityForm fetchModalities={fetchModalities} />}
-        {tab === 2 && <AddModalityForm fetchModalities={fetchModalities} /> /* Cambiar a otro para reglas */}
+        {tab === 1 && <AddModalityForm fetchData={fetchModalities} />}
+        {tab === 2 && <AddModalityRuleForm fetchData={fetchModalityRules} />}
       </Stack>
       {isLoading && <Spinner mt={4} />}
       {!isLoading && (
@@ -94,7 +94,15 @@ export const SettingsAdmissionModality = () => {
                 </HStack>
               </Stack>
 
-              <AdmissionModalitiesTable data={filteredModality} fetchData={fetchModalities} />
+              {dataModalities?.results?.length > 0 ? (
+                <AdmissionModalitiesTable 
+                  data={filteredModality}
+                  fetchData={fetchModalities}
+                  modalityRules={filteredModalityRules}
+                />
+              ) : (
+                <Text>No hay programas registrados.</Text>
+              )}
             </Stack>
           </Tabs.Content>
           <Tabs.Content value={2}>
@@ -119,8 +127,11 @@ export const SettingsAdmissionModality = () => {
                 </HStack>
               </Stack>
 
-              {/* tabla de reglas modalidades ↓ */}
-              
+              {dataModalityRules?.results?.length > 0 ? (
+                <ModalityRulesTable data={filteredModalityRules} fetchData={fetchModalityRules} />
+              ) : (
+                <Text>No hay reglas de modalidades registradas.</Text>
+              )}
             </Stack>
           </Tabs.Content>
         </Tabs.Root>

@@ -8,7 +8,7 @@ import {
 	SettingsLayout,
 	SettingsPrograms,
 	SettingsRoles,
-	SettingsAdmissionModality,
+	SettingsModalities,
 } from './views/admin/settings';
 import { UserList } from './views/admin/UserList';
 import { PrivateRoute, ProtectedRoute } from './PrivateRoute ';
@@ -76,7 +76,7 @@ function App() {
 								>
 									<Route
 										path='modalities'
-										element={<SettingsAdmissionModality />}
+										element={<SettingsModalities />}
 									/>
 								</Route>
 

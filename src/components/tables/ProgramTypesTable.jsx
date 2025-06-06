@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValueText,
 } from '@/components/ui'
-import { AssignModalityRules, DeleteModality, EditModality, ViewModality } from '../forms/management/modalities';
+import { DeleteProgramType, EditProgramType, ViewProgramType } from '../forms/management/programTypes';
 
 const Row = memo(({ item, fetchData, startIndex, index }) => {
 
@@ -24,13 +24,13 @@ const Row = memo(({ item, fetchData, startIndex, index }) => {
     <Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
       <Table.Cell>{startIndex + index + 1}</Table.Cell>
       <Table.Cell>{item.name}</Table.Cell>
+      <Table.Cell>{item.code}</Table.Cell>
       <Table.Cell>
         <HStack justify='space-between'>
           <Group>
-            <ViewModality item={item} />
-            <EditModality fetchData={fetchData} item={item} />
-            <AssignModalityRules item={item} fetchData={fetchData} />
-            <DeleteModality item={item} fetchData={fetchData} />
+            <ViewProgramType item={item} />
+            <EditProgramType item={item} fetchData={fetchData} />
+            <DeleteProgramType item={item} fetchData={fetchData} />
           </Group>
         </HStack>
       </Table.Cell>
@@ -45,10 +45,9 @@ Row.propTypes = {
   fetchData: PropTypes.func,
   startIndex: PropTypes.number,
   index: PropTypes.number,
-  modalityRules: PropTypes.array,
 };
 
-export const AdmissionModalitiesTable = ({ data, fetchData }) => {
+export const ProgramTypesTable = ({ data, fetchData }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState('10');
 
@@ -82,7 +81,8 @@ export const AdmissionModalitiesTable = ({ data, fetchData }) => {
           <Table.Header>
             <Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
               <Table.ColumnHeader>N°</Table.ColumnHeader>
-              <Table.ColumnHeader>Nombre del Rol</Table.ColumnHeader>
+              <Table.ColumnHeader>Nombre del programa</Table.ColumnHeader>
+              <Table.ColumnHeader>Código</Table.ColumnHeader>
               <Table.ColumnHeader>Acciones</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
@@ -147,7 +147,7 @@ export const AdmissionModalitiesTable = ({ data, fetchData }) => {
   )
 }
 
-AdmissionModalitiesTable.propTypes = {
+ProgramTypesTable.propTypes = {
   data: PropTypes.array,
   fetchData: PropTypes.func,
 };

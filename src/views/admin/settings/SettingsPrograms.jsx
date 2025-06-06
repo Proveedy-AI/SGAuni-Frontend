@@ -1,30 +1,28 @@
-import { /*AddProgramType,*/ CreateProgram } from "@/components/forms/management/programs/CreateProgram";
+import { AddProgram } from "@/components/forms/management/programs/CreateProgram";
+import { AddProgramType } from "@/components/forms/management/programTypes";
 import { ProgramTable } from "@/components/tables/ProgramTable";
+import { ProgramTypesTable } from "@/components/tables/ProgramTypesTable";
 import { InputGroup } from "@/components/ui";
 import { useReadPrograms, useReadProgramTypes } from "@/hooks";
 import { useReadUsers } from "@/hooks/users";
-import { Box, Heading, Input, Spinner, Stack, Text, VStack } from "@chakra-ui/react";
+import { Box, Heading, HStack, Input, Spinner, Stack, Tabs, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { FiSearch } from "react-icons/fi";
 
 export const SettingsPrograms = () => {
+  const [tab, setTab] = useState(1);
+
+  const [searchProgramValue, setSearchProgramValue] = useState("");
+  const [searchProgramTypesValue, setSearchProgramTypesValue] = useState("");
+
   const { data: dataPrograms, refetch: fetchPrograms, isLoading } = useReadPrograms();
-  const { data: dataProgramTypes } = useReadProgramTypes();
-  const { data: dataCoordinators } = useReadUsers();
+  const { data: dataProgramTypes, refetch: fetchProgramTypes, isLoading: loadingProgramTypes } = useReadProgramTypes();
+  const { data: dataCoordinators, isLoading: loadingCoordinators } = useReadUsers();
 
-  const programs = dataPrograms?.results ?? [];
-
-  const programTypesOptions = (
-  Array.isArray(dataProgramTypes?.results) && dataProgramTypes.results.length > 0
-    ? dataProgramTypes.results.map((item) => ({
-        value: item.id.toString(),
-        label: item.name,
-      }))
-    : [
-        { value: '1', label: "Maestrías" },
-        { value: '2', label: "Doctorado" }
-      ]
-);
+   const programTypesOptions = dataProgramTypes?.results?.map((item) => ({
+     value: item.id.toString(),
+     label: item.name,
+   }));
 
   const coordinatorsOptions = dataCoordinators?.results
     ?.filter(
@@ -37,52 +35,142 @@ export const SettingsPrograms = () => {
       value: item.id.toString(),
       label: item.full_name,
     }));
-
-  const [searchProgramValue, setSearchProgramValue] = useState("");
-
-  const filteredPrograms = programs?.filter((item) => 
+  
+  const filteredPrograms = dataPrograms?.results?.filter((item) => 
     item?.name?.toLowerCase().includes(searchProgramValue.toLowerCase())
   );
 
-  return (
-     <Box w='100%'>
-      <Heading size={{ xs: 'xs', sm: 'sm', md: 'md' }}>Programas de Postgrado</Heading>
+  const filteredProgramTypes = dataProgramTypes?.results?.filter((item) =>
+    item?.name?.toLowerCase().includes(searchProgramTypesValue.toLowerCase())
+  );
 
+  return (
+    <Box>
+      <Stack
+        direction={{ base: 'column', md: 'row' }}
+        align={{ base: 'start', sm: 'center' }}
+        justifyContent='space-between'
+      >
+        <Heading size={{ xs: 'xs', sm: 'sm', md: 'md' }}>Programas de Postgrado</Heading>
+
+        {tab === 1 && 
+        <AddProgram 
+          fetchData={fetchPrograms} 
+          programTypesOptions={programTypesOptions} 
+          coordinatorsOptions={coordinatorsOptions} 
+          loadingProgramTypes={loadingProgramTypes} 
+          loadingCoordinators={loadingCoordinators}
+        />
+        }
+        {tab === 2 && <AddProgramType fetchData={fetchProgramTypes} />}
+      </Stack>
       {isLoading && <Spinner mt={4} />}
       {!isLoading && (
-        <VStack w='100%' py='4' align='start' gap='3'>
-          <Stack w='100%' direction={{ base: 'column', sm: 'row' }} justify='space-between'>
-            <InputGroup startElement={<FiSearch />}>
-              <Input
-                ml='1'
-                size='sm'
-                placeholder='Buscar por nombre'
-                value={searchProgramValue}
-                onChange={(e) => setSearchProgramValue(e.target.value)}
+        <Tabs.Root
+          value={tab}
+          onValueChange={(e) => setTab(e.value)}
+          size={{ base: 'sm', md: 'md' }}
+        >
+          <>
+            <Box
+              overflowX='auto'
+              whiteSpace='nowrap'
+              css={{
+                '&::-webkit-scrollbar': { height: '6px' },
+                '&::-webkit-scrollbar-thumb': {
+                  background: '#A0AEC0', // Color del thumb
+                  borderRadius: '4px',
+                },
+              }}
+            >
+              <Tabs.List minW='max-content' colorPalette='cyan'>
+                <Tabs.Trigger
+                  value={1}
+                  color={tab === 1 ? 'uni.secondary' : ''}
+                >
+                  Programas
+                </Tabs.Trigger>
+
+                <Tabs.Trigger
+                  value={2}
+                  color={tab === 2 ? 'uni.secondary' : ''}
+                >
+                  Tipos de Programas
+                </Tabs.Trigger>
+              </Tabs.List>
+            </Box>
+          </>
+          <Tabs.Content value={1}>
+            <Stack>
+              <Stack
+                direction={{ base: 'column', sm: 'row' }}
+                align={{ base: 'start', sm: 'center' }}
+                justify='space-between'
+              >
+                <Heading size='md'>Gestión de Programas de Postgrado</Heading>
+
+                <HStack>
+                  <InputGroup flex='1' startElement={<FiSearch />}>
+                    <Input
+                      ml='1'
+                      size='sm'
+                      placeholder='Buscar por nombre'
+                      value={searchProgramValue}
+                      onChange={(e) => setSearchProgramValue(e.target.value)}
+                    />
+                  </InputGroup>
+                </HStack>
+              </Stack>
+              {dataPrograms?.results?.length > 0 ? (
+                <ProgramTable
+                  data={filteredPrograms}
+                  fetchData={fetchPrograms}
+                  programTypesOptions={programTypesOptions}
+                  coordinatorsOptions={coordinatorsOptions}
+                  loadingProgramTypes={loadingProgramTypes} 
+                  loadingCoordinators={loadingCoordinators}
                 />
-            </InputGroup>
+              ) : (
+                <Text>No hay programas registrados.</Text>
+              )}
+            </Stack>
+          </Tabs.Content>
+          <Tabs.Content value={2}>
+            <Stack>
+              <Stack
+                direction={{ base: 'column', sm: 'row' }}
+                align={{ base: 'start', sm: 'center' }}
+                justify='space-between'
+              >
+                <Heading size='md'>Gestión de Tipos de Programas</Heading>
 
-            <CreateProgram 
-              fetchData={fetchPrograms}
-              programTypesOptions={programTypesOptions}
-              coordinatorsOptions={coordinatorsOptions}
-              />
-          </Stack>
+                <HStack>
+                  <InputGroup flex='1' startElement={<FiSearch />}>
+                    <Input
+                      ml='1'
+                      size='sm'
+                      placeholder='Buscar por nombre'
+                      value={searchProgramTypesValue}
+                      onChange={(e) => setSearchProgramTypesValue(e.target.value)}
+                    />
+                  </InputGroup>
+                </HStack>
+              </Stack>
 
-          <Stack w='100%'>
-            {programs?.length > 0 ? (
-              <ProgramTable
-                data={filteredPrograms}
-                fetchData={fetchPrograms}
-                programTypesOptions={programTypesOptions}
-                coordinatorsOptions={coordinatorsOptions}
-              />
-            ) : (
-              <Text>No hay programas registrados.</Text>
-            )}
-          </Stack>
-        </VStack>
+              {/* Cargar la tabla de Tipos de Programas */}
+              {dataProgramTypes?.results?.length > 0 ? (
+                <ProgramTypesTable
+                  data={filteredProgramTypes}
+                  fetchData={fetchProgramTypes}
+                />
+              ) : (
+                <Text>No hay tipos de programas registrados.</Text>
+              )}
+            </Stack>
+          </Tabs.Content>
+        </Tabs.Root>
       )}
     </Box>
-  );
+  )
+
 }

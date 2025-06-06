@@ -16,21 +16,20 @@ import {
   SelectTrigger,
   SelectValueText,
 } from '@/components/ui'
-import { AssignModalityRules, DeleteModality, EditModality, ViewModality } from '../forms/management/modalities';
+import { DeleteModalityRule, EditModalityRule, ViewModalityRule } from '../forms/management/modalitiesRules';
 
 const Row = memo(({ item, fetchData, startIndex, index }) => {
 
   return (
     <Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
       <Table.Cell>{startIndex + index + 1}</Table.Cell>
-      <Table.Cell>{item.name}</Table.Cell>
+      <Table.Cell>{item.field_name}</Table.Cell>
       <Table.Cell>
         <HStack justify='space-between'>
           <Group>
-            <ViewModality item={item} />
-            <EditModality fetchData={fetchData} item={item} />
-            <AssignModalityRules item={item} fetchData={fetchData} />
-            <DeleteModality item={item} fetchData={fetchData} />
+            <ViewModalityRule item={item} />
+            <EditModalityRule fetchData={fetchData} item={item} />
+            <DeleteModalityRule item={item} fetchData={fetchData} />
           </Group>
         </HStack>
       </Table.Cell>
@@ -45,10 +44,9 @@ Row.propTypes = {
   fetchData: PropTypes.func,
   startIndex: PropTypes.number,
   index: PropTypes.number,
-  modalityRules: PropTypes.array,
 };
 
-export const AdmissionModalitiesTable = ({ data, fetchData }) => {
+export const ModalityRulesTable = ({ data, fetchData }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState('10');
 
@@ -147,7 +145,7 @@ export const AdmissionModalitiesTable = ({ data, fetchData }) => {
   )
 }
 
-AdmissionModalitiesTable.propTypes = {
+ModalityRulesTable.propTypes = {
   data: PropTypes.array,
   fetchData: PropTypes.func,
 };

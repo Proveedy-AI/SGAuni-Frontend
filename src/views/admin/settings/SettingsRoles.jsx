@@ -1,6 +1,6 @@
 import { useState } from 'react';
 //import { SettingsPermissionsTable, SettingsRolesTable } from '@/components';
-import { Box, Heading, HStack, Input, Stack, Tabs } from '@chakra-ui/react';
+import { Box, Heading, HStack, Input, Stack, Tabs, Text } from '@chakra-ui/react';
 import { useReadPermissions } from '@/hooks/permissions';
 import { useReadRoles } from '@/hooks/roles';
 import { InputGroup } from '@/components/ui';
@@ -86,7 +86,11 @@ export const SettingsRoles = () => {
 							</HStack>
 						</Stack>
 
-						<SettingsRolesTable data={filteredRoles} fetchData={fetchRoles} />
+						{dataRoles?.results?.length > 0 ? (
+              <SettingsRolesTable data={filteredRoles} fetchData={fetchRoles} />
+            ) : (
+              <Text>No hay roles registrados.</Text>
+            )}
 					</Stack>
 				</Tabs.Content>
 
@@ -112,10 +116,14 @@ export const SettingsRoles = () => {
 							</HStack>
 						</Stack>
 
-						<SettingsPermissionsTable
-							data={filteredPermissions}
-							fetchData={fetchPermissions}
-						/>
+						{dataPermissions?.results?.length > 0 ? (
+              <SettingsPermissionsTable
+                data={filteredPermissions}
+                fetchData={fetchPermissions}
+              />
+            ) : (
+              <Text>No hay permisos registrados.</Text>
+            )}
 					</Stack>
 				</Tabs.Content>
 			</Tabs.Root>
