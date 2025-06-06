@@ -56,21 +56,23 @@ export const Contracts = () => {
 				</Heading>
 
 				<HStack>
-					<InputGroup flex='1' startElement={<FiSearch />}>
-						<Input
-							ml='1'
-							size='sm'
-							placeholder='Buscar por nombre'
-							value={searchValue}
-							onChange={(e) => setSearchValue(e.target.value)}
-						/>
-					</InputGroup>
-
 					{permissions?.includes('contracts.list.create') && (
 						<AddContractsForm fetchData={fetchContracts} />
 					)}
 				</HStack>
 			</Stack>
+			<InputGroup flex='1' startElement={<FiSearch />}>
+				<Input
+					ml='1'
+					maxWidth={'550px'}
+					bg={'white'}
+					size='sm'
+					variant='outline'
+					placeholder='Buscar por nombre'
+					value={searchValue}
+					onChange={(e) => setSearchValue(e.target.value)}
+				/>
+			</InputGroup>
 
 			<ContractsListTable
 				data={filteredContracts}

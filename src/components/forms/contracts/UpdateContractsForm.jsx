@@ -16,7 +16,7 @@ export const UpdateContractsForm = ({ data, fetchData }) => {
 	const [expiresAt, setExpiresAt] = useState(data?.expires_at);
 	const [isSigned, setIsSigned] = useState(data?.is_signed);
 	const [selectedUser, setSelectedUser] = useState(null);
-console.log(data)
+
 	const handleFileChange = (e) => {
 		const file = e.target.files[0];
 		if (file) {
@@ -24,8 +24,7 @@ console.log(data)
 		}
 	};
 
-	const { mutate: updateContracts, isPending } =
-		useUpdateContracts();
+	const { mutate: updateContracts, isPending } = useUpdateContracts();
 	const { data: dataUsers, isLoading } = useReadUsers();
 
 	const handleSubmitData = async (e) => {

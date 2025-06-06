@@ -24,7 +24,8 @@ export const AddContractsForm = ({ fetchData }) => {
 		}
 	};
 
-	const { mutate: createContracts, isLoading: loadingContracts } = useCreateContracts();
+	const { mutate: createContracts, isLoading: loadingContracts } =
+		useCreateContracts();
 	const { data: dataUsers, isLoading } = useReadUsers();
 
 	const handleSubmitData = async (e) => {
@@ -39,7 +40,11 @@ export const AddContractsForm = ({ fetchData }) => {
 		}
 
 		try {
-			const s3Url = await uploadToS3(filePDF, 'sga_uni/contratos', selectedUser.label);
+			const s3Url = await uploadToS3(
+				filePDF,
+				'sga_uni/contratos',
+				selectedUser.label.replace(/\s+/g, '_')
+			);
 			const payload = {
 				path_contract: s3Url,
 				owner: selectedUser.value,

@@ -14,7 +14,7 @@ import { UserList } from './views/admin/UserList';
 import { PrivateRoute, ProtectedRoute } from './PrivateRoute ';
 import { Dashboard } from './views/admin/Dashboard';
 import { AdmissionsProccess } from './views/admin/admissions';
-import { Contracts } from './views/admin/contracts';
+import { Contracts, MyContracts } from './views/admin/contracts';
 
 function App() {
 	return (
@@ -55,8 +55,7 @@ function App() {
 										<ProtectedRoute requiredPermission='contracts.mylist.view' />
 									}
 								>
-									<Route path='mylist' element={<AdmissionsProccess />} />
-									
+									<Route path='mylist' element={<MyContracts />} />
 								</Route>
 								<Route
 									element={
@@ -64,7 +63,6 @@ function App() {
 									}
 								>
 									<Route path='list' element={<Contracts />} />
-									
 								</Route>
 							</Route>
 
