@@ -1,13 +1,13 @@
-import { AddModalityForm } from '@/components/forms/management/admission';
+import { AddModalityForm } from '@/components/forms/management/modalities';
 import { AddModalityRuleForm } from '@/components/forms/management/modalitiesRules';
 import { AdmissionModalitiesTable, ModalityRulesTable } from '@/components/tables';
 import { InputGroup } from '@/components/ui';
 import { useReadModalities, useReadModalityRules } from '@/hooks';
-import { Box, Heading, Spinner, Stack, Tabs, HStack, Input } from '@chakra-ui/react';
+import { Box, Heading, Spinner, Stack, Tabs, HStack, Input, Text } from '@chakra-ui/react';
 import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 
-export const SettingsAdmissionModality = () => {
+export const SettingsModalities = () => {
   const [tab, setTab] = useState(1);
 
   const [searchModalityValue, setSearchModalityValue] = useState('');
@@ -94,11 +94,15 @@ export const SettingsAdmissionModality = () => {
                 </HStack>
               </Stack>
 
-              <AdmissionModalitiesTable 
-                data={filteredModality}
-                fetchData={fetchModalities}
-                modalityRules={filteredModalityRules}
-              />
+              {dataModalities?.results?.length > 0 ? (
+                <AdmissionModalitiesTable 
+                  data={filteredModality}
+                  fetchData={fetchModalities}
+                  modalityRules={filteredModalityRules}
+                />
+              ) : (
+                <Text>No hay programas registrados.</Text>
+              )}
             </Stack>
           </Tabs.Content>
           <Tabs.Content value={2}>
@@ -123,7 +127,11 @@ export const SettingsAdmissionModality = () => {
                 </HStack>
               </Stack>
 
-              <ModalityRulesTable data={filteredModalityRules} fetchData={fetchModalityRules} />
+              {dataModalityRules?.results?.length > 0 ? (
+                <ModalityRulesTable data={filteredModalityRules} fetchData={fetchModalityRules} />
+              ) : (
+                <Text>No hay reglas de modalidades registradas.</Text>
+              )}
             </Stack>
           </Tabs.Content>
         </Tabs.Root>

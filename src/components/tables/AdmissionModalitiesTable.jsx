@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValueText,
 } from '@/components/ui'
-import { AssignModalityRules, DeleteModality, EditModality, ViewModality } from '../forms/management/admission';
+import { AssignModalityRules, DeleteModality, EditModality, ViewModality } from '../forms/management/modalities';
 
 const Row = memo(({ item, fetchData, startIndex, index }) => {
 

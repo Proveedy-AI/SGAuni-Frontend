@@ -4,3 +4,4 @@ export * from './useDeleteModality';
 export * from './useReadOneModality';
 export * from './useUpdateModality';
 export * from './useAssignModalityRules';
+export * from './useToggleModality';

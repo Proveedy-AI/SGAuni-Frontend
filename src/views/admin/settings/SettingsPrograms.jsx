@@ -158,10 +158,14 @@ export const SettingsPrograms = () => {
               </Stack>
 
               {/* Cargar la tabla de Tipos de Programas */}
-              <ProgramTypesTable
-                data={filteredProgramTypes}
-                fetchData={fetchProgramTypes}
-              />
+              {dataProgramTypes?.results?.length > 0 ? (
+                <ProgramTypesTable
+                  data={filteredProgramTypes}
+                  fetchData={fetchProgramTypes}
+                />
+              ) : (
+                <Text>No hay tipos de programas registrados.</Text>
+              )}
             </Stack>
           </Tabs.Content>
         </Tabs.Root>

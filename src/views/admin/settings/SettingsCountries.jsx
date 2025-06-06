@@ -8,6 +8,7 @@ import {
 	Spinner,
 	Stack,
 	Tabs,
+  Text,
 } from '@chakra-ui/react';
 import { InputGroup } from '@/components/ui';
 import { FiSearch } from 'react-icons/fi';
@@ -213,10 +214,14 @@ export const SettingsCountries = () => {
 								</HStack>
 							</Stack>
 
-							<SettingsCountryManagementTable
-								data={filteredCountry}
-								fetchData={fetchCountry}
-							/>
+							{dataCountries?.results?.length > 0 ? (
+                <SettingsCountryManagementTable
+                  data={filteredCountry}
+                  fetchData={fetchCountry}
+                />
+              ) : (
+                <Text>No hay países registrados.</Text>
+              )}
 						</Stack>
 					</Tabs.Content>
 
@@ -242,11 +247,15 @@ export const SettingsCountries = () => {
 								</HStack>
 							</Stack>
 
-							<SettingsDepartmentTable
-								data={filteredDepartment}
-								dataCountries={dataCountries?.results}
-								fetchData={fetchDepartmetns}
-							/>
+							{dataDepartments?.results?.length > 0 ? (
+                <SettingsDepartmentTable
+                  data={filteredDepartment}
+                  dataCountries={dataCountries?.results}
+                  fetchData={fetchDepartmetns}
+                />
+              ) : (
+                <Text>No hay departamentos registrados.</Text>
+              )}
 						</Stack>
 					</Tabs.Content>
 					<Tabs.Content value={3}>
@@ -271,11 +280,15 @@ export const SettingsCountries = () => {
 								</HStack>
 							</Stack>
 
-							<SettingsProvinceTable
-								data={filteredProvinces}
-								dataDepartments={dataDepartments?.results}
-								fetchData={fetchProvince}
-							/>
+							{dataProvince?.results?.length > 0 ? (
+                <SettingsProvinceTable
+                  data={filteredProvinces}
+                  dataDepartments={dataDepartments?.results}
+                  fetchData={fetchProvince}
+                />
+              ) : (
+                <Text>No hay provincias registradas.</Text>
+              )}
 						</Stack>
 					</Tabs.Content>
 					<Tabs.Content value={4}>
@@ -300,11 +313,15 @@ export const SettingsCountries = () => {
 								</HStack>
 							</Stack>
 
-							<SettingsDistrictTable
-								data={filteredDistricts}
-								dataProvince={dataProvince?.results}
-								fetchData={fetchDistrict}
-							/>
+							{dataDistrict?.results?.length > 0 ? (
+                <SettingsDistrictTable
+                  data={filteredDistricts}
+                  dataProvince={dataProvince?.results}
+                  fetchData={fetchDistrict}
+                />
+              ) : (
+                <Text>No hay distritos registrados.</Text>
+              )}
 						</Stack>
 					</Tabs.Content>
 					<Tabs.Content value={5}>
@@ -329,11 +346,15 @@ export const SettingsCountries = () => {
 								</HStack>
 							</Stack>
 
-							<SettingsUbigeosTable
-								data={filteredUbigeos}
-								fetchData={fetchUbigeos}
-								dataDistrict={dataDistrict?.results}
-							/>
+							{dataUbigeos?.results?.length > 0 ? (
+                <SettingsUbigeosTable
+                  data={filteredUbigeos}
+                  fetchData={fetchUbigeos}
+                  dataDistrict={dataDistrict?.results}
+                />
+              ) : (
+                <Text>No hay ubigeos registrados.</Text>
+              )}
 						</Stack>
 					</Tabs.Content>
 				</Tabs.Root>
