@@ -7,6 +7,7 @@ import {
   HStack,
   Stack,
   Table,
+  Switch
 } from '@chakra-ui/react';
 import {
   Pagination,
@@ -15,15 +16,57 @@ import {
   SelectRoot,
   SelectTrigger,
   SelectValueText,
+  toaster,
 } from '@/components/ui'
 import { AssignModalityRules, DeleteModality, EditModality, ViewModality } from '../forms/management/modalities';
+import { useToggleModality } from '@/hooks';
 
 const Row = memo(({ item, fetchData, startIndex, index }) => {
+  const { mutateAsync: toggleModalityRule, isPending: isPendingToggle } = useToggleModality();
+
+  const handleStatusChange = async (id) => {
+    try {
+      await toggleModalityRule(id);
+      // Realiza la acción de toggle en el rol
+      toaster.create({
+        title: `Estado del rol actualizado correctamente`,
+        type: 'success',
+      });
+
+      fetchData(); // Refetch data after toggling status
+    } catch (error) {
+      toaster.create({
+        title: error?.message || 'Ocurrió un error al cambiar el estado del rol',
+        type: 'error',
+      });
+    }
+  }
 
   return (
     <Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
       <Table.Cell>{startIndex + index + 1}</Table.Cell>
       <Table.Cell>{item.name}</Table.Cell>
+      <Table.Cell>
+        <Switch.Root
+          checked={item.enabled}
+          display='flex'
+          justifyContent='space-between'
+          onCheckedChange={() => handleStatusChange(item.id)}
+          disabled={isPendingToggle}
+        >
+          {' '}
+          <Switch.Label>
+            {item.enabled ? 'Activo' : 'Inactivo'}
+          </Switch.Label>
+          <Switch.HiddenInput />
+          <Switch.Control
+            _checked={{
+              bg: 'uni.secondary',
+            }}
+            bg='uni.red.400'
+          />
+        </Switch.Root>
+      </Table.Cell>
       <Table.Cell>
         <HStack justify='space-between'>
           <Group>
@@ -83,6 +126,7 @@ export const AdmissionModalitiesTable = ({ data, fetchData }) => {
             <Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
               <Table.ColumnHeader>N°</Table.ColumnHeader>
               <Table.ColumnHeader>Nombre del Rol</Table.ColumnHeader>
+              <Table.ColumnHeader w='150px'>Estado</Table.ColumnHeader>
               <Table.ColumnHeader>Acciones</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
