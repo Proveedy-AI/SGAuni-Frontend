@@ -53,7 +53,7 @@ const Row = memo(({ item, fetchData, startIndex, index, dataDistrict }) => {
 		<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
 			<Table.Cell>{startIndex + index + 1}</Table.Cell>
 			<Table.Cell>{item.code}</Table.Cell>
-			<Table.Cell>{item.distric_name}</Table.Cell>
+			<Table.Cell>{item.district_name}</Table.Cell>
 			<Table.Cell>
 				<HStack>
 					<UpdateSettingsUbigeosForm
