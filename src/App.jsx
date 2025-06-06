@@ -15,6 +15,7 @@ import { PrivateRoute, ProtectedRoute } from './PrivateRoute ';
 import { Dashboard } from './views/admin/Dashboard';
 import { AdmissionsProccess } from './views/admin/admissions';
 import { Contracts } from './views/admin/contracts';
+import AdmissionForm from './views/Inscription';
 
 function App() {
 	return (
@@ -104,8 +105,13 @@ function App() {
 									<Route path='regional' element={<SettingsCountries />} />
 								</Route>
 							</Route>
+
+
 						</Route>
 					</Route>
+
+          {/* Llamar a la inscripción */}
+          <Route path='inscription' element={<AdmissionForm />} />
 				</Routes>
 			</BrowserRouter>
 		</>
