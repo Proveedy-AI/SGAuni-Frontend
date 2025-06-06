@@ -54,26 +54,31 @@ export const Contracts = () => {
 				>
 					Contratos
 				</Heading>
-
+			</Stack>
+			<Stack
+				Stack
+				direction={{ base: 'column', sm: 'row' }}
+				align={{ base: 'center', sm: 'center' }}
+				justify='space-between'
+			>
+				<InputGroup flex='1' startElement={<FiSearch />}>
+					<Input
+						ml='1'
+						maxWidth={'550px'}
+						bg={'white'}
+						size='sm'
+						variant='outline'
+						placeholder='Buscar por nombre'
+						value={searchValue}
+						onChange={(e) => setSearchValue(e.target.value)}
+					/>
+				</InputGroup>
 				<HStack>
 					{permissions?.includes('contracts.list.create') && (
 						<AddContractsForm fetchData={fetchContracts} />
 					)}
 				</HStack>
 			</Stack>
-			<InputGroup flex='1' startElement={<FiSearch />}>
-				<Input
-					ml='1'
-					maxWidth={'550px'}
-					bg={'white'}
-					size='sm'
-					variant='outline'
-					placeholder='Buscar por nombre'
-					value={searchValue}
-					onChange={(e) => setSearchValue(e.target.value)}
-				/>
-			</InputGroup>
-
 			<ContractsListTable
 				data={filteredContracts}
 				fetchData={fetchContracts}
