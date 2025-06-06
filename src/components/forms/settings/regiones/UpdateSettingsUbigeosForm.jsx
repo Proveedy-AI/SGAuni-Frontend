@@ -3,36 +3,34 @@ import { useEffect, useRef, useState } from 'react';
 import { IconButton, Input, Stack } from '@chakra-ui/react';
 import { Field, Modal, toaster } from '@/components/ui';
 import { FiEdit2 } from 'react-icons/fi';
-import { useUpdateProvince } from '@/hooks';
 import { ReactSelect } from '@/components/select';
+import { useUpdateUbigeos } from '@/hooks/ubigeos';
 
-export const UpdateSettingsProvinceForm = ({
+export const UpdateSettingsUbigeosForm = ({
 	data,
 	fetchData,
-	dataDepartment,
+	dataDistrict,
 }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 
-	const [name, setName] = useState(data?.name);
 	const [code, setCode] = useState(data?.code);
-	const [selectedDepartment, setselectedDepartment] = useState(null);
+	const [selectedDistrict, setselectedDistrict] = useState(null);
 
-	const { mutateAsync: updateProvince, isPending } = useUpdateProvince();
+	const { mutateAsync: updateUbigeos, isPending } = useUpdateUbigeos();
 
 	const handleSubmitData = async (e) => {
 		e.preventDefault();
 
 		const payload = {
-			name: name.trim(),
 			code: code.trim(),
-			department: selectedDepartment.value,
+			district: selectedDistrict.value,
 		};
 
 		try {
-			await updateProvince({ id: data.id, payload });
+			await updateUbigeos({ id: data.id, payload });
 			toaster.create({
-				title: 'Provincia editado correctamente',
+				title: 'Distrito editado correctamente',
 				type: 'success',
 			});
 			setOpen(false);
@@ -45,22 +43,22 @@ export const UpdateSettingsProvinceForm = ({
 		}
 	};
 
-	const DepartmentOptions = dataDepartment?.map((department) => ({
-		label: department.name,
-		value: department.id,
+	const DistrictOptions = dataDistrict?.map((district) => ({
+		label: district.name,
+		value: district.id,
 	}));
 
 	useEffect(() => {
-		if (data && data.department && dataDepartment?.length) {
-			const matchedDepartment = dataDepartment.find((c) => c.id === data.department);
-			if (matchedDepartment) {
-				setselectedDepartment({
-					label: matchedDepartment.name,
-					value: matchedDepartment.id,
+		if (data && data.district && dataDistrict?.length) {
+			const matchedDistrict = dataDistrict.find((c) => c.id === data.district);
+			if (matchedDistrict) {
+				setselectedDistrict({
+					label: matchedDistrict.name,
+					value: matchedDistrict.id,
 				});
 			}
 		}
-	}, [data, dataDepartment]);
+	}, [data, dataDistrict]);
 
 	return (
 		<Modal
@@ -78,17 +76,6 @@ export const UpdateSettingsProvinceForm = ({
 			contentRef={contentRef}
 		>
 			<Stack css={{ '--field-label-width': '150px' }}>
-				<Field
-					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Provincia:'
-				>
-					<Input
-						value={name}
-						onChange={(e) => setName(e.target.value)}
-						placeholder='Lima'
-						size='xs'
-					/>
-				</Field>
 
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
@@ -97,24 +84,24 @@ export const UpdateSettingsProvinceForm = ({
 					<Input
 						value={code}
 						onChange={(e) => setCode(e.target.value)}
-						placeholder='Lima'
+						placeholder='San miguel'
 						size='xs'
 					/>
 				</Field>
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Departamento'
+					label='Distrito'
 				>
 					<ReactSelect
-						value={selectedDepartment}
+						value={selectedDistrict}
 						onChange={(select) => {
-							setselectedDepartment(select);
+							setselectedDistrict(select);
 						}}
 						variant='flushed'
 						size='xs'
 						isSearchable={true}
-						name='departamento'
-						options={DepartmentOptions}
+						name='distrito'
+						options={DistrictOptions}
 					/>
 				</Field>
 			</Stack>
@@ -122,8 +109,8 @@ export const UpdateSettingsProvinceForm = ({
 	);
 };
 
-UpdateSettingsProvinceForm.propTypes = {
+UpdateSettingsUbigeosForm.propTypes = {
 	data: PropTypes.object,
 	fetchData: PropTypes.func,
-	dataDepartment: PropTypes.array,
+	dataDistrict: PropTypes.array,
 };

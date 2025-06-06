@@ -91,12 +91,12 @@ export const AddSettingsCountryForm = ({ fetchData }) => {
 				</Field>
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Nacionalidad:'
+					label='Código:'
 				>
 					<Input
 						value={code}
 						onChange={(e) => setCode(e.target.value)}
-						placeholder='Peruano'
+						placeholder='PER'
 						size='xs'
 					/>
 				</Field>
@@ -114,7 +114,7 @@ export const AddSettingsCountryForm = ({ fetchData }) => {
 
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Código de país:'
+					label='Iso de país:'
 				>
 					<Input
 						value={isoCode}

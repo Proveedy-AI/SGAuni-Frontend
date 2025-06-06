@@ -217,7 +217,7 @@ export const SettingsDepartmentTable = ({ data, fetchData, dataCountries }) => {
 						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
 							<Table.ColumnHeader>N°</Table.ColumnHeader>
 							<Table.ColumnHeader>Departamento</Table.ColumnHeader>
-							<Table.ColumnHeader>code</Table.ColumnHeader>
+							<Table.ColumnHeader>Código</Table.ColumnHeader>
 							<Table.ColumnHeader>País</Table.ColumnHeader>
 							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 						</Table.Row>

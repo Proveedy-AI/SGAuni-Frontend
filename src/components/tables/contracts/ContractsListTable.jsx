@@ -1,5 +1,5 @@
 //import { UpdateSettingsCountryForm } from '@/components/forms';
-import { UpdateSettingsUbigeosForm } from '@/components/forms/settings';
+import { UpdateContractsForm } from '@/components/forms';
 import {
 	ConfirmModal,
 	Pagination,
@@ -10,9 +10,10 @@ import {
 	SelectValueText,
 	toaster,
 } from '@/components/ui';
-import { useDeleteUbigeos } from '@/hooks/ubigeos';
+import { useDeleteContracts } from '@/hooks/contracts';
 
 import {
+	Badge,
 	Box,
 	createListCollection,
 	HStack,
@@ -22,20 +23,21 @@ import {
 	Table,
 	Text,
 } from '@chakra-ui/react';
+import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { FiTrash2 } from 'react-icons/fi';
 
-const Row = memo(({ item, fetchData, startIndex, index, dataDistrict }) => {
+const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 	const [open, setOpen] = useState(false);
 
-	const { mutate: deleteUbigeos, isPending } = useDeleteUbigeos();
+	const { mutate: deleteContracts, isPending } = useDeleteContracts();
 
 	const handleDelete = () => {
-		deleteUbigeos(item.id, {
+		deleteContracts(item.id, {
 			onSuccess: () => {
 				toaster.create({
-					title: 'Ubigeo eliminado correctamente',
+					title: 'Contrato eliminado correctamente',
 					type: 'success',
 				});
 				fetchData();
@@ -52,36 +54,62 @@ const Row = memo(({ item, fetchData, startIndex, index, dataDistrict }) => {
 	return (
 		<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
 			<Table.Cell>{startIndex + index + 1}</Table.Cell>
-			<Table.Cell>{item.code}</Table.Cell>
-			<Table.Cell>{item.distric_name}</Table.Cell>
+			<Table.Cell>
+				{format(item.submit_by_admin_at, 'dd/MM/yy hh:mm a')}{' '}
+			</Table.Cell>
+			<Table.Cell>{item.owner_name}</Table.Cell>
+			<Table.Cell>{format(item.expires_at, 'dd/MM/yy')}</Table.Cell>
+			<Table.Cell>
+				<Badge
+					bg={item.is_signed ? 'green.100' : 'red.100'}
+					color={item.is_signed ? 'green.800' : 'red.800'}
+					fontSize='0.8em'
+				>
+					{item.is_signed ? 'Firmado' : 'Sin firmar'}
+				</Badge>
+			</Table.Cell>
+			<Table.Cell>
+				{item.submit_by_teacher_at
+					? format(new Date(item.submit_by_teacher_at), 'dd/MM/yy')
+					: ''}
+			</Table.Cell>
+			<Table.Cell>
+				<a
+					href={item.path_contract}
+					target='_blank'
+					rel='noopener noreferrer'
+					style={{ color: '#3182ce', textDecoration: 'underline' }}
+				>
+					Ver contrato
+				</a>
+			</Table.Cell>
 			<Table.Cell>
 				<HStack>
-					<UpdateSettingsUbigeosForm
-						dataDistrict={dataDistrict}
-						data={item}
-						fetchData={fetchData}
-					/>
-
-					<ConfirmModal
-						placement='center'
-						trigger={
-							<IconButton colorPalette='red' size='xs'>
-								<FiTrash2 />
-							</IconButton>
-						}
-						open={open}
-						onOpenChange={(e) => setOpen(e.open)}
-						onConfirm={() => handleDelete(item.id)}
-						loading={isPending}
-					>
-						<Text>
-							¿Estás seguro que quieres eliminar a
-							<Span fontWeight='semibold' px='1'>
-								{item.name}
-							</Span>
-							de la lista de ubigeos?
-						</Text>
-					</ConfirmModal>
+					{permissions?.includes('contracts.list.edit') && (
+						<UpdateContractsForm data={item} fetchData={fetchData} />
+					)}
+					{permissions?.includes('contracts.list.delete') && (
+						<ConfirmModal
+							placement='center'
+							trigger={
+								<IconButton colorPalette='red' size='xs'>
+									<FiTrash2 />
+								</IconButton>
+							}
+							open={open}
+							onOpenChange={(e) => setOpen(e.open)}
+							onConfirm={() => handleDelete(item.id)}
+							loading={isPending}
+						>
+							<Text>
+								¿Estás seguro que quieres eliminar a
+								<Span fontWeight='semibold' px='1'>
+									{item.owner_name}
+								</Span>
+								de la lista de Contratos?
+							</Text>
+						</ConfirmModal>
+					)}
 				</HStack>
 			</Table.Cell>
 		</Table.Row>
@@ -95,10 +123,10 @@ Row.propTypes = {
 	fetchData: PropTypes.func,
 	startIndex: PropTypes.number,
 	index: PropTypes.number,
-	dataDistrict: PropTypes.array,
+	permissions: PropTypes.array,
 };
 
-export const SettingsUbigeosTable = ({ data, fetchData, dataDistrict }) => {
+export const ContractsListTable = ({ data, fetchData, permissions }) => {
 	const smallOptions = useMemo(
 		() => [
 			{ label: '6', value: '6' },
@@ -215,8 +243,12 @@ export const SettingsUbigeosTable = ({ data, fetchData, dataDistrict }) => {
 					<Table.Header>
 						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
 							<Table.ColumnHeader>N°</Table.ColumnHeader>
-							<Table.ColumnHeader>Codigo</Table.ColumnHeader>
-							<Table.ColumnHeader>Distrito</Table.ColumnHeader>
+							<Table.ColumnHeader>Fecha Inicial</Table.ColumnHeader>
+							<Table.ColumnHeader>Propietario</Table.ColumnHeader>
+							<Table.ColumnHeader>Expiración</Table.ColumnHeader>
+							<Table.ColumnHeader>Estado</Table.ColumnHeader>
+							<Table.ColumnHeader>Fecha firmado</Table.ColumnHeader>
+							<Table.ColumnHeader>Contrato</Table.ColumnHeader>
 							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
@@ -225,7 +257,7 @@ export const SettingsUbigeosTable = ({ data, fetchData, dataDistrict }) => {
 							<Row
 								key={item.id}
 								item={item}
-								dataDistrict={dataDistrict}
+								permissions={permissions}
 								fetchData={fetchData}
 								startIndex={startIndex}
 								index={index}
@@ -283,9 +315,9 @@ export const SettingsUbigeosTable = ({ data, fetchData, dataDistrict }) => {
 	);
 };
 
-SettingsUbigeosTable.propTypes = {
+ContractsListTable.propTypes = {
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
 	loading: PropTypes.bool,
-	dataDistrict: PropTypes.array,
+	permissions: PropTypes.array,
 };

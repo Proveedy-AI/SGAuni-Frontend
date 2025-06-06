@@ -29,6 +29,7 @@ import {
 } from '@/components/forms/settings';
 import { useReadProvince } from '@/hooks/provincies';
 import { useReadDistrict } from '@/hooks/district';
+import { useReadUbigeos } from '@/hooks/ubigeos';
 
 export const SettingsCountries = () => {
 	const [tab, setTab] = useState(1);
@@ -37,6 +38,7 @@ export const SettingsCountries = () => {
 	const [searchDepartmentsValue, setSearchDepartmentValue] = useState('');
 	const [searchProvincesValue, setSearchProvincesValue] = useState('');
 	const [searchDistrictValue, setSearchDistrictValue] = useState('');
+	const [searchUbigeosValue, setSearchUbigeosValue] = useState('');
 
 	const {
 		data: dataCountries,
@@ -62,6 +64,11 @@ export const SettingsCountries = () => {
 		isLoading: loadingDistrict,
 	} = useReadDistrict();
 
+	const {
+		data: dataUbigeos,
+		refetch: fetchUbigeos,
+	} = useReadUbigeos();
+
 	const filteredCountry = dataCountries?.results?.filter((item) =>
 		item?.name?.toLowerCase().includes(searchCountryValue.toLowerCase())
 	);
@@ -76,6 +83,10 @@ export const SettingsCountries = () => {
 
 	const filteredDistricts = dataDistrict?.results?.filter((item) =>
 		item?.name?.toLowerCase().includes(searchDistrictValue.toLowerCase())
+	);
+
+	const filteredUbigeos = dataUbigeos?.results?.filter((item) =>
+		item?.code?.toLowerCase().includes(searchUbigeosValue.toLowerCase())
 	);
 
 	return (
@@ -119,8 +130,9 @@ export const SettingsCountries = () => {
 				)}
 				{tab === 5 && (
 					<AddSettingsUbigeoForm
-						fetchData={fetchCountry}
+						fetchData={fetchUbigeos}
 						isLoading={loadingDistrict}
+						dataDistrict={dataDistrict?.results}
 					/>
 				)}
 			</Stack>
@@ -261,7 +273,7 @@ export const SettingsCountries = () => {
 
 							<SettingsProvinceTable
 								data={filteredProvinces}
-								dataProvince={dataProvince?.results}
+								dataDepartments={dataDepartments?.results}
 								fetchData={fetchProvince}
 							/>
 						</Stack>
@@ -309,17 +321,18 @@ export const SettingsCountries = () => {
 										<Input
 											ml='1'
 											size='sm'
-											placeholder='Buscar por nombre'
+											placeholder='Buscar ...'
 											value={searchCountryValue}
-											onChange={(e) => setSearchCountryValue(e.target.value)}
+											onChange={(e) => setSearchUbigeosValue(e.target.value)}
 										/>
 									</InputGroup>
 								</HStack>
 							</Stack>
 
 							<SettingsUbigeosTable
-								data={filteredCountry}
-								fetchData={fetchCountry}
+								data={filteredUbigeos}
+								fetchData={fetchUbigeos}
+								dataDistrict={dataDistrict?.results}
 							/>
 						</Stack>
 					</Tabs.Content>

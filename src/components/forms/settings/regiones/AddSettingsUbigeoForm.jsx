@@ -3,23 +3,26 @@ import { useRef, useState } from 'react';
 import { Button, Input, Stack } from '@chakra-ui/react';
 import { Field, Modal, toaster } from '@/components/ui';
 import { FiPlus } from 'react-icons/fi';
-import { useCreateCountry } from '@/hooks';
+import { ReactSelect } from '@/components/select';
+import { useCreateUbigeos } from '@/hooks/ubigeos';
 
-export const AddSettingsUbigeoForm = ({ fetchData }) => {
+export const AddSettingsUbigeoForm = ({
+	fetchData,
+	isLoading,
+	dataDistrict,
+}) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
-	const [name, setName] = useState('');
 	const [code, setCode] = useState('');
-	const [isoCode, setIsoCode] = useState('');
-	const [dialCode, setDialCode] = useState('');
+	const [selectedDistrict, setSelectedDistrict] = useState(null);
 
-	const { mutate: createCountry, isPending } = useCreateCountry();
+	const { mutate: createUbigeo, isPending } = useCreateUbigeos();
 
 	const handleSubmitData = (e) => {
 		e.preventDefault();
 
 		// Validación de campos vacíos
-		if (!name.trim() || !code.trim() || !isoCode.trim() || !dialCode.trim()) {
+		if ( !code.trim() || !selectedDistrict) {
 			toaster.create({
 				title: 'Por favor completa todos los campos',
 				type: 'warning',
@@ -28,13 +31,11 @@ export const AddSettingsUbigeoForm = ({ fetchData }) => {
 		}
 
 		const payload = {
-			name: name.trim(),
 			code: code.trim(),
-			iso_code: isoCode.trim().toLowerCase(),
-			dial_code: dialCode.trim(),
+			district: selectedDistrict.value,
 		};
 
-		createCountry(payload, {
+		createUbigeo(payload, {
 			onSuccess: () => {
 				toaster.create({
 					title: 'Ubigeo registrado correctamente',
@@ -42,20 +43,22 @@ export const AddSettingsUbigeoForm = ({ fetchData }) => {
 				});
 				setOpen(false);
 				fetchData?.();
-				setName('');
 				setCode('');
-				setDialCode('');
-				setIsoCode('');
 			},
 			onError: (error) => {
 				console.log(error);
 				toaster.create({
-					title: error.response?.data?.[0] || 'Error al registrar el ubigeo',
+					title: error.response?.data?.[0] || 'Error al registrar el Ubigeo',
 					type: 'error',
 				});
 			},
 		});
 	};
+
+	const DistrictOptions = dataDistrict?.map((department) => ({
+		label: department.name,
+		value: department.id,
+	}));
 
 	return (
 		<Modal
@@ -68,7 +71,7 @@ export const AddSettingsUbigeoForm = ({ fetchData }) => {
 					size='xs'
 					w={{ base: 'full', sm: 'auto' }}
 				>
-					<FiPlus /> Agregar ubigeo
+					<FiPlus /> Agregar Ubigeo
 				</Button>
 			}
 			onSave={handleSubmitData}
@@ -80,47 +83,31 @@ export const AddSettingsUbigeoForm = ({ fetchData }) => {
 			<Stack css={{ '--field-label-width': '150px' }}>
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Nombre de país:'
-				>
-					<Input
-						value={name}
-						onChange={(e) => setName(e.target.value)}
-						placeholder='Perú'
-						size='xs'
-					/>
-				</Field>
-				<Field
-					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Nacionalidad:'
+					label='Código:'
 				>
 					<Input
 						value={code}
 						onChange={(e) => setCode(e.target.value)}
-						placeholder='Peruano'
+						placeholder='0000000'
 						size='xs'
 					/>
 				</Field>
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Prefijo'
+					label='Distrito:'
 				>
-					<Input
-						value={dialCode}
-						onChange={(e) => setDialCode(e.target.value)}
-						placeholder='+51'
+					<ReactSelect
+						value={selectedDistrict}
+						onChange={(select) => {
+							setSelectedDistrict(select);
+						}}
+						variant='flushed'
 						size='xs'
-					/>
-				</Field>
-
-				<Field
-					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Código de país:'
-				>
-					<Input
-						value={isoCode}
-						onChange={(e) => setIsoCode(e.target.value)}
-						placeholder='pe'
-						size='xs'
+						isDisabled={isLoading}
+						isLoading={isLoading}
+						isSearchable={true}
+						name='paises'
+						options={DistrictOptions}
 					/>
 				</Field>
 			</Stack>
@@ -130,4 +117,6 @@ export const AddSettingsUbigeoForm = ({ fetchData }) => {
 
 AddSettingsUbigeoForm.propTypes = {
 	fetchData: PropTypes.func,
+	dataDistrict: PropTypes.array,
+	isLoading: PropTypes.bool,
 };

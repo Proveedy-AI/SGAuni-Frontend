@@ -5,7 +5,10 @@ import {
 	FiCheckSquare,
 	FiCheck,
 	FiUserCheck,
+	FiList,
 } from 'react-icons/fi';
+import { FaFileContract } from "react-icons/fa";
+import { HiOutlineClipboardList } from 'react-icons/hi';
 
 export const DataSidebar = {
 	mainItems: [
@@ -31,6 +34,25 @@ export const DataSidebar = {
 					icon: FiUserCheck,
 					label: 'Postulantes',
 					permission: null,
+				},
+			],
+		},
+		{
+			href: '/contracts',
+			icon: FaFileContract,
+			label: 'Contratos',
+			subItems: [
+				{
+					href: '/contracts/list',
+					icon: FiList,
+					label: 'Lista General',
+					permission: 'contracts.list.view',
+				},
+				{
+					href: '/contracts/mylist',
+					icon: HiOutlineClipboardList,
+					label: 'Lista Personal',
+					permission: 'contracts.mylist.view',
 				},
 			],
 		},
