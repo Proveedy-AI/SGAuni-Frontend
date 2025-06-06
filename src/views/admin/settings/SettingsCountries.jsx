@@ -8,7 +8,7 @@ import {
 	Spinner,
 	Stack,
 	Tabs,
-  Text,
+	Text,
 } from '@chakra-ui/react';
 import { InputGroup } from '@/components/ui';
 import { FiSearch } from 'react-icons/fi';
@@ -31,6 +31,9 @@ import {
 import { useReadProvince } from '@/hooks/provincies';
 import { useReadDistrict } from '@/hooks/district';
 import { useReadUbigeos } from '@/hooks/ubigeos';
+import { useReadNationality } from '@/hooks/nationality';
+import { SettingsNationalityTable } from '@/components/tables/settings/SettingsNationalityTable';
+import { AddSettingsNationalityForm } from '@/components/forms/settings/regiones/AddSettingsNationalityForm';
 
 export const SettingsCountries = () => {
 	const [tab, setTab] = useState(1);
@@ -65,10 +68,9 @@ export const SettingsCountries = () => {
 		isLoading: loadingDistrict,
 	} = useReadDistrict();
 
-	const {
-		data: dataUbigeos,
-		refetch: fetchUbigeos,
-	} = useReadUbigeos();
+	const { data: dataUbigeos, refetch: fetchUbigeos } = useReadUbigeos();
+	const { data: dataNationality, refetch: fetchNationality } =
+		useReadNationality();
 
 	const filteredCountry = dataCountries?.results?.filter((item) =>
 		item?.name?.toLowerCase().includes(searchCountryValue.toLowerCase())
@@ -89,6 +91,12 @@ export const SettingsCountries = () => {
 	const filteredUbigeos = dataUbigeos?.results?.filter((item) =>
 		item?.code?.toLowerCase().includes(searchUbigeosValue.toLowerCase())
 	);
+
+	const filteredNationality = dataNationality?.results?.filter((item) =>
+		item?.name?.toLowerCase().includes(searchUbigeosValue.toLowerCase())
+	);
+
+	console.log(filteredNationality);
 
 	return (
 		<Box spaceY='5'>
@@ -134,6 +142,13 @@ export const SettingsCountries = () => {
 						fetchData={fetchUbigeos}
 						isLoading={loadingDistrict}
 						dataDistrict={dataDistrict?.results}
+					/>
+				)}
+				{tab === 6 && (
+					<AddSettingsNationalityForm
+						fetchData={fetchNationality}
+						isLoading={isLoading}
+						dataCountries={dataCountries?.results}
 					/>
 				)}
 			</Stack>
@@ -189,6 +204,12 @@ export const SettingsCountries = () => {
 								>
 									Ubigeos
 								</Tabs.Trigger>
+								<Tabs.Trigger
+									value={6}
+									color={tab === 5 ? 'uni.secondary' : ''}
+								>
+									Nacionalidades
+								</Tabs.Trigger>
 							</Tabs.List>
 						</Box>
 					</>
@@ -215,13 +236,13 @@ export const SettingsCountries = () => {
 							</Stack>
 
 							{dataCountries?.results?.length > 0 ? (
-                <SettingsCountryManagementTable
-                  data={filteredCountry}
-                  fetchData={fetchCountry}
-                />
-              ) : (
-                <Text>No hay países registrados.</Text>
-              )}
+								<SettingsCountryManagementTable
+									data={filteredCountry}
+									fetchData={fetchCountry}
+								/>
+							) : (
+								<Text>No hay países registrados.</Text>
+							)}
 						</Stack>
 					</Tabs.Content>
 
@@ -248,14 +269,14 @@ export const SettingsCountries = () => {
 							</Stack>
 
 							{dataDepartments?.results?.length > 0 ? (
-                <SettingsDepartmentTable
-                  data={filteredDepartment}
-                  dataCountries={dataCountries?.results}
-                  fetchData={fetchDepartmetns}
-                />
-              ) : (
-                <Text>No hay departamentos registrados.</Text>
-              )}
+								<SettingsDepartmentTable
+									data={filteredDepartment}
+									dataCountries={dataCountries?.results}
+									fetchData={fetchDepartmetns}
+								/>
+							) : (
+								<Text>No hay departamentos registrados.</Text>
+							)}
 						</Stack>
 					</Tabs.Content>
 					<Tabs.Content value={3}>
@@ -281,14 +302,14 @@ export const SettingsCountries = () => {
 							</Stack>
 
 							{dataProvince?.results?.length > 0 ? (
-                <SettingsProvinceTable
-                  data={filteredProvinces}
-                  dataDepartments={dataDepartments?.results}
-                  fetchData={fetchProvince}
-                />
-              ) : (
-                <Text>No hay provincias registradas.</Text>
-              )}
+								<SettingsProvinceTable
+									data={filteredProvinces}
+									dataDepartments={dataDepartments?.results}
+									fetchData={fetchProvince}
+								/>
+							) : (
+								<Text>No hay provincias registradas.</Text>
+							)}
 						</Stack>
 					</Tabs.Content>
 					<Tabs.Content value={4}>
@@ -314,14 +335,14 @@ export const SettingsCountries = () => {
 							</Stack>
 
 							{dataDistrict?.results?.length > 0 ? (
-                <SettingsDistrictTable
-                  data={filteredDistricts}
-                  dataProvince={dataProvince?.results}
-                  fetchData={fetchDistrict}
-                />
-              ) : (
-                <Text>No hay distritos registrados.</Text>
-              )}
+								<SettingsDistrictTable
+									data={filteredDistricts}
+									dataProvince={dataProvince?.results}
+									fetchData={fetchDistrict}
+								/>
+							) : (
+								<Text>No hay distritos registrados.</Text>
+							)}
 						</Stack>
 					</Tabs.Content>
 					<Tabs.Content value={5}>
@@ -347,14 +368,47 @@ export const SettingsCountries = () => {
 							</Stack>
 
 							{dataUbigeos?.results?.length > 0 ? (
-                <SettingsUbigeosTable
-                  data={filteredUbigeos}
-                  fetchData={fetchUbigeos}
-                  dataDistrict={dataDistrict?.results}
-                />
-              ) : (
-                <Text>No hay ubigeos registrados.</Text>
-              )}
+								<SettingsUbigeosTable
+									data={filteredUbigeos}
+									fetchData={fetchUbigeos}
+									dataDistrict={dataDistrict?.results}
+								/>
+							) : (
+								<Text>No hay ubigeos registrados.</Text>
+							)}
+						</Stack>
+					</Tabs.Content>
+					<Tabs.Content value={6}>
+						<Stack>
+							<Stack
+								direction={{ base: 'column', sm: 'row' }}
+								align={{ base: 'start', sm: 'center' }}
+								justify='space-between'
+							>
+								<Heading size='md'>Gestión Nacionalidades</Heading>
+
+								<HStack>
+									<InputGroup flex='1' startElement={<FiSearch />}>
+										<Input
+											ml='1'
+											size='sm'
+											placeholder='Buscar ...'
+											value={searchCountryValue}
+											onChange={(e) => setSearchUbigeosValue(e.target.value)}
+										/>
+									</InputGroup>
+								</HStack>
+							</Stack>
+
+							{dataNationality?.results?.length > 0 ? (
+								<SettingsNationalityTable
+									data={filteredNationality}
+									fetchData={fetchNationality}
+									dataCountries={dataCountries?.results}
+								/>
+							) : (
+								<Text>No hay nacionalidades registrados.</Text>
+							)}
 						</Stack>
 					</Tabs.Content>
 				</Tabs.Root>

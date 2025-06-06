@@ -8,4 +8,4 @@ export * from './UpdateSettingsDepartmentForm';
 export * from './UpdateSettingsProvinceForm';
 export * from './UpdateSettingsDistrictForm';
 export * from './UpdateSettingsUbigeosForm';
-
+export * from './UpdateSettingsNationalityForm';
