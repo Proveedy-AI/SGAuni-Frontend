@@ -91,7 +91,7 @@ export const AddSettingsProvinceForm = ({
 					<Input
 						value={name}
 						onChange={(e) => setName(e.target.value)}
-						placeholder='Perú'
+						placeholder='Lima'
 						size='xs'
 					/>
 				</Field>
@@ -102,7 +102,7 @@ export const AddSettingsProvinceForm = ({
 					<Input
 						value={code}
 						onChange={(e) => setCode(e.target.value)}
-						placeholder='Peruano'
+						placeholder='00'
 						size='xs'
 					/>
 				</Field>
