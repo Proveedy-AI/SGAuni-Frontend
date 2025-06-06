@@ -163,6 +163,7 @@ const groupTitles = {
 		settings: 'Configuración',
 		users: 'Usuarios',
 		admissions: 'Admisiones',
+		contracts: 'Contratos',
 	},
 	subCategory: {
 		program: 'Programas',
@@ -173,5 +174,7 @@ const groupTitles = {
 		countries: 'Regiones - Paises',
 		proccess: 'Procesos Admisión',
 		properties: 'Propiedades de producto',
+		list: 'Lista General',
+		mylist: 'Lista Personal',
 	},
 };
