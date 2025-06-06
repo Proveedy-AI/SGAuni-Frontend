@@ -36,6 +36,12 @@ export const AddModalityForm = ({ fetchData }) => {
           name: '',
           requires_pre_master_exam:false,
         })
+      },
+      onError: (error) => {
+        toaster.create({
+          title: error?.message || 'Error al crear la modalidad',
+          type: 'error',
+        });
       }
     })
   }

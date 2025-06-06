@@ -117,7 +117,11 @@ export const SettingsAdmissionModality = () => {
                 </HStack>
               </Stack>
 
-              <AdmissionModalitiesTable data={filteredModality} fetchData={fetchModalities} />
+              <AdmissionModalitiesTable 
+                data={filteredModality}
+                fetchData={fetchModalities}
+                modalityRules={localModalityRules}
+              />
             </Stack>
           </Tabs.Content>
           <Tabs.Content value={2}>
