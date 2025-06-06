@@ -108,8 +108,8 @@ export const CreateAndFilterUser = ({
 						<Stack>
 							<form onSubmit={handleCreateUser}>
 								<Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} gap={4}>
-									<Field label='Usuario'>
-										<Input required name='username' placeholder='Usuario' />
+									<Field label='Correo/Usuario'>
+										<Input required name='username' placeholder='Correo' />
 									</Field>
 
 									<Field label='Nombres'>

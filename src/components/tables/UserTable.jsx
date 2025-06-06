@@ -67,7 +67,7 @@ export const UserTable = ({ fetchUsers, users, handleOpenModal }) => {
 						<Table.Row>
 							<Table.ColumnHeader>Nº</Table.ColumnHeader>
 							<Table.ColumnHeader>Nombre</Table.ColumnHeader>
-							<Table.ColumnHeader>Correo UNI</Table.ColumnHeader>
+							<Table.ColumnHeader>Correo institucional</Table.ColumnHeader>
 							<Table.ColumnHeader>Rol</Table.ColumnHeader>
 							<Table.ColumnHeader>Estado</Table.ColumnHeader>
 							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
