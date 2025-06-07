@@ -1,5 +1,5 @@
 //import { UpdateSettingsCountryForm } from '@/components/forms';
-import { UpdateContractsForm } from '@/components/forms';
+import { UpdateAdmissionsProccessForm } from '@/components/forms/admissions';
 import {
 	ConfirmModal,
 	Pagination,
@@ -10,10 +10,8 @@ import {
 	SelectValueText,
 	toaster,
 } from '@/components/ui';
-import { useDeleteContracts } from '@/hooks/contracts';
-
+import { useDeleteAdmissions } from '@/hooks/admissions_proccess';
 import {
-	Badge,
 	Box,
 	createListCollection,
 	HStack,
@@ -31,13 +29,13 @@ import { FiTrash2 } from 'react-icons/fi';
 const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 	const [open, setOpen] = useState(false);
 
-	const { mutate: deleteContracts, isPending } = useDeleteContracts();
+	const { mutate: deleteAdmisions, isPending } = useDeleteAdmissions();
 
 	const handleDelete = () => {
-		deleteContracts(item.id, {
+		deleteAdmisions(item.id, {
 			onSuccess: () => {
 				toaster.create({
-					title: 'Contrato eliminado correctamente',
+					title: 'Proceso eliminado correctamente',
 					type: 'success',
 				});
 				fetchData();
@@ -54,39 +52,21 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 	return (
 		<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
 			<Table.Cell>{startIndex + index + 1}</Table.Cell>
-			<Table.Cell></Table.Cell>
-			<Table.Cell>{item.owner_name}</Table.Cell>
-			<Table.Cell></Table.Cell>
+			<Table.Cell>{item.admission_process_name}</Table.Cell>
+			<Table.Cell>{item.admission_level_display}</Table.Cell>
+			<Table.Cell>{format(new Date(item.start_date), 'dd/MM/yy')}</Table.Cell>
+			<Table.Cell>{format(new Date(item.end_date), 'dd/MM/yy')}</Table.Cell>
 			<Table.Cell>
-				<Badge
-					bg={item.is_signed ? 'green.100' : 'red.100'}
-					color={item.is_signed ? 'green.800' : 'red.800'}
-					fontSize='0.8em'
-				>
-					{item.is_signed ? 'Firmado' : 'Sin firmar'}
-				</Badge>
-			</Table.Cell>
-			<Table.Cell>
-				{item.submit_by_teacher_at
-					? format(new Date(item.submit_by_teacher_at), 'dd/MM/yy')
-					: ''}
-			</Table.Cell>
-			<Table.Cell>
-				<a
-					href={item.path_contract}
-					target='_blank'
-					rel='noopener noreferrer'
-					style={{ color: '#3182ce', textDecoration: 'underline' }}
-				>
-					Ver contrato
+				<a href={item.uri_url} target='_blank' rel='noopener noreferrer'>
+					{item.uri_url}
 				</a>
 			</Table.Cell>
 			<Table.Cell>
 				<HStack>
-					{permissions?.includes('contracts.list.edit') && (
-						<UpdateContractsForm data={item} fetchData={fetchData} />
+					{permissions?.includes('admissions.proccess.edit') && (
+						<UpdateAdmissionsProccessForm data={item} fetchData={fetchData} />
 					)}
-					{permissions?.includes('contracts.list.delete') && (
+					{permissions?.includes('admissions.proccess.delete') && (
 						<ConfirmModal
 							placement='center'
 							trigger={
@@ -102,9 +82,9 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 							<Text>
 								¿Estás seguro que quieres eliminar a
 								<Span fontWeight='semibold' px='1'>
-									{item.owner_name}
+									{item.admission_process_name}
 								</Span>
-								de la lista de Contratos?
+								de la lista de Procesos?
 							</Text>
 						</ConfirmModal>
 					)}
@@ -241,12 +221,11 @@ export const AdmissionsListTable = ({ data, fetchData, permissions }) => {
 					<Table.Header>
 						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
 							<Table.ColumnHeader>N°</Table.ColumnHeader>
-							<Table.ColumnHeader>Fecha Inicial</Table.ColumnHeader>
-							<Table.ColumnHeader>Propietario</Table.ColumnHeader>
-							<Table.ColumnHeader>Expiración</Table.ColumnHeader>
-							<Table.ColumnHeader>Estado</Table.ColumnHeader>
-							<Table.ColumnHeader>Fecha firmado</Table.ColumnHeader>
-							<Table.ColumnHeader>Contrato</Table.ColumnHeader>
+							<Table.ColumnHeader>Nombre</Table.ColumnHeader>
+							<Table.ColumnHeader>Nivel</Table.ColumnHeader>
+							<Table.ColumnHeader>Fecha Inicio</Table.ColumnHeader>
+							<Table.ColumnHeader>Fecha Fin</Table.ColumnHeader>
+							<Table.ColumnHeader>Url</Table.ColumnHeader>
 							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>

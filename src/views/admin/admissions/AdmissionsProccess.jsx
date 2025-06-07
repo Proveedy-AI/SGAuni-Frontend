@@ -21,7 +21,9 @@ export const AdmissionsProccess = () => {
 	const [loading, setInitialLoading] = useState(true);
 
 	const filteredAdmissions = dataAdmissions?.results?.filter((item) =>
-		item.name.toLowerCase().includes(searchValue.toLowerCase())
+		item.admission_process_name
+			.toLowerCase()
+			.includes(searchValue.toLowerCase())
 	);
 
 	useEffect(() => {

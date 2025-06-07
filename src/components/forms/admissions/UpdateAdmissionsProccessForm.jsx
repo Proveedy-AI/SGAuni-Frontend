@@ -1,18 +1,18 @@
 import PropTypes from 'prop-types';
-import { useRef, useState } from 'react';
-import { Button, Input, Stack } from '@chakra-ui/react';
-import { Field, Modal, toaster } from '@/components/ui';
-import { FiPlus } from 'react-icons/fi';
+import { useEffect, useRef, useState } from 'react';
+import { Box, IconButton, Input, Stack } from '@chakra-ui/react';
+import { Field, Modal, toaster, Tooltip } from '@/components/ui';
+import { FiEdit2 } from 'react-icons/fi';
 import { useCreateAdmissions } from '@/hooks/admissions_proccess';
 import { ReactSelect } from '@/components/select';
 
-export const AddAdmissionsProccessForm = ({ fetchData }) => {
+export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
-	const [name, setName] = useState('');
-	const [startDate, setStartDate] = useState('');
-	const [endDate, setEndDate] = useState('');
-	const [url, setUrl] = useState('');
+	const [name, setName] = useState(data?.admission_process_name);
+	const [startDate, setStartDate] = useState(data?.start_date);
+	const [endDate, setEndDate] = useState(data?.end_date);
+	const [url, setUrl] = useState(data.uri_url);
 	const [selectedLevel, setSelectedLevel] = useState(null);
 
 	const { mutate: createAdmissions, isPending } = useCreateAdmissions();
@@ -74,22 +74,50 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 		value: level.value,
 	}));
 
+	useEffect(() => {
+		if (data && data.admission_level) {
+			const matchedLevel = dataLevel.find(
+				(level) => level.value === data.admission_level
+			);
+			if (matchedLevel) {
+				setSelectedLevel({
+					label: matchedLevel.label,
+					value: matchedLevel.value,
+				});
+			}
+		}
+	}, [data]);
+
 	return (
 		<Modal
 			title='Agregar Proceso de Admisión'
 			placement='center'
 			trigger={
-				<Button
-					bg='uni.secondary'
-					color='white'
-					size='xs'
-					w={{ base: 'full', sm: 'auto' }}
-				>
-					<FiPlus /> Agregar Proceso
-				</Button>
+				<Box>
+					<Tooltip
+						content='Editar'
+						positioning={{ placement: 'bottom-center' }}
+						showArrow
+						openDelay={0}
+					>
+						<IconButton
+							size='xs'
+							disabled={!data?.editable}
+							colorPalette='cyan'
+							css={{
+								_icon: {
+									width: '5',
+									height: '5',
+								},
+							}}
+						>
+							<FiEdit2 />
+						</IconButton>
+					</Tooltip>
+				</Box>
 			}
 			onSave={handleSubmitData}
-			size='2xl'
+			size='4xl'
 			loading={isPending}
 			open={open}
 			onOpenChange={(e) => setOpen(e.open)}
@@ -169,6 +197,7 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 	);
 };
 
-AddAdmissionsProccessForm.propTypes = {
+UpdateAdmissionsProccessForm.propTypes = {
 	fetchData: PropTypes.func,
+	data: PropTypes.object,
 };
