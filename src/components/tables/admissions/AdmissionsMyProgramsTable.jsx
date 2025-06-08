@@ -6,6 +6,7 @@ import {
 } from '@/components/forms/admissions';
 import {
 	ConfirmModal,
+	SendModal,
 	Pagination,
 	SelectContent,
 	SelectItem,
@@ -13,8 +14,10 @@ import {
 	SelectTrigger,
 	SelectValueText,
 	toaster,
+	Tooltip,
 } from '@/components/ui';
 import { useDeleteAdmissionsPrograms } from '@/hooks/admissions_programs';
+import { useCreateProgramsReview } from '@/hooks/admissions_review_programs/useCreateProgramsReview';
 import {
 	Box,
 	createListCollection,
@@ -28,14 +31,18 @@ import {
 import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 import { memo, useEffect, useMemo, useState } from 'react';
-import { FiTrash2 } from 'react-icons/fi';
+import { FiSend, FiTrash2 } from 'react-icons/fi';
 
 const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 	const [open, setOpen] = useState(false);
+	const [openSend, setOpenSend] = useState(false);
 
 	const { mutate: deleteAdmisionsPrograms, isPending } =
 		useDeleteAdmissionsPrograms();
 
+	const { mutate: createProgramsReview, isPending: LoadingProgramsReview } =
+		useCreateProgramsReview();
+	console.log(item);
 	const handleDelete = () => {
 		deleteAdmisionsPrograms(item.id, {
 			onSuccess: () => {
@@ -47,6 +54,29 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 				setOpen(false);
 			},
 			onError: (error) => {
+				toaster.create({
+					title: error.message,
+					type: 'error',
+				});
+			},
+		});
+	};
+
+	const handleSend = () => {
+		const payload = {
+			admission_process_program: item.id,
+		};
+		createProgramsReview(payload, {
+			onSuccess: () => {
+				toaster.create({
+					title: 'Programa enviado correctamente',
+					type: 'success',
+				});
+				fetchData();
+				setOpenSend(false);
+			},
+			onError: (error) => {
+				console.log(error);
 				toaster.create({
 					title: error.message,
 					type: 'error',
@@ -70,6 +100,39 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 			<Table.Cell></Table.Cell>
 			<Table.Cell>
 				<HStack>
+					{permissions?.includes('admissions.myprograms.send') && (
+						<SendModal
+							placement='center'
+							trigger={
+								<Box>
+									<Tooltip
+										content='Enviar para aprobación'
+										positioning={{ placement: 'bottom-center' }}
+										showArrow
+										openDelay={0}
+									>
+										<IconButton colorPalette='green' size='xs'>
+											<FiSend />
+										</IconButton>
+									</Tooltip>
+								</Box>
+							}
+							open={openSend}
+							onOpenChange={(e) => setOpenSend(e.open)}
+							onConfirm={() => handleSend(item.id)}
+							loading={LoadingProgramsReview}
+							icon={'FiSend'}
+							loadingText={'Enviando'}
+						>
+							<Text>
+								¿Estás seguro que quieres enviar a
+								<Span fontWeight='semibold' px='1'>
+									{item.program_name}
+								</Span>
+								para aprobación de cronograma?
+							</Text>
+						</SendModal>
+					)}
 					<PreviewAdmissionsProgramsModal data={item} />
 					{permissions?.includes('admissions.myprograms.edit') && (
 						<UpdateAdmissionsProgramsForm data={item} fetchData={fetchData} />
@@ -90,7 +153,7 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 							<Text>
 								¿Estás seguro que quieres eliminar a
 								<Span fontWeight='semibold' px='1'>
-									{item.admission_process_name}
+									{item.program_name}
 								</Span>
 								de la lista de Procesos?
 							</Text>

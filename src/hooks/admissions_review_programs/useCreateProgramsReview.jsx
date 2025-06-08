@@ -8,7 +8,7 @@ export const useCreateProgramsReview = () => {
 	return useMutation({
 		mutationFn: async (payload) => {
 			const res = await axiosPrivate.post(
-				'/api/v1/admission-process-programs/',
+				'/api/v1/admission-reviews/',
 				payload
 			);
 			return res.data;

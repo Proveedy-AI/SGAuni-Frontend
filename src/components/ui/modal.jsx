@@ -13,6 +13,8 @@ import {
 import { Box, Heading, Icon, VStack } from '@chakra-ui/react';
 import { FiAlertCircle } from 'react-icons/fi';
 import { useContrastingColor } from '@/components/ui';
+import { HiPaperAirplane } from 'react-icons/hi2';
+import { BsSendArrowUp } from 'react-icons/bs';
 
 export const Modal = ({
 	title,
@@ -171,6 +173,57 @@ export const ConfirmModal = ({
 						loadingText={loadingText ? loadingText : 'Eliminando...'}
 					>
 						{confirmLabel ? confirmLabel : 'Si, eliminar'}
+					</Button>
+				</DialogFooter>
+				<DialogCloseTrigger bg='transparent' />
+			</DialogContent>
+		</DialogRoot>
+	);
+};
+
+export const SendModal = ({
+	children,
+	trigger,
+	onConfirm,
+	contentRef,
+	loading,
+	loadingText,
+	cancelLabel,
+	confirmLabel,
+	...props
+}) => {
+	return (
+		<DialogRoot {...props}>
+			<DialogTrigger asChild>{trigger}</DialogTrigger>
+			<DialogContent
+				bg={{ base: 'white', _dark: 'uni.gray.500' }}
+				ref={contentRef}
+			>
+				<DialogBody pt='4'>
+					<VStack>
+						<Icon
+							fontSize='5xl'
+							color={{ base: 'green.500', _dark: 'red.600' }}
+						>
+							<BsSendArrowUp />
+						</Icon>
+						{children}
+					</VStack>
+				</DialogBody>
+				<DialogFooter justifyContent='space-evenly'>
+					<DialogActionTrigger asChild>
+						<Button variant='outline' colorPalette='red'>
+							{cancelLabel ? cancelLabel : 'No, cancelar'}
+						</Button>
+					</DialogActionTrigger>
+					<Button
+						onClick={onConfirm}
+						bg='uni.secondary'
+						color='white'
+						loading={loading}
+						loadingText={loadingText ? loadingText : 'Enviando...'}
+					>
+						{confirmLabel ? confirmLabel : 'Si, Enviar'}
 					</Button>
 				</DialogFooter>
 				<DialogCloseTrigger bg='transparent' />

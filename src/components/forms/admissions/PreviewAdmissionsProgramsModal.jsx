@@ -35,8 +35,22 @@ export const PreviewAdmissionsProgramsModal = ({ data }) => {
 			placement='center'
 			trigger={
 				<Box>
-					<Tooltip content='Ver' showArrow>
-						<IconButton size='xs' colorPalette='gray'>
+					<Tooltip
+						content='Mas información'
+						positioning={{ placement: 'bottom-center' }}
+						showArrow
+						openDelay={0}
+					>
+						<IconButton
+							size='xs'
+							colorPalette='gray'
+							css={{
+								_icon: {
+									width: '5',
+									height: '5',
+								},
+							}}
+						>
 							<FiEye />
 						</IconButton>
 					</Tooltip>
