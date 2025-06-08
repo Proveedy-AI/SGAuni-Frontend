@@ -176,5 +176,7 @@ const groupTitles = {
 		properties: 'Propiedades de producto',
 		list: 'Lista General',
 		mylist: 'Lista Personal',
+		myprograms: 'Mis Programas de Admisión',
+		programs: 'Programas de Admisión',
 	},
 };
