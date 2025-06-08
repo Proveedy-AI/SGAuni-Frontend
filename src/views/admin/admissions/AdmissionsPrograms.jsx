@@ -10,21 +10,30 @@ import {
 	Input,
 	Stack,
 	Breadcrumb,
+	Tabs,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router';
-import { useReadAdmissionsProgramPending } from '@/hooks/admissions_programs';
+import {
+	useReadAdmissionsProgramAproved,
+	useReadAdmissionsProgramPending,
+} from '@/hooks/admissions_programs';
+import { AdmissionsProgramsAproveeTable } from '@/components/tables/admissions/AdmissionsProgramsAproveeTable';
 
 export const AdmissionsPrograms = () => {
 	const { id } = useParams();
 	const { data } = useReadAdmissionById(id);
+	const [tab, setTab] = useState(1);
 	const {
 		data: dataAdmissionsPrograms,
 		refetch: fetchAdmissionsPrograms,
 		isLoading,
 	} = useReadAdmissionsProgramPending();
+
+	const { data: dataAproveePrograms, refetch: fetchAproveePrograms } =
+		useReadAdmissionsProgramAproved();
 	const { getProfile } = useProvideAuth();
 	const profile = getProfile();
 	const roles = profile?.roles || [];
@@ -42,6 +51,11 @@ export const AdmissionsPrograms = () => {
 			item.program_name.toLowerCase().includes(searchValue.toLowerCase())
 	);
 
+	const filteredAprovedPrograms = dataAproveePrograms?.results?.filter((item) =>
+		//item.admission_process === Number(id) &&
+		item.program_name.toLowerCase().includes(searchValue.toLowerCase())
+	);
+	console.log(dataAproveePrograms);
 	useEffect(() => {
 		if (loading && filteredAdmissionsPrograms?.length > 0) {
 			setInitialLoading(false);
@@ -90,32 +104,93 @@ export const AdmissionsPrograms = () => {
 					{data?.admission_process_name}
 				</Heading>
 			</Stack>
-
-			<Stack
-				Stack
-				direction={{ base: 'column', sm: 'row' }}
-				align={{ base: 'center', sm: 'center' }}
-				justify='space-between'
+			<Tabs.Root
+				value={tab}
+				onValueChange={(e) => setTab(e.value)}
+				size={{ base: 'sm', md: 'md' }}
 			>
-				<InputGroup flex='1' startElement={<FiSearch />}>
-					<Input
-						ml='1'
-						size='sm'
-						bg={'white'}
-						maxWidth={'550px'}
-						placeholder='Buscar por programa ...'
-						value={searchValue}
-						onChange={(e) => setSearchValue(e.target.value)}
-					/>
-				</InputGroup>
-			</Stack>
+				<>
+					<Box
+						overflowX='auto'
+						whiteSpace='nowrap'
+						css={{
+							'&::-webkit-scrollbar': { height: '6px' },
+							'&::-webkit-scrollbar-thumb': {
+								background: '#A0AEC0', // Color del thumb
+								borderRadius: '4px',
+							},
+						}}
+					>
+						<Tabs.List minW='max-content' colorPalette='cyan'>
+							<Tabs.Trigger value={1} color={tab === 1 ? 'uni.secondary' : ''}>
+								Pendientes
+							</Tabs.Trigger>
 
-			<AdmissionsProgramsTable
-				isLoading={isLoading}
-				data={filteredAdmissionsPrograms}
-				fetchData={fetchAdmissionsPrograms}
-				permissions={permissions}
-			/>
+							<Tabs.Trigger value={2} color={tab === 2 ? 'uni.secondary' : ''}>
+								Aprobados
+							</Tabs.Trigger>
+						</Tabs.List>
+					</Box>
+				</>
+				<Tabs.Content value={1}>
+					<Stack>
+						<Stack
+							Stack
+							direction={{ base: 'column', sm: 'row' }}
+							align={{ base: 'center', sm: 'center' }}
+							justify='space-between'
+						>
+							<InputGroup flex='1' startElement={<FiSearch />}>
+								<Input
+									ml='1'
+									size='sm'
+									bg={'white'}
+									maxWidth={'550px'}
+									placeholder='Buscar por programa ...'
+									value={searchValue}
+									onChange={(e) => setSearchValue(e.target.value)}
+								/>
+							</InputGroup>
+						</Stack>
+
+						<AdmissionsProgramsTable
+							isLoading={isLoading}
+							data={filteredAdmissionsPrograms}
+							fetchData={fetchAdmissionsPrograms}
+							permissions={permissions}
+						/>
+					</Stack>
+				</Tabs.Content>
+				<Tabs.Content value={2}>
+					<Stack>
+						<Stack
+							Stack
+							direction={{ base: 'column', sm: 'row' }}
+							align={{ base: 'center', sm: 'center' }}
+							justify='space-between'
+						>
+							<InputGroup flex='1' startElement={<FiSearch />}>
+								<Input
+									ml='1'
+									size='sm'
+									bg={'white'}
+									maxWidth={'550px'}
+									placeholder='Buscar por programa ...'
+									value={searchValue}
+									onChange={(e) => setSearchValue(e.target.value)}
+								/>
+							</InputGroup>
+						</Stack>
+
+						<AdmissionsProgramsAproveeTable
+							isLoading={isLoading}
+							data={filteredAprovedPrograms}
+							fetchData={fetchAproveePrograms}
+							permissions={permissions}
+						/>
+					</Stack>
+				</Tabs.Content>
+			</Tabs.Root>
 		</Box>
 	);
 };

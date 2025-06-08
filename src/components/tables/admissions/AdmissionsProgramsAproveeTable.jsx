@@ -1,98 +1,25 @@
-import { UpdateStatusAdmissionsProccessForm } from '@/components/forms/admissions/UpdateStatusAdmissionsProccessForm';
 import {
-	ConfirmModal,
 	Pagination,
 	SelectContent,
 	SelectItem,
 	SelectRoot,
 	SelectTrigger,
 	SelectValueText,
-	toaster,
 } from '@/components/ui';
-import { useDeleteAdmissions } from '@/hooks/admissions_proccess';
-import {
-	Box,
-	createListCollection,
-	HStack,
-	IconButton,
-	Span,
-	Stack,
-	Table,
-	Text,
-} from '@chakra-ui/react';
+import { Box, createListCollection, Stack, Table } from '@chakra-ui/react';
 import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 import { memo, useEffect, useMemo, useState } from 'react';
-import { FiTrash2 } from 'react-icons/fi';
 
-const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
-	const [open, setOpen] = useState(false);
-
-	const { mutate: deleteAdmisions, isPending } = useDeleteAdmissions();
-
-	const handleDelete = () => {
-		deleteAdmisions(item.id, {
-			onSuccess: () => {
-				toaster.create({
-					title: 'Proceso eliminado correctamente',
-					type: 'success',
-				});
-				fetchData();
-				setOpen(false);
-			},
-			onError: (error) => {
-				toaster.create({
-					title: error.message,
-					type: 'error',
-				});
-			},
-		});
-	};
+const Row = memo(({ item, startIndex, index }) => {
 	return (
 		<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
 			<Table.Cell>{startIndex + index + 1}</Table.Cell>
 			<Table.Cell>{item.program_name}</Table.Cell>
-			<Table.Cell>{item.coordinator_name}</Table.Cell>
+			<Table.Cell>{item.program_type}</Table.Cell>
+			<Table.Cell>{item.reviewed_by}</Table.Cell>
 			<Table.Cell>
-				{format(new Date(item.semester_start_date), 'dd/MM/yyyy')}
-			</Table.Cell>
-			<Table.Cell>
-				{format(new Date(item.registration_start_date), 'dd/MM/yyyy')}
-			</Table.Cell>
-			<Table.Cell>
-				{format(new Date(item.registration_end_date), 'dd/MM/yyyy')}
-			</Table.Cell>
-			<Table.Cell>
-				<HStack>
-					{permissions?.includes('admissions.programs.approve') && (
-						<UpdateStatusAdmissionsProccessForm
-							data={item}
-							fetchData={fetchData}
-						/>
-					)}
-					{permissions?.includes('admissions.proccess.delete') && (
-						<ConfirmModal
-							placement='center'
-							trigger={
-								<IconButton colorPalette='red' size='xs'>
-									<FiTrash2 />
-								</IconButton>
-							}
-							open={open}
-							onOpenChange={(e) => setOpen(e.open)}
-							onConfirm={() => handleDelete(item.id)}
-							loading={isPending}
-						>
-							<Text>
-								¿Estás seguro que quieres eliminar a
-								<Span fontWeight='semibold' px='1'>
-									{item.admission_process_name}
-								</Span>
-								de la lista de Procesos?
-							</Text>
-						</ConfirmModal>
-					)}
-				</HStack>
+				{format(new Date(item.reviewed_at), 'dd/MM/yyyy')}
 			</Table.Cell>
 		</Table.Row>
 	);
@@ -108,7 +35,11 @@ Row.propTypes = {
 	permissions: PropTypes.array,
 };
 
-export const AdmissionsProgramsTable = ({ data, fetchData, permissions }) => {
+export const AdmissionsProgramsAproveeTable = ({
+	data,
+	fetchData,
+	permissions,
+}) => {
 	const smallOptions = useMemo(
 		() => [
 			{ label: '6', value: '6' },
@@ -226,11 +157,9 @@ export const AdmissionsProgramsTable = ({ data, fetchData, permissions }) => {
 						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
 							<Table.ColumnHeader>N°</Table.ColumnHeader>
 							<Table.ColumnHeader>Programa</Table.ColumnHeader>
-							<Table.ColumnHeader>Coordinador</Table.ColumnHeader>
-							<Table.ColumnHeader>Inicio Semestre</Table.ColumnHeader>
-							<Table.ColumnHeader>Inicio de Inscripciones</Table.ColumnHeader>
-							<Table.ColumnHeader>Fin de Inscripciones</Table.ColumnHeader>
-							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
+							<Table.ColumnHeader>Tipo</Table.ColumnHeader>
+							<Table.ColumnHeader>Revisado por</Table.ColumnHeader>
+							<Table.ColumnHeader>Fecha de Aprobación</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
@@ -304,7 +233,7 @@ export const AdmissionsProgramsTable = ({ data, fetchData, permissions }) => {
 	);
 };
 
-AdmissionsProgramsTable.propTypes = {
+AdmissionsProgramsAproveeTable.propTypes = {
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
 	loading: PropTypes.bool,
