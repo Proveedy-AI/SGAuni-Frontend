@@ -68,8 +68,9 @@ export const AdmissionsProccess = () => {
 						onChange={(e) => setSearchValue(e.target.value)}
 					/>
 				</InputGroup>
-
-				<AddAdmissionsProccessForm fetchData={fetchCountries} />
+				{permissions?.includes('admissions.proccess.create') && (
+					<AddAdmissionsProccessForm fetchData={fetchCountries} />
+				)}
 			</Stack>
 
 			<AdmissionsListTable

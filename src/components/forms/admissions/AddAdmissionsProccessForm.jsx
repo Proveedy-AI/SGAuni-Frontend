@@ -12,7 +12,6 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 	const [name, setName] = useState('');
 	const [startDate, setStartDate] = useState('');
 	const [endDate, setEndDate] = useState('');
-	const [url, setUrl] = useState('');
 	const [selectedLevel, setSelectedLevel] = useState(null);
 
 	const { mutate: createAdmissions, isPending } = useCreateAdmissions();
@@ -29,14 +28,11 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 			return;
 		}
 
-		const uriUrl = `${import.meta.env.VITE_DOMAIN_MAIN}/postulations?name=${encodeURIComponent(name.trim())}`;
-
 		const payload = {
 			admission_process_name: name.trim(),
 			admission_level: selectedLevel.value,
 			start_date: startDate,
 			end_date: endDate,
-			uri_url: uriUrl,
 			editable: true,
 		};
 
@@ -51,7 +47,6 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 				setName('');
 				setSelectedLevel(null);
 				setEndDate();
-				setUrl('');
 				setStartDate('');
 			},
 			onError: (error) => {
@@ -65,8 +60,10 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 	};
 
 	const dataLevel = [
-		{ label: 'Maestría', value: 1 },
-		{ label: 'Doctorado', value: 2 },
+		{ label: 'Pre Maestría', value: 1 },
+		{ label: 'Maestría', value: 2 },
+		{ label: 'Doctorado', value: 3 },
+		{ label: 'Diplomado', value: 3 },
 	];
 
 	const LevelOptions = dataLevel.map((level) => ({
@@ -105,9 +102,6 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 						onChange={(e) => {
 							const newName = e.target.value;
 							setName(newName);
-							setUrl(
-								`${import.meta.env.VITE_DOMAIN_MAIN}/postulations?name=${encodeURIComponent(newName.trim())}`
-							);
 						}}
 						placeholder='Proceso 2025-II'
 						size='xs'
@@ -150,18 +144,6 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 						onChange={(e) => setEndDate(e.target.value)}
 						type='date'
 						size='xs'
-					/>
-				</Field>
-				<Field
-					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='URL:'
-				>
-					<Input
-						value={url}
-						onChange={(e) => setUrl(e.target.value)}
-						placeholder='pe'
-						size='xs'
-						disabled
 					/>
 				</Field>
 			</Stack>

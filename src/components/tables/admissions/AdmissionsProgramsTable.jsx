@@ -25,20 +25,9 @@ import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { FiTrash2 } from 'react-icons/fi';
-import { useNavigate } from 'react-router';
 
 const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 	const [open, setOpen] = useState(false);
-	const navigate = useNavigate();
-
-	const handleRowClick = () => {
-		if (permissions?.includes('admissions.myprograms.view')) {
-			navigate(`/admissions/myprograms/${item.id}`);
-		}
-		if (permissions?.includes('admissions.programs.view')) {
-			navigate(`/admissions/programs/${item.id}`);
-		}
-	};
 
 	const { mutate: deleteAdmisions, isPending } = useDeleteAdmissions();
 
@@ -61,33 +50,21 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 		});
 	};
 	return (
-		<Table.Row
-			onClick={(e) => {
-				if (e.target.closest('button') || e.target.closest('a')) return;
-				handleRowClick();
-			}}
-			key={item.id}
-			bg={{ base: 'white', _dark: 'its.gray.500' }}
-			_hover={{
-				bg: 'gray.100',
-				cursor: 'pointer',
-			}}
-		>
+		<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
 			<Table.Cell>{startIndex + index + 1}</Table.Cell>
-			<Table.Cell>{item.admission_process_name}</Table.Cell>
-			<Table.Cell>{item.admission_level_display}</Table.Cell>
-			<Table.Cell>{format(new Date(item.start_date), 'dd/MM/yy')}</Table.Cell>
-			<Table.Cell>{format(new Date(item.end_date), 'dd/MM/yy')}</Table.Cell>
+			<Table.Cell>{item.program_name}</Table.Cell>
+			<Table.Cell>{item.coordinator_name}</Table.Cell>
 			<Table.Cell>
-				<a
-					href={`${import.meta.env.VITE_DOMAIN_MAIN}${item.uri_url}`}
-					target='_blank'
-					rel='noopener noreferrer'
-				>
-					{`${import.meta.env.VITE_DOMAIN_MAIN}${item.uri_url}`}
-				</a>
+				{format(new Date(item.semester_start_date), 'dd/MM/yyyy')}
 			</Table.Cell>
-			<Table.Cell onClick={(e) => e.stopPropagation()}>
+			<Table.Cell>
+				{format(new Date(item.registration_start_date), 'dd/MM/yyyy')}
+			</Table.Cell>
+			<Table.Cell>
+				{format(new Date(item.registration_end_date), 'dd/MM/yyyy')}
+			</Table.Cell>
+			<Table.Cell></Table.Cell>
+			<Table.Cell>
 				<HStack>
 					{permissions?.includes('admissions.proccess.edit') && (
 						<UpdateAdmissionsProccessForm data={item} fetchData={fetchData} />
@@ -130,7 +107,7 @@ Row.propTypes = {
 	permissions: PropTypes.array,
 };
 
-export const AdmissionsListTable = ({ data, fetchData, permissions }) => {
+export const AdmissionsProgramsTable = ({ data, fetchData, permissions }) => {
 	const smallOptions = useMemo(
 		() => [
 			{ label: '6', value: '6' },
@@ -247,25 +224,34 @@ export const AdmissionsListTable = ({ data, fetchData, permissions }) => {
 					<Table.Header>
 						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
 							<Table.ColumnHeader>N°</Table.ColumnHeader>
-							<Table.ColumnHeader>Nombre</Table.ColumnHeader>
-							<Table.ColumnHeader>Nivel</Table.ColumnHeader>
-							<Table.ColumnHeader>Fecha Inicio</Table.ColumnHeader>
-							<Table.ColumnHeader>Fecha Fin</Table.ColumnHeader>
-							<Table.ColumnHeader>Url</Table.ColumnHeader>
+							<Table.ColumnHeader>Programa</Table.ColumnHeader>
+							<Table.ColumnHeader>Coordinador</Table.ColumnHeader>
+							<Table.ColumnHeader>Inicio Semestre</Table.ColumnHeader>
+							<Table.ColumnHeader>Inicio de Inscripciones</Table.ColumnHeader>
+							<Table.ColumnHeader>Fin de Inscripciones</Table.ColumnHeader>
+							<Table.ColumnHeader>Estado</Table.ColumnHeader>
 							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{visibleRows?.map((item, index) => (
-							<Row
-								key={item.id}
-								item={item}
-								permissions={permissions}
-								fetchData={fetchData}
-								startIndex={startIndex}
-								index={index}
-							/>
-						))}
+						{visibleRows?.length > 0 ? (
+							visibleRows.map((item, index) => (
+								<Row
+									key={item.id}
+									item={item}
+									permissions={permissions}
+									fetchData={fetchData}
+									startIndex={startIndex}
+									index={index}
+								/>
+							))
+						) : (
+							<Table.Row>
+								<Table.Cell colSpan={7} textAlign='center'>
+									Sin datos disponibles
+								</Table.Cell>
+							</Table.Row>
+						)}
 					</Table.Body>
 				</Table.Root>
 			</Table.ScrollArea>
@@ -318,7 +304,7 @@ export const AdmissionsListTable = ({ data, fetchData, permissions }) => {
 	);
 };
 
-AdmissionsListTable.propTypes = {
+AdmissionsProgramsTable.propTypes = {
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
 	loading: PropTypes.bool,

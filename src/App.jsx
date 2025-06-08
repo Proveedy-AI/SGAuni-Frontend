@@ -13,7 +13,11 @@ import {
 import { UserList } from './views/admin/UserList';
 import { PrivateRoute, ProtectedRoute } from './PrivateRoute ';
 import { Dashboard } from './views/admin/Dashboard';
-import { AdmissionsProccess } from './views/admin/admissions';
+import {
+	AdmissionsMyPrograms,
+	AdmissionsProccess,
+	AdmissionsPrograms,
+} from './views/admin/admissions';
 import { Contracts, MyContracts } from './views/admin/contracts';
 
 function App() {
@@ -47,6 +51,23 @@ function App() {
 								>
 									<Route path='proccess' element={<AdmissionsProccess />} />
 								</Route>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='admissions.programs.view' />
+									}
+								>
+									<Route path='programs/:id' element={<AdmissionsPrograms />} />
+								</Route>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='admissions.myprograms.view' />
+									}
+								>
+									<Route
+										path='myprograms/:id'
+										element={<AdmissionsMyPrograms />}
+									/>
+								</Route>
 							</Route>
 
 							<Route path='contracts'>
@@ -74,10 +95,7 @@ function App() {
 										<ProtectedRoute requiredPermission='settings.modalities.view' />
 									}
 								>
-									<Route
-										path='modalities'
-										element={<SettingsModalities />}
-									/>
+									<Route path='modalities' element={<SettingsModalities />} />
 								</Route>
 
 								<Route

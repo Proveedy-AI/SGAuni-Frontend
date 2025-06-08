@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Box, IconButton, Input, Stack } from '@chakra-ui/react';
 import { Field, Modal, toaster, Tooltip } from '@/components/ui';
 import { FiEdit2 } from 'react-icons/fi';
-import { useCreateAdmissions } from '@/hooks/admissions_proccess';
+import { useUpdateAdmissions } from '@/hooks/admissions_proccess';
 import { ReactSelect } from '@/components/select';
 
 export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
@@ -12,10 +12,9 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 	const [name, setName] = useState(data?.admission_process_name);
 	const [startDate, setStartDate] = useState(data?.start_date);
 	const [endDate, setEndDate] = useState(data?.end_date);
-	const [url, setUrl] = useState(data.uri_url);
 	const [selectedLevel, setSelectedLevel] = useState(null);
 
-	const { mutate: createAdmissions, isPending } = useCreateAdmissions();
+	const { mutate: UpdateAdmissions, isPending } = useUpdateAdmissions();
 
 	const handleSubmitData = (e) => {
 		e.preventDefault();
@@ -29,44 +28,42 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 			return;
 		}
 
-		const uriUrl = `${import.meta.env.VITE_DOMAIN_MAIN}/postulations?name=${encodeURIComponent(name.trim())}`;
-
 		const payload = {
 			admission_process_name: name.trim(),
 			admission_level: selectedLevel.value,
 			start_date: startDate,
 			end_date: endDate,
-			uri_url: uriUrl,
 			editable: true,
 		};
 
-		createAdmissions(payload, {
-			onSuccess: () => {
-				toaster.create({
-					title: 'Proceso registrado correctamente',
-					type: 'success',
-				});
-				setOpen(false);
-				fetchData();
-				setName('');
-				setSelectedLevel(null);
-				setEndDate();
-				setUrl('');
-				setStartDate('');
-			},
-			onError: (error) => {
-				console.log(error);
-				toaster.create({
-					title: error.response?.data?.[0] || 'Error al registrar el Proceso',
-					type: 'error',
-				});
-			},
-		});
+		UpdateAdmissions(
+			{ id: data.id, payload },
+			{
+				onSuccess: () => {
+					toaster.create({
+						title: 'Proceso actualizado correctamente',
+						type: 'success',
+					});
+					setOpen(false);
+					fetchData();
+				},
+				onError: (error) => {
+					console.log(error);
+					toaster.create({
+						title:
+							error.response?.data?.[0] || 'Error al actualizar el Proceso',
+						type: 'error',
+					});
+				},
+			}
+		);
 	};
 
 	const dataLevel = [
-		{ label: 'Maestría', value: 1 },
-		{ label: 'Doctorado', value: 2 },
+		{ label: 'Pre Maestría', value: 1 },
+		{ label: 'Maestría', value: 2 },
+		{ label: 'Doctorado', value: 3 },
+		{ label: 'Diplomado', value: 3 },
 	];
 
 	const LevelOptions = dataLevel.map((level) => ({
@@ -90,7 +87,7 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 
 	return (
 		<Modal
-			title='Agregar Proceso de Admisión'
+			title='Editar Proceso de Admisión'
 			placement='center'
 			trigger={
 				<Box>
@@ -102,7 +99,6 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 					>
 						<IconButton
 							size='xs'
-							disabled={!data?.editable}
 							colorPalette='cyan'
 							css={{
 								_icon: {
@@ -133,9 +129,6 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 						onChange={(e) => {
 							const newName = e.target.value;
 							setName(newName);
-							setUrl(
-								`${import.meta.env.VITE_DOMAIN_MAIN}/postulations?name=${encodeURIComponent(newName.trim())}`
-							);
 						}}
 						placeholder='Proceso 2025-II'
 						size='xs'
@@ -178,18 +171,6 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 						onChange={(e) => setEndDate(e.target.value)}
 						type='date'
 						size='xs'
-					/>
-				</Field>
-				<Field
-					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='URL:'
-				>
-					<Input
-						value={url}
-						onChange={(e) => setUrl(e.target.value)}
-						placeholder='pe'
-						size='xs'
-						disabled
 					/>
 				</Field>
 			</Stack>

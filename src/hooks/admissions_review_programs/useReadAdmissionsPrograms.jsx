@@ -2,15 +2,18 @@
 import { useQuery } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useReadAdmissions = (params = {}) => {
+export const useReadAdmissionsPrograms = (params = {}) => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useQuery({
-		queryKey: ['admission', params],
+		queryKey: ['admission-programs', params],
 		queryFn: async () => {
-			const res = await axiosPrivate.get('/api/v1/admission-processes/', {
-				params,
-			});
+			const res = await axiosPrivate.get(
+				'/api/v1/admission-process-programs/',
+				{
+					params,
+				}
+			);
 			return res.data;
 		},
 	});
