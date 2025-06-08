@@ -40,9 +40,7 @@ export const AdmissionsMyPrograms = () => {
 	const filteredAdmissionsPrograms = dataAdmissionsPrograms?.results?.filter(
 		(item) =>
 			item.admission_process === Number(id) &&
-			item.admission_process_name
-				.toLowerCase()
-				.includes(searchValue.toLowerCase())
+			item.program_name.toLowerCase().includes(searchValue.toLowerCase())
 	);
 	console.log(dataAdmissionsPrograms);
 

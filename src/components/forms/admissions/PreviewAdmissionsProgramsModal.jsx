@@ -27,7 +27,7 @@ export const PreviewAdmissionsProgramsModal = ({ data }) => {
 	}));
 
 	const getLabel = (options, value) =>
-		options.find((opt) => opt.value === value) || { label: '—', value: null };
+		options?.find((opt) => opt.value === value) || { label: '—', value: null };
 
 	return (
 		<Modal

@@ -38,12 +38,9 @@ export const AdmissionsPrograms = () => {
 
 	const filteredAdmissionsPrograms = dataAdmissionsPrograms?.results?.filter(
 		(item) =>
-			item.admission_process === Number(id) &&
-			item.admission_process_name
-				.toLowerCase()
-				.includes(searchValue.toLowerCase())
+			//item.admission_process === Number(id) &&
+			item.program_name.toLowerCase().includes(searchValue.toLowerCase())
 	);
-	console.log(dataAdmissionsPrograms);
 
 	useEffect(() => {
 		if (loading && filteredAdmissionsPrograms?.length > 0) {

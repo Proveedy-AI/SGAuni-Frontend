@@ -1,5 +1,4 @@
-//import { UpdateSettingsCountryForm } from '@/components/forms';
-import { UpdateAdmissionsProccessForm } from '@/components/forms/admissions';
+import { UpdateStatusAdmissionsProccessForm } from '@/components/forms/admissions/UpdateStatusAdmissionsProccessForm';
 import {
 	ConfirmModal,
 	Pagination,
@@ -12,6 +11,7 @@ import {
 } from '@/components/ui';
 import { useDeleteAdmissions } from '@/hooks/admissions_proccess';
 import {
+	Badge,
 	Box,
 	createListCollection,
 	HStack,
@@ -63,11 +63,19 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 			<Table.Cell>
 				{format(new Date(item.registration_end_date), 'dd/MM/yyyy')}
 			</Table.Cell>
-			<Table.Cell></Table.Cell>
+			<Table.Cell>
+				{' '}
+				<Badge bg='yellow.500' color='white' fontSize='0.8em'>
+					Pendiente
+				</Badge>
+			</Table.Cell>
 			<Table.Cell>
 				<HStack>
-					{permissions?.includes('admissions.proccess.edit') && (
-						<UpdateAdmissionsProccessForm data={item} fetchData={fetchData} />
+					{permissions?.includes('admissions.programs.approve') && (
+						<UpdateStatusAdmissionsProccessForm
+							data={item}
+							fetchData={fetchData}
+						/>
 					)}
 					{permissions?.includes('admissions.proccess.delete') && (
 						<ConfirmModal

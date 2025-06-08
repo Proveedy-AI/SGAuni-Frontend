@@ -42,7 +42,7 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 
 	const { mutate: createProgramsReview, isPending: LoadingProgramsReview } =
 		useCreateProgramsReview();
-	console.log(item);
+
 	const handleDelete = () => {
 		deleteAdmisionsPrograms(item.id, {
 			onSuccess: () => {
@@ -65,6 +65,7 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 	const handleSend = () => {
 		const payload = {
 			admission_process_program: item.id,
+			reviewed_by: 1,
 		};
 		createProgramsReview(payload, {
 			onSuccess: () => {
