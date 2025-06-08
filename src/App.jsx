@@ -19,6 +19,7 @@ import {
 	AdmissionsPrograms,
 } from './views/admin/admissions';
 import { Contracts, MyContracts } from './views/admin/contracts';
+import AdmissionForm from './views/Inscription';
 
 function App() {
 	return (
@@ -122,6 +123,9 @@ function App() {
 							</Route>
 						</Route>
 					</Route>
+
+					{/* Llamar a la inscripción */}
+					<Route path='inscription' element={<AdmissionForm />} />
 				</Routes>
 			</BrowserRouter>
 		</>
