@@ -337,7 +337,7 @@ export const LoginAdmin = () => {
 						)}
 					</VStack>
 
-					<VStack w={'full'}>
+					{/*<VStack w={'full'}>
 						<Text
 							fontSize='14px'
 							color='gray'
@@ -370,7 +370,7 @@ export const LoginAdmin = () => {
 						>
 							Soy estudiante
 						</Button>
-					</VStack>
+					</VStack>*/}
 				</VStack>
 			</Box>
 		</Flex>
