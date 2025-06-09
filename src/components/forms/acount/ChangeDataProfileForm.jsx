@@ -1,58 +1,111 @@
 import {
-  Badge,
-  Box,
-  Button,
-  Flex,
-  Grid,
-  Input,
-  Stack,
-  Text,
+	Badge,
+	Box,
+	Button,
+	Flex,
+	Grid,
+	Input,
+	Stack,
+	Text,
 } from '@chakra-ui/react';
-import { Field, FileInput, FileUploadRoot } from '@/components/ui';
+import { Field } from '@/components/ui';
+import PropTypes from 'prop-types';
+import { ReactSelect } from '@/components/select';
 
 const FieldWithInputText = ({ label, field, value, updateProfileField }) => {
-  if (!value || value.length === 0) return null;
+	return (
+		<Field
+			orientation={{
+				base: 'vertical',
+				sm: 'horizontal',
+			}}
+			label={label}
+		>
+			<Input
+				value={value}
+				onChange={(e) => updateProfileField(field, e.target.value)}
+				variant='flushed'
+				flex='1'
+				size='sm'
+			/>
+		</Field>
+	);
+};
 
-  return (
-    <Field
-      orientation={{
-        base: 'vertical',
-        sm: 'horizontal',
-      }}
-      label={ label }
-    >
-      <Input
-        value={value}
-        onChange={(e) => updateProfileField(field, e.target.value)}
-        variant='flushed'
-        flex='1'
-        size='sm'
-      />
-    </Field>
-  )
-}
+FieldWithInputText.propTypes = {
+	label: PropTypes.string,
+	field: PropTypes.string,
+	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	updateProfileField: PropTypes.func,
+};
 
 export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
+	return (
+		<Grid
+			w='full'
+			templateColumns={{ base: '1fr', lg: 'repeat(2, 1fr)' }}
+			gap='6'
+		>
+			<Box minW='50%'>
+				<Stack css={{ '--field-label-width': '140px' }}>
+					<FieldWithInputText
+						label='Nombres:'
+						field='first_name'
+						value={profile.first_name}
+						updateProfileField={updateProfileField}
+					/>
 
-  return (
-   <Grid w='full' templateColumns={{ base: '1fr', lg: 'repeat(2, 1fr)' }} gap='6'>
-      <Box minW='50%'>
-        <Stack css={{ '--field-label-width': '140px' }}>
-          <FieldWithInputText label='Nombres:' field='first_name' value={profile.first_name} updateProfileField={updateProfileField} /> 
+					<FieldWithInputText
+						label='Apellidos:'
+						field='last_name'
+						value={profile.last_name}
+						updateProfileField={updateProfileField}
+					/>
 
-          <FieldWithInputText label='Apellidos:' field='last_name' value={profile.last_name} updateProfileField={updateProfileField} /> 
-          
-          {/* <FieldWithInputText label='Correo electrónico:' field='email' value={profile.email} updateProfileField={updateProfileField} /> */}
-          
-          <FieldWithInputText label='Nro. de documento de identidad:' field='num_doc' value={profile.num_doc} updateProfileField={updateProfileField} />
-          
-          {/* <FieldWithInputText label='País:' field='country' value={profile.country.label || user.country.name} updateProfileField={updateProfileField} /> */}
-          
-          <FieldWithInputText label='Correo institucional:' field='uni_email' value={profile.uni_email}  updateProfileField={updateProfileField} />
-          
-          <FieldWithInputText label='Categoría:' field='category' value={profile.category} updateProfileField={updateProfileField} />
-        </Stack>
-        {/* 
+					{/* <FieldWithInputText label='Correo electrónico:' field='email' value={profile.email} updateProfileField={updateProfileField} /> */}
+
+					<FieldWithInputText
+						label='Num Identidad:'
+						field='num_doc'
+						value={profile.num_doc}
+						updateProfileField={updateProfileField}
+					/>
+
+					{/* <FieldWithInputText label='País:' field='country' value={profile.country.label || user.country.name} updateProfileField={updateProfileField} /> */}
+
+					<FieldWithInputText
+						label='Correo institucional:'
+						field='uni_email'
+						value={profile.uni_email}
+						updateProfileField={updateProfileField}
+					/>
+
+					<Field
+						orientation={{ base: 'vertical', sm: 'horizontal' }}
+						label='Categoria:'
+					>
+						<ReactSelect
+							options={[
+								{ label: '4ta categoría', value: '4ta' },
+								{ label: '5ta categoría', value: '5ta' },
+							]}
+							value={{
+								label:
+									profile.category === '4ta'
+										? '4ta categoría'
+										: '5ta categoría',
+								value: profile.category,
+							}}
+							onChange={(option) =>
+								updateProfileField('category', option.value)
+							}
+							size='xs'
+							variant='flushed'
+							isSearchable={false}
+						/>
+					</Field>
+				</Stack>
+				{/* 
         <Stack css={{ '--field-label-width': '140px' }}>
           
           <Field
@@ -123,130 +176,123 @@ export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
           </Field>
         </Stack>
         */}
-      </Box> 
+			</Box>
 
-      <Box minW='50%'>
-        <Stack css={{ '--field-label-width': '140px' }}>
-    
-          <FieldWithInputText label='Teléfono:' field='phone' value={profile.phone} updateProfileField={updateProfileField} />
+			<Box minW='50%'>
+				<Stack css={{ '--field-label-width': '140px' }}>
+					<FieldWithInputText
+						label='Teléfono:'
+						field='phone'
+						value={profile.phone}
+						updateProfileField={updateProfileField}
+					/>
 
-          <Field orientation={{ base: 'vertical', sm: 'horizontal', }} label='CV:'>
-            {
-              !profile.path_cv
-                ? (
-                  <FileUploadRoot>
-                    <FileInput
-                      accept='.pdf'
-                      size='sm'
-                      placeholder='Selecciona tu CV'
-                      onChange={ e => console.log(e) }
-                    />
-                  </FileUploadRoot>
-                )
-                : (
-                  <Flex gap={2} justify="flex-start">
-                    <Button
-                      size='xs'
-                      colorScheme='blue'
-                      as='a'
-                      href={profile.path_cv || '#'}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                    >
-                      Ver CV
-                    </Button>
-                    <Button
-                      size='xs'
-                      colorScheme='red'
-                      onClick={() => updateProfileField('path_cv', '')}
-                    >
-                      Quitar CV
-                    </Button>
-                  </Flex>
-                )
-            }
-          </Field>
+					<Field
+						orientation={{ base: 'vertical', sm: 'horizontal' }}
+						label='Curriculum:'
+					>
+						{!profile.path_cv ? (
+							<Input
+								type='file'
+								accept='application/pdf'
+								size='sx'
+								onChange={(e) => {
+									const file = e.target.files?.[0];
+									updateProfileField('path_cv', file);
+								}}
+							/>
+						) : (
+							<Flex gap={2} justify='flex-start'>
+								<Button
+									size='xs'
+									colorScheme='blue'
+									as='a'
+									href={profile.path_cv || '#'}
+									target='_blank'
+									rel='noopener noreferrer'
+								>
+									Ver CV
+								</Button>
+								<Button
+									size='xs'
+									colorScheme='red'
+									onClick={() => updateProfileField('path_cv', '')}
+								>
+									Quitar CV
+								</Button>
+							</Flex>
+						)}
+					</Field>
 
-          <Field orientation={{ base: 'vertical', sm: 'horizontal', }} label='Contrato:'>
-            {
-              !profile.path_grade
-                ? (
-                  <FileUploadRoot>
-                    <FileInput
-                      accept='.pdf'
-                      size='sm'
-                      placeholder='Selecciona tu contrato'
-                      onChange={ e => console.log(e) }
-                    />
-                  </FileUploadRoot>
-                )
-                : (
-                  <Flex gap={2} justify="flex-start">
-                    <Button
-                      size='xs'
-                      colorScheme='blue'
-                      as='a'
-                      href={profile.path_grade || '#'}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                    >
-                      Ver Contrato
-                    </Button>
-                    <Button
-                      size='xs'
-                      colorScheme='red'
-                      onClick={() => updateProfileField('pathContract', '')}
-                    >
-                      Quitar Contrato
-                    </Button>
-                  </Flex>
-                )
-            }
-          </Field>
+					<Field
+						orientation={{ base: 'vertical', sm: 'horizontal' }}
+						label='Título o grado:'
+					>
+						{!profile.path_grade ? (
+							<Input
+								type='file'
+								accept='application/pdf'
+								size='sx'
+								onChange={(e) => {
+									const file = e.target.files?.[0];
+									updateProfileField('path_grade', file);
+								}}
+							/>
+						) : (
+							<Flex gap={2} justify='flex-start'>
+								<Button
+									size='xs'
+									colorScheme='blue'
+									as='a'
+									href={profile.path_grade || '#'}
+									target='_blank'
+									rel='noopener noreferrer'
+								>
+									Ver Título
+								</Button>
+								<Button
+									size='xs'
+									colorScheme='red'
+									onClick={() => updateProfileField('pathContract', '')}
+								>
+									Quitar Título
+								</Button>
+							</Flex>
+						)}
+					</Field>
+				</Stack>
+			</Box>
+			<Stack css={{ '--field-label-width': '140px' }}>
+				<Field
+					orientation={{ base: 'vertical', sm: 'horizontal' }}
+					label='Roles asignados:'
+				>
+					<Flex w='full' align='start' gap='2' wrap='wrap'>
+						{profile.roles.length > 0 ? (
+							profile.roles.map((role, index) => (
+								<Badge
+									key={index}
+									bg={{
+										base: 'uni.200',
+										_dark: 'uni.gray.300',
+									}}
+								>
+									{role.name}
+								</Badge>
+							))
+						) : (
+							<Text fontSize='sm' color='gray.500'>
+								Sin roles asignados
+							</Text>
+						)}
+					</Flex>
+				</Field>
+			</Stack>
+		</Grid>
+	);
+};
 
-          <Field
-            orientation={{
-              base: 'vertical',
-              sm: 'horizontal',
-            }}
-            label='Fecha de Expiración:'
-          >
-            <Input
-              value={profile.contractExpiresAt ? new Date(profile.contractExpiresAt).toLocaleDateString() : ''}
-              readOnly
-              variant='flushed'
-              flex='1'
-              size='sm'
-            />
-          </Field>
-        </Stack>
-      </Box>
-      <Stack css={{ '--field-label-width': '140px' }}>
-        <Field
-          orientation={{ base: 'vertical', sm: 'horizontal' }}
-          label='Roles asignados:'
-        >
-          <Flex w='full' align='start' gap='2' wrap='wrap'>
-            {profile.roles.length > 0 ? (
-              profile.roles.map((role, index) => (
-                <Badge
-                  key={index}
-                  bg={{
-                    base: 'uni.200',
-                    _dark: 'uni.gray.300',
-                  }}
-                >
-                  {role.name}
-                </Badge>
-              ))
-            ) : (
-              <Text fontSize='sm' color='gray.500'>
-                Sin roles asignados
-              </Text>
-            )}
-          </Flex>
-        </Field>
-      </Stack>
-    </Grid>
-  );
+ChangeDataProfileForm.propTypes = {
+	profile: PropTypes.object,
+	updateProfileField: PropTypes.func,
 };
