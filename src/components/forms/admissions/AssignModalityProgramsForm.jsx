@@ -35,7 +35,7 @@ export const AssignModalityToProgramForm = ({ data }) => {
 	const { mutate: updateAssignment } = useUpdateModalityAssignment();
 	const { data: modalityList } = useReadModalities();
 
-	const filteredCountry = modalityAssignList?.results?.filter(
+	const filteredModality = modalityAssignList?.results?.filter(
 		(item) => item?.admission_process_program === data?.id
 	);
 	const modalityOptions = modalityList?.results
@@ -185,7 +185,7 @@ export const AssignModalityToProgramForm = ({ data }) => {
 						</Table.Header>
 
 						<Table.Body>
-							{filteredCountry?.map((item, index) => (
+							{filteredModality?.map((item, index) => (
 								<Table.Row
 									key={item.id}
 									bg={{ base: 'white', _dark: 'its.gray.500' }}
@@ -208,7 +208,7 @@ export const AssignModalityToProgramForm = ({ data }) => {
 									</Table.Cell>
 								</Table.Row>
 							))}
-							{filteredCountry?.length === 0 && (
+							{filteredModality?.length === 0 && (
 								<Table.Row>
 									<Table.Cell colSpan={7} textAlign='center'>
 										Sin datos disponibles

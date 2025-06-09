@@ -1,3 +1,4 @@
+import { PreviewProgramsPendingModal } from '@/components/forms/admissions';
 import { UpdateStatusAdmissionsProccessForm } from '@/components/forms/admissions/UpdateStatusAdmissionsProccessForm';
 import {
 	ConfirmModal,
@@ -64,6 +65,7 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 			</Table.Cell>
 			<Table.Cell>
 				<HStack>
+					<PreviewProgramsPendingModal data={item} />
 					{permissions?.includes('admissions.programs.approve') && (
 						<UpdateStatusAdmissionsProccessForm
 							data={item}

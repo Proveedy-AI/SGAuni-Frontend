@@ -59,6 +59,7 @@ export const PreviewAdmissionsProgramsModal = ({ data }) => {
 			open={open}
 			onOpenChange={(e) => setOpen(e.open)}
 			size='4xl'
+			hiddenFooter={true}
 		>
 			<Stack css={{ '--field-label-width': '140px' }}>
 				<Field label='Programa:'>
