@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { AdminLayout, AuthLayout } from './layouts';
 //import { PrivateRoute, ProtectedRoute } from './PrivateRoute ';
-import { Login, LoginAdmin, ResetPassword } from './views/auth';
+import { LoginAdmin, ResetPassword } from './views/auth';
 import {
 	AccountProfile,
 	SettingsCountries,
