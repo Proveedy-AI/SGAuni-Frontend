@@ -1,14 +1,12 @@
 import { Outlet, useLocation } from 'react-router';
 import { Box, Flex } from '@chakra-ui/react';
-import { useColorMode } from '@/components/ui/color-mode';
 
 export const AuthLayout = () => {
-	const { colorMode } = useColorMode();
 	const location = useLocation();
 
 	let bgImage = '';
 	if (location.pathname === '/auth/login') {
-		bgImage = "url('/img/bg-light.png')";
+		bgImage = "url('/img/bg-admin.png')";
 	} else {
 		bgImage = "url('/img/bg-admin.png')";
 	}
