@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { Field, Modal, Tooltip, toaster } from '@/components/ui';
 import { ReactSelect } from '@/components/select';
-import { FiEdit2, FiTrash2, FiSettings } from 'react-icons/fi';
+import { FiTrash2, FiSettings } from 'react-icons/fi';
 import {
 	useCreateModalityAssignment,
 	useDeleteModalityAssignment,
@@ -87,14 +87,6 @@ export const AssignModalityToProgramForm = ({ data }) => {
 		} else {
 			createAssignment(payload, { onSuccess, onError });
 		}
-	};
-
-	const handleEdit = (assignment) => {
-		setSelectedModality(
-			modalityOptions.find((m) => m.value === assignment.modality_id)
-		);
-		setVacancies(String(assignment.vacancies));
-		setEditingId(assignment.id);
 	};
 
 	const handleDelete = (id) => {
