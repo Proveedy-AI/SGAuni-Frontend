@@ -1,6 +1,7 @@
 //import { UpdateSettingsCountryForm } from '@/components/forms';
 
 import {
+  AssignEvaluatorProgramModal,
 	PreviewAdmissionsProgramsModal,
 	UpdateAdmissionsProgramsForm,
 } from '@/components/forms/admissions';
@@ -142,6 +143,9 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 					{permissions?.includes('admissions.myprograms.edit') && (
 						<UpdateAdmissionsProgramsForm data={item} fetchData={fetchData} />
 					)}
+          {permissions?.includes('admissions.myprograms.assignevaluator') && (
+            <AssignEvaluatorProgramModal item={item} fetchData={fetchData} />
+          )}
 					{permissions?.includes('admissions.myprograms.delete') && (
 						<ConfirmModal
 							placement='center'
