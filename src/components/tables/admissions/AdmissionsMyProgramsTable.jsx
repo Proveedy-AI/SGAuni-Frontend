@@ -4,6 +4,7 @@ import {
 	PreviewAdmissionsProgramsModal,
 	UpdateAdmissionsProgramsForm,
 } from '@/components/forms/admissions';
+import { AssignModalityToProgramForm } from '@/components/forms/admissions/AssignModalityProgramsForm';
 import {
 	ConfirmModal,
 	SendModal,
@@ -135,6 +136,9 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 						</SendModal>
 					)}
 					<PreviewAdmissionsProgramsModal data={item} />
+					{permissions?.includes('admissions.myprograms.assignmodality') && (
+						<AssignModalityToProgramForm data={item} fetchData={fetchData} />
+					)}
 					{permissions?.includes('admissions.myprograms.edit') && (
 						<UpdateAdmissionsProgramsForm data={item} fetchData={fetchData} />
 					)}

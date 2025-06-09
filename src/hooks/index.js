@@ -12,3 +12,4 @@ export * from './provincies';
 export * from './district';
 export * from './modalityRules';
 export * from './nationalities';
+export * from './assignModalities';

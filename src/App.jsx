@@ -27,8 +27,8 @@ function App() {
 			<BrowserRouter>
 				<Routes>
 					<Route path='/auth' element={<AuthLayout />}>
-						<Route path='login' element={<Login />} />
-						<Route path='admin/login' element={<LoginAdmin />} />
+						<Route path='login' element={<LoginAdmin />} />
+						{/*<Route path='admin/login' element={<LoginAdmin />} />*/}
 						<Route path='reset-password/:token' element={<ResetPassword />} />
 					</Route>
 
