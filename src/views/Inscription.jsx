@@ -1,4 +1,4 @@
-import { useReadCountries, useReadDepartments, useReadDistrict, useReadModalities, useReadNacionalities, useReadProgramTypes, useReadProvince } from "@/hooks";
+import { /*useCreatePerson,*/ useReadCountries, useReadDepartments, useReadDistrict, useReadModalities, useReadNacionalities, useReadProgramTypes, useReadProvince } from "@/hooks";
 import { useState, useEffect } from "react";
 import {
   Box,
@@ -114,39 +114,47 @@ export default function AdmissionForm() {
     district: null,
   });
 
-  //const { mutateAsync: createInscription, isLoading: isSubmitting } = useCreateInscription();
+  //const { mutateAsync: createPerson, isLoading: isSaving } = useCreatePerson();
 
   const handleSubmitInscription = async () => {
     const payload = {
-      name: inscriptionRequest.first_name,
+      user : {
+        username: inscriptionRequest.email,
+        first_name: inscriptionRequest.first_name,
+        last_name: isOneLastName ? inscriptionRequest.last_name : `${inscriptionRequest.father_last_name} ${inscriptionRequest.mother_last_name}`,
+        //password: 'La constraseña se genera automáticamente',
+      },
+      first_name: inscriptionRequest.first_name,
       paternal_surname: inscriptionRequest.father_last_name,
       maternal_surname: inscriptionRequest.mother_last_name,
-      birthdate: inscriptionRequest.birth_date,
-      birth_country: inscriptionRequest.country?.value,
-      nationality: inscriptionRequest.nationality?.value,
+      document_type: inscriptionRequest.document_type?.value,
+      document_number: inscriptionRequest.document_number,
+      birth_date: inscriptionRequest.birth_date,
+      district: inscriptionRequest.district?.value,
       phone: `${inscriptionRequest.dial_code?.value}${inscriptionRequest.phone_number}`,
-      personal_email: inscriptionRequest.email,
+      nationality: inscriptionRequest.nationality?.value,
+      address: inscriptionRequest.address,
+      has_one_surname: isOneLastName,
+
+      //birth_country: inscriptionRequest.country?.value,
+      //personal_email: inscriptionRequest.email,
       //password: 'La constraseña se genera automáticamente',
       //is_active: true,
-      type_doc: inscriptionRequest.document_type?.value,
-      num_doc: inscriptionRequest.document_number,
-      address: inscriptionRequest.address,
-      distric: inscriptionRequest.district?.value,
-      birth_ubigeo_code: '',
-      address_ubigeo_code: '',
-      is_uni_graduate: false,
-      uni_graduate_code: '',
-      gender: 'X',
-      has_disability: false,
-      medical_disability_description: '',
-      license_number: '',
+      //birth_ubigeo_code: '',
+      //address_ubigeo_code: '',
+      //is_uni_graduate: false,
+      //uni_graduate_code: '',
+      //gender: 'X',
+      //has_disability: false,
+      //medical_disability_description: '',
+      //license_number: '',
       //created_at: new Date().toISOString(),
       //updated_at: new Date().toISOString(),
     }
 
     console.log(payload);
     /*
-      await createInscription(payload, {
+      await createPerson(payload, {
         onSuccess: () => {
           toast({
             title: "Inscripción exitosa",

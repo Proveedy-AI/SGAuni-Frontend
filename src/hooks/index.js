@@ -13,3 +13,4 @@ export * from './district';
 export * from './modalityRules';
 export * from './nationalities';
 export * from './assignModalities';
+export * from './person';

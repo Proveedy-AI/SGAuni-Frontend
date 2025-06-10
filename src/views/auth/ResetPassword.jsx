@@ -12,6 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { toaster, Field, Button, InputGroup } from '@/components/ui';
 import { LuArrowLeft, LuLock } from 'react-icons/lu';
+import { useResetPassword } from '@/hooks/users/recoverypass';
 
 export const ResetPassword = () => {
 	const { token } = useParams();
@@ -23,7 +24,7 @@ export const ResetPassword = () => {
 		error,
 		fetchTokenRecovery,
 	} = useFindTokenRecovery();*/
-	//const { reset, loading: loadingReset } = useResetPassword();
+	const { reset, loading: loadingReset } = useResetPassword();
 
 	const [password, setPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
