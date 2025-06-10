@@ -8,7 +8,7 @@ import { useReadPrograms } from '@/hooks';
 import { useCreateAdmissionsPrograms } from '@/hooks/admissions_programs';
 import { useReadUsers } from '@/hooks/users';
 
-export const AddAdmissionsProgramsForm = ({ id, fetchData }) => {
+export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 
@@ -27,7 +27,7 @@ export const AddAdmissionsProgramsForm = ({ id, fetchData }) => {
 
 	const { mutate: createAdmissionsPrograms, isPending } =
 		useCreateAdmissionsPrograms();
-	const { data: dataPrograms } = useReadPrograms();
+	const { data: dataPrograms } = useReadPrograms({ coordinator_id: profileId });
 	const { data: dataUsers, isLoading } = useReadUsers();
 
 	const handleSubmitData = (e) => {
@@ -260,4 +260,5 @@ export const AddAdmissionsProgramsForm = ({ id, fetchData }) => {
 AddAdmissionsProgramsForm.propTypes = {
 	fetchData: PropTypes.func.isRequired,
 	id: PropTypes.string,
+	profileId: PropTypes.number,
 };

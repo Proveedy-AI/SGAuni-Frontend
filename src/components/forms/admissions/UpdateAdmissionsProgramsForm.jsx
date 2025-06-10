@@ -25,14 +25,14 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 		data?.pre_master_start_date
 	);
 	const [preMasterEnd, setPreMasterEnd] = useState(data?.pre_master_end_date);
-
+console.log(data)
 	const [selectedMode, setSelectedMode] = useState(null);
 	const [selectedType, setSelectedType] = useState(null);
 	const [selectedProgram, setSelectedProgram] = useState(null);
 	const [selectedUser, setSelectedUser] = useState(null);
 	const { mutate: updateAdmissionsPrograms, isPending } =
 		useUpdateAdmissionsPrograms();
-	const { data: dataPrograms } = useReadPrograms();
+	const { data: dataPrograms } = useReadPrograms({ coordinator_id: data?.coordinator });
 	const { data: dataUsers, isLoading } = useReadUsers();
 
 	const handleSubmitData = (e) => {

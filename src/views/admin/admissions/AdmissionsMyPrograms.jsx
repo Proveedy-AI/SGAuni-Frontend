@@ -113,6 +113,7 @@ export const AdmissionsMyPrograms = () => {
 				{permissions?.includes('admissions.myprograms.create') && (
 					<AddAdmissionsProgramsForm
 						id={id}
+						profileId={profile?.id}
 						fetchData={fetchAdmissionsPrograms}
 					/>
 				)}
