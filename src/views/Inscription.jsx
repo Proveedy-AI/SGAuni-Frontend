@@ -59,17 +59,46 @@ export default function AdmissionForm() {
   const { data: dataProvince, isLoading: loadingProvince } = useReadProvince();
   const { data: dataDistrict, isLoading: loadingDistrict } = useReadDistrict();
 
+  console.log(
+    'Paises',
+    dataCountries?.results,
+    'Departamentos',
+    dataDepartments?.results,
+    'Provincias',
+    dataProvince?.results,
+    'Distritos',
+    dataDistrict?.results
+  )
+
+  const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [selectedProvince, setSelectedProvince] = useState(null);
   const [selectedDistrict, setSelectedDistrict] = useState(null);
 
-  const departmentOptions = dataDepartments?.results?.map(dep => ({
+  useEffect(() => {
+    setSelectedDepartment(null);
+    setSelectedProvince(null);
+    setSelectedDistrict(null);
+  }, [selectedCountry]);
+
+  useEffect(() => {
+    setSelectedProvince(null);
+    setSelectedDistrict(null);
+  }, [selectedDepartment]);
+
+  useEffect(() => {
+    setSelectedDistrict(null);
+  }, [selectedProvince]);
+
+  const departmentOptions = dataDepartments?.results
+  ?.filter(dep => selectedCountry ? dep.country === selectedCountry.value : true)
+  .map(dep => ({
     value: dep.id,
     label: dep.name,
   })) || [];
 
   const provinceOptions = dataProvince?.results
-    ?.filter(prov => selectedDepartment ? prov.department_id === selectedDepartment.value : true)
+    ?.filter(prov => selectedDepartment ? prov.department === selectedDepartment.value : true)
     .map(prov => ({
       value: prov.id,
       label: prov.name,
@@ -77,7 +106,7 @@ export default function AdmissionForm() {
     })) || [];
 
   const districtOptions = dataDistrict?.results
-    ?.filter(dist => selectedProvince ? dist.province_id === selectedProvince.value : true)
+    ?.filter(dist => selectedProvince ? dist.province === selectedProvince.value : true)
     .map(dist => ({
       value: dist.id,
       label: dist.name,
@@ -360,6 +389,16 @@ export default function AdmissionForm() {
               </Field>
               <Field label="País">
                 <ReactSelect
+                  label="País"
+                  options={countryOptions}
+                  value={selectedCountry}
+                  onChange={setSelectedCountry}
+                  isLoading={isLoading}
+                  placeholder="Seleccione un país"
+                />
+              </Field>
+              <Field label="Departamento">
+                <ReactSelect
                   label="Departamento"
                   options={departmentOptions}
                   value={selectedDepartment}
@@ -388,7 +427,6 @@ export default function AdmissionForm() {
                   onChange={setSelectedDistrict}
                   isLoading={loadingDistrict}
                   placeholder="Seleccione un distrito"
-                  isDisabled={!selectedProvince}
                   mt={4}
                 />
               </Field>
