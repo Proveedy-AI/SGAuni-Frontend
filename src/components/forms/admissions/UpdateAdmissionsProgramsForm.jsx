@@ -6,6 +6,7 @@ import { FiEdit2 } from 'react-icons/fi';
 import { ReactSelect } from '@/components/select';
 import { useReadPrograms } from '@/hooks';
 import { useUpdateAdmissionsPrograms } from '@/hooks/admissions_programs';
+import { useReadUsers } from '@/hooks/users';
 
 export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 	const contentRef = useRef();
@@ -28,10 +29,11 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 	const [selectedMode, setSelectedMode] = useState(null);
 	const [selectedType, setSelectedType] = useState(null);
 	const [selectedProgram, setSelectedProgram] = useState(null);
-
+	const [selectedUser, setSelectedUser] = useState(null);
 	const { mutate: updateAdmissionsPrograms, isPending } =
 		useUpdateAdmissionsPrograms();
 	const { data: dataPrograms } = useReadPrograms();
+	const { data: dataUsers, isLoading } = useReadUsers();
 
 	const handleSubmitData = (e) => {
 		e.preventDefault();
@@ -52,6 +54,7 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 			registration_start_date: registrationStart,
 			registration_end_date: registrationEnd,
 			exam_date_start: examStart,
+			director: selectedUser.value,
 			exam_date_end: examEnd,
 			semester_start_date: semesterStart,
 			pre_master_start_date: preMasterStart,
@@ -98,6 +101,13 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 		value: department.id,
 	}));
 
+	const UserstOptions = dataUsers?.results
+		.filter((user) => user.roles?.some((role) => role.name === 'Director'))
+		.map((user) => ({
+			label: user.full_name,
+			value: user.id,
+		}));
+
 	useEffect(() => {
 		if (data) {
 			// Tipo de postgrado
@@ -123,6 +133,14 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 				);
 				if (matchedProgram) {
 					setSelectedProgram(matchedProgram);
+				}
+			}
+			if (data.director && UserstOptions) {
+				const matchedDirector = UserstOptions.find(
+					(director) => director.value === data.director
+				);
+				if (matchedDirector) {
+					setSelectedUser(matchedDirector);
 				}
 			}
 		}
@@ -192,6 +210,19 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 						size='xs'
 						isSearchable
 						options={dataMode}
+					/>
+				</Field>
+				<Field label='Director:'>
+					<ReactSelect
+						value={selectedUser}
+						onChange={(select) => setSelectedUser(select)}
+						variant='flushed'
+						size='xs'
+						isDisabled={isLoading}
+						isLoading={isLoading}
+						isSearchable={true}
+						name='paises'
+						options={UserstOptions}
 					/>
 				</Field>
 				<Field label='Inicio de semestre:'>

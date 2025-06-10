@@ -1,7 +1,7 @@
 //import { UpdateSettingsCountryForm } from '@/components/forms';
 
 import {
-  AssignEvaluatorProgramModal,
+	AssignEvaluatorProgramModal,
 	PreviewAdmissionsProgramsModal,
 	UpdateAdmissionsProgramsForm,
 } from '@/components/forms/admissions';
@@ -21,6 +21,7 @@ import {
 import { useDeleteAdmissionsPrograms } from '@/hooks/admissions_programs';
 import { useCreateProgramsReview } from '@/hooks/admissions_review_programs/useCreateProgramsReview';
 import {
+	Badge,
 	Box,
 	createListCollection,
 	HStack,
@@ -87,6 +88,12 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 			},
 		});
 	};
+	const statusMap = {
+		Draft: { label: 'Borrador', color: 'gray' },
+		Pending: { label: 'Pendiente', color: 'yellow' },
+		Approved: { label: 'Aprobado', color: 'green' },
+		Rejected: { label: 'Rechazado', color: 'red' },
+	};
 	return (
 		<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
 			<Table.Cell>{startIndex + index + 1}</Table.Cell>
@@ -100,7 +107,22 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 			<Table.Cell>
 				{format(new Date(item.registration_end_date), 'dd/MM/yyyy')}
 			</Table.Cell>
-			<Table.Cell></Table.Cell>
+			<Table.Cell>
+				{(() => {
+					const status = statusMap[item.status_display] || {
+						label: item.status_display,
+						color: 'default',
+					};
+					return (
+						<Badge
+							variant='solid'
+							className={`bg-${status.color}-100 text-${status.color}-800`}
+						>
+							{status.label}
+						</Badge>
+					);
+				})()}
+			</Table.Cell>
 			<Table.Cell>
 				<HStack>
 					{permissions?.includes('admissions.myprograms.send') && (
@@ -143,9 +165,9 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 					{permissions?.includes('admissions.myprograms.edit') && (
 						<UpdateAdmissionsProgramsForm data={item} fetchData={fetchData} />
 					)}
-          {permissions?.includes('admissions.myprograms.assignevaluator') && (
-            <AssignEvaluatorProgramModal item={item} fetchData={fetchData} />
-          )}
+					{permissions?.includes('admissions.myprograms.assignevaluator') && (
+						<AssignEvaluatorProgramModal item={item} fetchData={fetchData} />
+					)}
 					{permissions?.includes('admissions.myprograms.delete') && (
 						<ConfirmModal
 							placement='center'

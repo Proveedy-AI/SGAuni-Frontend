@@ -1,5 +1,11 @@
 import PropTypes from 'prop-types';
-import { Box, IconButton, Input, SimpleGrid, Stack } from '@chakra-ui/react';
+import {
+	Box,
+	IconButton,
+	Input,
+	SimpleGrid,
+	Stack,
+} from '@chakra-ui/react';
 import { Field, Modal, Tooltip } from '@/components/ui';
 import { FiEye } from 'react-icons/fi';
 import { ReactSelect } from '@/components/select';
@@ -87,6 +93,10 @@ export const PreviewAdmissionsProgramsModal = ({ data }) => {
 						variant='flushed'
 						size='xs'
 					/>
+				</Field>
+
+				<Field label='Director:'>
+					<Input value={data.director_name} isReadOnly></Input>
 				</Field>
 
 				<Field label='Inicio de semestre:'>
