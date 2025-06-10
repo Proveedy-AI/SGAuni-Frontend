@@ -19,6 +19,7 @@ import {
 import { ViewProgram } from '../forms/management/programs/ViewProgram';
 import { DeleteProgram } from '../forms/management/programs/DeleteProgram';
 import { EditProgram } from '../forms/management/programs/EditProgram';
+import { AssignDebtConditionProgram } from '../forms/management/programs';
 
 const Row = memo(({ item, fetchData, startIndex, index, programTypesOptions, coordinatorsOptions, loadingProgramTypes, loadingCoordinators }) => {
 
@@ -39,6 +40,7 @@ const Row = memo(({ item, fetchData, startIndex, index, programTypesOptions, coo
               loadingProgramTypes={loadingProgramTypes}
               loadingCoordinators={loadingCoordinators}
             />
+            <AssignDebtConditionProgram item={item} fetchData={fetchData} />
             <DeleteProgram item={item} fetchData={fetchData} />
           </Group>
         </HStack>
