@@ -29,7 +29,7 @@ function App() {
 					<Route path='/auth' element={<AuthLayout />}>
 						<Route path='login' element={<LoginAdmin />} />
 						{/*<Route path='admin/login' element={<LoginAdmin />} />*/}
-						<Route path='reset-password/:token' element={<ResetPassword />} />
+						<Route path='reset-password' element={<ResetPassword />} />
 					</Route>
 
 					<Route element={<PrivateRoute />}>

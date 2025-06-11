@@ -1,16 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
-import { axiosPrivate } from '@/api';
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { useMutation } from '@tanstack/react-query';
+import axios from '@/api/axios';
 
 export const useResetPassword = () => {
-	return useQuery({
-		queryKey: ['recovery-pass'],
-		queryFn: async (payload) => {
-			const response = await axiosPrivate.post(`${API_URL}/api/v1/request_password_reset/`, payload);
+	return useMutation({
+		mutationFn: async (payload) => {
+			const response = await axios.post(`/api/v1/password-reset/request_password_reset/`, payload);
 			return response.data;
 		},
-		enabled: false,
 	});
 };
-

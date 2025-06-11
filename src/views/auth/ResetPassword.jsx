@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams, Link } from 'react-router';
+import { useState } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router';
 import {
 	Box,
 	Container,
@@ -8,23 +8,18 @@ import {
 	Stack,
 	VStack,
 	Text,
-	Spinner,
 } from '@chakra-ui/react';
 import { toaster, Field, Button, InputGroup } from '@/components/ui';
 import { LuArrowLeft, LuLock } from 'react-icons/lu';
 import { useResetPassword } from '@/hooks/users/recoverypass';
 
 export const ResetPassword = () => {
-	const { token } = useParams();
+	const location = useLocation();
+	const queryParams = new URLSearchParams(location.search);
+	const token = queryParams.get('token');
 	const navigate = useNavigate();
 
-	/*const {
-		loading: loadingFind,
-		data,
-		error,
-		fetchTokenRecovery,
-	} = useFindTokenRecovery();*/
-	const { reset, loading: loadingReset } = useResetPassword();
+	const { mutateAsync: reset, isPending: loadingReset } = useResetPassword();
 
 	const [password, setPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
@@ -33,14 +28,8 @@ export const ResetPassword = () => {
 		confirmPassword: '',
 	});
 
-	/*useEffect(() => {
-		if (token && token.trim() !== '') {
-			fetchTokenRecovery(token);
-		}
-	}, [token, fetchTokenRecovery]);*/
-
 	const handleSubmit = async (e) => {
-	/*	e.preventDefault();
+		e.preventDefault();
 		setFieldError({ password: '', confirmPassword: '' });
 
 		if (!password) {
@@ -67,7 +56,7 @@ export const ResetPassword = () => {
 			return;
 		}
 
-		if (!data?.email || !data?.token) {
+		if (!token) {
 			toaster.create({
 				title: 'Error',
 				description: 'No se pudo validar el token. Intente de nuevo.',
@@ -78,10 +67,9 @@ export const ResetPassword = () => {
 
 		try {
 			await reset({
-				email: data.email,
-				password: password,
-				token: data.token,
-				configuration_id: 1,
+				new_password: password,
+				confirm_new_password: confirmPassword,
+				token: token,
 			});
 
 			toaster.create({
@@ -100,59 +88,8 @@ export const ResetPassword = () => {
 				description: error.message,
 				type: 'error',
 			});
-		}*/
+		}
 	};
-
-	/*if (loadingFind) {
-		return (
-			<Container maxW='md' py={12}>
-				<Box
-					bg={{ base: 'white', _dark: 'uni.gray.500' }}
-					p={10}
-					borderRadius='20px'
-					boxShadow='2xl'
-					w='full'
-					textAlign='center'
-				>
-					<Spinner size='lg' />
-					<Text mt={4} color='gray.600'>
-						Verificando token...
-					</Text>
-				</Box>
-			</Container>
-		);
-	}
-
-	if (error || !data?.email || !data?.token) {
-		return (
-			<Container maxW='md' py={12}>
-				<Box
-					bg={{ base: 'white', _dark: 'uni.gray.500' }}
-					p={10}
-					borderRadius='20px'
-					boxShadow='2xl'
-					w='full'
-					textAlign='center'
-				>
-					<Text fontSize='xl' fontWeight='bold' color='red.500'>
-						Token inválido o expirado
-					</Text>
-					<Text color='gray.600' mt={2}>
-						Por favor, solicita un nuevo enlace de recuperación.
-					</Text>
-					<Button
-						mt={4}
-						bg='uni.secondary'
-						color='white'
-						as={Link}
-						to='/auth/login'
-					>
-						Solicitar nuevo enlace
-					</Button>
-				</Box>
-			</Container>
-		);
-	}*/
 
 	return (
 		<Container maxW='md' py={12}>
@@ -194,17 +131,12 @@ export const ResetPassword = () => {
 								invalid={!!fieldError.password}
 								errorText={fieldError.password}
 							>
-								<InputGroup
-									width='100%'
-									startElement={<LuLock />}
-								>
+								<InputGroup width='100%' startElement={<LuLock />}>
 									<Input
 										placeholder='Ingrese su nueva contraseña'
 										type='password'
 										value={password}
-										onChange={(e) =>
-											setPassword(e.target.value)
-										}
+										onChange={(e) => setPassword(e.target.value)}
 										size='sm'
 									/>
 								</InputGroup>
@@ -215,17 +147,12 @@ export const ResetPassword = () => {
 								invalid={!!fieldError.confirmPassword}
 								errorText={fieldError.confirmPassword}
 							>
-								<InputGroup
-									width='100%'
-									startElement={<LuLock />}
-								>
+								<InputGroup width='100%' startElement={<LuLock />}>
 									<Input
 										placeholder='Confirme su nueva contraseña'
 										type='password'
 										value={confirmPassword}
-										onChange={(e) =>
-											setConfirmPassword(e.target.value)
-										}
+										onChange={(e) => setConfirmPassword(e.target.value)}
 										size='sm'
 									/>
 								</InputGroup>
@@ -234,7 +161,7 @@ export const ResetPassword = () => {
 							<Button
 								type='submit'
 								w='full'
-								//loading={loadingReset}
+								loading={loadingReset}
 								loadingText='Guardando...'
 								bg='uni.secondary'
 								color='white'
