@@ -206,7 +206,7 @@ export const AssignEvaluatorProgramModal = ({ item, fetchData }) => {
 							size='sm'
 							bg='uni.secondary'
 							loading={isSaving}
-							disabled={!evaluatorRequest.coordinator || !evaluatorRequest.role}
+							disabled={!evaluatorRequest.coordinator || !evaluatorRequest.role || item.status === 4}
 							onClick={handleSubmit}
 							css={{ _icon: { width: '5', height: '5' } }}
 						>
