@@ -66,11 +66,7 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 	};
 
 	const handleSend = () => {
-		const payload = {
-			admission_process_program: item.id,
-			reviewed_by: 1,
-		};
-		createProgramsReview(payload, {
+		createProgramsReview(item.id, {
 			onSuccess: () => {
 				toaster.create({
 					title: 'Programa enviado correctamente',
@@ -90,7 +86,7 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 	};
 	const statusMap = {
 		Draft: { label: 'Borrador', color: 'gray' },
-		Pending: { label: 'Pendiente', color: 'yellow' },
+		Pending: { label: 'Pendiente', color: 'orange.500' },
 		Approved: { label: 'Aprobado', color: 'green' },
 		Rejected: { label: 'Rechazado', color: 'red' },
 	};
@@ -114,10 +110,7 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 						color: 'default',
 					};
 					return (
-						<Badge
-							variant='solid'
-							className={`bg-${status.color}-100 text-${status.color}-800`}
-						>
+						<Badge variant='solid' bg={status.color}>
 							{status.label}
 						</Badge>
 					);
@@ -162,11 +155,12 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 					{permissions?.includes('admissions.myprograms.assignmodality') && (
 						<AssignModalityToProgramForm data={item} fetchData={fetchData} />
 					)}
-					{permissions?.includes('admissions.myprograms.edit') && (
-						<UpdateAdmissionsProgramsForm data={item} fetchData={fetchData} />
-					)}
+
 					{permissions?.includes('admissions.myprograms.assignevaluator') && (
 						<AssignEvaluatorProgramModal item={item} fetchData={fetchData} />
+					)}
+					{permissions?.includes('admissions.myprograms.edit') && (
+						<UpdateAdmissionsProgramsForm data={item} fetchData={fetchData} />
 					)}
 					{permissions?.includes('admissions.myprograms.delete') && (
 						<ConfirmModal
