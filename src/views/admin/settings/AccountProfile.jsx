@@ -3,25 +3,23 @@ import { toaster } from '@/components/ui';
 import { Box, Heading, VStack, Text } from '@chakra-ui/react';
 import { FiAlertCircle } from 'react-icons/fi';
 import { Link } from 'react-router';
-import { useChangePassword } from '@/hooks/auth';
-import { useReadUsers, useUpdateUser } from '@/hooks/users';
-import { ChangePasswordForm } from '@/components/forms/acount/ChangePasswordForm';
+import { useUpdateUser } from '@/hooks/users';
 import { ChangeDataProfileForm } from '@/components/forms/acount/ChangeDataProfileForm';
 import { ChangeProfileControl } from '@/components/forms/acount/ChangeProfileControl';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { uploadToS3 } from '@/utils/uploadToS3';
 
 export const AccountProfile = () => {
-	const { data: dataUser, isLoading, error } = useReadUserLogged();
+	const { data: dataUser, isLoading, error, refetch } = useReadUserLogged();
 	const { mutate: update, loading: loadingUpdate } = useUpdateUser();
-	const { changePassword, loading: loadingPassword } = useChangePassword();
-	const { data: dataUsers, refetch, loading: loadingRead } = useReadUsers();
 
 	const [profile, setProfile] = useState({
 		id: '',
 		user: {},
 		username: '',
 		first_name: '',
+		password: '',
+		confirmPassword: '',
 		last_name: '',
 		full_name: '',
 		num_doc: '',
@@ -37,20 +35,12 @@ export const AccountProfile = () => {
 		roles: [],
 		color: '',
 		status: null,
-		password: '',
 		country: {},
 		pathContract: '',
 		contractExpiresAt: null,
 		userId: '',
 	});
 
-	const [passwords, setPasswords] = useState({
-		currentPassword: '',
-		newPassword: '',
-		confirmPassword: '',
-	});
-
-	const [isOpen, setIsOpen] = useState(false);
 	const [isChangesMade, setIsChangesMade] = useState(false);
 	const [initialProfile, setInitialProfile] = useState(null);
 
@@ -74,10 +64,6 @@ export const AccountProfile = () => {
 	const updateProfileField = (field, value) => {
 		setIsChangesMade(true);
 		setProfile((prev) => ({ ...prev, [field]: value }));
-	};
-
-	const updatePasswordField = (field, value) => {
-		setPasswords((prev) => ({ ...prev, [field]: value }));
 	};
 
 	const handleUpdateProfile = async (e) => {
@@ -133,39 +119,6 @@ export const AccountProfile = () => {
 		}
 	};
 
-	const handleChangePassword = async () => {
-		if (passwords.newPassword !== passwords.confirmPassword) {
-			toaster.create({ title: 'Las contraseñas no coinciden', type: 'error' });
-			return;
-		}
-
-		const payload = {
-			user_id: dataUser?.id,
-			current_password: passwords.currentPassword,
-			new_password: passwords.newPassword,
-		};
-
-		try {
-			// problema de las CSRF await changePassword(payload);
-			await new Promise((resolve) => setTimeout(resolve, 1000));
-
-			// Simulación de validación (no usar en producción)
-			if (passwords.currentPassword !== profile.password) {
-				throw new Error('La contraseña actual es incorrecta.');
-			}
-
-			updateProfileField('password', passwords.newPassword);
-			toaster.create({ title: 'Contraseña actualizada', type: 'success' });
-			setIsOpen(false);
-			setPasswords({
-				currentPassword: '',
-				newPassword: '',
-				confirmPassword: '',
-			});
-		} catch (error) {
-			toaster.create({ title: error.message, type: 'error' });
-		}
-	};
 
 	return (
 		<Box spaceY='5'>
@@ -227,14 +180,14 @@ export const AccountProfile = () => {
 						updateProfileField={updateProfileField}
 					/>
 
-					<ChangePasswordForm
+					{/*<ChangePasswordForm
 						isOpen={isOpen}
 						setIsOpen={setIsOpen}
 						handleChangePassword={handleChangePassword}
 						loadingPassword={loadingPassword}
 						passwords={passwords}
 						updatePasswordField={updatePasswordField}
-					/>
+					/>*/}
 				</VStack>
 			)}
 		</Box>
