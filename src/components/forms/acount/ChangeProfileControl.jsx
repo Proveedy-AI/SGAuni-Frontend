@@ -8,6 +8,15 @@ export const ChangeProfileControl = ({
 	handleUpdateProfile,
 	loadingUpdate,
 }) => {
+	const isPasswordMismatch =
+		profile.password &&
+		profile.confirmPassword &&
+		profile.password !== profile.confirmPassword;
+	const isPasswordRequiredButEmpty =
+		profile.password && !profile.confirmPassword;
+	const isButtonDisabled =
+		!isChangesMade || isPasswordMismatch || isPasswordRequiredButEmpty;
+
 	return (
 		<HStack justify='space-between' w='full'>
 			<HStack>
@@ -19,21 +28,30 @@ export const ChangeProfileControl = ({
 					<Text fontWeight='medium'>{profile.full_name}</Text>
 				</Stack>
 			</HStack>
-			<Button
-				size='sm'
-				onClick={isChangesMade ? handleUpdateProfile : undefined}
-				isLoading={loadingUpdate}
-				bg={isChangesMade ? 'uni.secondary' : 'gray.300'}
-				color={isChangesMade ? 'white' : 'gray.600'}
-				w={{ base: 'full', sm: 'auto' }}
-				alignSelf='flex-start'
-				isDisabled={!isChangesMade}
-				_hover={isChangesMade ? {} : { bg: 'gray.300' }}
-				_active={isChangesMade ? {} : { bg: 'gray.300' }}
-				cursor={isChangesMade ? 'pointer' : 'not-allowed'}
-			>
-				Guardar Cambios
-			</Button>
+
+			<Stack spacing={1} align='end'>
+				<Button
+					size='sm'
+					onClick={!isButtonDisabled ? handleUpdateProfile : undefined}
+					isLoading={loadingUpdate}
+					bg={isButtonDisabled ? 'gray.300' : 'uni.secondary'}
+					color={isButtonDisabled ? 'gray.600' : 'white'}
+					w={{ base: 'full', sm: 'auto' }}
+					alignSelf='flex-start'
+					isDisabled={isButtonDisabled}
+					_hover={isButtonDisabled ? { bg: 'gray.300' } : {}}
+					_active={isButtonDisabled ? { bg: 'gray.300' } : {}}
+					cursor={isButtonDisabled ? 'not-allowed' : 'pointer'}
+				>
+					Guardar Cambios
+				</Button>
+
+				{isPasswordMismatch && (
+					<Text fontSize='xs' color='red.500'>
+						Las contraseñas no coinciden
+					</Text>
+				)}
+			</Stack>
 		</HStack>
 	);
 };
