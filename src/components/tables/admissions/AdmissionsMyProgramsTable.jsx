@@ -129,7 +129,11 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 										showArrow
 										openDelay={0}
 									>
-										<IconButton colorPalette='green' size='xs'>
+										<IconButton
+											disabled={item.status === 4}
+											colorPalette='green'
+											size='xs'
+										>
 											<FiSend />
 										</IconButton>
 									</Tooltip>
@@ -166,7 +170,11 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 						<ConfirmModal
 							placement='center'
 							trigger={
-								<IconButton colorPalette='red' size='xs'>
+								<IconButton
+									disabled={item.status === 4}
+									colorPalette='red'
+									size='xs'
+								>
 									<FiTrash2 />
 								</IconButton>
 							}

@@ -15,6 +15,16 @@ import { format } from 'date-fns';
 
 export const PreviewProgramsPendingModal = ({ data }) => {
 	const [open, setOpen] = useState(false);
+	const statusMap = {
+		Draft: { label: 'Borrador', color: 'gray' },
+		Pending: { label: 'Pendiente', color: 'orange.500' },
+		Approved: { label: 'Aprobado', color: 'green' },
+		Rejected: { label: 'Rechazado', color: 'red' },
+	};
+	const typeMap = {
+		1: 'Investigación',
+		2: 'Profesionalizante',
+	};
 	console.log(data);
 	return (
 		<Modal
@@ -57,8 +67,8 @@ export const PreviewProgramsPendingModal = ({ data }) => {
 					</Field>
 
 					<Field color='gray' label='Tipo de Postgrado:'>
-						<Text color={'black'} fontSize='xl'>
-							{data.post_grad_type_display}
+						<Text color='black' fontSize='lg'>
+							{typeMap[data.postgrad_type] || 'No definido'}
 						</Text>
 					</Field>
 
@@ -67,12 +77,18 @@ export const PreviewProgramsPendingModal = ({ data }) => {
 							{data.study_mode_display}
 						</Text>
 					</Field>
-					<Field color='gray' label='Estado:'>
-						<Text color={'black'} fontSize='sm'>
-							<Badge bg='blue.500' color='white' fontSize='0.8em'>
-								Pendiente
-							</Badge>
-						</Text>
+					<Field label='Estado:'>
+						{(() => {
+							const status = statusMap[data.status_display] || {
+								label: data.status_display,
+								color: 'default',
+							};
+							return (
+								<Badge variant='solid' bg={status.color}>
+									{status.label}
+								</Badge>
+							);
+						})()}
 					</Field>
 				</SimpleGrid>
 				<Stack spacing={4} mt={4}>

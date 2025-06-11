@@ -40,7 +40,7 @@ export const UpdateStatusAdmissionsProccessForm = ({ data, fetchData }) => {
 		}
 
 		const payload = {
-			comment: selectedStatus === 3 ? comments.trim() : '',
+			comments: selectedStatus === 3 ? comments.trim() : '',
 			status: selectedStatus,
 		};
 

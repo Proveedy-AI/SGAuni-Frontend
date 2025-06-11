@@ -9,7 +9,7 @@ export const useReadAdmissionsProgramAproved = (params = {}) => {
 		queryKey: ['admission-aproved', params],
 		queryFn: async () => {
 			const res = await axiosPrivate.get(
-				'/api/v1/admission-reviews/active-programs/',
+				'/api/v1/admission-reviews/active_programs/',
 				{
 					params,
 				}

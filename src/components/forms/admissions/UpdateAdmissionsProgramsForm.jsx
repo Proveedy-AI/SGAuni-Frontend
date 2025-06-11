@@ -31,7 +31,9 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 	const [selectedUser, setSelectedUser] = useState(null);
 	const { mutate: updateAdmissionsPrograms, isPending } =
 		useUpdateAdmissionsPrograms();
-	const { data: dataPrograms } = useReadPrograms({ coordinator_id: data?.coordinator });
+	const { data: dataPrograms } = useReadPrograms({
+		coordinator_id: data?.coordinator,
+	});
 	const { data: dataUsers, isLoading } = useReadUsers();
 
 	const handleSubmitData = (e) => {
@@ -160,6 +162,7 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 						<IconButton
 							size='xs'
 							colorPalette='cyan'
+							disabled={data.status === 4}
 							css={{
 								_icon: {
 									width: '5',

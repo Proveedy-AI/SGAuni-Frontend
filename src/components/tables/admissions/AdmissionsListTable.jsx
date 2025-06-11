@@ -67,9 +67,9 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 				handleRowClick();
 			}}
 			key={item.id}
-			bg={{ base: 'white', _dark: 'its.gray.500' }}
+			bg={index % 2 === 0 ? 'gray.100' : 'white'} // tu color alternado aquí
 			_hover={{
-				bg: 'gray.100',
+				bg: 'blue.100',
 				cursor: 'pointer',
 			}}
 		>
@@ -243,9 +243,9 @@ export const AdmissionsListTable = ({ data, fetchData, permissions }) => {
 					maxHeight: tableHeight,
 				}}
 			>
-				<Table.Root size='sm' w='full' striped>
+				<Table.Root size='sm' w='full'>
 					<Table.Header>
-						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
+						<Table.Row>
 							<Table.ColumnHeader>N°</Table.ColumnHeader>
 							<Table.ColumnHeader>Nombre</Table.ColumnHeader>
 							<Table.ColumnHeader>Nivel</Table.ColumnHeader>
