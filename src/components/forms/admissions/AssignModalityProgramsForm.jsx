@@ -163,7 +163,7 @@ export const AssignModalityToProgramForm = ({ data }) => {
 						size='sm'
 						bg='uni.secondary'
 						loading={isPending}
-						disabled={!vacancies && !selectedModality}
+						disabled={!vacancies || !selectedModality || data.status === 4}
 						onClick={handleSubmit}
 						css={{ _icon: { width: '5', height: '5' } }}
 					>
@@ -191,7 +191,7 @@ export const AssignModalityToProgramForm = ({ data }) => {
 									bg={{ base: 'white', _dark: 'its.gray.500' }}
 								>
 									<Table.Cell>{index + 1}</Table.Cell>
-									<Table.Cell>{item.modality}</Table.Cell>
+									<Table.Cell>{item.modality_name}</Table.Cell>
 									<Table.Cell>{item.vacancies}</Table.Cell>
 
 									<Table.Cell>

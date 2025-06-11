@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
-import { Flex, IconButton, Input, Stack } from '@chakra-ui/react';
-import { Field, Modal, Switch, toaster } from '@/components/ui';
+import { IconButton, Input, Stack } from '@chakra-ui/react';
+import { Field, Modal, toaster } from '@/components/ui';
 import { FiEdit2 } from 'react-icons/fi';
 import { useUpdateContracts } from '@/hooks/contracts';
 import { useReadUsers } from '@/hooks/users';
@@ -14,7 +14,7 @@ export const UpdateContractsForm = ({ data, fetchData }) => {
 
 	const [filePDF, setFilePDF] = useState(null);
 	const [expiresAt, setExpiresAt] = useState(data?.expires_at);
-	const [isSigned, setIsSigned] = useState(data?.is_signed);
+	//const [isSigned, setIsSigned] = useState(data?.is_signed);
 	const [selectedUser, setSelectedUser] = useState(null);
 
 	const handleFileChange = (e) => {
@@ -49,12 +49,12 @@ export const UpdateContractsForm = ({ data, fetchData }) => {
 					selectedUser.label.replace(/\s+/g, '_') // evita espacios
 				);
 			}
+			console.log(s3Url)
 
 			const payload = {
 				path_contract: s3Url,
 				owner: selectedUser.value,
 				expires_at: expiresAt,
-				is_signed: isSigned,
 			};
 
 			updateContracts(
@@ -116,7 +116,6 @@ export const UpdateContractsForm = ({ data, fetchData }) => {
 			onSave={handleSubmitData}
 			loading={isPending}
 			open={open}
-			disabledSave={data?.is_signed}
 			onOpenChange={(e) => setOpen(e.open)}
 			contentRef={contentRef}
 		>
@@ -153,7 +152,7 @@ export const UpdateContractsForm = ({ data, fetchData }) => {
 					/>
 				</Field>
 
-				<Field label='Firmado:'>
+				{/*<Field label='Firmado:'>
 					<Flex align='center' gap={3}>
 						<Switch
 							checked={isSigned}
@@ -163,7 +162,7 @@ export const UpdateContractsForm = ({ data, fetchData }) => {
 						/>
 						{isSigned ? 'Sí' : 'No'}
 					</Flex>
-				</Field>
+				</Field>*/}
 			</Stack>
 		</Modal>
 	);

@@ -16,11 +16,7 @@ import { useEffect, useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router';
-import {
-	useReadAdmissionsProgramAproved,
-	useReadAdmissionsProgramPending,
-} from '@/hooks/admissions_programs';
-import { AdmissionsProgramsAproveeTable } from '@/components/tables/admissions/AdmissionsProgramsAproveeTable';
+import { useReadAdmissionsPrograms } from '@/hooks/admissions_programs';
 
 export const AdmissionsPrograms = () => {
 	const { id } = useParams();
@@ -30,10 +26,8 @@ export const AdmissionsPrograms = () => {
 		data: dataAdmissionsPrograms,
 		refetch: fetchAdmissionsPrograms,
 		isLoading,
-	} = useReadAdmissionsProgramPending();
+	} = useReadAdmissionsPrograms();
 
-	const { data: dataAproveePrograms, refetch: fetchAproveePrograms } =
-		useReadAdmissionsProgramAproved();
 	const { getProfile } = useProvideAuth();
 	const profile = getProfile();
 	const roles = profile?.roles || [];
@@ -47,15 +41,20 @@ export const AdmissionsPrograms = () => {
 
 	const filteredAdmissionsPrograms = dataAdmissionsPrograms?.results?.filter(
 		(item) =>
-			//item.admission_process === Number(id) &&
+			item.admission_process_name === data?.admission_process_name &&
+			item.director === profile.id &&
+			item.status === 2 &&
 			item.program_name.toLowerCase().includes(searchValue.toLowerCase())
 	);
 
-	const filteredAprovedPrograms = dataAproveePrograms?.results?.filter((item) =>
-		//item.admission_process === Number(id) &&
-		item.program_name.toLowerCase().includes(searchValue.toLowerCase())
+	const filteredAprovedPrograms = dataAdmissionsPrograms?.results?.filter(
+		(item) =>
+			item.admission_process_name === data?.admission_process_name &&
+			item.director === profile.id &&
+			item.status === 4 &&
+			item.program_name.toLowerCase().includes(searchValue.toLowerCase())
 	);
-	console.log(dataAproveePrograms);
+
 	useEffect(() => {
 		if (loading && filteredAdmissionsPrograms?.length > 0) {
 			setInitialLoading(false);
@@ -182,10 +181,10 @@ export const AdmissionsPrograms = () => {
 							</InputGroup>
 						</Stack>
 
-						<AdmissionsProgramsAproveeTable
+						<AdmissionsProgramsTable
 							isLoading={isLoading}
 							data={filteredAprovedPrograms}
-							fetchData={fetchAproveePrograms}
+							fetchData={fetchAdmissionsPrograms}
 							permissions={permissions}
 						/>
 					</Stack>

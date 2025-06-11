@@ -54,7 +54,6 @@ export const SignContractsForm = ({ data, fetchData }) => {
 				path_contract_signed: s3Url,
 				owner,
 				expires_at: expiresAt,
-				is_signed: true,
 			};
 
 			signContracts(
@@ -102,7 +101,6 @@ export const SignContractsForm = ({ data, fetchData }) => {
 						<IconButton
 							variant='outline'
 							size='xs'
-							disabled={data?.is_signed}
 							borderColor='uni.secondary'
 							color='uni.secondary'
 							css={{
@@ -120,7 +118,6 @@ export const SignContractsForm = ({ data, fetchData }) => {
 			onSave={handleSubmitData}
 			loading={isPending}
 			open={open}
-			disabledSave={data?.is_signed}
 			onOpenChange={(e) => setOpen(e.open)}
 			contentRef={contentRef}
 		>

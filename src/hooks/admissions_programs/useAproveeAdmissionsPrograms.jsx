@@ -8,7 +8,7 @@ export const useAproveeAdmissionsPrograms = () => {
 	return useMutation({
 		mutationFn: async ({ id, payload }) => {
 			const res = await axiosPrivate.patch(
-				`/api/v1/admission-reviews/${id}/process_schedule/`,
+				`/api/v1/admission-process-programs/${id}/process_schedule/`,
 				payload
 			);
 			return res.data;

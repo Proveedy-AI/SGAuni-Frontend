@@ -7,7 +7,6 @@ import {
 	SelectValueText,
 } from '@/components/ui';
 import { Box, createListCollection, Stack, Table } from '@chakra-ui/react';
-import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 import { memo, useEffect, useMemo, useState } from 'react';
 
@@ -19,7 +18,7 @@ const Row = memo(({ item, startIndex, index }) => {
 			<Table.Cell>{item.program_type}</Table.Cell>
 			<Table.Cell>{item.reviewed_by}</Table.Cell>
 			<Table.Cell>
-				{format(new Date(item.reviewed_at), 'dd/MM/yyyy')}
+				
 			</Table.Cell>
 		</Table.Row>
 	);

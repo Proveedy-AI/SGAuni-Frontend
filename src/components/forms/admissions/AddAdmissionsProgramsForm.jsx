@@ -6,8 +6,9 @@ import { FiPlus } from 'react-icons/fi';
 import { ReactSelect } from '@/components/select';
 import { useReadPrograms } from '@/hooks';
 import { useCreateAdmissionsPrograms } from '@/hooks/admissions_programs';
+import { useReadUsers } from '@/hooks/users';
 
-export const AddAdmissionsProgramsForm = ({ id, fetchData }) => {
+export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 
@@ -22,10 +23,12 @@ export const AddAdmissionsProgramsForm = ({ id, fetchData }) => {
 	const [selectedMode, setSelectedMode] = useState(null);
 	const [selectedType, setSelectedType] = useState(null);
 	const [selectedProgram, setSelectedProgram] = useState(null);
+	const [selectedUser, setSelectedUser] = useState(null);
 
 	const { mutate: createAdmissionsPrograms, isPending } =
 		useCreateAdmissionsPrograms();
-	const { data: dataPrograms } = useReadPrograms();
+	const { data: dataPrograms } = useReadPrograms({ coordinator_id: profileId });
+	const { data: dataUsers, isLoading } = useReadUsers();
 
 	const handleSubmitData = (e) => {
 		e.preventDefault();
@@ -43,6 +46,7 @@ export const AddAdmissionsProgramsForm = ({ id, fetchData }) => {
 			study_mode: selectedMode.value,
 			admission_process: Number(id),
 			program: selectedProgram.value,
+			director: selectedUser.value,
 			registration_start_date: registrationStart,
 			registration_end_date: registrationEnd,
 			exam_date_start: examStart,
@@ -72,11 +76,25 @@ export const AddAdmissionsProgramsForm = ({ id, fetchData }) => {
 				setPreMasterEnd('');
 			},
 			onError: (error) => {
-				console.error(error);
-				toaster.create({
-					title: error.response?.data?.[0] || 'Error al registrar el Programa',
-					type: 'error',
-				});
+				const errorData = error.response?.data;
+
+				if (errorData && typeof errorData === 'object') {
+					Object.values(errorData).forEach((errorList) => {
+						if (Array.isArray(errorList)) {
+							errorList.forEach((message) => {
+								toaster.create({
+									title: message,
+									type: 'error',
+								});
+							});
+						}
+					});
+				} else {
+					toaster.create({
+						title: 'Error al registrar el Programa',
+						type: 'error',
+					});
+				}
 			},
 		});
 	};
@@ -96,6 +114,13 @@ export const AddAdmissionsProgramsForm = ({ id, fetchData }) => {
 		label: department.name,
 		value: department.id,
 	}));
+
+	const UserstOptions = dataUsers?.results
+		.filter((user) => user.roles?.some((role) => role.name === 'Director'))
+		.map((user) => ({
+			label: user.full_name,
+			value: user.id,
+		}));
 
 	return (
 		<Modal
@@ -148,6 +173,19 @@ export const AddAdmissionsProgramsForm = ({ id, fetchData }) => {
 						size='xs'
 						isSearchable
 						options={dataMode}
+					/>
+				</Field>
+				<Field label='Director:'>
+					<ReactSelect
+						value={selectedUser}
+						onChange={(select) => setSelectedUser(select)}
+						variant='flushed'
+						size='xs'
+						isDisabled={isLoading}
+						isLoading={isLoading}
+						isSearchable={true}
+						name='paises'
+						options={UserstOptions}
 					/>
 				</Field>
 				<Field label='Inicio de semestre:'>
@@ -222,4 +260,5 @@ export const AddAdmissionsProgramsForm = ({ id, fetchData }) => {
 AddAdmissionsProgramsForm.propTypes = {
 	fetchData: PropTypes.func.isRequired,
 	id: PropTypes.string,
+	profileId: PropTypes.number,
 };

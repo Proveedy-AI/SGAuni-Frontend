@@ -12,6 +12,7 @@ import {
 } from '@/components/ui';
 import { useDeleteAdmissions } from '@/hooks/admissions_proccess';
 import {
+	Badge,
 	Box,
 	createListCollection,
 	HStack,
@@ -25,6 +26,7 @@ import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { FiTrash2 } from 'react-icons/fi';
+import { data } from 'react-router';
 
 const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 	const [open, setOpen] = useState(false);
@@ -49,6 +51,12 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 			},
 		});
 	};
+	const statusMap = {
+		Draft: { label: 'Borrador', color: 'gray' },
+		Pending: { label: 'Pendiente', color: 'orange.500' },
+		Approved: { label: 'Aprobado', color: 'green' },
+		Rejected: { label: 'Rechazado', color: 'red' },
+	};
 	return (
 		<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
 			<Table.Cell>{startIndex + index + 1}</Table.Cell>
@@ -64,36 +72,51 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 				{format(new Date(item.registration_end_date), 'dd/MM/yyyy')}
 			</Table.Cell>
 			<Table.Cell>
+				{(() => {
+					const status = statusMap[item.status_display] || {
+						label: item.status_display,
+						color: 'default',
+					};
+					return (
+						<Badge variant='solid' bg={status.color}>
+							{status.label}
+						</Badge>
+					);
+				})()}
+			</Table.Cell>
+			<Table.Cell>
 				<HStack>
 					<PreviewProgramsPendingModal data={item} />
-					{permissions?.includes('admissions.programs.approve') && (
-						<UpdateStatusAdmissionsProccessForm
-							data={item}
-							fetchData={fetchData}
-						/>
-					)}
-					{permissions?.includes('admissions.proccess.delete') && (
-						<ConfirmModal
-							placement='center'
-							trigger={
-								<IconButton colorPalette='red' size='xs'>
-									<FiTrash2 />
-								</IconButton>
-							}
-							open={open}
-							onOpenChange={(e) => setOpen(e.open)}
-							onConfirm={() => handleDelete(item.id)}
-							loading={isPending}
-						>
-							<Text>
-								¿Estás seguro que quieres eliminar a
-								<Span fontWeight='semibold' px='1'>
-									{item.admission_process_name}
-								</Span>
-								de la lista de Procesos?
-							</Text>
-						</ConfirmModal>
-					)}
+					{permissions?.includes('admissions.programs.approve') &&
+						data.status === 4 && (
+							<UpdateStatusAdmissionsProccessForm
+								data={item}
+								fetchData={fetchData}
+							/>
+						)}
+					{permissions?.includes('admissions.proccess.delete') &&
+						data.status === 4 && (
+							<ConfirmModal
+								placement='center'
+								trigger={
+									<IconButton colorPalette='red' size='xs'>
+										<FiTrash2 />
+									</IconButton>
+								}
+								open={open}
+								onOpenChange={(e) => setOpen(e.open)}
+								onConfirm={() => handleDelete(item.id)}
+								loading={isPending}
+							>
+								<Text>
+									¿Estás seguro que quieres eliminar a
+									<Span fontWeight='semibold' px='1'>
+										{item.admission_process_name}
+									</Span>
+									de la lista de Procesos?
+								</Text>
+							</ConfirmModal>
+						)}
 				</HStack>
 			</Table.Cell>
 		</Table.Row>
@@ -232,6 +255,7 @@ export const AdmissionsProgramsTable = ({ data, fetchData, permissions }) => {
 							<Table.ColumnHeader>Inicio Semestre</Table.ColumnHeader>
 							<Table.ColumnHeader>Inicio de Inscripciones</Table.ColumnHeader>
 							<Table.ColumnHeader>Fin de Inscripciones</Table.ColumnHeader>
+							<Table.ColumnHeader>Estado</Table.ColumnHeader>
 							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
-import { Button, Flex, Input, Stack } from '@chakra-ui/react';
-import { Field, Modal, Switch, toaster } from '@/components/ui';
+import { Button, Input, Stack } from '@chakra-ui/react';
+import { Field, Modal, toaster } from '@/components/ui';
 import { FiPlus } from 'react-icons/fi';
 import { useCreateContracts } from '@/hooks/contracts';
 import { useReadUsers } from '@/hooks/users';
@@ -14,7 +14,7 @@ export const AddContractsForm = ({ fetchData }) => {
 
 	const [filePDF, setFilePDF] = useState(null);
 	const [expiresAt, setExpiresAt] = useState('');
-	const [isSigned, setIsSigned] = useState(false);
+	//const [isSigned, setIsSigned] = useState(false);
 	const [selectedUser, setSelectedUser] = useState(null);
 
 	const handleFileChange = (e) => {
@@ -49,7 +49,6 @@ export const AddContractsForm = ({ fetchData }) => {
 				path_contract: s3Url,
 				owner: selectedUser.value,
 				expires_at: expiresAt,
-				is_signed: isSigned,
 			};
 
 			createContracts(payload, {
@@ -63,7 +62,7 @@ export const AddContractsForm = ({ fetchData }) => {
 					setFilePDF(null);
 					setSelectedUser(null);
 					setExpiresAt('');
-					setIsSigned(false);
+					//setIsSigned(false);
 				},
 				onError: (error) => {
 					console.log(error);
@@ -140,7 +139,7 @@ export const AddContractsForm = ({ fetchData }) => {
 					/>
 				</Field>
 
-				<Field label='Firmado:'>
+				{/*<Field label='Firmado:'>
 					<Flex align='center' gap={3}>
 						<Switch
 							checked={isSigned}
@@ -150,7 +149,7 @@ export const AddContractsForm = ({ fetchData }) => {
 						/>
 						{isSigned ? 'Sí' : 'No'}
 					</Flex>
-				</Field>
+				</Field>*/}
 			</Stack>
 		</Modal>
 	);

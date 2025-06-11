@@ -29,7 +29,7 @@ export const LoginAdmin = () => {
 
 	const location = useLocation();
 	const [isVisible, setIsVisible] = useState(false);
-	const redirectUrl = 'https://sguni.vercel.app/auth/admin/recovery-pass/';
+	const redirectUrl = `${import.meta.env.VITE_DOMAIN_MAIN}/auth/reset-password`;
 
 	const { refetch: validateUser, isFetching } = useRecoveryPass({
 		email: username,

@@ -105,77 +105,6 @@ export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
 						/>
 					</Field>
 				</Stack>
-				{/* 
-        <Stack css={{ '--field-label-width': '140px' }}>
-          
-          <Field
-            orientation={{
-              base: 'vertical',
-              sm: 'horizontal',
-            }}
-            label='País:'
-          >
-            <Input
-              value={profile.country.label || user.country.name}
-              onChange={(e) => updateProfileField('country', { label: e.target.value, value: profile.country.value })}
-              variant='flushed'
-              flex='1'
-              size='sm'
-            />
-          </Field>
-
-          <Field
-            orientation={{
-              base: 'vertical',
-              sm: 'horizontal',
-            }}
-            label='Correo institucional:'
-          >
-            <Input
-              value={profile.uniEmail}
-              onChange={(e) => updateProfileField('uniEmail', e.target.value)}
-              variant='flushed'
-              flex='1'
-              size='sm'
-            />
-          </Field>
-
-          <Field
-            orientation={{
-              base: 'vertical',
-              sm: 'horizontal',
-            }}
-            label='Categoría:'
-          >
-            <Input
-              value={profile.category}
-              onChange={(e) => updateProfileField('category', e.target.value)}
-              variant='flushed'
-              flex='1'
-              size='sm'
-            />
-          </Field>
-
-          <Field
-            orientation={{
-              base: 'vertical',
-              sm: 'horizontal',
-            }}
-            label='Estado:'
-          >
-              <Flex w='full' align='start' gap='2' wrap='wrap'>
-              <Badge
-                bg={{
-                  base: 'uni.200',
-                  _dark: 'uni.gray.300',
-                }}
-              >
-                {profile.status ? 'Activo' : 'Inactivo'}
-              </Badge>
-            </Flex>
-          </Field>
-        </Stack>
-        */}
 			</Box>
 
 			<Box minW='50%'>
@@ -266,6 +195,7 @@ export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
 					label='Roles asignados:'
+					mb={10}
 				>
 					<Flex w='full' align='start' gap='2' wrap='wrap'>
 						{profile.roles.length > 0 ? (
@@ -287,6 +217,43 @@ export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
 						)}
 					</Flex>
 				</Field>
+				<Field
+					orientation={{ base: 'vertical', sm: 'horizontal' }}
+					label='Contraseña'
+				>
+					<Input
+						type='password'
+						value={profile.password}
+						onChange={(e) => updateProfileField('password', e.target.value)}
+						variant='flushed'
+						flex='1'
+						size='sm'
+					/>
+				</Field>
+
+				<Field
+					orientation={{ base: 'vertical', sm: 'horizontal' }}
+					label='Confirmar Contraseña'
+				>
+					<Input
+						type='password'
+						value={profile.confirmPassword}
+						onChange={(e) =>
+							updateProfileField('confirmPassword', e.target.value)
+						}
+						variant='flushed'
+						flex='1'
+						size='sm'
+					/>
+				</Field>
+
+				{profile.password &&
+					profile.confirmPassword &&
+					profile.password !== profile.confirmPassword && (
+						<Text color='red.500' fontSize='sm' mt={1}>
+							Las contraseñas no coinciden
+						</Text>
+					)}
 			</Stack>
 		</Grid>
 	);
