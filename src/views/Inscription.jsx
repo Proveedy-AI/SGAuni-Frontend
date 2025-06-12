@@ -136,7 +136,7 @@ export default function AdmissionForm() {
     mother_last_name: '',
     birth_date: '',
     country: null,
-    nationality: null,  // es el country_id
+    nationality: null,
     dial_code: dialCodeOptions[0],
     phone_number: '',
     email: '',
@@ -165,7 +165,6 @@ export default function AdmissionForm() {
         document_number: inscriptionRequest.document_number,
         birth_date: inscriptionRequest.birth_date,
         district: selectedDistrict?.value,
-        emai: inscriptionRequest.email,
         phone: inscriptionRequest.dial_code ? `${inscriptionRequest.dial_code.value} ${inscriptionRequest.phone_number}` : inscriptionRequest.phone_number,
         nationality: inscriptionRequest.nationality?.value,
         address: inscriptionRequest.address,
@@ -177,12 +176,11 @@ export default function AdmissionForm() {
     
     await create(payload, {
         onSuccess: () => {
-          console.log('bien hecho')
+          navigate('/');
           toaster.create({
             title: "Inscripción exitosa",
             status: "success",
           });
-          navigate('/');
         },
         onError: (error) => {
           toaster.create({
