@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useReadAdmissionApplications = (params = {}) => {
+export const useReadAdmissionApplicants = (params = {}) => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useQuery({

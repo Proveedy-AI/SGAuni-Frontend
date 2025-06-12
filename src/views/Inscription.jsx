@@ -16,7 +16,7 @@ import { ReactSelect } from "@/components";
 import { Field, InputPhoneWithMask, Radio, RadioGroup, toaster } from "@/components/ui";
 import { useNavigate, useParams } from "react-router";
 import { useReadAdmissionByUUID } from "@/hooks/admissions_proccess";
-import { useCreatePersonWithAdmission } from "@/hooks/admissions_applications";
+import { useCreatePersonWithAdmission } from "@/hooks/admissions_applicants";
 
 export default function AdmissionForm() {
   const { uuid } = useParams();

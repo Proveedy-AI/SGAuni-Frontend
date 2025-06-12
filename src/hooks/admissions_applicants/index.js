@@ -1,2 +1,2 @@
 export * from './useCreatePersonWithAdmission';
-export * from './useReadAdmissionApplications';
+export * from './useReadAdmissionApplicants';
