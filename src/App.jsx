@@ -124,8 +124,8 @@ function App() {
 						</Route>
 					</Route>
 
-					{/* Llamar a la inscripción */}
-					<Route path='inscription' element={<AdmissionForm />} />
+					{/* Ruta para ir a formulario de inscripción */}
+          <Route path='admission-process/:uuid' element={<AdmissionForm />} />
 				</Routes>
 			</BrowserRouter>
 		</>

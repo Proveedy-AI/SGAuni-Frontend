@@ -11,6 +11,7 @@ import { uploadToS3 } from '@/utils/uploadToS3';
 
 export const AccountProfile = () => {
 	const { data: dataUser, isLoading, error, refetch } = useReadUserLogged();
+  console.log(dataUser)
 	const { mutate: update, loading: loadingUpdate } = useUpdateUser();
 
 	const [profile, setProfile] = useState({
@@ -47,6 +48,8 @@ export const AccountProfile = () => {
 	useEffect(() => {
 		if (!isLoading && dataUser) {
 			const updatedProfile = {
+        first_name: dataUser.user.first_name,
+        last_name: dataUser.user.last_name,
 				...dataUser,
 			};
 			setProfile(updatedProfile);
