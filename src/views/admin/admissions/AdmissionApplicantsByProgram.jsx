@@ -1,7 +1,7 @@
 import { AdmissionApplicantsByProgramTable } from "@/components/tables/admissions";
 import { InputGroup } from "@/components/ui";
 import { useReadAdmissionApplicants } from "@/hooks/admissions_applicants";
-import { useReadAdmissionProgramsById, useReadAdmissionsPrograms } from "@/hooks/admissions_programs";
+import { useReadAdmissionProgramsById } from "@/hooks/admissions_programs";
 import { Box, Breadcrumb, Heading, Input, Span, Spinner, Stack, Text } from "@chakra-ui/react"
 import { useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
@@ -11,25 +11,19 @@ import { Link as RouterLink } from 'react-router';
 
 export const AdmissionApplicantsByProgram = () => {
   const { id } = useParams();
-  const { data: dataAdmissionProgram, loading: isAdmissionProgramLoading } = useReadAdmissionsPrograms();
+  const { data: dataProgram, loading: isProgramLoading } = useReadAdmissionProgramsById(id);
   const { data: dataAdmissionApplicants, refetch: fetchAdmissionApplicants } = useReadAdmissionApplicants();
-  const { data: dataProgram } = useReadAdmissionProgramsById(id);
-  
-  const admissionProgramName = dataAdmissionProgram?.results?.find(
-    (program) => program.id === Number(id)
-  )?.program_name;
 
   const filteredApplicantsByProgramId = dataAdmissionApplicants?.results?.filter(
     (item) => item.admission_program === Number(id)
-  )
-
+  );
 
   const [searchValue, setSearchValue] = useState('');
   const [loading, setInitialLoading] = useState(true);
 
   const filteredApplicants = filteredApplicantsByProgramId?.filter(
     (item) =>
-      item.person.first_name.toLowerCase().includes(searchValue.toLowerCase())
+      item.person_full_name.toLowerCase().includes(searchValue.toLowerCase())
   );
 
   useEffect(() => {
@@ -37,7 +31,6 @@ export const AdmissionApplicantsByProgram = () => {
       setInitialLoading(false);
     }
   }, [loading, filteredApplicantsByProgramId]);
-
 
   return (
     <Box spaceY='5'>
@@ -58,7 +51,7 @@ export const AdmissionApplicantsByProgram = () => {
 							<LiaSlashSolid />
 						</Breadcrumb.Separator>
 						<Breadcrumb.Item>
-							<Breadcrumb.CurrentLink>{admissionProgramName}</Breadcrumb.CurrentLink>
+							<Breadcrumb.CurrentLink>{dataProgram?.program_name}</Breadcrumb.CurrentLink>
 						</Breadcrumb.Item>
 					</Breadcrumb.List>
 				</Breadcrumb.Root>
@@ -80,7 +73,7 @@ export const AdmissionApplicantsByProgram = () => {
 				>
 					<Text>{dataProgram?.program_name}</Text>
           <Span fontSize='md' color='gray.500'>
-            { isAdmissionProgramLoading ? 'Cargando...' : dataProgram?.admission_process_name}
+            { isProgramLoading ? 'Cargando...' : dataProgram?.admission_process_name}
           </Span>
 				</Heading>
 			</Stack>
@@ -97,7 +90,7 @@ export const AdmissionApplicantsByProgram = () => {
 						size='sm'
 						bg={'white'}
 						maxWidth={'550px'}
-						placeholder='Buscar por programa ...'
+						placeholder='Buscar por nombre del postulante ...'
 						value={searchValue}
 						onChange={(e) => setSearchValue(e.target.value)}
 					/>

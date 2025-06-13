@@ -14,6 +14,7 @@ import { UserList } from './views/admin/UserList';
 import { PrivateRoute, ProtectedRoute } from './PrivateRoute ';
 import { Dashboard } from './views/admin/Dashboard';
 import {
+  AdmissionApplicantDetail,
   AdmissionApplicants,
 	AdmissionApplicantsByProgram,
 	AdmissionsMyPrograms,
@@ -80,6 +81,7 @@ function App() {
                     <Route index element={<AdmissionApplicants />} />
 
                     <Route path='programs/:id' element={<AdmissionApplicantsByProgram />} />
+                    <Route path='programs/:programId/estudiante/:id' element={<AdmissionApplicantDetail />} />
                   </Route>
                 </Route>
 							</Route>s

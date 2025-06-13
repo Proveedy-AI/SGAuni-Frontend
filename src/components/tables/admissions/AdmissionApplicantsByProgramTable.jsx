@@ -1,4 +1,4 @@
-import { UpdateAdmissionsProccessForm } from '@/components/forms/admissions';
+import { CreateProgramExamToAdmissionProgram } from '@/components/forms/admissions/createProgramExamToAdmissionProgram';
 import {
   Pagination,
   SelectContent,
@@ -11,6 +11,7 @@ import {
   Box,
   createListCollection,
   HStack,
+  Span,
   Stack,
   Table,
 } from '@chakra-ui/react';
@@ -20,7 +21,6 @@ import { useNavigate } from 'react-router';
 
 const Row = memo(({ programId, item, fetchData, startIndex, index, permissions }) => {
   const navigate = useNavigate();
-  console.log(item);
   const handleRowClick = () => {
     // if (permissions?.includes('admissions.myapplicants.view')) {
     //   navigate(`/admissions/myapplicants/${item.id}`);
@@ -31,6 +31,18 @@ const Row = memo(({ programId, item, fetchData, startIndex, index, permissions }
     // Por ahora, sin permisos para ver los postulantes por programa
     navigate(`/admissions/applicants/programs/${programId}/estudiante/${item.id}`);
   };
+
+  const applicationStatusEnum = [
+    { id: 1, value:'Incomplete', label: 'En revisión', color: 'orange' },
+    { id: 2, value:'Approved', label: 'Aprobado', color: 'green' },
+    { id: 3, value:'rejected', label: 'Rechazado', color: 'red' },
+    { id: 4, value:'Observed', label: 'Observado', color: 'purple' },
+  ];
+
+  const calificationStatusEnum = [
+    { id: 1, value:'Pending', label: 'Pendiente', color: 'gray' },
+    { id: 2, value:'Calificado', label: 'Calificado', color: 'green' },
+  ];
 
   return (
     <Table.Row
@@ -46,14 +58,37 @@ const Row = memo(({ programId, item, fetchData, startIndex, index, permissions }
       }}
     >
       <Table.Cell>{startIndex + index + 1}</Table.Cell>
-      <Table.Cell>{item.person.user.first_name} {item.person.user.last_name}</Table.Cell>
-      <Table.Cell>{item.applicant_status || item.status}</Table.Cell>
-      <Table.Cell>{item.calification_status || item.status}</Table.Cell>
+      <Table.Cell>{item.person_full_name}</Table.Cell>
+      <Table.Cell display={'flex'} alignItems='center' justifyContent='center' w={'150px'}>
+        <Span
+          bg={applicationStatusEnum.find(status => status.value === item.status_display)?.color}
+          fontWeight='semibold'
+          px={2}
+          py={1}
+          rounded={'md'}
+          color={'white'}
+        >
+          {applicationStatusEnum.find(status => status.value === item.status_display)?.label}
+        </Span>
+      </Table.Cell>
+      <Table.Cell>
+        <Span
+          bg={calificationStatusEnum.find(status => status.value === item.status_qualification_display)?.color}
+          fontWeight='semibold'
+          px={2}
+          py={1}
+          rounded={'md'}
+          color={'white'}
+        >
+          {calificationStatusEnum.find(status => status.value === item.status_qualification_display)?.label}
+        </Span>
+      </Table.Cell>
       <Table.Cell onClick={(e) => e.stopPropagation()}>
         <HStack>
-          {permissions?.includes('admissions.proccess.edit') && (
-            <UpdateAdmissionsProccessForm data={item} fetchData={fetchData} />
-          )}
+          <CreateProgramExamToAdmissionProgram
+            item={item}
+            fetchData={fetchData}
+          />
         </HStack>
       </Table.Cell>
     </Table.Row>
