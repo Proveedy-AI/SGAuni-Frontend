@@ -15,6 +15,7 @@ import { PrivateRoute, ProtectedRoute } from './PrivateRoute ';
 import { Dashboard } from './views/admin/Dashboard';
 import {
   AdmissionApplicants,
+	AdmissionApplicantsByProgram,
 	AdmissionsMyPrograms,
 	AdmissionsProccess,
 	AdmissionsPrograms,
@@ -75,9 +76,13 @@ function App() {
 										<ProtectedRoute requiredPermission='admissions.myprograms.view' />
 									}
                 >
-                  <Route path='applicants' element={<AdmissionApplicants />} />
+                  <Route path='applicants'>
+                    <Route index element={<AdmissionApplicants />} />
+
+                    <Route path='programs/:id' element={<AdmissionApplicantsByProgram />} />
+                  </Route>
                 </Route>
-							</Route>
+							</Route>s
 
 							<Route path='contracts'>
 								<Route

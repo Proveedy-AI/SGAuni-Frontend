@@ -1,5 +1,4 @@
 import { UpdateAdmissionsProccessForm } from '@/components/forms/admissions';
-import { ReactSelect } from '@/components/select';
 import {
   Pagination,
   SelectContent,
@@ -8,25 +7,20 @@ import {
   SelectTrigger,
   SelectValueText,
 } from '@/components/ui';
-import { useReadProgramTypes } from '@/hooks';
-import { useReadAdmissions } from '@/hooks/admissions_proccess';
 import {
   Box,
   createListCollection,
   HStack,
-  Input,
   Stack,
   Table,
-  Text,
 } from '@chakra-ui/react';
-import { format, parseISO } from 'date-fns';
 import PropTypes from 'prop-types';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 
-const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
+const Row = memo(({ programId, item, fetchData, startIndex, index, permissions }) => {
   const navigate = useNavigate();
-
+  console.log(item);
   const handleRowClick = () => {
     // if (permissions?.includes('admissions.myapplicants.view')) {
     //   navigate(`/admissions/myapplicants/${item.id}`);
@@ -35,7 +29,7 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
     //   navigate(`/admissions/applicants/${item.id}`);
     // }
     // Por ahora, sin permisos para ver los postulantes por programa
-    navigate(`/admissions/applicants/programs/${item.id}`);
+    navigate(`/admissions/applicants/programs/${programId}/estudiante/${item.id}`);
   };
 
   return (
@@ -52,10 +46,9 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
       }}
     >
       <Table.Cell>{startIndex + index + 1}</Table.Cell>
-      <Table.Cell>{item.program_name}</Table.Cell>
-      <Table.Cell>{item.program_type}</Table.Cell>
-      <Table.Cell>{item.admission_process_name}</Table.Cell>
-      <Table.Cell>{format(parseISO(item.semester_start_date), 'dd/MM/yyyy')}</Table.Cell>
+      <Table.Cell>{item.person.user.first_name} {item.person.user.last_name}</Table.Cell>
+      <Table.Cell>{item.applicant_status || item.status}</Table.Cell>
+      <Table.Cell>{item.calification_status || item.status}</Table.Cell>
       <Table.Cell onClick={(e) => e.stopPropagation()}>
         <HStack>
           {permissions?.includes('admissions.proccess.edit') && (
@@ -70,6 +63,7 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 Row.displayName = 'Row';
 
 Row.propTypes = {
+  programId: PropTypes.number,
   item: PropTypes.object,
   fetchData: PropTypes.func,
   startIndex: PropTypes.number,
@@ -77,27 +71,7 @@ Row.propTypes = {
   permissions: PropTypes.array,
 };
 
-export const AdmissionApplicantsTable = ({ data, fetchData, permissions, search, setSearch }) => {
-  const { data: dataProgramTypes, loading: loadingProgramTypes } = useReadProgramTypes();
-  const { data: dataAdmissions, loading: loadingAdmissions } = useReadAdmissions();
-
-  const programTypeOptions = useMemo(() => {
-    if (loadingProgramTypes) return [];
-    const options = dataProgramTypes?.results?.map((item) => ({
-      label: item.name,
-      value: item.id,
-    })) || [];
-    return [{ label: 'Todos', value: null }, ...options];
-  }, [dataProgramTypes, loadingProgramTypes]);
-
-  const admissionOptions = useMemo(() => {
-    if (loadingAdmissions) return [];
-    const options = dataAdmissions?.results?.map((item) => ({
-      label: item.admission_process_name,
-      value: item.id,
-    })) || [];
-    return [{ label: 'Todos', value: null }, ...options];
-  }, [dataAdmissions, loadingAdmissions]);
+export const AdmissionApplicantsByProgramTable = ({ programId, data, fetchData, permissions }) => {
 
   const smallOptions = useMemo(
     () => [
@@ -197,9 +171,8 @@ export const AdmissionApplicantsTable = ({ data, fetchData, permissions, search,
     setPageSize(newPageSize);
     setCurrentPage(1);
   };
-
-  return (
-    <Box
+  
+  return (<Box
       bg={{ base: 'white', _dark: 'its.gray.500' }}
       p='3'
       borderRadius='10px'
@@ -215,41 +188,9 @@ export const AdmissionApplicantsTable = ({ data, fetchData, permissions, search,
           <Table.Header>
             <Table.Row>
               <Table.ColumnHeader>N°</Table.ColumnHeader>
-              <Table.ColumnHeader>Nombres del programa</Table.ColumnHeader>
-              <Table.ColumnHeader>
-                <Stack direction='column' w='150px'>
-                  <Text>Tipo del programa</Text>
-                  <ReactSelect
-                    label="programType"
-                    value={search?.program_type}
-                    options={programTypeOptions}
-                    isLoading={loadingProgramTypes}
-                    onChange={(value) => setSearch({ ...search, program_type: value })}
-                  />
-                </Stack>
-              </Table.ColumnHeader>
-              <Table.ColumnHeader>
-                <Stack direction='column' w='150px'>
-                  <Text>Proceso de Admisión</Text>
-                  <ReactSelect
-                    label="admissionProcess"
-                    value={search?.admission_process}
-                    options={admissionOptions}
-                    isLoading={loadingAdmissions}
-                    onChange={(value) => setSearch({ ...search, admission_process: value })}
-                  />
-                </Stack>
-              </Table.ColumnHeader>
-              <Table.ColumnHeader>
-                <Stack direction='column' w='150px'>
-                  <Text>Fecha</Text>
-                  <Input 
-                    type='date'
-                    value={search?.date}
-                    onChange={(e) => setSearch({ ...search, date: e.target.value })}
-                  />
-                </Stack>
-              </Table.ColumnHeader>
+              <Table.ColumnHeader>Nombres del postulante</Table.ColumnHeader>
+              <Table.ColumnHeader>Estado de postulación</Table.ColumnHeader>
+              <Table.ColumnHeader>Estado de calificación</Table.ColumnHeader>
               <Table.ColumnHeader>Acciones</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
@@ -257,6 +198,7 @@ export const AdmissionApplicantsTable = ({ data, fetchData, permissions, search,
             {visibleRows?.map((item, index) => (
               <Row
                 key={item.id}
+                programId={programId}
                 item={item}
                 permissions={permissions}
                 fetchData={fetchData}
@@ -314,13 +256,11 @@ export const AdmissionApplicantsTable = ({ data, fetchData, permissions, search,
       </Stack>
     </Box>
   );
-};
+}
 
-AdmissionApplicantsTable.propTypes = {
+AdmissionApplicantsByProgramTable.propTypes = {
+  programId: PropTypes.number,
   data: PropTypes.array,
   fetchData: PropTypes.func,
-  loading: PropTypes.bool,
   permissions: PropTypes.array,
-  search: PropTypes.object,
-  setSearch: PropTypes.func
-};
+}
