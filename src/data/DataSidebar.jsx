@@ -8,10 +8,9 @@ import {
 	FiUserCheck,
 	FiList,
 } from 'react-icons/fi';
-import { FaFileContract } from "react-icons/fa";
+import { FaFileContract } from 'react-icons/fa';
 import { HiOutlineClipboardList } from 'react-icons/hi';
 import { useProvideAuth } from '@/hooks/auth';
-
 
 export const useDataSidebar = () => {
 	const { getProfile } = useProvideAuth();
@@ -59,6 +58,12 @@ export const useDataSidebar = () => {
 			],
 		},
 		{
+			href: '/admissions/myapplicants',
+			icon: FiUserCheck,
+			label: 'Mis Postulantes',
+			permission: 'admissions.myapplicants.view',
+		},
+		{
 			href: '/contracts',
 			icon: FaFileContract,
 			label: 'Contratos',
@@ -95,7 +100,7 @@ export const useDataSidebar = () => {
 	];
 
 	return {
-		mainItems: mainItems.filter(item => hasPermission(item.permission)),
-		bottomItems: bottomItems.filter(item => hasPermission(item.permission)),
+		mainItems: mainItems.filter((item) => hasPermission(item.permission)),
+		bottomItems: bottomItems.filter((item) => hasPermission(item.permission)),
 	};
 };

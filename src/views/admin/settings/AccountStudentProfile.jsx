@@ -100,9 +100,9 @@ export const AccountStudentProfile = () => {
 			address_ubigeo: profile.address_ubigeo?.value,
 			phone: profile.phone,
 			nationality: profile.nationality?.value,
-			uni_email: profile.uni_email,
-			is_uni_graduate: profile.is_uni_graduate,
-			uni_code: profile.uni_code,
+			uni_email: profile.uni_email || null,
+			is_uni_graduate: profile.is_uni_graduate ,
+			uni_code: profile.uni_code || null,
 			has_disability: profile.has_disability,
 			type_disability: profile.type_disability,
 			other_disability: profile.other_disability,
@@ -139,7 +139,7 @@ export const AccountStudentProfile = () => {
 						});
 					} else {
 						toaster.create({
-							title: 'Error al registrar el Programa',
+							title: 'Error al Actualizar el perfil',
 							type: 'error',
 						});
 					}

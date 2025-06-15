@@ -24,6 +24,7 @@ import {
 } from './views/admin/admissions';
 import { Contracts, MyContracts } from './views/admin/contracts';
 import AdmissionForm from './views/Inscription';
+import { AdmissionMyApplicants } from './views/admin/admissions/MyApplicants/AdmissionMyApplicants';
 
 function App() {
 	return (
@@ -89,8 +90,16 @@ function App() {
 										/>
 									</Route>
 								</Route>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='admissions.myapplicants.view' />
+									}
+								>
+									<Route path='myapplicants'>
+										<Route index element={<AdmissionMyApplicants />} />
+									</Route>
+								</Route>
 							</Route>
-							s
 							<Route path='contracts'>
 								<Route
 									element={

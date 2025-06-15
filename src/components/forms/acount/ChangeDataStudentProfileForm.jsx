@@ -130,6 +130,15 @@ export const ChangeDataStudentProfileForm = ({
 
 	useEffect(() => {
 		preloadSelectValue(
+			dataUbigeo,
+			profile.address_ubigeo,
+			UbigeosOptions,
+			'address_ubigeo'
+		);
+	}, [dataUbigeo, profile]);
+
+	useEffect(() => {
+		preloadSelectValue(
 			dataDistrict,
 			profile.district,
 			DistrictOptions,
@@ -311,8 +320,8 @@ export const ChangeDataStudentProfileForm = ({
 							/>
 						</Field>
 						<FieldWithInputText
-							label='Licencia:'
-							placeholder='Numero de licencia'
+							label='Colegiatura:'
+							placeholder='Numero de colegiatura'
 							field='license_number'
 							value={profile.license_number}
 							updateProfileField={updateProfileField}
