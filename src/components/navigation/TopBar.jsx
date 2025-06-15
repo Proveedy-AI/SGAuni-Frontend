@@ -19,6 +19,17 @@ import { useProvideAuth } from '@/hooks/auth';
 export const TopBar = () => {
 	const { getProfile, logout } = useProvideAuth();
 	const profile = getProfile();
+	const roles = profile?.roles || [];
+
+	const permissions = roles
+		.flatMap((r) => r.permissions || [])
+		.map((p) => p.guard_name);
+
+	const hasPermission = (requiredPermission) => {
+		if (!requiredPermission) return true;
+		if (!permissions || permissions.length === 0) return false;
+		return permissions.includes(requiredPermission.trim());
+	};
 
 	const [fullname, setFullname] = useState('');
 	const mensaje =
@@ -38,10 +49,13 @@ export const TopBar = () => {
 		);
 	}
 
-	const menuItems = [{ label: 'Configurar cuenta', href: '/settings/profile' }];
+	const settingsHref = hasPermission('settings.studenprofile.view')
+		? '/settings/myprofile'
+		: '/settings/profile';
+
+	const menuItems = [{ label: 'Configurar cuenta', href: settingsHref }];
 	const username = profile.user?.username || '';
 	//const email = profile.uni_email || '';
-	const roles = profile.roles || [];
 
 	const mainRole =
 		roles.length > 0

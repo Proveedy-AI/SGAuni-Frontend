@@ -73,7 +73,7 @@ function App() {
 								</Route>
 								<Route
 									element={
-										<ProtectedRoute requiredPermission='admissions.myprograms.view' />
+										<ProtectedRoute requiredPermission='admissions.applicants.view' />
 									}
 								>
 									<Route path='applicants'>
