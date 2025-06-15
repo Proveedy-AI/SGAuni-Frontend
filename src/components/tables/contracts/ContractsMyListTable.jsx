@@ -102,7 +102,7 @@ export const ContractsMyListTable = ({ data, fetchData }) => {
 	const smallHeight = 350; // Base para pantallas pequeñas
 	const mediumHeight = 530; // Para pantallas medianas
 	const largeHeight = 690; // Para pantallas grandes
-console.log(data)
+
 	const getTableHeight = () => {
 		const width = window.innerWidth;
 		if (width > 1900) return largeHeight; // Para pantallas muy grandes (large)

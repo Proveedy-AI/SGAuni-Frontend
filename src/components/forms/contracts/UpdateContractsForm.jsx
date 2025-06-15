@@ -49,7 +49,6 @@ export const UpdateContractsForm = ({ data, fetchData }) => {
 					selectedUser.label.replace(/\s+/g, '_') // evita espacios
 				);
 			}
-			console.log(s3Url)
 
 			const payload = {
 				path_contract: s3Url,

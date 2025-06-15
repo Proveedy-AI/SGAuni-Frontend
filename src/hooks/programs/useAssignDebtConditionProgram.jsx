@@ -6,7 +6,6 @@ export const useAssignDebtConditionProgram = () => {
 
   return useMutation({
     mutationFn: async ({ programId, payload }) => {
-      console.log({ programId, payload })
       const res = await axiosPrivate.post(`/api/v1/postgraduate-programs/${programId}/assign-debt-condition`, payload);
       return res.data;
     },

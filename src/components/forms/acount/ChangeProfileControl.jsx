@@ -1,5 +1,5 @@
 import { Avatar } from '@/components/ui';
-import { Button, Flex, HStack, Stack, Text } from '@chakra-ui/react';
+import { Button, Flex, Stack, Text } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 
 export const ChangeProfileControl = ({

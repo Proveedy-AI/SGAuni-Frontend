@@ -65,7 +65,6 @@ export const AccountStudentProfile = () => {
 
 	const updateProfileField = (field, value) => {
 		setIsChangesMade(true);
-		console.log('Cambio detectado en:', field, 'con valor:', value);
 		setProfile((prev) => ({ ...prev, [field]: value }));
 	};
 

@@ -44,7 +44,6 @@ export const UpdateStatusAdmissionsProccessForm = ({ data, fetchData }) => {
 			status: selectedStatus,
 		};
 
-		console.log(payload);
 		aproveePrograms(
 			{ id: data.id, payload },
 			{

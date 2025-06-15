@@ -25,7 +25,7 @@ export const PreviewProgramsPendingModal = ({ data }) => {
 		1: 'Investigación',
 		2: 'Profesionalizante',
 	};
-	console.log(data);
+
 	return (
 		<Modal
 			title='Vista previa del Programa de Admisión'

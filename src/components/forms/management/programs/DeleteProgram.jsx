@@ -11,7 +11,6 @@ export const DeleteProgram = ({ item, fetchData }) => {
 
   const handleDelete = async (id) => {
     try {
-      console.log('eliminando', id)
       await remove(id);
       toaster.create({
         title: 'Programa eliminado correctamente',

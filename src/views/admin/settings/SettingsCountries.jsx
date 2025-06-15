@@ -96,8 +96,6 @@ export const SettingsCountries = () => {
 		item?.name?.toLowerCase().includes(searchUbigeosValue.toLowerCase())
 	);
 
-	console.log(filteredNationality);
-
 	return (
 		<Box spaceY='5'>
 			<Stack

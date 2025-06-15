@@ -6,7 +6,6 @@ export const useAssignModalityRules = () => {
 
   return useMutation({
     mutationFn: async ({ modalityId, rulesId }) => {
-      console.log({ modalityId, rules_id: rulesId})
       const res = await axiosPrivate.post(`/api/v1/admission-modalities/${modalityId}/assign_rules/`, {
         rules_ids: rulesId
       });

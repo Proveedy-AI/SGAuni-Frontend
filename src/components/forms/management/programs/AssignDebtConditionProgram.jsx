@@ -21,7 +21,7 @@ export const AssignDebtConditionProgram = ({ item, fetchData }) => {
       ]
     }
   */
-  console.log(item?.debt_conditions || [])
+
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
   const [minPaymentPercentage, setMinPaymentPercentage] = useState(0);
