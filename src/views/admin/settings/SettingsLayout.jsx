@@ -31,55 +31,19 @@ export const SettingsLayout = () => {
 		{
 			href: '/settings/profile',
 			label: 'Cuenta',
-			permission: null,
+			permission: 'settings.adminprofile.view',
+		},
+		{
+			href: '/settings/myprofile',
+			label: 'Cuenta',
+			permission: 'settings.studenprofile.view',
 		},
 		{
 			href: '/settings/regional',
 			label: 'Configuración regional',
 			permission: 'settings.regional.view',
 		},
-		{
-			href: '/settings/data-processing',
-			label: 'Tratamiento de datos',
-			permission: 'settings.data-processing.view',
-		},
 
-		// {
-		// 	href: '/settings/availability-status',
-		// 	label: 'Estado de disponibilidad',
-		// 	permission: 'settings.availability-status.view',
-		// },
-		{
-			href: '/settings/mails-server',
-			label: 'Servidor de correo electrónico',
-			permission: 'settings.mails-servers.view',
-		},
-		{
-			href: '/settings/business-goals',
-			label: 'Metas comerciales',
-			permission: 'settings.business-goals.view',
-		},
-		{
-			href: '/settings/develop',
-			label: 'Desarrollador',
-			permission: 'settings.develop.view',
-		},
-		{
-			href: '/settings/help',
-			label: 'Ayuda',
-			permission: 'settings.help.view',
-		},
-
-		// {
-		// 	href: '/settings/usage-guide',
-		// 	label: 'Guía de uso',
-		// 	permission: null,
-		// },
-		// {
-		// 	href: '/settings/documentation',
-		// 	label: 'Documentación',
-		// 	permission: null,
-		// },
 		{
 			href: '/settings/Modalities',
 			label: 'Modalidades',
@@ -98,7 +62,7 @@ export const SettingsLayout = () => {
 		{
 			href: '/settings/regional',
 			label: 'Región y países',
-			permission: null,
+			permission: 'settings.countries.view',
 		},
 	];
 

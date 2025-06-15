@@ -18,7 +18,7 @@ export const AdminLayout = () => {
 				<Flex
 					flex='1'
 					direction='column'
-					bg={colorMode === 'dark' ? 'uni.gray.400' : 'uni.100'}
+					bg={colorMode === 'dark' ? 'uni.gray.400' : 'uni.50'}
 					minW='0'
 				>
 					<TopBar />

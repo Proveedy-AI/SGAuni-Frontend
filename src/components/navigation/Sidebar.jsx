@@ -28,8 +28,8 @@ import {
 	FiLogOut,
 } from 'react-icons/fi';
 import { useSidebarState } from '@/hooks';
-import { DataSidebar } from '@/data';
 import { useProvideAuth } from '@/hooks/auth';
+import { useDataSidebar } from '@/data';
 
 export const Sidebar = () => {
 	const { isCollapsed, toggleSidebar } = useSidebarState();
@@ -47,6 +47,8 @@ export const Sidebar = () => {
 		if (!permissions || permissions.length === 0) return false;
 		return permissions.includes(requiredPermission.trim());
 	};
+
+	const { mainItems, bottomItems } = useDataSidebar();
 
 	const handleLogout = () => {
 		logout();
@@ -111,7 +113,7 @@ export const Sidebar = () => {
 					css={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}
 					spaceY='1'
 				>
-					{DataSidebar.mainItems
+					{mainItems
 						.filter((item) => hasPermission(item.permission))
 						.map((item, index) => {
 							const filteredSubItems =
@@ -135,7 +137,7 @@ export const Sidebar = () => {
 				</Box>
 				<Separator size='xs' variant='solid' bg='uni.gray.200' />
 				<Box mt='auto' spaceY='1' overflow={'clip'}>
-					{DataSidebar.bottomItems
+					{bottomItems
 						.filter((item) => hasPermission(item.permission))
 						.map((item, index) => (
 							<SidebarItem
@@ -182,7 +184,7 @@ const SidebarItem = ({ href, icon, label, isCollapsed, subItems, ...atr }) => {
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])
-		.map((p) => p.name);
+		.map((p) => p.guard_name);
 
 	const hasPermission = (requiredPermission) => {
 		if (!requiredPermission) return true;
@@ -190,10 +192,12 @@ const SidebarItem = ({ href, icon, label, isCollapsed, subItems, ...atr }) => {
 		return permissions.includes(requiredPermission.trim());
 	};
 
+	console.log(roles)
+
 	const getHref = () => {
 		if (href === '/settings') {
-			return hasPermission.includes('settings.settings.view')
-				? '/settings'
+			return hasPermission.includes('settings.studenprofile.view')
+				? '/settings/myprofile'
 				: '/settings/profile';
 		}
 		return href;

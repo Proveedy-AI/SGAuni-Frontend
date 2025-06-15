@@ -1,3 +1,4 @@
+// DataSidebar.tsx o .js
 import {
 	FiGrid,
 	FiUsers,
@@ -9,9 +10,31 @@ import {
 } from 'react-icons/fi';
 import { FaFileContract } from "react-icons/fa";
 import { HiOutlineClipboardList } from 'react-icons/hi';
+import { useProvideAuth } from '@/hooks/auth';
 
-export const DataSidebar = {
-	mainItems: [
+
+export const useDataSidebar = () => {
+	const { getProfile } = useProvideAuth();
+	const profile = getProfile();
+	const roles = profile?.roles || [];
+
+	const permissions = roles
+		.flatMap((r) => r.permissions || [])
+		.map((p) => p.guard_name);
+
+	const hasPermission = (requiredPermission) => {
+		if (!requiredPermission) return true;
+		if (!permissions || permissions.length === 0) return false;
+		return permissions.includes(requiredPermission.trim());
+	};
+
+	const settingsHref = hasPermission('settings.studenprofile.view')
+		? '/settings/myprofile'
+		: '/settings/profile';
+
+		console.log(permissions)
+
+	const mainItems = [
 		{
 			href: '/',
 			icon: FiGrid,
@@ -33,7 +56,7 @@ export const DataSidebar = {
 					href: '/admissions/applicants',
 					icon: FiUserCheck,
 					label: 'Postulantes',
-					permission: null,
+					permission: 'admissions.applicants.view',
 				},
 			],
 		},
@@ -62,43 +85,19 @@ export const DataSidebar = {
 			label: 'Usuarios',
 			permission: 'users.users.view',
 		},
-	],
+	];
 
-	bottomItems: [
+	const bottomItems = [
 		{
-			href: '/settings/profile',
+			href: settingsHref,
 			icon: FiSettings,
 			label: 'Configuración',
 			permission: null,
 		},
-	],
-};
+	];
 
-/*
-		{
-			href: '/messaging',
-			icon: LuMessagesSquare,
-			label: 'Mensajeria',
-			permission: 'messaging.messaging.view',
-			subItems: [
-				{
-					href: '/messaging/inbox',
-					icon: FiInbox,
-					label: 'Bandeja de entrada',
-					permission: 'messaging.inbox.view',
-				},
-				{
-					href: '/messaging/notifications',
-					icon: FiBell,
-					label: 'Notificaciones',
-					permission: 'messaging.notifications.view',
-				},
-				{
-					href: '/messaging/whatsapp',
-					icon: FaWhatsapp,
-					label: 'WhatsApp',
-					permission: 'whatsapp.whatsapp.view',
-					platform: 'whatsapp',
-				},
-			],
-		},*/
+	return {
+		mainItems: mainItems.filter(item => hasPermission(item.permission)),
+		bottomItems: bottomItems.filter(item => hasPermission(item.permission)),
+	};
+};
