@@ -51,97 +51,98 @@ export const UserList = () => {
 	});
 
 	return (
-		<Box spaceY='4'>
-			<Heading
-				size={{ xs: 'xs', sm: 'sm', md: 'md' }}
-				color='its.gray.200'
-				fontWeight='bold'
-			>
-				Usuarios
-			</Heading>
-
-			{error && (
-				<Box
-					display='flex'
-					flexDirection='column'
-					alignItems='center'
-					justifyContent='center'
-					py={8}
+		<>
+			<Box spaceY='4'>
+				<Heading
+					size={{ xs: 'xs', sm: 'sm', md: 'md' }}
+					color='its.gray.200'
+					fontWeight='bold'
 				>
-					<Box color='red.500' mb={2}>
-						<FiAlertCircle size={24} />
-					</Box>
-					<Text mb={4} color='red.600' fontWeight='bold'>
-						Error al cargar los usuarios: {error.message}
-					</Text>
-					<Link
-						style={{
-							background: '#E53E3E',
-							color: 'white',
-							padding: '8px 16px',
-							borderRadius: '4px',
-							border: 'none',
-							cursor: 'pointer',
-						}}
-						onClick={() => window.location.reload()}
+					Usuarios
+				</Heading>
+
+				{error && (
+					<Box
+						display='flex'
+						flexDirection='column'
+						alignItems='center'
+						justifyContent='center'
+						py={8}
 					>
-						Recargar página
-					</Link>
-				</Box>
-			)}
+						<Box color='red.500' mb={2}>
+							<FiAlertCircle size={24} />
+						</Box>
+						<Text mb={4} color='red.600' fontWeight='bold'>
+							Error al cargar los usuarios: {error.message}
+						</Text>
+						<Link
+							style={{
+								background: '#E53E3E',
+								color: 'white',
+								padding: '8px 16px',
+								borderRadius: '4px',
+								border: 'none',
+								cursor: 'pointer',
+							}}
+							onClick={() => window.location.reload()}
+						>
+							Recargar página
+						</Link>
+					</Box>
+				)}
 
-			{isLoading && <Box>Cargando contenido...</Box>}
+				{isLoading && <Box>Cargando contenido...</Box>}
 
-			{!isLoading && !error && filteredUsers && (
-				<VStack py='4' align='start' gap='3'>
-					{/* Componente para crear y filtrar usuarios */}
-					<CreateAndFilterUser
-						search={search}
-						setSearch={setSearch}
-						handleOpenModal={handleOpenModal}
-						isCreateModalOpen={isModalOpen.create}
-						setIsModalOpen={setIsModalOpen}
-						fetchUsers={fetchUsers}
-						handleCloseModal={handleCloseModal}
-					/>
+				{!isLoading && !error && filteredUsers && (
+					<VStack py='4' align='start' gap='3'>
+						{/* Componente para crear y filtrar usuarios */}
+						<CreateAndFilterUser
+							search={search}
+							setSearch={setSearch}
+							handleOpenModal={handleOpenModal}
+							isCreateModalOpen={isModalOpen.create}
+							setIsModalOpen={setIsModalOpen}
+							fetchUsers={fetchUsers}
+							handleCloseModal={handleCloseModal}
+						/>
 
-					{/* Tabla de usuarios */}
+						{/* Tabla de usuarios */}
 
-					<UserTable
-						users={filteredUsers}
-						fetchUsers={fetchUsers}
-						handleOpenModal={handleOpenModal}
-					/>
-				</VStack>
-			)}
+						<UserTable
+							users={filteredUsers}
+							fetchUsers={fetchUsers}
+							handleOpenModal={handleOpenModal}
+						/>
+					</VStack>
+				)}
 
-			{/* Modal para ver detalles del usuario - componentes*/}
+				{/* Modal para editar usuario */}
+				<EditUserModal
+					fetchUsers={fetchUsers}
+					selectedUser={selectedUser}
+					setSelectedUser={setSelectedUser}
+					isEditModalOpen={isModalOpen.edit}
+					setIsModalOpen={setIsModalOpen}
+					handleCloseModal={handleCloseModal}
+				/>
+				{/* Modal para agregar/quitar rol al usuario */}
+				<ToogleRoleUserModal
+					users={filteredUsers}
+					fetchUsers={fetchUsers}
+					selectedUser={selectedUser}
+					setSelectedUser={setSelectedUser}
+					handleCloseModal={handleCloseModal}
+					isToogleRoleModalOpen={isModalOpen.toogleRole}
+					setIsModalOpen={setIsModalOpen}
+				/>
+			</Box>
+
 			<ViewUserModal
 				selectedUser={selectedUser}
 				isViewModalOpen={isModalOpen.view}
 				setIsModalOpen={setIsModalOpen}
 				handleCloseModal={handleCloseModal}
 			/>
-
-			{/* Modal para editar usuario */}
-			<EditUserModal
-				fetchUsers={fetchUsers}
-				selectedUser={selectedUser}
-				setSelectedUser={setSelectedUser}
-				isEditModalOpen={isModalOpen.edit}
-				setIsModalOpen={setIsModalOpen}
-				handleCloseModal={handleCloseModal}
-			/>
-			{/* Modal para agregar/quitar rol al usuario */}
-			<ToogleRoleUserModal
-				users={filteredUsers}
-				fetchUsers={fetchUsers}
-				selectedUser={selectedUser}
-				setSelectedUser={setSelectedUser}
-				handleCloseModal={handleCloseModal}
-				isToogleRoleModalOpen={isModalOpen.toogleRole}
-				setIsModalOpen={setIsModalOpen}
-			/>
-		</Box>
+		</>
 	);
 };

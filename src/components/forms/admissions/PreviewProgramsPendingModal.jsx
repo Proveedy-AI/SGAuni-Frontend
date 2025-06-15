@@ -60,24 +60,24 @@ export const PreviewProgramsPendingModal = ({ data }) => {
 		>
 			<Stack css={{ '--field-label-width': '140px' }}>
 				<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-					<Field color='gray' label='Programa:'>
-						<Text color={'black'} fontSize='xl'>
+					<Field color={'uni.secondary'} label='Programa:'>
+						<Text color={'black'}   fontWeight='medium'>
 							{data.program_name}
 						</Text>
 					</Field>
 
-					<Field color='gray' label='Tipo de Postgrado:'>
-						<Text color='black' fontSize='lg'>
+					<Field color={'uni.secondary'} label='Tipo de Postgrado:'>
+						<Text color='black'  fontWeight='medium'>
 							{typeMap[data.postgrad_type] || 'No definido'}
 						</Text>
 					</Field>
 
-					<Field color='gray' label='Modo de estudio:'>
-						<Text color={'black'} fontSize='xl'>
+					<Field color={'uni.secondary'} label='Modo de estudio:'>
+						<Text color={'black'}  fontWeight='medium'>
 							{data.study_mode_display}
 						</Text>
 					</Field>
-					<Field label='Estado:'>
+					<Field label='Estado:' color={'uni.secondary'}>
 						{(() => {
 							const status = statusMap[data.status_display] || {
 								label: data.status_display,
@@ -91,7 +91,7 @@ export const PreviewProgramsPendingModal = ({ data }) => {
 						})()}
 					</Field>
 				</SimpleGrid>
-				<Stack spacing={4} mt={4}>
+				<Stack spacing={4} >
 					{/* Inicio de semestre */}
 					<Field color={'uni.secondary'} label='Inicio de semestre:'>
 						<Text color='black' fontWeight='medium'>

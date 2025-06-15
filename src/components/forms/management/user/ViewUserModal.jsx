@@ -1,8 +1,16 @@
-import { ControlledModal, Field } from '@/components/ui';
+import { Field, Modal, Tooltip } from '@/components/ui';
 import { useReadUserById } from '@/hooks/users/useReadUserById';
-import { Flex, Stack, Text } from '@chakra-ui/react';
+import {
+	Badge,
+	Box,
+	IconButton,
+	SimpleGrid,
+	Stack,
+	Text,
+} from '@chakra-ui/react';
 import { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { FiEye } from 'react-icons/fi';
 
 export const ViewUserModal = ({
 	selectedUser,
@@ -22,145 +30,134 @@ export const ViewUserModal = ({
 	}, [isViewModalOpen, selectedUser?.id, fetchUser]);
 
 	return (
-		<Stack css={{ '--field-label-width': '140px' }}>
-			<Field orientation={{ base: 'vertical', sm: 'horizontal' }}>
-				<ControlledModal
-					title='Ver Usuario'
-					placement='center'
-					size='xl'
-					open={isViewModalOpen}
-					onOpenChange={(e) => setIsModalOpen((s) => ({ ...s, view: e.open }))}
-					onSave={() => handleCloseModal('view')}
-					hiddenFooter={true}
-				>
-					<Stack spacing={4}>
-						<Stack>
-							<Flex gap={6} flexDir={{ base: 'column', md: 'row' }}>
-								<Stack flex={1} spacing={4}>
-									<Field label='Nombres y apellidos'>
-										<Text
-											w='full'
-											py={2}
-											px={3}
-											border={'1px solid #E2E8F0'}
-											borderRadius='md'
-										>
-											{dataUser?.full_name ||
-												`${dataUser?.first_name || ''} ${dataUser?.last_name || ''}`}
-										</Text>
-									</Field>
-									<Field label='Usuario'>
-										<Text
-											w='full'
-											py={2}
-											px={3}
-											border={'1px solid #E2E8F0'}
-											borderRadius='md'
-										>
-											{dataUser?.user?.username}
-										</Text>
-									</Field>
-									<Field label='Correo Institucional'>
-										<Text
-											w='full'
-											py={2}
-											px={3}
-											border={'1px solid #E2E8F0'}
-											borderRadius='md'
-										>
-											{dataUser?.uni_email}
-										</Text>
-									</Field>
-									<Field label='Número de documento'>
-										<Text
-											w='full'
-											py={2}
-											px={3}
-											border={'1px solid #E2E8F0'}
-											borderRadius='md'
-										>
-											{dataUser?.num_doc}
-										</Text>
-									</Field>
-								
-									<Field label='Categoría'>
-										<Text
-											w='full'
-											py={2}
-											px={3}
-											border={'1px solid #E2E8F0'}
-											borderRadius='md'
-										>
-											{dataUser?.category}
-										</Text>
-									</Field>
-								</Stack>
-								<Stack flex={1} spacing={4}>
-                <Field label='Teléfono'>
-										<Text
-											w='full'
-											py={2}
-											px={3}
-											border={'1px solid #E2E8F0'}
-											borderRadius='md'
-										>
-											{dataUser?.phone}
-										</Text>
-									</Field>
-									<Field label='CV'>
-										<Text
-											w='full'
-											py={2}
-											px={3}
-											border={'1px solid #E2E8F0'}
-											borderRadius='md'
-											isTruncated
-										>
-											{dataUser?.path_cv}
-										</Text>
-									</Field>
-									<Field label='Grado'>
-										<Text
-											w='full'
-											py={2}
-											px={3}
-											border={'1px solid #E2E8F0'}
-											borderRadius='md'
-											isTruncated
-										>
-											{dataUser?.path_grade}
-										</Text>
-									</Field>
+		<Modal
+			title='Detalle de Usuario'
+			placement='center'
+			trigger={
+				<Box>
+					<Tooltip
+						content='Mas información'
+						positioning={{ placement: 'bottom-center' }}
+						showArrow
+						openDelay={0}
+					>
+						<IconButton
+							size='xs'
+							colorPalette='gray'
+							css={{
+								_icon: {
+									width: '5',
+									height: '5',
+								},
+							}}
+						>
+							<FiEye />
+						</IconButton>
+					</Tooltip>
+				</Box>
+			}
+			open={isViewModalOpen}
+			hiddenFooter={true}
+			onOpenChange={(e) => setIsModalOpen((s) => ({ ...s, view: e.open }))}
+			onSave={() => handleCloseModal('view')}
+			size='2xl'
+		>
+			<Stack css={{ '--field-label-width': '140px' }} fontSize={'md'}>
+				<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+					<Field color={'uni.secondary'} label='Nombre completo:'>
+						<Text color={'black'} fontWeight='medium'>
+							{dataUser?.full_name ||
+								`${dataUser?.first_name || ''} ${dataUser?.last_name || ''}`}
+						</Text>
+					</Field>
 
-									<Field label='Fecha de creación'>
-										<Text
-											w='full'
-											py={2}
-											px={3}
-											border={'1px solid #E2E8F0'}
-											borderRadius='md'
-										>
-											{dataUser?.created_at?.slice(0, 19).replace('T', ' ')}
-										</Text>
-									</Field>
-									<Field label='Fecha de actualización'>
-										<Text
-											w='full'
-											py={2}
-											px={3}
-											border={'1px solid #E2E8F0'}
-											borderRadius='md'
-										>
-											{dataUser?.updated_at?.slice(0, 19).replace('T', ' ')}
-										</Text>
-									</Field>
-								</Stack>
-							</Flex>
-						</Stack>
-					</Stack>
-				</ControlledModal>
-			</Field>
-		</Stack>
+					<Field color={'uni.secondary'} label='Usuario:'>
+						<Text color='black' fontWeight='medium'>
+							{dataUser?.user?.username}
+						</Text>
+					</Field>
+
+					<Field color={'uni.secondary'} label='Correo Institucional:'>
+						<Text
+							color={dataUser?.uni_email ? 'black' : 'gray.500'}
+							fontWeight='medium'
+						>
+							{dataUser?.uni_email || 'Sin datos'}
+						</Text>
+					</Field>
+					<Field color={'uni.secondary'} label='Número de documento:'>
+						<Text
+							color={dataUser?.num_doc ? 'black' : 'gray.500'}
+							fontWeight='medium'
+						>
+							{dataUser?.num_doc}
+						</Text>
+					</Field>
+					<Field color={'uni.secondary'} label='Categoría:'>
+						<Text
+							color={dataUser?.category ? 'black' : 'gray.500'}
+							fontWeight='medium'
+						>
+							{dataUser?.category}
+						</Text>
+					</Field>
+					<Field color='uni.secondary' label='Teléfono:'>
+						<Text
+							color={dataUser?.phone ? 'black' : 'gray.500'}
+							fontWeight='medium'
+						>
+							{dataUser?.phone || 'Sin datos'}
+						</Text>
+					</Field>
+					<Field color='uni.secondary' label='Curriculum:'>
+						{dataUser?.path_cv ? (
+							<Badge
+								as='a'
+								href={dataUser.path_cv}
+								target='_blank'
+								rel='noopener noreferrer'
+								colorPalette='green'
+								variant='solid'
+								px={3}
+								py={1}
+								borderRadius='md'
+								cursor='pointer'
+								_hover={{ textDecoration: 'underline', bg: 'uni.secondary' }}
+							>
+								Ver archivo
+							</Badge>
+						) : (
+							<Text color='gray.500' fontWeight='medium'>
+								Sin datos
+							</Text>
+						)}
+					</Field>
+					<Field color='uni.secondary' label='Título o grado:'>
+						{dataUser?.path_grade ? (
+							<Badge
+								as='a'
+								href={dataUser.path_grade}
+								target='_blank'
+								rel='noopener noreferrer'
+								colorPalette='blue'
+								variant='solid'
+								px={3}
+								py={1}
+								borderRadius='md'
+								cursor='pointer'
+								_hover={{ textDecoration: 'underline', bg: 'uni.secondary' }}
+							>
+								Ver archivo
+							</Badge>
+						) : (
+							<Text color='gray.500' fontWeight='medium'>
+								Sin datos
+							</Text>
+						)}
+					</Field>
+				</SimpleGrid>
+			</Stack>
+		</Modal>
 	);
 };
 
