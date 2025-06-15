@@ -1,5 +1,5 @@
 import { Avatar } from '@/components/ui';
-import { Button, HStack, Stack, Text } from '@chakra-ui/react';
+import { Button, Flex, HStack, Stack, Text } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 
 export const ChangeProfileControl = ({
@@ -18,18 +18,23 @@ export const ChangeProfileControl = ({
 		!isChangesMade || isPasswordMismatch || isPasswordRequiredButEmpty;
 
 	return (
-		<HStack justify='space-between' w='full'>
-			<HStack>
-				{profile?.full_name && (
-					<Avatar name={profile.full_name} shape='rounded' size='xl' />
+		<Flex
+			w='full'
+			flexDirection={{ base: 'column', md: 'row' }}
+			justify='space-between'
+			gap={4}
+		>
+			<Stack direction='row' align='center'>
+				{profile?.first_name && (
+					<Avatar name={profile.first_name} shape='rounded' size='xl' />
 				)}
 
 				<Stack gap='0'>
-					<Text fontWeight='medium'>{profile.full_name}</Text>
+					<Text fontWeight='medium'>{profile?.first_name}</Text>
 				</Stack>
-			</HStack>
+			</Stack>
 
-			<Stack spacing={1} align='end'>
+			<Stack spacing={1} align={{ base: 'stretch', md: 'flex-end' }}>
 				<Button
 					size='sm'
 					onClick={!isButtonDisabled ? handleUpdateProfile : undefined}
@@ -37,7 +42,7 @@ export const ChangeProfileControl = ({
 					bg={isButtonDisabled ? 'gray.300' : 'uni.secondary'}
 					color={isButtonDisabled ? 'gray.600' : 'white'}
 					w={{ base: 'full', sm: 'auto' }}
-					alignSelf='flex-start'
+					alignSelf={{ base: 'stretch', md: 'flex-start' }}
 					isDisabled={isButtonDisabled}
 					_hover={isButtonDisabled ? { bg: 'gray.300' } : {}}
 					_active={isButtonDisabled ? { bg: 'gray.300' } : {}}
@@ -52,7 +57,7 @@ export const ChangeProfileControl = ({
 					</Text>
 				)}
 			</Stack>
-		</HStack>
+		</Flex>
 	);
 };
 

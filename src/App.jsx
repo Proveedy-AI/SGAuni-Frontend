@@ -9,6 +9,7 @@ import {
 	SettingsPrograms,
 	SettingsRoles,
 	SettingsModalities,
+	AccountStudentProfile,
 } from './views/admin/settings';
 import { UserList } from './views/admin/UserList';
 import { PrivateRoute, ProtectedRoute } from './PrivateRoute ';
@@ -120,7 +121,7 @@ function App() {
 										<ProtectedRoute requiredPermission='settings.studenprofile.view' />
 									}
 								>
-									<Route path='myprofile' element={<AccountProfile />} />
+									<Route path='myprofile' element={<AccountStudentProfile />} />
 								</Route>
 
 								<Route

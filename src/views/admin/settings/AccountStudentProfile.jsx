@@ -1,0 +1,217 @@
+import { useState, useEffect } from 'react';
+import { toaster } from '@/components/ui';
+import { Box, Heading, VStack, Text } from '@chakra-ui/react';
+import { FiAlertCircle } from 'react-icons/fi';
+import { Link } from 'react-router';
+import { ChangeProfileControl } from '@/components/forms/acount/ChangeProfileControl';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
+import { uploadToS3 } from '@/utils/uploadToS3';
+import { useUpdatePerson } from '@/hooks';
+import { ChangeDataStudentProfileForm } from '@/components/forms/acount/ChangeDataStudentProfileForm';
+
+export const AccountStudentProfile = () => {
+	const { data: dataUser, isLoading, error, refetch } = useReadUserLogged();
+
+	const { mutate: update, loading: loadingUpdate } = useUpdatePerson();
+
+	const [profile, setProfile] = useState({
+		id: '',
+		user: {},
+		username: '',
+		first_name: '',
+		password: '',
+		confirmPassword: '',
+		paternal_surname: '',
+		maternal_surname: '',
+		document_type: '',
+		document_number: '',
+		birth_date: '',
+		district: '',
+		phone: '',
+		nationality: null,
+		address: '',
+		has_one_surname: false,
+		country: null,
+		birth_ubigeo: null,
+		address_ubigeo: null,
+		uni_email: '',
+		is_uni_graduate: false,
+		uni_code: '',
+		has_disability: '',
+		type_disability: '',
+		other_disability: '',
+		license_number: '',
+		entrant: '',
+		orcid_code: '',
+		document_path: '',
+	});
+
+	const [isChangesMade, setIsChangesMade] = useState(false);
+	const [initialProfile, setInitialProfile] = useState(null);
+
+	useEffect(() => {
+		if (!isLoading && dataUser) {
+			setProfile(dataUser);
+			setInitialProfile(dataUser);
+		}
+	}, [dataUser, isLoading]);
+
+	useEffect(() => {
+		if (!initialProfile) return;
+		const hasChanges =
+			JSON.stringify(profile) !== JSON.stringify(initialProfile);
+		setIsChangesMade(hasChanges);
+	}, [profile, initialProfile]);
+
+	const updateProfileField = (field, value) => {
+		setIsChangesMade(true);
+		console.log('Cambio detectado en:', field, 'con valor:', value);
+		setProfile((prev) => ({ ...prev, [field]: value }));
+	};
+
+	const handleUpdateProfile = async (e) => {
+		e.preventDefault();
+
+		let pathDocUrl = profile?.document_path;
+
+		// Solo subir a S3 si hay un archivo nuevo
+		if (profile?.document_path instanceof File) {
+			pathDocUrl = await uploadToS3(
+				profile.document_path,
+				'sga_uni/studentdoc',
+				profile.first_name?.replace(/\s+/g, '_') || 'cv'
+			);
+		}
+
+		const payload = {
+			user: {
+				password: profile.password,
+			},
+			first_name: profile.first_name,
+			paternal_surname: profile.paternal_surname,
+			maternal_surname: profile.maternal_surname,
+			document_type: profile.document_type,
+			document_number: profile.document_number,
+			birth_date: profile.birth_date,
+			district: profile.district?.value,
+			address: profile.address,
+			has_one_surname: profile.has_one_surname,
+			country: profile.country?.value,
+			birth_ubigeo: profile.birth_ubigeo?.value,
+			address_ubigeo: profile.address_ubigeo?.value,
+			phone: profile.phone,
+			nationality: profile.nationality?.value,
+			uni_email: profile.uni_email,
+			is_uni_graduate: profile.is_uni_graduate,
+			uni_code: profile.uni_code,
+			has_disability: profile.has_disability,
+			type_disability: profile.type_disability,
+			other_disability: profile.other_disability,
+			license_number: profile.license_number,
+			orcid_code: profile.orcid_code,
+			document_path: pathDocUrl,
+		};
+
+		update(
+			{ id: profile.id, payload },
+			{
+				onSuccess: () => {
+					setInitialProfile(profile);
+					setIsChangesMade(false);
+					toaster.create({
+						title: 'Perfil actualizado correctamente.',
+						type: 'success',
+					});
+					refetch();
+				},
+				onError: (error) => {
+					const errorData = error.response?.data;
+
+					if (errorData && typeof errorData === 'object') {
+						Object.values(errorData).forEach((errorList) => {
+							if (Array.isArray(errorList)) {
+								errorList.forEach((message) => {
+									toaster.create({
+										title: message,
+										type: 'error',
+									});
+								});
+							}
+						});
+					} else {
+						toaster.create({
+							title: 'Error al registrar el Programa',
+							type: 'error',
+						});
+					}
+				},
+			}
+		);
+	};
+
+	return (
+		<Box spaceY='5'>
+			<Heading size={{ xs: 'xs', sm: 'sm', md: 'md' }}>
+				Propiedades de cuenta
+			</Heading>
+
+			{error && (
+				<Box
+					display='flex'
+					flexDirection='column'
+					alignItems='center'
+					justifyContent='center'
+					py={8}
+				>
+					<Box color='red.500' mb={2}>
+						<FiAlertCircle size={24} />
+					</Box>
+					<Text mb={4} color='red.600' fontWeight='bold'>
+						Error al cargar los datos: {error.message}
+					</Text>
+					<Link
+						style={{
+							background: '#E53E3E',
+							color: 'white',
+							padding: '8px 16px',
+							borderRadius: '4px',
+							border: 'none',
+							cursor: 'pointer',
+						}}
+						onClick={() => window.location.reload()}
+					>
+						Recargar página
+					</Link>
+				</Box>
+			)}
+
+			{isLoading && <Box>Cargando contenido...</Box>}
+
+			{!isLoading && !error && dataUser && (
+				<>
+					<VStack
+						bg={{ base: 'white', _dark: 'uni.gray.500' }}
+						p='6'
+						align='start'
+						borderRadius='10px'
+						overflow='hidden'
+						boxShadow='md'
+						gap='6'
+					>
+						<ChangeProfileControl
+							profile={profile}
+							isChangesMade={isChangesMade}
+							handleUpdateProfile={handleUpdateProfile}
+							loadingUpdate={loadingUpdate}
+						/>
+
+						<ChangeDataStudentProfileForm
+							profile={profile}
+							updateProfileField={updateProfileField}
+						/>
+					</VStack>
+				</>
+			)}
+		</Box>
+	);
+};
