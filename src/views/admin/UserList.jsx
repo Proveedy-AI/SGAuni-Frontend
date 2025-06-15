@@ -2,7 +2,6 @@ import { UserTable } from '@/components/tables';
 import { Box, Heading, Text, VStack } from '@chakra-ui/react';
 import { useState } from 'react';
 import { CreateAndFilterUser } from '@/components/forms/management/user/CreateAndFilterUser';
-import { ViewUserModal } from '@/components/forms/management/user/ViewUserModal';
 import { EditUserModal } from '@/components/forms/management/user/EditUserModal';
 import { ToogleRoleUserModal } from '@/components/forms/management/user/ToogleRoleUserModal';
 import { useReadUsers } from '@/hooks/users';
@@ -115,6 +114,7 @@ export const UserList = () => {
 						/>
 					</VStack>
 				)}
+				
 
 				{/* Modal para editar usuario */}
 				<EditUserModal
@@ -136,13 +136,6 @@ export const UserList = () => {
 					setIsModalOpen={setIsModalOpen}
 				/>
 			</Box>
-
-			<ViewUserModal
-				selectedUser={selectedUser}
-				isViewModalOpen={isModalOpen.view}
-				setIsModalOpen={setIsModalOpen}
-				handleCloseModal={handleCloseModal}
-			/>
 		</>
 	);
 };

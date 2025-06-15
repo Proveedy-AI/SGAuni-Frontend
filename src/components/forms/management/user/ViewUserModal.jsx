@@ -8,26 +8,22 @@ import {
 	Stack,
 	Text,
 } from '@chakra-ui/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FiEye } from 'react-icons/fi';
 
-export const ViewUserModal = ({
-	selectedUser,
-	isViewModalOpen,
-	setIsModalOpen,
-	handleCloseModal,
-}) => {
+export const ViewUserModal = ({ selectedUser }) => {
+	const [open, setOpen] = useState(false);
 	const { data: dataUser, refetch: fetchUser } = useReadUserById({
 		id: selectedUser?.id,
 		enabled: false,
 	});
 
 	useEffect(() => {
-		if (isViewModalOpen && selectedUser?.id) {
+		if (selectedUser?.id) {
 			fetchUser();
 		}
-	}, [isViewModalOpen, selectedUser?.id, fetchUser]);
+	}, [selectedUser?.id, fetchUser]);
 
 	return (
 		<Modal
@@ -43,7 +39,7 @@ export const ViewUserModal = ({
 					>
 						<IconButton
 							size='xs'
-							colorPalette='gray'
+							colorPalette='blue'
 							css={{
 								_icon: {
 									width: '5',
@@ -56,10 +52,9 @@ export const ViewUserModal = ({
 					</Tooltip>
 				</Box>
 			}
-			open={isViewModalOpen}
+			open={open}
 			hiddenFooter={true}
-			onOpenChange={(e) => setIsModalOpen((s) => ({ ...s, view: e.open }))}
-			onSave={() => handleCloseModal('view')}
+			onOpenChange={(e) => setOpen(e.open)}
 			size='2xl'
 		>
 			<Stack css={{ '--field-label-width': '140px' }} fontSize={'md'}>
@@ -162,12 +157,5 @@ export const ViewUserModal = ({
 };
 
 ViewUserModal.propTypes = {
-	setUsers: PropTypes.func,
 	selectedUser: PropTypes.object,
-	setSelectedUser: PropTypes.func,
-	isEditModalOpen: PropTypes.bool,
-	setIsModalOpen: PropTypes.func,
-	handleCloseModal: PropTypes.func,
-	fetchUsers: PropTypes.func,
-	isViewModalOpen: PropTypes.bool,
 };

@@ -2,10 +2,11 @@ import { Button, Pagination, toaster } from '@/components/ui';
 import { Badge, Box, HStack, Switch, Table } from '@chakra-ui/react';
 import { useState } from 'react';
 import { FiUserPlus } from 'react-icons/fi';
-import { HiEye, HiPencil } from 'react-icons/hi2';
+import { HiPencil } from 'react-icons/hi2';
 import { RowsPerPageSelect } from '../select';
 import PropTypes from 'prop-types';
 import { useToggleUser } from '@/hooks/users/useToggleUser';
+import { ViewUserModal } from '../forms/management/user/ViewUserModal';
 
 export const UserTable = ({ fetchUsers, users, handleOpenModal }) => {
 	const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -127,20 +128,7 @@ export const UserTable = ({ fetchUsers, users, handleOpenModal }) => {
 								</Table.Cell>
 								<Table.Cell>
 									<HStack>
-										<Button
-											background={{ base: '#0661D8', _dark: '#3182ce' }}
-											color='white'
-											width='1'
-											variant='outline'
-											size='xs'
-											borderRadius='md'
-											onClick={() => handleOpenModal('view', item)}
-											_hover={{
-												background: { base: '#054ca6', _dark: '#2563eb' },
-											}}
-										>
-											<HiEye />
-										</Button>
+										<ViewUserModal selectedUser={item} />
 										<Button
 											background={{ base: '#2D9F2D', _dark: '#38a169' }}
 											color='white'
