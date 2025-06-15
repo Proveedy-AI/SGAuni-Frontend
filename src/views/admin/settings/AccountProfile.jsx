@@ -11,7 +11,7 @@ import { uploadToS3 } from '@/utils/uploadToS3';
 
 export const AccountProfile = () => {
 	const { data: dataUser, isLoading, error, refetch } = useReadUserLogged();
-  console.log(dataUser)
+ 
 	const { mutate: update, loading: loadingUpdate } = useUpdateUser();
 
 	const [profile, setProfile] = useState({
