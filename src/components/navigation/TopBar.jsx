@@ -37,7 +37,6 @@ export const TopBar = () => {
 			</Flex>
 		);
 	}
-	console.log(profile)
 
 	const menuItems = [{ label: 'Configurar cuenta', href: '/settings/profile' }];
 	const username = profile.user?.username || '';

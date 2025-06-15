@@ -192,8 +192,6 @@ const SidebarItem = ({ href, icon, label, isCollapsed, subItems, ...atr }) => {
 		return permissions.includes(requiredPermission.trim());
 	};
 
-	console.log(roles)
-
 	const getHref = () => {
 		if (href === '/settings') {
 			return hasPermission.includes('settings.studenprofile.view')

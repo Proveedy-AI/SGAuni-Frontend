@@ -32,8 +32,6 @@ export const useDataSidebar = () => {
 		? '/settings/myprofile'
 		: '/settings/profile';
 
-		console.log(permissions)
-
 	const mainItems = [
 		{
 			href: '/',
