@@ -343,14 +343,14 @@ export const ChangeDataStudentProfileForm = ({
 										target='_blank'
 										rel='noopener noreferrer'
 									>
-										Ver CV
+										Ver documento
 									</Button>
 									<Button
 										size='xs'
 										colorScheme='red'
 										onClick={() => updateProfileField('document_path', '')}
 									>
-										Quitar CV
+										Quitar documento
 									</Button>
 								</Flex>
 							)}
