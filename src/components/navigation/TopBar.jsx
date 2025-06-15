@@ -26,7 +26,7 @@ export const TopBar = () => {
 
 	useEffect(() => {
 		if (profile) {
-			setFullname(profile.full_name || '');
+			setFullname(profile.user.first_name || '');
 		}
 	}, [profile]);
 
@@ -37,10 +37,11 @@ export const TopBar = () => {
 			</Flex>
 		);
 	}
+	console.log(profile)
 
 	const menuItems = [{ label: 'Configurar cuenta', href: '/settings/profile' }];
 	const username = profile.user?.username || '';
-	const email = profile.uni_email || '';
+	//const email = profile.uni_email || '';
 	const roles = profile.roles || [];
 
 	const mainRole =
@@ -110,9 +111,6 @@ export const TopBar = () => {
 					>
 						<Stack gap='0' px='4'>
 							<Text fontWeight='medium'>{username}</Text>
-							<Text textStyle='sm' color='fg.muted'>
-								{email}
-							</Text>
 						</Stack>
 						<MenuSeparator />
 						<Box px='4' my='2'>
