@@ -14,8 +14,8 @@ import { UserList } from './views/admin/UserList';
 import { PrivateRoute, ProtectedRoute } from './PrivateRoute ';
 import { Dashboard } from './views/admin/Dashboard';
 import {
-  AdmissionApplicantDetail,
-  AdmissionApplicants,
+	AdmissionApplicantDetail,
+	AdmissionApplicants,
 	AdmissionApplicantsByProgram,
 	AdmissionsMyPrograms,
 	AdmissionsProccess,
@@ -38,7 +38,6 @@ function App() {
 					<Route element={<PrivateRoute />}>
 						<Route path='/' element={<AdminLayout />}>
 							<Route index element={<Dashboard />} />
-
 							<Route
 								element={
 									<ProtectedRoute requiredPermission='users.users.view' />
@@ -46,7 +45,6 @@ function App() {
 							>
 								<Route path='users' element={<UserList />} />
 							</Route>
-
 							<Route path='admissions'>
 								<Route
 									element={
@@ -72,20 +70,26 @@ function App() {
 										element={<AdmissionsMyPrograms />}
 									/>
 								</Route>
-                <Route
-                  element={
+								<Route
+									element={
 										<ProtectedRoute requiredPermission='admissions.myprograms.view' />
 									}
-                >
-                  <Route path='applicants'>
-                    <Route index element={<AdmissionApplicants />} />
+								>
+									<Route path='applicants'>
+										<Route index element={<AdmissionApplicants />} />
 
-                    <Route path='programs/:id' element={<AdmissionApplicantsByProgram />} />
-                    <Route path='programs/:programId/estudiante/:id' element={<AdmissionApplicantDetail />} />
-                  </Route>
-                </Route>
-							</Route>s
-
+										<Route
+											path='programs/:id'
+											element={<AdmissionApplicantsByProgram />}
+										/>
+										<Route
+											path='programs/:programId/estudiante/:id'
+											element={<AdmissionApplicantDetail />}
+										/>
+									</Route>
+								</Route>
+							</Route>
+							s
 							<Route path='contracts'>
 								<Route
 									element={
@@ -102,10 +106,23 @@ function App() {
 									<Route path='list' element={<Contracts />} />
 								</Route>
 							</Route>
-
 							{/* SETTINGS */}
 							<Route path='settings' element={<SettingsLayout />}>
-								<Route path='profile' element={<AccountProfile />} />
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='settings.adminprofile.view' />
+									}
+								>
+									<Route path='profile' element={<AccountProfile />} />
+								</Route>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='settings.studenprofile.view' />
+									}
+								>
+									<Route path='myprofile' element={<AccountProfile />} />
+								</Route>
+
 								<Route
 									element={
 										<ProtectedRoute requiredPermission='settings.modalities.view' />
@@ -140,7 +157,7 @@ function App() {
 					</Route>
 
 					{/* Ruta para ir a formulario de inscripción */}
-          <Route path='admission-process/:uuid' element={<AdmissionForm />} />
+					<Route path='admission-process/:uuid' element={<AdmissionForm />} />
 				</Routes>
 			</BrowserRouter>
 		</>
