@@ -72,7 +72,7 @@ console.log(dataUser?.document_path)
 					/>
 				</Flex>
 			)}
-			{!isLoading && dataUser?.document_path && (
+			{!isLoading && !dataUser?.document_path && (
 				<PersonalDataApplicants
 					loading={isLoadingDataUser}
 					fetchUser={fetchDataUser}
