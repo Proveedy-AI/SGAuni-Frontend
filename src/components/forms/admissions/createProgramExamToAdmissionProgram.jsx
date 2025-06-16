@@ -1,19 +1,21 @@
-import { Modal, toaster } from '@/components/ui';
-import { Box, Field, Flex, IconButton, Input, Stack, Table, Text } from '@chakra-ui/react';
+import { Field, Modal, toaster, Tooltip } from '@/components/ui';
+import { useCreateAdmissionEvaluation, useDeleteAdmissionEvaluation, useReadAdmissionEvaluations, useUpdateAdmissionEvaluation } from '@/hooks/admissions_evaluations';
+import { Box, Flex, IconButton, Input, Stack, Table, Text } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
-import { FaSave } from 'react-icons/fa';
-import { FiSettings } from 'react-icons/fi';
-import { Tooltip } from 'recharts';
+import { FaSave, FaTimes } from 'react-icons/fa';
+import { FiCalendar } from 'react-icons/fi';
 
 export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
   
-  //const { mutate: createProgramExam, isPending: isCreatePending } = useCreateProgramExam();
-  //const { mutate: editProgramExam, isPending: isEditPending } = useEditProgramExam();
-  //const { data: dataProgramExams, refetch: fetchProgramExams } = useListProgramExamsByAdmissionProgram(item?.id)
+  const { mutate: createEvaluation, isPending: isCreateEvaluationPending } = useCreateAdmissionEvaluation()
+  const { data: dataEvaluations, refetch: fetchEvaluations } = useReadAdmissionEvaluations();
+  const { mutate: editEvaluation, isPending: isEditEvaluationPending } = useUpdateAdmissionEvaluation();
+  const { mutate: deleteEvaluation, isPending: isDeleteEvaluationPending } = useDeleteAdmissionEvaluation();
 
+  const filteredEvaluationsByStudent = dataEvaluations?.results?.filter(evaluation => evaluation.application === item?.id)
   const [nameExamInput, setNameExamInput] = useState('');
   const [dateExamInput, setDateExamInput] = useState('');
   const [timeExamInput, setTimeExamInput] = useState('');
@@ -41,6 +43,8 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
       time: timeExamInput,
     };
 
+    console.log('Payload:', payload);
+
     const onSuccess = () => {
       toaster.create({
         title: editingId ? 'Examen actualizado' : 'Examen creado',
@@ -48,7 +52,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
       });
       handleResetForm();
       fetchData();
-      //fetchProgramExams();
+      fetchEvaluations();
     };
 
     const onError = (error) => {
@@ -60,30 +64,50 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
     };
 
     if (editingId) {
-      //editProgramExam({ id: editingId, payload }, { onSuccess, onError });
+      editEvaluation({ id: editingId, payload }, { onSuccess, onError });
     } else {
-      //createProgramExam(payload, { onSuccess, onError });
+      createEvaluation(payload, { onSuccess, onError });
     }
   }
 
+  const handleDelete = (id) => {
+    deleteEvaluation(id, {
+      onSuccess: () => {
+        toaster.create({
+          title: 'Examen eliminado',
+          type: 'success',
+        });
+        fetchData();
+        fetchEvaluations();
+      },
+      onError: (error) => {
+        console.error(error);
+        toaster.create({
+          title: error.response?.data?.[0] || 'Error al eliminar el examen',
+          type: 'error',
+        });
+      },
+    });
+  };
+
   return (
     <Modal
-      title='Asignar Modalidad a Programa'
+      title='Programa exámenes'
       placement='center'
       trigger={
         <Box>
           <Tooltip
-            content='Asignar Modalidad'
+            content='Programa exámenes'
             positioning={{ placement: 'bottom-center' }}
             showArrow
             openDelay={0}
           >
             <IconButton
               size='xs'
-              colorPalette='purple'
+              colorPalette='green'
               css={{ _icon: { width: '5', height: '5' } }}
             >
-              <FiSettings />
+              <FiCalendar />
             </IconButton>
           </Tooltip>
         </Box>
@@ -129,14 +153,26 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
           </Field>
           <IconButton
             size='sm'
-            bg='uni.secondary'
+            bg='green'
             // loading={isCreatePending || isEditPending}
             disabled={!nameExamInput || !dateExamInput || !timeExamInput}
             onClick={handleSubmit}
+            isLoading={isCreateEvaluationPending || isEditEvaluationPending}
             css={{ _icon: { width: '5', height: '5' } }}
             aria-label={editingId ? 'Actualizar' : 'Guardar'}
           >
             <FaSave />
+          </IconButton>
+          <IconButton
+            size='sm'
+            bg='red'
+            // loading={isCreatePending || isEditPending}
+            disabled={!nameExamInput || !dateExamInput || !timeExamInput}
+            onClick={handleResetForm}
+            css={{ _icon: { width: '5', height: '5' } }}
+            aria-label={editingId ? 'Actualizar' : 'Guardar'}
+          >
+            <FaTimes />
           </IconButton>
         </Flex>
         {/* Tabla de Exámenes */}
@@ -155,32 +191,52 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {/* Aquí deberías mapear los exámenes, ejemplo: dataProgramExams?.results */}
-              {/* {dataProgramExams?.results?.map((exam, index) => ( */}
-              {/*   <Table.Row key={exam.id}> */}
-              {/*     <Table.Cell>{index + 1}</Table.Cell> */}
-              {/*     <Table.Cell>{exam.name}</Table.Cell> */}
-              {/*     <Table.Cell>{exam.date}</Table.Cell> */}
-              {/*     <Table.Cell>{exam.time}</Table.Cell> */}
-              {/*     <Table.Cell> */}
-              {/*       <Flex gap={2}> */}
-              {/*         <IconButton size='xs' colorPalette='red' onClick={() => handleDeleteExam(exam.id)} aria-label='Eliminar'> */}
-              {/*           <FiTrash2 /> */}
-              {/*         </IconButton> */}
-              {/*         <IconButton size='xs' colorPalette='blue' onClick={() => handleEditExam(exam)} aria-label='Editar'> */}
-              {/*           <FiEdit2 /> */}
-              {/*         </IconButton> */}
-              {/*       </Flex> */}
-              {/*     </Table.Cell> */}
-              {/*   </Table.Row> */}
-              {/* ))} */}
-              {/* {(!dataProgramExams?.results || dataProgramExams?.results.length === 0) && ( */}
-              <Table.Row>
-                <Table.Cell colSpan={5} textAlign='center'>
-                  Sin datos disponibles
-                </Table.Cell>
-              </Table.Row>
-              {/* )} */}
+              {
+                filteredEvaluationsByStudent.length > 0 ? (
+                  filteredEvaluationsByStudent.map((exam, index) => (
+                    <Table.Row key={exam.id}>
+                      <Table.Cell>{index + 1}</Table.Cell>
+                      <Table.Cell>{exam.name}</Table.Cell>
+                      <Table.Cell>{exam.date}</Table.Cell>
+                      <Table.Cell>{exam.time}</Table.Cell>
+                      <Table.Cell>
+                        <Flex gap={2}>
+                          <IconButton
+                            size='xs'
+                            colorPalette='blue'
+                            onClick={() => {
+                              setEditingId(exam.id);
+                              setNameExamInput(exam.name);
+                              setDateExamInput(exam.date);
+                              setTimeExamInput(exam.time);
+                            }}
+                            aria-label='Editar'
+                          >
+                            <FaSave />
+                          </IconButton>
+                          <IconButton
+                            size='xs'
+                            colorPalette='red'
+                            isLoading={isDeleteEvaluationPending}
+                            onClick={() => {
+                              handleDelete(exam.id);
+                            }}
+                            aria-label='Eliminar'
+                          >
+                            <FaTimes />
+                          </IconButton>
+                        </Flex>
+                      </Table.Cell>
+                    </Table.Row>
+                  ))
+                ) : (
+                  <Table.Row>
+                    <Table.Cell colSpan={5} textAlign='center'>
+                      Sin datos disponibles
+                    </Table.Cell>
+                  </Table.Row>
+                )
+              }
             </Table.Body>
           </Table.Root>
         </Box>

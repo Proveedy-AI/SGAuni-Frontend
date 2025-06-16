@@ -8,7 +8,7 @@ import { Link as RouterLink } from 'react-router';
 export const AdmissionApplicantDetail = () => {
   const { programId, id } = useParams();
   const { data: dataApplicant, loading: isApplicantLoading } = useReadAdmissionApplicantById(id);
-  const { data: dataApplicantDetails, loading: isApplicantDetailsLoading } = useReadPersonById(dataApplicant?.person_id || 1);
+  const { data: dataApplicantDetails, loading: isApplicantDetailsLoading } = useReadPersonById(id);
 
   const statusEnum = [
    { id: 1, label: 'En Revisión', bg:'#FDD9C6', color:'#F86A1E' },
