@@ -24,7 +24,9 @@ import {
 } from './views/admin/admissions';
 import { Contracts, MyContracts } from './views/admin/contracts';
 import AdmissionForm from './views/Inscription';
-import { AdmissionMyApplicants } from './views/admin/admissions/MyApplicants/AdmissionMyApplicants';
+import { AdmissionMyApplicants } from './views/admin/applicants/AdmissionMyApplicants';
+import { ApplicantsLayout } from './views/admin/applicants/ApplicantsLayout';
+import { PaymentApplicant } from './views/admin/applicants/PaymentApplicant';
 
 function App() {
 	return (
@@ -97,6 +99,9 @@ function App() {
 								>
 									<Route path='myapplicants'>
 										<Route index element={<AdmissionMyApplicants />} />
+										<Route path='proccess' element={<ApplicantsLayout />}>
+											<Route path='payment' element={<PaymentApplicant />} />
+										</Route>
 									</Route>
 								</Route>
 							</Route>

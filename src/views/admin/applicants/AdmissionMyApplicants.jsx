@@ -1,16 +1,16 @@
 import { PersonalDataApplicants } from '@/components/forms/admissions/MyApplicants';
-import { AdmissionApplicantsTable } from '@/components/tables/admissions';
-import { useReadAdmissionsPrograms } from '@/hooks/admissions_programs';
+import { MyApplicantsTable } from '@/components/tables/myApplicants';
+import { useReadMyApplicants } from '@/hooks';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { Box, Heading, Stack, Spinner, Flex } from '@chakra-ui/react';
 import { useState } from 'react';
 
 export const AdmissionMyApplicants = () => {
 	const {
-		data: dataAdmissionPrograms,
-		refetch: fetchAdmissionPrograms,
+		data: dataMyApplicants,
+		refetch: fetchMyApplicants,
 		isLoading,
-	} = useReadAdmissionsPrograms();
+	} = useReadMyApplicants();
 	const {
 		data: dataUser,
 		isLoading: isLoadingDataUser,
@@ -23,21 +23,8 @@ export const AdmissionMyApplicants = () => {
 		date: null,
 	});
 
-	const filteredAdmissionPrograms = dataAdmissionPrograms?.results?.filter(
-		(item) =>
-			(!searchValue.program_name ||
-				item.program_name
-					.toLowerCase()
-					.includes(searchValue.program_name.toLowerCase())) &&
-			(!searchValue.program_type?.value ||
-				item.program_type.toLowerCase() ===
-					searchValue.program_type.label.toLowerCase()) &&
-			(!searchValue.admission_process?.value ||
-				item.admission_process === searchValue.admission_process.value) &&
-			(!searchValue.date ||
-				item.semester_start_date.slice(0, 10) === searchValue.date)
-	);
-console.log(dataUser?.document_path)
+	console.log(dataMyApplicants);
+
 	return (
 		<Box spaceY='5'>
 			<Stack
@@ -76,17 +63,17 @@ console.log(dataUser?.document_path)
 				<PersonalDataApplicants
 					loading={isLoadingDataUser}
 					fetchUser={fetchDataUser}
-          data={dataUser}
+					data={dataUser}
 				/>
 			)}
 			{
 				<>
 					{!isLoading &&
-						dataAdmissionPrograms?.results?.length > 0 &&
+						dataMyApplicants?.length > 0 &&
 						dataUser?.document_path && (
-							<AdmissionApplicantsTable
-								data={filteredAdmissionPrograms}
-								fetchData={fetchAdmissionPrograms}
+							<MyApplicantsTable
+								data={dataMyApplicants}
+								fetchData={fetchMyApplicants}
 								permissions={[]}
 								search={searchValue}
 								setSearch={setSearchValue}
