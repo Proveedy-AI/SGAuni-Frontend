@@ -6,6 +6,7 @@ import {
 	UpdateAdmissionsProgramsForm,
 } from '@/components/forms/admissions';
 import { AssignModalityToProgramForm } from '@/components/forms/admissions/AssignModalityProgramsForm';
+import { HistoryStatusProgramsView } from '@/components/forms/admissions/HistoryStatusProgramsView';
 import {
 	ConfirmModal,
 	SendModal,
@@ -21,7 +22,6 @@ import {
 import { useDeleteAdmissionsPrograms } from '@/hooks/admissions_programs';
 import { useCreateProgramsReview } from '@/hooks/admissions_review_programs/useCreateProgramsReview';
 import {
-	Badge,
 	Box,
 	createListCollection,
 	HStack,
@@ -104,17 +104,11 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 				{format(new Date(item.registration_end_date), 'dd/MM/yyyy')}
 			</Table.Cell>
 			<Table.Cell>
-				{(() => {
-					const status = statusMap[item.status_display] || {
-						label: item.status_display,
-						color: 'default',
-					};
-					return (
-						<Badge variant='solid' bg={status.color}>
-							{status.label}
-						</Badge>
-					);
-				})()}
+				<HistoryStatusProgramsView
+					data={item}
+					statusMap={statusMap}
+					fetchData={fetchData}
+				/>
 			</Table.Cell>
 			<Table.Cell>
 				<HStack>

@@ -1,35 +1,34 @@
 import { PreviewProgramsPendingModal } from '@/components/forms/admissions';
 import { UpdateStatusAdmissionsProccessForm } from '@/components/forms/admissions/UpdateStatusAdmissionsProccessForm';
 import {
-	ConfirmModal,
+	//	ConfirmModal,
 	Pagination,
 	SelectContent,
 	SelectItem,
 	SelectRoot,
 	SelectTrigger,
 	SelectValueText,
-	toaster,
+	//	toaster,
 } from '@/components/ui';
-import { useDeleteAdmissions } from '@/hooks/admissions_proccess';
+//import { useDeleteAdmissions } from '@/hooks/admissions_proccess';
 import {
 	Badge,
 	Box,
 	createListCollection,
 	HStack,
-	IconButton,
-	Span,
+	//	IconButton,
+	//	Span,
 	Stack,
 	Table,
-	Text,
+	//	Text,
 } from '@chakra-ui/react';
 import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 import { memo, useEffect, useMemo, useState } from 'react';
-import { FiTrash2 } from 'react-icons/fi';
-import { data } from 'react-router';
+//import { FiTrash2 } from 'react-icons/fi';
 
 const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
-	const [open, setOpen] = useState(false);
+	/*const [open, setOpen] = useState(false);
 
 	const { mutate: deleteAdmisions, isPending } = useDeleteAdmissions();
 
@@ -50,7 +49,7 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 				});
 			},
 		});
-	};
+	};*/
 	const statusMap = {
 		Draft: { label: 'Borrador', color: 'gray' },
 		Pending: { label: 'Pendiente', color: 'orange.500' },
@@ -88,14 +87,13 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 				<HStack>
 					<PreviewProgramsPendingModal data={item} />
 					{permissions?.includes('admissions.programs.approve') &&
-						data.status === 4 && (
+						item.status === 2 && (
 							<UpdateStatusAdmissionsProccessForm
 								data={item}
 								fetchData={fetchData}
 							/>
 						)}
-					{permissions?.includes('admissions.proccess.delete') &&
-						data.status === 4 && (
+					{/*permissions?.includes('admissions.proccess.delete') && (
 							<ConfirmModal
 								placement='center'
 								trigger={
@@ -116,7 +114,7 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 									de la lista de Procesos?
 								</Text>
 							</ConfirmModal>
-						)}
+						)*/}
 				</HStack>
 			</Table.Cell>
 		</Table.Row>
