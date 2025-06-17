@@ -174,7 +174,7 @@ export const UserTable = ({ fetchUsers, users, handleOpenModal }) => {
 									/>
 								</HStack>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader colSpan={4}>
+							<Table.ColumnHeader colSpan={5}>
 								<Pagination
 									count={users.length}
 									pageSize={rowsPerPage}
