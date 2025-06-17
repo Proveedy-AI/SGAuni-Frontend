@@ -1,6 +1,6 @@
 import { useReadPersonById } from "@/hooks";
 import { useReadAdmissionApplicantById } from "@/hooks/admissions_applicants/useReadAdmissionApplicantById";
-import { Badge, Box, Breadcrumb, Flex, Heading, SimpleGrid, Spinner, Stack, Text } from "@chakra-ui/react";
+import { Badge, Box, Breadcrumb, Flex, Heading, SimpleGrid, Spinner, Stack, Table, Text } from "@chakra-ui/react";
 import { LiaSlashSolid } from "react-icons/lia";
 import { useParams } from "react-router"
 import { Link as RouterLink } from 'react-router';
@@ -17,60 +17,6 @@ export const AdmissionApplicantDetail = () => {
   ]
 
   const statusEnumSelected = statusEnum.find(item => item.id === dataApplicant?.status);
-
-  /*
-  Persona
-  {
-    "id": 1,
-    "user": {
-      "id": 7,
-      "username": "ejemplo@gmail.com",
-      "first_name": "Jose",
-      "last_name": "Diaz Torres"
-    },
-    "first_name": "Jose",
-    "paternal_surname": "Diaz",
-    "maternal_surname": "Torres",
-    "document_type": 1,
-    "document_number": "77777777",
-    "birth_date": "2004-02-17",
-    "district": 1,
-    "phone": "+51 987 654 321",
-    "nationality": 1,
-    "address": "La marina, C.C. San Miguel",
-    "has_one_surname": false,
-    "country": 1,
-    "birth_ubigeo": null,
-    "address_ubigeo": null,
-    "uni_email": "",
-    "is_uni_graduate": true,
-    "uni_code": "",
-    "has_disability": true,
-    "type_disability": null,
-    "other_disability": "",
-    "license_number": "",
-    "entrant": true,
-    "admission_date": "2025-06-11",
-    "orcid_code": "",
-    "document_path": ""
-  }
-
-
-  Postulante
-  {
-    "id": 1,
-    "person_full_name": "Jose Diaz Torres",
-    "admission_program": 4,
-    "admission_process": "3",
-    "admission_process_name": "proceso prueb",
-    "modality_id": 5,
-    "modality_display": "Prueba Modalidad 3",
-    "status": 1,
-    "status_display": "Incomplete",
-    "postgrade_name": "Programa 1",
-    "status_qualification_display": "Pending"
-  }
-  */
 
   return (
     <Box spaceY='5'>
@@ -130,11 +76,13 @@ export const AdmissionApplicantDetail = () => {
                 <Box maxW="900px" mx="auto">
                   {/* Estado y Programa */}
                   <Flex
-                    bg="gray.50"
-                    borderRadius="md"
+                    bg={{ base: 'white', _dark: 'its.gray.500' }}
+                    borderRadius='10px'
+                    overflow='hidden'
+                    boxShadow='md'
+                    mb={6}
                     px={6}
                     py={8}
-                    mb={6}
                     align="center"
                     justify="space-between"
                     wrap="wrap"
@@ -157,17 +105,24 @@ export const AdmissionApplicantDetail = () => {
                       <Text as="span" fontWeight="semibold">Modalidad:</Text> {dataApplicant?.modality_display}
                     </Text>
                   </Flex>
-                  <Box bg="gray.50" borderRadius="md" p={6} mb={6}>
+                  <Box 
+                    bg={{ base: 'white', _dark: 'its.gray.500' }}
+                    borderRadius='10px'
+                    overflow='hidden'
+                    boxShadow='md'
+                    p={6}
+                    mb={6}
+                  >
                     <Text fontWeight="bold" color="red.600" mb={4}>
                       Datos del postulante:
                     </Text>
                     <SimpleGrid columns={[1, 2]} spacing={4}>
                       <Box>
-                        <Text>Fecha de Nacimiento: {dataApplicantDetails.birth_date}</Text>
-                        <Text>País de Nacimiento: {dataApplicantDetails.nationality}</Text>
-                        <Text>Nacionalidad: {dataApplicantDetails.nationality}</Text>
-                        <Text>Celular: {dataApplicantDetails.phone}</Text>
-                        <Text>Correo: {dataApplicantDetails.user?.username}</Text>
+                        <Text><b>Fecha de Nacimiento:</b> {dataApplicantDetails.birth_date}</Text>
+                        <Text><b>País de Nacimiento:</b> {dataApplicantDetails.nationality}</Text>
+                        <Text><b>Nacionalidad:</b> {dataApplicantDetails.nationality}</Text>
+                        <Text><b>Celular:</b> {dataApplicantDetails.phone}</Text>
+                        <Text><b>Correo:</b> {dataApplicantDetails.user?.username}</Text>
                       </Box>
                       <Box>
                         <Text><b>Documento de identidad:</b> {dataApplicantDetails.document_number}</Text>
@@ -177,6 +132,39 @@ export const AdmissionApplicantDetail = () => {
                         <Text><b>Distrito:</b> {dataApplicantDetails.district}</Text>
                       </Box>
                     </SimpleGrid>
+                  </Box>
+                  <Box 
+                    bg={{ base: 'white', _dark: 'its.gray.500' }}
+                    borderRadius='10px'
+                    overflow='hidden'
+                    boxShadow='md'
+                    p={6}
+                    mb={6}
+                  >
+                    <Text fontWeight="bold" color="red.600" mb={4}>
+                      Trámites:
+                    </Text>
+                    <Box
+                      bg={{ base: 'white', _dark: 'its.gray.500' }}
+                      p='3'
+                      borderRadius='10px'
+                      overflow='hidden'
+                      boxShadow='md'
+                    >
+                      <Table.Root size='sm' w='full'>
+                        <Table.Header>
+                          <Table.Row>
+                            <Table.ColumnHeader>N°</Table.ColumnHeader>
+                            <Table.ColumnHeader>Fecha</Table.ColumnHeader>
+                            <Table.ColumnHeader>Nombres del trámite</Table.ColumnHeader>
+                            <Table.ColumnHeader>Acciones</Table.ColumnHeader>
+                          </Table.Row>
+                        </Table.Header>
+                        <Table.Body>
+                          
+                        </Table.Body>
+                      </Table.Root>
+                    </Box>
                   </Box>
                 </Box>
               ) : (

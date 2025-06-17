@@ -84,7 +84,7 @@ const Row = memo(({ programId, item, fetchData, startIndex, index, permissions }
         <Table.Cell textAlign="center">{item.calification || '-'}</Table.Cell>
         <Table.Cell onClick={(e) => e.stopPropagation()}>
         <HStack>
-          {permissions?.includes('admissions.applicants.create.evaluation') && (
+          {permissions?.includes('admissions.create.evaluation') && (
             <CreateProgramExamToAdmissionProgram item={item} fetchData={fetchData} />
           )}
         </HStack>
