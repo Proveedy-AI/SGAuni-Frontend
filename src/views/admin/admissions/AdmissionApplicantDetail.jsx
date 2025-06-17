@@ -1,4 +1,3 @@
-import { useReadPersonById } from "@/hooks";
 import { useReadAdmissionApplicantById } from "@/hooks/admissions_applicants/useReadAdmissionApplicantById";
 import { Badge, Box, Breadcrumb, Flex, Heading, SimpleGrid, Spinner, Stack, Table, Text } from "@chakra-ui/react";
 import { LiaSlashSolid } from "react-icons/lia";
@@ -8,7 +7,6 @@ import { Link as RouterLink } from 'react-router';
 export const AdmissionApplicantDetail = () => {
   const { programId, id } = useParams();
   const { data: dataApplicant, loading: isApplicantLoading } = useReadAdmissionApplicantById(id);
-  const { data: dataApplicantDetails, loading: isApplicantDetailsLoading } = useReadPersonById(id);
 
   const statusEnum = [
    { id: 1, label: 'En Revisión', bg:'#FDD9C6', color:'#F86A1E' },
@@ -17,6 +15,24 @@ export const AdmissionApplicantDetail = () => {
   ]
 
   const statusEnumSelected = statusEnum.find(item => item.id === dataApplicant?.status);
+  /*
+    payment_orders = [
+      {
+        id: 1
+        id_orden: 
+        sub_amount:
+        discount_value:
+        total_amount:
+        payment_method_name:
+        name:
+        address:
+        email:
+        document_num;
+        due_date:
+        status_value:
+      }
+    ]
+  */
 
   return (
     <Box spaceY='5'>
@@ -72,9 +88,8 @@ export const AdmissionApplicantDetail = () => {
        { isApplicantLoading && <Spinner /> }
           { (
             <>
-            { !isApplicantLoading && !isApplicantDetailsLoading && dataApplicant && dataApplicantDetails ? (
+            { !isApplicantLoading && dataApplicant ? (
                 <Box maxW="900px" mx="auto">
-                  {/* Estado y Programa */}
                   <Flex
                     bg={{ base: 'white', _dark: 'its.gray.500' }}
                     borderRadius='10px'
@@ -118,18 +133,18 @@ export const AdmissionApplicantDetail = () => {
                     </Text>
                     <SimpleGrid columns={[1, 2]} spacing={4}>
                       <Box>
-                        <Text><b>Fecha de Nacimiento:</b> {dataApplicantDetails.birth_date}</Text>
-                        <Text><b>País de Nacimiento:</b> {dataApplicantDetails.nationality}</Text>
-                        <Text><b>Nacionalidad:</b> {dataApplicantDetails.nationality}</Text>
-                        <Text><b>Celular:</b> {dataApplicantDetails.phone}</Text>
-                        <Text><b>Correo:</b> {dataApplicantDetails.user?.username}</Text>
+                        <Text><b>Fecha de Nacimiento:</b> {dataApplicant?.person_details?.birth_date}</Text>
+                        <Text><b>País de Nacimiento:</b> {dataApplicant?.person_details?.country_name}</Text>
+                        <Text><b>Nacionalidad:</b> {dataApplicant?.person_details?.nationality_name}</Text>
+                        <Text><b>Celular:</b> {dataApplicant?.person_details?.phone}</Text>
+                        <Text><b>Correo:</b> {dataApplicant?.person_details?.email}</Text>
                       </Box>
                       <Box>
-                        <Text><b>Documento de identidad:</b> {dataApplicantDetails.document_number}</Text>
-                        <Text><b>Dirección:</b> {dataApplicantDetails.address}</Text>
-                        <Text><b>Departamento:</b> {dataApplicantDetails.department || 'No hay'}</Text>
-                        <Text><b>Provincia:</b> {dataApplicantDetails.province || 'No hay'}</Text>
-                        <Text><b>Distrito:</b> {dataApplicantDetails.district}</Text>
+                        <Text><b>Documento de identidad:</b> {dataApplicant?.person_details?.document_number}</Text>
+                        <Text><b>Dirección:</b> {dataApplicant?.person_details?.address}</Text>
+                        <Text><b>Departamento:</b> {dataApplicant?.person_details?.department_name}</Text>
+                        <Text><b>Provincia:</b> {dataApplicant?.person_details?.province_name}</Text>
+                        <Text><b>Distrito:</b> {dataApplicant?.person_details?.district_name}</Text>
                       </Box>
                     </SimpleGrid>
                   </Box>
