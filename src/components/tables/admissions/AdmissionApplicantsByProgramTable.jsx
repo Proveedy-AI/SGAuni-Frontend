@@ -1,4 +1,5 @@
 import { CreateProgramExamToAdmissionProgram } from '@/components/forms/admissions/createProgramExamToAdmissionProgram';
+import { ViewAdmissionProgramExams } from '@/components/forms/admissions/ViewAdmissionProgramExams';
 import {
   Pagination,
   SelectContent,
@@ -22,26 +23,24 @@ import { useNavigate } from 'react-router';
 const Row = memo(({ programId, item, fetchData, startIndex, index, permissions }) => {
   const navigate = useNavigate();
   const handleRowClick = () => {
-    // if (permissions?.includes('admissions.myapplicants.view')) {
-    //   navigate(`/admissions/myapplicants/${item.id}`);
-    // }
-    // if (permissions?.includes('admissions.applicants.view')) {
-    //   navigate(`/admissions/applicants/${item.id}`);
-    // }
-    // Por ahora, sin permisos para ver los postulantes por programa
-    navigate(`/admissions/applicants/programs/${programId}/estudiante/${item.id}`);
+    if (permissions?.includes('admissions.myapplicants.view')) {
+      navigate(`/admissions/myapplicants/${item.id}`);
+    }
+    if (permissions?.includes('admissions.applicants.view')) {
+      navigate(`/admissions/applicants/programs/${programId}/estudiante/${item.id}`);
+    }
   };
 
   const applicationStatusEnum = [
-    { id: 1, value:'Incomplete', label: 'En revisión', color: 'orange' },
-    { id: 2, value:'Approved', label: 'Aprobado', color: 'green' },
-    { id: 3, value:'rejected', label: 'Rechazado', color: 'red' },
-    { id: 4, value:'Observed', label: 'Observado', color: 'purple' },
+    { id: 1, value:'Incomplete', label: 'En revisión', bg: '#FDD9C6', color: '#F86A1E' },
+    { id: 2, value:'Approved', label: 'Aprobado', bg: '#D0EDD0', color: '#2D9F2D' },
+    { id: 3, value:'rejected', label: 'Rechazado', bg: '#F7CDCE', color: '#E0383B' },
+    { id: 4, value:'Observed', label: 'Observado', bg: '#E3D1F6', color: '#9049DB' },
   ];
 
   const calificationStatusEnum = [
-    { id: 1, value:'Pending', label: 'Pendiente', color: 'gray' },
-    { id: 2, value:'Calificado', label: 'Calificado', color: 'green' },
+    { id: 1, value:'Pending', label: 'Pendiente', bg: '#AEAEAE', color: '#F5F5F5' },
+    { id: 2, value:'Calificado', label: 'Calificado', bg: '#D0EDD0', color: '#2D9F2D' },
   ];
 
   return (
@@ -49,46 +48,47 @@ const Row = memo(({ programId, item, fetchData, startIndex, index, permissions }
        onClick={(e) => {
          if (e.target.closest('button') || e.target.closest('a')) return;
          handleRowClick();
-       }}
-      key={item.id}
-      bg={index % 2 === 0 ? 'gray.100' : 'white'} // tu color alternado aquí
-      _hover={{
+         }}
+        key={item.id}
+        bg={index % 2 === 0 ? 'gray.100' : 'white'}
+        _hover={{
         bg: 'blue.100',
         cursor: 'pointer',
-      }}
-    >
-      <Table.Cell>{startIndex + index + 1}</Table.Cell>
-      <Table.Cell>{item.person_full_name}</Table.Cell>
-      <Table.Cell display={'flex'} alignItems='center' justifyContent='center' w={'150px'}>
-        <Span
-          bg={applicationStatusEnum.find(status => status.value === item.status_display)?.color}
-          fontWeight='semibold'
-          px={2}
-          py={1}
-          rounded={'md'}
-          color={'white'}
-        >
-          {applicationStatusEnum.find(status => status.value === item.status_display)?.label}
-        </Span>
-      </Table.Cell>
-      <Table.Cell>
-        <Span
-          bg={calificationStatusEnum.find(status => status.value === item.status_qualification_display)?.color}
-          fontWeight='semibold'
-          px={2}
-          py={1}
-          rounded={'md'}
-          color={'white'}
-        >
-          {calificationStatusEnum.find(status => status.value === item.status_qualification_display)?.label}
-        </Span>
-      </Table.Cell>
-      <Table.Cell onClick={(e) => e.stopPropagation()}>
+        }}
+      >
+        <Table.Cell textAlign="center">{startIndex + index + 1}</Table.Cell>
+        <Table.Cell>{item.person_full_name}</Table.Cell>
+        <Table.Cell textAlign="center">
+          <Span
+            bg={applicationStatusEnum.find(status => status.value === item.status_display)?.bg}
+            fontWeight='semibold'
+            px={2}
+            py={1}
+            rounded={'md'}
+            color={applicationStatusEnum.find(status => status.value === item.status_display)?.color}
+          >
+            {applicationStatusEnum.find(status => status.value === item.status_display)?.label}
+          </Span>
+        </Table.Cell>
+        <Table.Cell textAlign="center">
+          <Span
+            bg={calificationStatusEnum.find(status => status.value === item.status_qualification_display)?.bg}
+            fontWeight='semibold'
+            px={2}
+            py={1}
+            rounded={'md'}
+            color={calificationStatusEnum.find(status => status.value === item.status_qualification_display)?.color}
+          >
+            {calificationStatusEnum.find(status => status.value === item.status_qualification_display)?.label}
+          </Span>
+        </Table.Cell>
+        <Table.Cell textAlign="center">{item.calification || '-'}</Table.Cell>
+        <Table.Cell onClick={(e) => e.stopPropagation()}>
         <HStack>
-          <CreateProgramExamToAdmissionProgram
-            item={item}
-            fetchData={fetchData}
-          />
+          <ViewAdmissionProgramExams item={item} fetchData={fetchData} />
+          {permissions?.includes('admissions.create.evaluation') && (
+            <CreateProgramExamToAdmissionProgram item={item} fetchData={fetchData} />
+          )}
         </HStack>
       </Table.Cell>
     </Table.Row>
@@ -224,8 +224,9 @@ export const AdmissionApplicantsByProgramTable = ({ programId, data, fetchData, 
             <Table.Row>
               <Table.ColumnHeader>N°</Table.ColumnHeader>
               <Table.ColumnHeader>Nombres del postulante</Table.ColumnHeader>
-              <Table.ColumnHeader>Estado de postulación</Table.ColumnHeader>
-              <Table.ColumnHeader>Estado de calificación</Table.ColumnHeader>
+              <Table.ColumnHeader textAlign="center">Estado de postulación</Table.ColumnHeader>
+              <Table.ColumnHeader textAlign="center">Estado de calificación</Table.ColumnHeader>
+              <Table.ColumnHeader textAlign="center">Calificaciones</Table.ColumnHeader>
               <Table.ColumnHeader>Acciones</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>

@@ -2,6 +2,7 @@ import { AdmissionApplicantsByProgramTable } from "@/components/tables/admission
 import { InputGroup } from "@/components/ui";
 import { useReadAdmissionApplicants } from "@/hooks/admissions_applicants";
 import { useReadAdmissionProgramsById } from "@/hooks/admissions_programs";
+import { useProvideAuth } from "@/hooks/auth";
 import { Box, Breadcrumb, Heading, Input, Span, Spinner, Stack, Text } from "@chakra-ui/react"
 import { useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
@@ -11,6 +12,13 @@ import { Link as RouterLink } from 'react-router';
 
 export const AdmissionApplicantsByProgram = () => {
   const { id } = useParams();
+  const { getProfile } = useProvideAuth();
+  const profile = getProfile();
+  const roles = profile?.roles || [];
+  const permissions = roles
+    .flatMap((r) => r.permissions || [])
+    .map((p) => p.guard_name);
+
   const { data: dataProgram, loading: isProgramLoading } = useReadAdmissionProgramsById(id);
   const { data: dataAdmissionApplicants, refetch: fetchAdmissionApplicants } = useReadAdmissionApplicants();
 
@@ -106,7 +114,7 @@ export const AdmissionApplicantsByProgram = () => {
                   programId={id}
                   data={filteredApplicants}
                   fetchData={fetchAdmissionApplicants}
-                  permissions={[]}
+                  permissions={permissions}
                 />
               ) : (
                 <Heading size='sm' color='gray.500'>

@@ -1,4 +1,4 @@
-import { useReadPersonById } from "@/hooks";
+import { PaymentOrdersByApplicationTable } from "@/components/tables/payment_orders";
 import { useReadAdmissionApplicantById } from "@/hooks/admissions_applicants/useReadAdmissionApplicantById";
 import { Badge, Box, Breadcrumb, Flex, Heading, SimpleGrid, Spinner, Stack, Text } from "@chakra-ui/react";
 import { LiaSlashSolid } from "react-icons/lia";
@@ -8,7 +8,6 @@ import { Link as RouterLink } from 'react-router';
 export const AdmissionApplicantDetail = () => {
   const { programId, id } = useParams();
   const { data: dataApplicant, loading: isApplicantLoading } = useReadAdmissionApplicantById(id);
-  const { data: dataApplicantDetails, loading: isApplicantDetailsLoading } = useReadPersonById(dataApplicant?.person_id || 1);
 
   const statusEnum = [
    { id: 1, label: 'En Revisión', bg:'#FDD9C6', color:'#F86A1E' },
@@ -17,60 +16,22 @@ export const AdmissionApplicantDetail = () => {
   ]
 
   const statusEnumSelected = statusEnum.find(item => item.id === dataApplicant?.status);
-
-  /*
-  Persona
-  {
-    "id": 1,
-    "user": {
-      "id": 7,
-      "username": "ejemplo@gmail.com",
-      "first_name": "Jose",
-      "last_name": "Diaz Torres"
-    },
-    "first_name": "Jose",
-    "paternal_surname": "Diaz",
-    "maternal_surname": "Torres",
-    "document_type": 1,
-    "document_number": "77777777",
-    "birth_date": "2004-02-17",
-    "district": 1,
-    "phone": "+51 987 654 321",
-    "nationality": 1,
-    "address": "La marina, C.C. San Miguel",
-    "has_one_surname": false,
-    "country": 1,
-    "birth_ubigeo": null,
-    "address_ubigeo": null,
-    "uni_email": "",
-    "is_uni_graduate": true,
-    "uni_code": "",
-    "has_disability": true,
-    "type_disability": null,
-    "other_disability": "",
-    "license_number": "",
-    "entrant": true,
-    "admission_date": "2025-06-11",
-    "orcid_code": "",
-    "document_path": ""
-  }
-
-
-  Postulante
-  {
-    "id": 1,
-    "person_full_name": "Jose Diaz Torres",
-    "admission_program": 4,
-    "admission_process": "3",
-    "admission_process_name": "proceso prueb",
-    "modality_id": 5,
-    "modality_display": "Prueba Modalidad 3",
-    "status": 1,
-    "status_display": "Incomplete",
-    "postgrade_name": "Programa 1",
-    "status_qualification_display": "Pending"
-  }
-  */
+  const payment_orders = [
+      {
+        id: 1,
+        id_orden: '8384999',
+        sub_amount: '500.67',
+        discount_value: '0.50',
+        total_amount: '500.05',
+        payment_method_name: 'BCP',
+        name: 'German',
+        address: 'Villa Sur',
+        email: 'user@example.com',
+        document_num: '7854648',
+        due_date: '2025-06-17',
+        status_value: 'Pending'
+      }
+    ]
 
   return (
     <Box spaceY='5'>
@@ -126,15 +87,16 @@ export const AdmissionApplicantDetail = () => {
        { isApplicantLoading && <Spinner /> }
           { (
             <>
-            { !isApplicantLoading && !isApplicantDetailsLoading && dataApplicant && dataApplicantDetails ? (
+            { !isApplicantLoading && dataApplicant ? (
                 <Box maxW="900px" mx="auto">
-                  {/* Estado y Programa */}
                   <Flex
-                    bg="gray.50"
-                    borderRadius="md"
+                    bg={{ base: 'white', _dark: 'its.gray.500' }}
+                    borderRadius='10px'
+                    overflow='hidden'
+                    boxShadow='md'
+                    mb={6}
                     px={6}
                     py={8}
-                    mb={6}
                     align="center"
                     justify="space-between"
                     wrap="wrap"
@@ -157,26 +119,46 @@ export const AdmissionApplicantDetail = () => {
                       <Text as="span" fontWeight="semibold">Modalidad:</Text> {dataApplicant?.modality_display}
                     </Text>
                   </Flex>
-                  <Box bg="gray.50" borderRadius="md" p={6} mb={6}>
+                  <Box 
+                    bg={{ base: 'white', _dark: 'its.gray.500' }}
+                    borderRadius='10px'
+                    overflow='hidden'
+                    boxShadow='md'
+                    p={6}
+                    mb={6}
+                  >
                     <Text fontWeight="bold" color="red.600" mb={4}>
                       Datos del postulante:
                     </Text>
                     <SimpleGrid columns={[1, 2]} spacing={4}>
                       <Box>
-                        <Text>Fecha de Nacimiento: {dataApplicantDetails.birth_date}</Text>
-                        <Text>País de Nacimiento: {dataApplicantDetails.nationality}</Text>
-                        <Text>Nacionalidad: {dataApplicantDetails.nationality}</Text>
-                        <Text>Celular: {dataApplicantDetails.phone}</Text>
-                        <Text>Correo: {dataApplicantDetails.user?.username}</Text>
+                        <Text><b>Fecha de Nacimiento:</b> {dataApplicant?.person_details?.birth_date}</Text>
+                        <Text><b>País de Nacimiento:</b> {dataApplicant?.person_details?.country_name}</Text>
+                        <Text><b>Nacionalidad:</b> {dataApplicant?.person_details?.nationality_name}</Text>
+                        <Text><b>Celular:</b> {dataApplicant?.person_details?.phone}</Text>
+                        <Text><b>Correo:</b> {dataApplicant?.person_details?.email}</Text>
                       </Box>
                       <Box>
-                        <Text><b>Documento de identidad:</b> {dataApplicantDetails.document_number}</Text>
-                        <Text><b>Dirección:</b> {dataApplicantDetails.address}</Text>
-                        <Text><b>Departamento:</b> {dataApplicantDetails.department || 'No hay'}</Text>
-                        <Text><b>Provincia:</b> {dataApplicantDetails.province || 'No hay'}</Text>
-                        <Text><b>Distrito:</b> {dataApplicantDetails.district}</Text>
+                        <Text><b>Documento de identidad:</b> {dataApplicant?.person_details?.document_number}</Text>
+                        <Text><b>Dirección:</b> {dataApplicant?.person_details?.address}</Text>
+                        <Text><b>Departamento:</b> {dataApplicant?.person_details?.department_name}</Text>
+                        <Text><b>Provincia:</b> {dataApplicant?.person_details?.province_name}</Text>
+                        <Text><b>Distrito:</b> {dataApplicant?.person_details?.district_name}</Text>
                       </Box>
                     </SimpleGrid>
+                  </Box>
+                  <Box 
+                    bg={{ base: 'white', _dark: 'its.gray.500' }}
+                    borderRadius='10px'
+                    overflow='hidden'
+                    boxShadow='md'
+                    p={6}
+                    mb={6}
+                  >
+                    <Text fontWeight="bold" color="red.600" mb={4}>
+                      Trámites:
+                    </Text>
+                    <PaymentOrdersByApplicationTable data={payment_orders} />
                   </Box>
                 </Box>
               ) : (

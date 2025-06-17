@@ -9,7 +9,7 @@ export const useReadAdmissionApplicantById = (id) => {
     queryKey: ['admission_applications', id],
     queryFn: async () => {
       if (!id) throw new Error('ID requerido');
-      const res = await axiosPrivate.get(`/api/v1/admission-applications/${id}/`);
+      const res = await axiosPrivate.get(`/api/v1/admission-applications/by-id/${id}/`);
       return res.data;
     },
     enabled: !!id, // solo corre si hay un id válido

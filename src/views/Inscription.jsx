@@ -149,8 +149,9 @@ export default function AdmissionForm() {
 			.map((dist) => ({
 				value: dist.id,
 				label: dist.name,
-				province_id: dist.province_id,
+				province_id: dist.id,
 			})) || [];
+  console.log(dataDistrict)
 
 	useEffect(() => {
 		setSelectedProvince(null);
@@ -206,7 +207,7 @@ export default function AdmissionForm() {
 					? `${inscriptionRequest.dial_code.value} ${inscriptionRequest.phone_number}`
 					: inscriptionRequest.phone_number,
 				nationality: inscriptionRequest.nationality?.value,
-				country: inscriptionRequest.country,
+				country: inscriptionRequest.country?.value,
 				address: inscriptionRequest.address,
 				has_one_surname: isOneLastName,
 			},
