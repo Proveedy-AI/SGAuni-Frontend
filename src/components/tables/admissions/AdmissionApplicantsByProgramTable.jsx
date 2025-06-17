@@ -1,4 +1,5 @@
 import { CreateProgramExamToAdmissionProgram } from '@/components/forms/admissions/createProgramExamToAdmissionProgram';
+import { ViewAdmissionProgramExams } from '@/components/forms/admissions/ViewAdmissionProgramExams';
 import {
   Pagination,
   SelectContent,
@@ -84,6 +85,7 @@ const Row = memo(({ programId, item, fetchData, startIndex, index, permissions }
         <Table.Cell textAlign="center">{item.calification || '-'}</Table.Cell>
         <Table.Cell onClick={(e) => e.stopPropagation()}>
         <HStack>
+          <ViewAdmissionProgramExams item={item} fetchData={fetchData} />
           {permissions?.includes('admissions.create.evaluation') && (
             <CreateProgramExamToAdmissionProgram item={item} fetchData={fetchData} />
           )}

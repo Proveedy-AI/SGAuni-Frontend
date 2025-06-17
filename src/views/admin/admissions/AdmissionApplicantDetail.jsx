@@ -1,5 +1,6 @@
+import { PaymentOrdersByApplicationTable } from "@/components/tables/payment_orders";
 import { useReadAdmissionApplicantById } from "@/hooks/admissions_applicants/useReadAdmissionApplicantById";
-import { Badge, Box, Breadcrumb, Flex, Heading, SimpleGrid, Spinner, Stack, Table, Text } from "@chakra-ui/react";
+import { Badge, Box, Breadcrumb, Flex, Heading, SimpleGrid, Spinner, Stack, Text } from "@chakra-ui/react";
 import { LiaSlashSolid } from "react-icons/lia";
 import { useParams } from "react-router"
 import { Link as RouterLink } from 'react-router';
@@ -15,24 +16,22 @@ export const AdmissionApplicantDetail = () => {
   ]
 
   const statusEnumSelected = statusEnum.find(item => item.id === dataApplicant?.status);
-  /*
-    payment_orders = [
+  const payment_orders = [
       {
-        id: 1
-        id_orden: 
-        sub_amount:
-        discount_value:
-        total_amount:
-        payment_method_name:
-        name:
-        address:
-        email:
-        document_num;
-        due_date:
-        status_value:
+        id: 1,
+        id_orden: '8384999',
+        sub_amount: '500.67',
+        discount_value: '0.50',
+        total_amount: '500.05',
+        payment_method_name: 'BCP',
+        name: 'German',
+        address: 'Villa Sur',
+        email: 'user@example.com',
+        document_num: '7854648',
+        due_date: '2025-06-17',
+        status_value: 'Pending'
       }
     ]
-  */
 
   return (
     <Box spaceY='5'>
@@ -159,27 +158,7 @@ export const AdmissionApplicantDetail = () => {
                     <Text fontWeight="bold" color="red.600" mb={4}>
                       Trámites:
                     </Text>
-                    <Box
-                      bg={{ base: 'white', _dark: 'its.gray.500' }}
-                      p='3'
-                      borderRadius='10px'
-                      overflow='hidden'
-                      boxShadow='md'
-                    >
-                      <Table.Root size='sm' w='full'>
-                        <Table.Header>
-                          <Table.Row>
-                            <Table.ColumnHeader>N°</Table.ColumnHeader>
-                            <Table.ColumnHeader>Fecha</Table.ColumnHeader>
-                            <Table.ColumnHeader>Nombres del trámite</Table.ColumnHeader>
-                            <Table.ColumnHeader>Acciones</Table.ColumnHeader>
-                          </Table.Row>
-                        </Table.Header>
-                        <Table.Body>
-                          
-                        </Table.Body>
-                      </Table.Root>
-                    </Box>
+                    <PaymentOrdersByApplicationTable data={payment_orders} />
                   </Box>
                 </Box>
               ) : (

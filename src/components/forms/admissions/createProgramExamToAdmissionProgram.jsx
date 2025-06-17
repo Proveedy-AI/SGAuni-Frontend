@@ -97,7 +97,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
       trigger={
         <Box>
           <Tooltip
-            content='Programa exámenes'
+            content='Programar exámenes'
             positioning={{ placement: 'bottom-center' }}
             showArrow
             openDelay={0}
@@ -192,7 +192,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
             </Table.Header>
             <Table.Body>
               {
-                filteredEvaluationsByStudent.length > 0 ? (
+                filteredEvaluationsByStudent?.length > 0 ? (
                   filteredEvaluationsByStudent.map((exam, index) => (
                     <Table.Row key={exam.id}>
                       <Table.Cell>{index + 1}</Table.Cell>
