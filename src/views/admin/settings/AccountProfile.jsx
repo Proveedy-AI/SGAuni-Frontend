@@ -13,6 +13,7 @@ export const AccountProfile = () => {
 	const { data: dataUser, isLoading, error, refetch } = useReadUserLogged();
  
 	const { mutate: update, loading: loadingUpdate } = useUpdateUser();
+	const [disableUpload, setDisableUpload] = useState(false)
 
 	const [profile, setProfile] = useState({
 		id: '',
@@ -71,7 +72,7 @@ export const AccountProfile = () => {
 
 	const handleUpdateProfile = async (e) => {
 		e.preventDefault();
-
+		setDisableUpload(true)
 		let pathCvUrl = profile?.path_cv;
 		let pathGradeUrl = profile?.path_grade;
 
@@ -117,6 +118,7 @@ export const AccountProfile = () => {
 				type: 'success',
 			});
 			refetch();
+			setDisableUpload(false)
 		} catch (error) {
 			toaster.create({ title: error.message, type: 'error' });
 		}
@@ -176,6 +178,7 @@ export const AccountProfile = () => {
 						isChangesMade={isChangesMade}
 						handleUpdateProfile={handleUpdateProfile}
 						loadingUpdate={loadingUpdate}
+						disableUpload={disableUpload}
 					/>
 
 					<ChangeDataProfileForm

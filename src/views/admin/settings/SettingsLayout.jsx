@@ -40,7 +40,7 @@ export const SettingsLayout = () => {
 		},
 		{
 			href: '/settings/regional',
-			label: 'Configuración regional',
+			label: 'Localización',
 			permission: 'settings.regional.view',
 		},
 
@@ -51,7 +51,7 @@ export const SettingsLayout = () => {
 		},
 		{
 			href: '/settings/Programs',
-			label: 'Programas de Postgrado',
+			label: 'Programas',
 			permission: 'settings.program.view',
 		},
 		{
@@ -61,7 +61,7 @@ export const SettingsLayout = () => {
 		},
 		{
 			href: '/settings/regional',
-			label: 'Región y países',
+			label: 'Localización',
 			permission: 'settings.countries.view',
 		},
 	];

@@ -110,7 +110,7 @@ export const SettingsCountries = () => {
 						md: 'md',
 					}}
 				>
-					Gestión de Regiones
+					Gestión localizaciones
 				</Heading>
 
 				{tab === 1 && <AddSettingsCountryForm fetchData={fetchCountry} />}

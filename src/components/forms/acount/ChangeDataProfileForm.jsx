@@ -182,7 +182,7 @@ export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
 								<Button
 									size='xs'
 									colorScheme='red'
-									onClick={() => updateProfileField('pathContract', '')}
+									onClick={() => updateProfileField('path_grade', '')}
 								>
 									Quitar Título
 								</Button>

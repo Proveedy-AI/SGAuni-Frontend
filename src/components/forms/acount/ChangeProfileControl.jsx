@@ -7,6 +7,7 @@ export const ChangeProfileControl = ({
 	isChangesMade,
 	handleUpdateProfile,
 	loadingUpdate,
+	disableUpload,
 }) => {
 	const isPasswordMismatch =
 		profile.password &&
@@ -37,16 +38,16 @@ export const ChangeProfileControl = ({
 			<Stack spacing={1} align={{ base: 'stretch', md: 'flex-end' }}>
 				<Button
 					size='sm'
-					onClick={!isButtonDisabled ? handleUpdateProfile : undefined}
+					onClick={handleUpdateProfile}
 					isLoading={loadingUpdate}
-					bg={isButtonDisabled ? 'gray.300' : 'uni.secondary'}
-					color={isButtonDisabled ? 'gray.600' : 'white'}
+					bg={isButtonDisabled || disableUpload ? 'gray.300' : 'uni.secondary'}
+					color={isButtonDisabled || disableUpload ? 'gray.600' : 'white'}
 					w={{ base: 'full', sm: 'auto' }}
 					alignSelf={{ base: 'stretch', md: 'flex-start' }}
-					isDisabled={isButtonDisabled}
-					_hover={isButtonDisabled ? { bg: 'gray.300' } : {}}
-					_active={isButtonDisabled ? { bg: 'gray.300' } : {}}
-					cursor={isButtonDisabled ? 'not-allowed' : 'pointer'}
+					disabled={isButtonDisabled || disableUpload}
+					_hover={isButtonDisabled || disableUpload ? { bg: 'gray.300' } : {}}
+					_active={isButtonDisabled || disableUpload ? { bg: 'gray.300' } : {}}
+					cursor={isButtonDisabled || disableUpload ? 'not-allowed' : 'pointer'}
 				>
 					Guardar Cambios
 				</Button>
@@ -66,4 +67,5 @@ ChangeProfileControl.propTypes = {
 	isChangesMade: PropTypes.bool.isRequired,
 	handleUpdateProfile: PropTypes.func.isRequired,
 	loadingUpdate: PropTypes.bool,
+	disableUpload: PropTypes.bool,
 };
