@@ -29,7 +29,7 @@ export const SettingsPrograms = () => {
       (item) =>
         item?.is_active === true &&
         Array.isArray(item?.roles) &&
-        item.roles.some((role) => role?.name === "Docente")
+        item.roles.some((role) => role?.name === "Coordinador Académico")
     )
     ?.map((item) => ({
       value: item.id.toString(),

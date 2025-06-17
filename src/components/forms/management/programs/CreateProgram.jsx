@@ -116,7 +116,7 @@ export const AddProgram = ({ fetchData, programTypesOptions, coordinatorsOptions
             options={coordinatorsOptions}
           />
         </Field>
-        <Field label='Precio por crédito'>
+        <Field label='Precio por crédito (s/)'>
           <Input
             required
             type='number'
