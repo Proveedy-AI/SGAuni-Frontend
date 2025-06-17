@@ -120,6 +120,7 @@ export const AccountProfile = () => {
 			refetch();
 			setDisableUpload(false)
 		} catch (error) {
+			setDisableUpload(false)
 			toaster.create({ title: error.message, type: 'error' });
 		}
 	};

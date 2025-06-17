@@ -18,7 +18,7 @@ import { FiUploadCloud } from 'react-icons/fi';
 export const SignContractsForm = ({ data, fetchData }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
-
+	const [disableUpload, setDisableUpload] = useState(false);
 	const [filePDF, setFilePDF] = useState(null);
 	const [expiresAt] = useState(data?.expires_at);
 	const [owner] = useState(data?.owner);
@@ -30,7 +30,7 @@ export const SignContractsForm = ({ data, fetchData }) => {
 		}
 	};
 
-	const { mutate: signContracts, isPending } = useSignContracts();
+	const { mutate: signContracts } = useSignContracts();
 
 	const handleSubmitData = async (e) => {
 		e.preventDefault();
@@ -42,7 +42,7 @@ export const SignContractsForm = ({ data, fetchData }) => {
 			});
 			return;
 		}
-
+		setDisableUpload(true);
 		try {
 			const s3Url = await uploadToS3(
 				filePDF,
@@ -66,9 +66,11 @@ export const SignContractsForm = ({ data, fetchData }) => {
 						});
 						setOpen(false);
 						fetchData();
+						setDisableUpload(false);
 					},
 					onError: (error) => {
 						console.log(error);
+						setDisableUpload(false);
 						toaster.create({
 							title:
 								error.response?.data?.[0] || 'Error al actualizar el contrato',
@@ -79,6 +81,7 @@ export const SignContractsForm = ({ data, fetchData }) => {
 			);
 		} catch (error) {
 			console.error('Error al subir el archivo:', error);
+			setDisableUpload(false);
 			toaster.create({
 				title: 'Error al subir el contrato',
 				type: 'error',
@@ -116,7 +119,7 @@ export const SignContractsForm = ({ data, fetchData }) => {
 				</Box>
 			}
 			onSave={handleSubmitData}
-			loading={isPending}
+			loading={disableUpload}
 			open={open}
 			onOpenChange={(e) => setOpen(e.open)}
 			contentRef={contentRef}

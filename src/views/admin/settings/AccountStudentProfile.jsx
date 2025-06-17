@@ -11,7 +11,7 @@ import { ChangeDataStudentProfileForm } from '@/components/forms/acount/ChangeDa
 
 export const AccountStudentProfile = () => {
 	const { data: dataUser, isLoading, error, refetch } = useReadUserLogged();
-
+	const [disableUpload, setDisableUpload] = useState(false);
 	const { mutate: update, loading: loadingUpdate } = useUpdatePerson();
 
 	const [profile, setProfile] = useState({
@@ -72,7 +72,7 @@ export const AccountStudentProfile = () => {
 		e.preventDefault();
 
 		let pathDocUrl = profile?.document_path;
-
+		setDisableUpload(true);
 		// Solo subir a S3 si hay un archivo nuevo
 		if (profile?.document_path instanceof File) {
 			pathDocUrl = await uploadToS3(
@@ -101,7 +101,7 @@ export const AccountStudentProfile = () => {
 			phone: profile.phone,
 			nationality: profile.nationality?.value,
 			uni_email: profile.uni_email || null,
-			is_uni_graduate: profile.is_uni_graduate ,
+			is_uni_graduate: profile.is_uni_graduate,
 			uni_code: profile.uni_code || null,
 			has_disability: profile.has_disability,
 			type_disability: profile.type_disability,
@@ -121,11 +121,12 @@ export const AccountStudentProfile = () => {
 						title: 'Perfil actualizado correctamente.',
 						type: 'success',
 					});
+					setDisableUpload(false);
 					refetch();
 				},
 				onError: (error) => {
 					const errorData = error.response?.data;
-
+					setDisableUpload(false);
 					if (errorData && typeof errorData === 'object') {
 						Object.values(errorData).forEach((errorList) => {
 							if (Array.isArray(errorList)) {
@@ -202,6 +203,7 @@ export const AccountStudentProfile = () => {
 							isChangesMade={isChangesMade}
 							handleUpdateProfile={handleUpdateProfile}
 							loadingUpdate={loadingUpdate}
+							disableUpload={disableUpload}
 						/>
 
 						<ChangeDataStudentProfileForm

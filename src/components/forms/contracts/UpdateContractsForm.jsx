@@ -11,7 +11,7 @@ import { uploadToS3 } from '@/utils/uploadToS3';
 export const UpdateContractsForm = ({ data, fetchData }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
-
+	const [disableUpload, setDisableUpload] = useState(false);
 	const [filePDF, setFilePDF] = useState(null);
 	const [expiresAt, setExpiresAt] = useState(data?.expires_at);
 	//const [isSigned, setIsSigned] = useState(data?.is_signed);
@@ -24,7 +24,7 @@ export const UpdateContractsForm = ({ data, fetchData }) => {
 		}
 	};
 
-	const { mutate: updateContracts, isPending } = useUpdateContracts();
+	const { mutate: updateContracts } = useUpdateContracts();
 	const { data: dataUsers, isLoading } = useReadUsers();
 
 	const handleSubmitData = async (e) => {
@@ -37,7 +37,7 @@ export const UpdateContractsForm = ({ data, fetchData }) => {
 			});
 			return;
 		}
-
+		setDisableUpload(true);
 		try {
 			let s3Url = data?.path_contract;
 
@@ -66,8 +66,10 @@ export const UpdateContractsForm = ({ data, fetchData }) => {
 						});
 						setOpen(false);
 						fetchData();
+						setDisableUpload(false);
 					},
 					onError: (error) => {
+						setDisableUpload(false);
 						console.log(error);
 						toaster.create({
 							title:
@@ -79,6 +81,7 @@ export const UpdateContractsForm = ({ data, fetchData }) => {
 			);
 		} catch (error) {
 			console.error('Error al subir el archivo:', error);
+			setDisableUpload(false);
 			toaster.create({
 				title: 'Error al subir el contrato',
 				type: 'error',
@@ -113,7 +116,7 @@ export const UpdateContractsForm = ({ data, fetchData }) => {
 				</IconButton>
 			}
 			onSave={handleSubmitData}
-			loading={isPending}
+			loading={disableUpload}
 			open={open}
 			onOpenChange={(e) => setOpen(e.open)}
 			contentRef={contentRef}
