@@ -19,7 +19,6 @@ export const SortableHeader = ({ label, columnKey, sortConfig, onSort }) => {
 			<HStack>
 				<FaLongArrowAltUp
 					size={14}
-					style={{ marginLeft: '10px' }}
 					color={isActive && isAsc ? '#711610' : 'gray'}
 				/>
 				<FaLongArrowAltDown
