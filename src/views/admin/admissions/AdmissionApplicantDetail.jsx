@@ -18,6 +18,7 @@ import { Link as RouterLink } from 'react-router';
 
 export const AdmissionApplicantDetail = () => {
 	const { programId, id } = useParams();
+	const encodeProgram = encodeURIComponent(programId);
 	const decoded = decodeURIComponent(id);
 	const decrypted = Encryptor.decrypt(decoded);
 
@@ -55,7 +56,7 @@ export const AdmissionApplicantDetail = () => {
 						<Breadcrumb.Item>
 							<Breadcrumb.Link
 								as={RouterLink}
-								to={`/admissions/applicants/programs/${programId}`}
+								to={`/admissions/applicants/programs/${encodeProgram}`}
 							>
 								{isApplicantLoading
 									? 'Cargando...'
@@ -203,7 +204,9 @@ export const AdmissionApplicantDetail = () => {
 								<Text fontWeight='bold' color='red.600' mb={4}>
 									Trámites:
 								</Text>
-								<PaymentOrdersByApplicationTable data={dataApplicant?.payment_orders} />
+								<PaymentOrdersByApplicationTable
+									data={dataApplicant?.payment_orders}
+								/>
 							</Box>
 						</Box>
 					) : (
