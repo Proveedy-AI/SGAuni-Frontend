@@ -151,7 +151,6 @@ export default function AdmissionForm() {
 				label: dist.name,
 				province_id: dist.id,
 			})) || [];
-  console.log(dataDistrict)
 
 	useEffect(() => {
 		setSelectedProvince(null);
@@ -187,6 +186,44 @@ export default function AdmissionForm() {
 		useCreatePersonWithAdmission();
 
 	const handleSubmitInscription = async () => {
+		const missingFields = [];
+
+		if (!inscriptionRequest.email) missingFields.push('Correo');
+		if (!inscriptionRequest.first_name) missingFields.push('Nombre');
+		if (isOneLastName) {
+			if (!inscriptionRequest.last_name) missingFields.push('Apellido');
+		} else {
+			if (!inscriptionRequest.father_last_name)
+				missingFields.push('Apellido paterno');
+			if (!inscriptionRequest.mother_last_name)
+				missingFields.push('Apellido materno');
+		}
+		if (!inscriptionRequest.document_type?.value)
+			missingFields.push('Tipo de documento');
+		if (!inscriptionRequest.document_number)
+			missingFields.push('Número de documento');
+		if (!inscriptionRequest.birth_date)
+			missingFields.push('Fecha de nacimiento');
+		if (!selectedDistrict?.value) missingFields.push('Distrito');
+		if (
+			!inscriptionRequest.phone_number ||
+			(inscriptionRequest.dial_code && !inscriptionRequest.dial_code.value)
+		)
+			missingFields.push('Teléfono');
+		if (!inscriptionRequest.nationality?.value)
+			missingFields.push('Nacionalidad');
+		if (!inscriptionRequest.country?.value) missingFields.push('País');
+		if (!inscriptionRequest.address) missingFields.push('Dirección');
+		if (!selectedModality?.value) missingFields.push('Modalidad');
+		if (!dataAdmissionProgram?.id) missingFields.push('Programa de admisión');
+
+		if (missingFields.length > 0) {
+			toaster.create({
+				title: 'Por favor completa todos los campos',
+				type: 'warning',
+			});
+			return;
+		}
 		const payload = {
 			person: {
 				user: {
@@ -215,7 +252,7 @@ export default function AdmissionForm() {
 			modality_id: selectedModality?.value,
 		};
 
-		await create(payload, {
+		create(payload, {
 			onSuccess: () => {
 				navigate('/auth/login', {
 					state: {
@@ -224,6 +261,7 @@ export default function AdmissionForm() {
 				});
 			},
 			onError: (error) => {
+				console.log(error);
 				toaster.create({
 					title: error?.message || 'Error al inscribir',
 					status: 'error',
@@ -566,7 +604,7 @@ export default function AdmissionForm() {
 													px={10}
 													mt={5}
 													onClick={handleSubmitInscription}
-													isLoading={isSaving}
+													loading={isSaving}
 												>
 													Enviar
 												</Button>
