@@ -204,7 +204,7 @@ export const SettingsCountries = () => {
 								</Tabs.Trigger>
 								<Tabs.Trigger
 									value={6}
-									color={tab === 5 ? 'uni.secondary' : ''}
+									color={tab === 6 ? 'uni.secondary' : ''}
 								>
 									Nacionalidades
 								</Tabs.Trigger>
