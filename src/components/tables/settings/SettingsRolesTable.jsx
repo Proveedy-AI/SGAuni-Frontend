@@ -9,7 +9,7 @@ import {
 	Table,
 	Text,
 } from '@chakra-ui/react';
-import { ConfirmModal, Pagination, toaster } from '@/components/ui';
+import { ConfirmModal, Pagination, toaster, Tooltip } from '@/components/ui';
 import { FiTrash2 } from 'react-icons/fi';
 import { useDeleteRole } from '@/hooks/roles';
 import {
@@ -63,9 +63,18 @@ const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 							title='Eliminar rol'
 							placement='center'
 							trigger={
-								<IconButton colorPalette='red' size='xs'>
-									<FiTrash2 />
-								</IconButton>
+								<Box>
+									<Tooltip
+										content='Eliminar'
+										positioning={{ placement: 'bottom-center' }}
+										showArrow
+										openDelay={0}
+									>
+										<IconButton colorPalette='red' size='xs'>
+											<FiTrash2 />
+										</IconButton>
+									</Tooltip>
+								</Box>
 							}
 							open={open}
 							onOpenChange={(e) => setOpen(e.open)}

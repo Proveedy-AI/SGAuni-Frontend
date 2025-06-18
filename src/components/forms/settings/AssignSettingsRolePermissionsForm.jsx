@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Checkbox, Modal, toaster } from '@/components/ui';
+import { Checkbox, Modal, toaster, Tooltip } from '@/components/ui';
 import {
 	CheckboxGroup,
 	Fieldset,
@@ -10,6 +10,7 @@ import {
 	Flex,
 	IconButton,
 	Spinner,
+	Box,
 } from '@chakra-ui/react';
 import { useRef, useState, useEffect } from 'react';
 import { FiCheckSquare } from 'react-icons/fi';
@@ -82,9 +83,18 @@ export const AssignSettingsRolePermissionsForm = ({ data, fetchData }) => {
 			placement='center'
 			size='4xl'
 			trigger={
-				<IconButton colorPalette='green' size='xs'>
-					<FiCheckSquare />
-				</IconButton>
+				<Box>
+					<Tooltip
+						content='Asignar permiso'
+						positioning={{ placement: 'bottom-center' }}
+						showArrow
+						openDelay={0}
+					>
+						<IconButton colorPalette='green' size='xs'>
+							<FiCheckSquare />
+						</IconButton>
+					</Tooltip>
+				</Box>
 			}
 			contentRef={contentRef}
 			onSave={handleSavePermissions}

@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
-import { Field, Modal, toaster } from '@/components/ui';
-import { IconButton, Input, Stack } from '@chakra-ui/react';
-import { FiEdit2 } from 'react-icons/fi';
+import { Field, Modal, toaster, Tooltip } from '@/components/ui';
+import { Box, IconButton, Input, Stack } from '@chakra-ui/react';
 import { useUpdateRole } from '@/hooks/roles';
+import { HiPencil } from 'react-icons/hi2';
 
 export const UpdateSettingsRoleForm = ({ data, fetchData }) => {
 	const contentRef = useRef();
@@ -11,14 +11,14 @@ export const UpdateSettingsRoleForm = ({ data, fetchData }) => {
 
 	const [name, setName] = useState(data.name);
 
-  const { mutateAsync: update, isPending: loading} = useUpdateRole();
+	const { mutateAsync: update, isPending: loading } = useUpdateRole();
 
 	const handleSubmitData = async (e) => {
 		e.preventDefault();
 
 		const payload = {
 			name: name,
-      id: data.id
+			id: data.id,
 		};
 
 		try {
@@ -43,9 +43,18 @@ export const UpdateSettingsRoleForm = ({ data, fetchData }) => {
 			placement='center'
 			size='lg'
 			trigger={
-				<IconButton colorPalette='cyan' size='xs'>
-					<FiEdit2 />
-				</IconButton>
+				<Box>
+					<Tooltip
+						content='Editar'
+						positioning={{ placement: 'bottom-center' }}
+						showArrow
+						openDelay={0}
+					>
+						<IconButton colorPalette='cyan' size='xs'>
+							<HiPencil />
+						</IconButton>
+					</Tooltip>
+				</Box>
 			}
 			onSave={handleSubmitData}
 			loading={loading}
