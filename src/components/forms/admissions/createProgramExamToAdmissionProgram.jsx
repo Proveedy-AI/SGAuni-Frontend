@@ -16,7 +16,9 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
   const { data: dataEvaluations, refetch: fetchEvaluations } = useReadAdmissionEvaluationsByApplication(item?.id);
   const { mutate: editEvaluation, isPending: isEditEvaluationPending } = useUpdateAdmissionEvaluation();
   const { mutate: deleteEvaluation, isPending: isDeleteEvaluationPending } = useDeleteAdmissionEvaluation();
-  const { data: dataEvaluators, isLoading: evaluatorsLoading } = useReadAdmissionEvaluators();
+  const { data: dataEvaluators, isLoading: evaluatorsLoading } = useReadAdmissionEvaluators({
+    program_id: item?.admission_program
+  });
   const evaluatorOptions = dataEvaluators?.results?.map((evaluator) => {
     return {
       value: evaluator.evaluator,
@@ -182,7 +184,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
                 onChange={(value) => setApplicationTypeInput(value)}
               />
             </Field>
-            <Field label='Coordinador:'>
+            <Field label='Evaluador:'>
               <ReactSelect
                 value={evaluatorInput}
                 options={evaluatorOptions}
