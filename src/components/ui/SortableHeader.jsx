@@ -16,7 +16,7 @@ export const SortableHeader = ({ label, columnKey, sortConfig, onSort }) => {
 	return (
 		<HStack cursor='pointer' onClick={handleSort}>
 			<Text fontWeight='semibold'>{label}</Text>
-			<HStack lineHeight='1'>
+			<HStack>
 				<FaLongArrowAltUp
 					size={14}
 					style={{ marginLeft: '10px' }}
@@ -24,7 +24,7 @@ export const SortableHeader = ({ label, columnKey, sortConfig, onSort }) => {
 				/>
 				<FaLongArrowAltDown
 					size={14}
-					style={{ marginLeft: '-12px' }}
+					style={{ marginLeft: '-14px' }}
 					color={isActive && !isAsc ? '#711610' : 'gray'}
 				/>
 			</HStack>
