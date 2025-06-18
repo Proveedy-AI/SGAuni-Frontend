@@ -1,13 +1,11 @@
 import PropTypes from 'prop-types';
-import { memo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import {
 	Box,
-	createListCollection,
 	Group,
 	HStack,
 	IconButton,
 	Span,
-	Stack,
 	Table,
 	Text,
 } from '@chakra-ui/react';
@@ -16,23 +14,18 @@ import {
 	ClipboardText,
 	ConfirmModal,
 	Pagination,
-	SelectContent,
-	SelectItem,
-	SelectRoot,
-	SelectTrigger,
-	SelectValueText,
 	toaster,
 } from '@/components/ui';
-import { FiArrowDown, FiArrowUp, FiTrash2 } from 'react-icons/fi';
+import { FiTrash2 } from 'react-icons/fi';
 import { UpdateSettingsPermissionForm } from '@/components/forms/settings';
-import { useDeletePermission, useReorderPermission } from '@/hooks';
+import { useDeletePermission } from '@/hooks';
+import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
+import { SortableHeader } from '@/components/ui/SortableHeader';
 
-const Row = memo(({ item, fetchData, startIndex, index }) => {
+const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 	const [open, setOpen] = useState(false);
 
 	const { mutateAsync: remove, loading } = useDeletePermission();
-	const { mutateAsync: reorder, loading: loadingReorder } =
-		useReorderPermission();
 
 	const handleDelete = async (id) => {
 		try {
@@ -51,25 +44,13 @@ const Row = memo(({ item, fetchData, startIndex, index }) => {
 		}
 	};
 
-	const handleReorder = async (id, direction) => {
-		try {
-			await reorder({ id, direction });
-			fetchData();
-			toaster.create({
-				title: 'Permiso reordenado correctamente',
-				type: 'success',
-			});
-		} catch (error) {
-			toaster.create({
-				title: error.message,
-				type: 'error',
-			});
-		}
-	};
-
 	return (
 		<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
-			<Table.Cell>{startIndex + index + 1}</Table.Cell>
+			<Table.Cell>
+				{sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
+					? data.length - (startIndex + index)
+					: startIndex + index + 1}
+			</Table.Cell>
 			<Table.Cell>{item.name}</Table.Cell>
 			<Table.Cell>
 				<HStack>
@@ -104,28 +85,6 @@ const Row = memo(({ item, fetchData, startIndex, index }) => {
 							</Text>
 						</ConfirmModal>
 					</Group>
-
-					<Group attached>
-						<IconButton
-							colorPalette='blue'
-							size='xs'
-							onClick={() => handleReorder(item.id, 'arriba')}
-							disabled={loadingReorder}
-							variant='surface'
-						>
-							<FiArrowUp />
-						</IconButton>
-
-						<IconButton
-							colorPalette='blue'
-							size='xs'
-							onClick={() => handleReorder(item.id, 'abajo')}
-							disabled={loadingReorder}
-							variant='surface'
-						>
-							<FiArrowDown />
-						</IconButton>
-					</Group>
 				</HStack>
 			</Table.Cell>
 		</Table.Row>
@@ -139,28 +98,36 @@ Row.propTypes = {
 	fetchData: PropTypes.func,
 	startIndex: PropTypes.number,
 	index: PropTypes.number,
+	sortConfig: PropTypes.object,
+	data: PropTypes.array,
 };
 
 export const SettingsPermissionsTable = ({ data, fetchData }) => {
+	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [currentPage, setCurrentPage] = useState(1);
-	const [pageSize, setPageSize] = useState('10');
+	const startIndex = (currentPage - 1) * pageSize;
+	const endIndex = startIndex + pageSize;
+	const [sortConfig, setSortConfig] = useState(null);
 
-	const startIndex = (currentPage - 1) * parseInt(pageSize);
-	const endIndex = startIndex + parseInt(pageSize);
-	const visibleRows = data?.slice(startIndex, endIndex);
+	const sortedData = useMemo(() => {
+		if (!sortConfig) return data;
 
-	const handlePageSizeChange = (newPageSize) => {
-		setPageSize(newPageSize);
-		setCurrentPage(1);
-	};
+		const sorted = [...data];
 
-	const pageSizeOptions = [
-		{ label: '5 filas', value: '5' },
-		{ label: '10 filas', value: '10' },
-		{ label: '15 filas', value: '15' },
-		{ label: '20 filas', value: '20' },
-		{ label: '25 filas', value: '25' },
-	];
+		if (sortConfig.key === 'index') {
+			return sortConfig.direction === 'asc' ? sorted : sorted.reverse();
+		}
+		return sorted.sort((a, b) => {
+			const aVal = a[sortConfig.key];
+			const bVal = b[sortConfig.key];
+
+			if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+			if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+			return 0;
+		});
+	}, [data, sortConfig]);
+
+	const visibleRows = sortedData?.slice(startIndex, endIndex);
 
 	return (
 		<Box
@@ -174,10 +141,31 @@ export const SettingsPermissionsTable = ({ data, fetchData }) => {
 				<Table.Root size='sm' w='full' striped>
 					<Table.Header>
 						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
-							<Table.ColumnHeader>N°</Table.ColumnHeader>
-							<Table.ColumnHeader>Nombre del permiso</Table.ColumnHeader>
-							<Table.ColumnHeader>Permiso</Table.ColumnHeader>
-							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
+							<Table.ColumnHeader w='5%'>
+								<SortableHeader
+									label='N°'
+									columnKey='index'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader w='30%'>
+								<SortableHeader
+									label='Nombre del permiso'
+									columnKey='name'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader w='35%'>
+								<SortableHeader
+									label='Permiso'
+									columnKey='guard_name'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader w='10%'>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
@@ -185,6 +173,8 @@ export const SettingsPermissionsTable = ({ data, fetchData }) => {
 							<Row
 								key={item.id}
 								item={item}
+								data={data}
+								sortConfig={sortConfig}
 								fetchData={fetchData}
 								startIndex={startIndex}
 								index={index}
@@ -194,50 +184,17 @@ export const SettingsPermissionsTable = ({ data, fetchData }) => {
 				</Table.Root>
 			</Table.ScrollArea>
 
-			<Stack
-				w='full'
-				direction={{ base: 'column', sm: 'row' }}
-				justify={{ base: 'center', sm: 'space-between' }}
-				pt='2'
-			>
-				<SelectRoot
-					collection={createListCollection({
-						items: pageSizeOptions,
-					})}
-					size='xs'
-					w='150px'
-					display={{ base: 'none', sm: 'block' }}
-					defaultValue={pageSize}
-					onChange={(event) => handlePageSizeChange(event.target.value)}
-				>
-					<SelectTrigger>
-						<SelectValueText placeholder='Seleccionar filas' />
-					</SelectTrigger>
-					<SelectContent bg={{ base: 'white', _dark: 'its.gray.500' }}>
-						{pageSizeOptions.map((option) => (
-							<SelectItem
-								_hover={{
-									bg: {
-										base: 'its.100',
-										_dark: 'its.gray.400',
-									},
-								}}
-								key={option.value}
-								item={option}
-							>
-								{option.label}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</SelectRoot>
-
-				<Pagination
-					count={data?.length}
-					pageSize={pageSize}
-					currentPage={currentPage}
-					onPageChange={(page) => setCurrentPage(page)}
-				/>
-			</Stack>
+			<Pagination
+				count={data?.length}
+				pageSize={pageSize}
+				currentPage={currentPage}
+				pageSizeOptions={pageSizeOptions}
+				onPageChange={setCurrentPage}
+				onPageSizeChange={(size) => {
+					setPageSize(size);
+					setCurrentPage(1);
+				}}
+			/>
 		</Box>
 	);
 };
