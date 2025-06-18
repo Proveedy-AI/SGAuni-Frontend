@@ -152,7 +152,6 @@ export const UserTable = ({ fetchUsers, data, handleOpenModal }) => {
 										<Switch.Root
 											checked={item.is_active}
 											display='flex'
-											justifyContent='space-between'
 											onCheckedChange={() => handleStatusChange(item.id)}
 											disabled={isPendingToggle}
 										>
