@@ -108,13 +108,12 @@ export const UserList = () => {
 						{/* Tabla de usuarios */}
 
 						<UserTable
-							users={filteredUsers}
+							data={filteredUsers}
 							fetchUsers={fetchUsers}
 							handleOpenModal={handleOpenModal}
 						/>
 					</VStack>
 				)}
-				
 
 				{/* Modal para editar usuario */}
 				<EditUserModal
