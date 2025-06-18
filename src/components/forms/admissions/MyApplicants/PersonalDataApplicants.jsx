@@ -1,6 +1,7 @@
 import { ReactSelect } from '@/components/select';
 import { Field, Radio, RadioGroup, toaster } from '@/components/ui';
 import { useUpdatePerson } from '@/hooks';
+import { useReadDisabilities } from '@/hooks/disabilities';
 import { useReadUbigeos } from '@/hooks/ubigeos';
 import { uploadToS3 } from '@/utils/uploadToS3';
 import {
@@ -19,9 +20,12 @@ import { useEffect, useState } from 'react';
 import { FiUploadCloud } from 'react-icons/fi';
 
 export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
-	const { mutate: update, loading: loadingUpdate } = useUpdatePerson();
+	const { mutate: update } = useUpdatePerson();
+	const [loadingUpdate, setloadingUpdate] = useState(false);
 	const [filePDF, setFilePDF] = useState(null);
 	const { data: dataUbigeo, isLoading: loadingUbigeo } = useReadUbigeos();
+	const { data: dataDisabilities, isLoading: loadingDisabilities } =
+		useReadDisabilities();
 	const [isUni, setIsUni] = useState(false);
 	const [isDisable, setIsDisable] = useState(false);
 
@@ -56,11 +60,15 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 			label: ubigeo.code,
 		})) || [];
 
-	const DiscapacityOptions = [{ value: 1, label: 'Ciego' }];
+	const DiscapacityOptions =
+		dataDisabilities?.results?.map((disability) => ({
+			value: disability.id,
+			label: disability.name,
+		})) || [];
 
 	const handleUpdateProfile = async (e) => {
 		e.preventDefault();
-
+		setloadingUpdate(true);
 		let pathDocUrl = formData?.document_path;
 
 		// Solo subir a S3 si hay un archivo nuevo
@@ -94,11 +102,12 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 						title: 'Perfil actualizado correctamente.',
 						type: 'success',
 					});
+					setloadingUpdate(false);
 					fetchUser();
 				},
 				onError: (error) => {
 					const errorData = error.response?.data;
-
+					setloadingUpdate(false);
 					if (errorData && typeof errorData === 'object') {
 						Object.values(errorData).forEach((errorList) => {
 							if (Array.isArray(errorList)) {
@@ -111,6 +120,7 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 							}
 						});
 					} else {
+						setloadingUpdate(false);
 						toaster.create({
 							title: 'Error al registrar el Programa',
 							type: 'error',
@@ -353,6 +363,7 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 								label='Discapacidad'
 								options={DiscapacityOptions}
 								value={data.type_disability}
+								isLoading={loadingDisabilities}
 								onChange={(value) =>
 									updateProfileField('type_disability', value)
 								}
@@ -381,18 +392,16 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 				<Input
 					type='text'
 					value={formData.license_number || ''}
-					onChange={(e) =>
-						updateProfileField('license_number', e.target.value)
-					}
+					onChange={(e) => updateProfileField('license_number', e.target.value)}
 					variant='flushed'
-					placeholder='Ingresar número'
+					placeholder='Ingresar número (Opcional'
 				/>
 			</SimpleGrid>
 
 			<Flex justify='flex-end' mt={6}>
 				<Button
 					bg={'uni.secondary'}
-					disabled={!formData.document_path}
+					disabled={!formData.document_path || loadingUpdate}
 					loading={loadingUpdate}
 					onClick={handleUpdateProfile}
 				>
