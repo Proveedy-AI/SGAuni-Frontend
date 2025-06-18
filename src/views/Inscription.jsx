@@ -181,13 +181,12 @@ export default function AdmissionForm() {
 		province: null,
 		district: null,
 	});
-
-	const { mutateAsync: create, isLoading: isSaving } =
-		useCreatePersonWithAdmission();
+	const [isSaving, setIsSaving] = useState(false);
+	const { mutateAsync: create } = useCreatePersonWithAdmission();
 
 	const handleSubmitInscription = async () => {
 		const missingFields = [];
-
+		setIsSaving(true);
 		if (!inscriptionRequest.email) missingFields.push('Correo');
 		if (!inscriptionRequest.first_name) missingFields.push('Nombre');
 		if (isOneLastName) {
@@ -218,6 +217,7 @@ export default function AdmissionForm() {
 		if (!dataAdmissionProgram?.id) missingFields.push('Programa de admisión');
 
 		if (missingFields.length > 0) {
+			setIsSaving(false);
 			toaster.create({
 				title: 'Por favor completa todos los campos',
 				type: 'warning',
@@ -254,6 +254,7 @@ export default function AdmissionForm() {
 
 		create(payload, {
 			onSuccess: () => {
+				setIsSaving(false);
 				navigate('/auth/login', {
 					state: {
 						successMessage: 'Registro exitoso, Inicia Sesión',
@@ -261,7 +262,7 @@ export default function AdmissionForm() {
 				});
 			},
 			onError: (error) => {
-				console.log(error);
+				setIsSaving(false);
 				toaster.create({
 					title: error?.message || 'Error al inscribir',
 					status: 'error',
