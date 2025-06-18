@@ -53,7 +53,7 @@ export const TopBar = () => {
 		? '/settings/myprofile'
 		: '/settings/profile';
 
-	const menuItems = [{ label: 'Configurar cuenta', href: settingsHref }];
+	const menuItems = [{ label: 'Configuración', href: settingsHref }];
 	const username = profile.user?.username || '';
 	//const email = profile.uni_email || '';
 
@@ -162,7 +162,7 @@ export const TopBar = () => {
 								</MenuItem>
 							))}
 
-							<MenuItem
+							{/*<MenuItem
 								as={Link}
 								to='/settings/help'
 								px='4'
@@ -177,7 +177,7 @@ export const TopBar = () => {
 								borderRadius='5px'
 							>
 								Ayuda
-							</MenuItem>
+							</MenuItem>*/}
 
 							<MenuItem
 								onClick={logout}
