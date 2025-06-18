@@ -1,4 +1,5 @@
 //import { UpdateSettingsCountryForm } from '@/components/forms';
+import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { UpdateAdmissionsProccessForm } from '@/components/forms/admissions';
 import {
 	ConfirmModal,
@@ -30,13 +31,14 @@ import { useNavigate } from 'react-router';
 const Row = memo(({ item, fetchData, startIndex, index, permissions }) => {
 	const [open, setOpen] = useState(false);
 	const navigate = useNavigate();
-
+	const encrypted = Encryptor.encrypt(item.id);
+	const encoded = encodeURIComponent(encrypted);
 	const handleRowClick = () => {
 		if (permissions?.includes('admissions.myprograms.view')) {
-			navigate(`/admissions/myprograms/${item.id}`);
+			navigate(`/admissions/myprograms/${encoded}`);
 		}
 		if (permissions?.includes('admissions.programs.view')) {
-			navigate(`/admissions/programs/${item.id}`);
+			navigate(`/admissions/programs/${encoded}`);
 		}
 	};
 

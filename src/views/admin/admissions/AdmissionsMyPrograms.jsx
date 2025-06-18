@@ -17,10 +17,14 @@ import { FiSearch } from 'react-icons/fi';
 import { useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router';
 import { useReadAdmissionsPrograms } from '@/hooks/admissions_programs';
+import { Encryptor } from '@/components/CrytoJS/Encryptor';
 
 export const AdmissionsMyPrograms = () => {
 	const { id } = useParams();
-	const { data } = useReadAdmissionById(id);
+	const decoded = decodeURIComponent(id);
+	const decrypted = Encryptor.decrypt(decoded);
+
+	const { data } = useReadAdmissionById(decrypted);
 	const {
 		data: dataAdmissionsPrograms,
 		refetch: fetchAdmissionsPrograms,
@@ -39,7 +43,7 @@ export const AdmissionsMyPrograms = () => {
 
 	const filteredAdmissionsPrograms = dataAdmissionsPrograms?.results?.filter(
 		(item) =>
-			item.admission_process === Number(id) &&
+			item.admission_process === Number(decrypted) &&
 			item.coordinator === profile.id &&
 			item.program_name.toLowerCase().includes(searchValue.toLowerCase())
 	);
