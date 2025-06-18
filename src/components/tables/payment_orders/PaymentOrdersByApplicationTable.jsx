@@ -1,21 +1,14 @@
 import PropTypes from 'prop-types';
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import {
   Box,
-  createListCollection,
   HStack,
-  Stack,
   Table
 } from '@chakra-ui/react';
-import {
-  Pagination,
-  SelectContent,
-  SelectItem,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
-} from '@/components/ui'
+import { Pagination } from '@/components/ui'
 import { ViewPaymentOrderByApplicationModal } from '@/components/forms/payment_orders';
+import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
+import { SortableHeader } from '@/components/ui/SortableHeader';
 
 const Row = memo(({ item, startIndex, index }) => {
 
@@ -44,41 +37,68 @@ Row.propTypes = {
 };
 
 export const PaymentOrdersByApplicationTable = ({ data }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState('10');
-
-  const startIndex = (currentPage - 1) * parseInt(pageSize);
-  const endIndex = startIndex + parseInt(pageSize);
-  const visibleRows = data?.slice(startIndex, endIndex);
-
-  const handlePageSizeChange = (newPageSize) => {
-    setPageSize(newPageSize);
-    setCurrentPage(1);
-  };
-
-  const pageSizeOptions = [
-    { label: '5 filas', value: '5' },
-    { label: '10 filas', value: '10' },
-    { label: '15 filas', value: '15' },
-    { label: '20 filas', value: '20' },
-    { label: '25 filas', value: '25' },
-  ];
+  const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
+    const [currentPage, setCurrentPage] = useState(1);
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const [sortConfig, setSortConfig] = useState(null);
+  
+    const sortedData = useMemo(() => {
+      if (!sortConfig) return data;
+  
+      const sorted = [...data];
+  
+      if (sortConfig.key === 'index') {
+        return sortConfig.direction === 'asc' ? sorted : sorted.reverse();
+      }
+      return sorted.sort((a, b) => {
+        const aVal = a[sortConfig.key];
+        const bVal = b[sortConfig.key];
+  
+        if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }, [data, sortConfig]);
+  
+    const visibleRows = sortedData?.slice(startIndex, endIndex);
 
   return (
-    <Box 
-      bg={{ base: 'white', _dark: 'its.gray.500' }}
-      p='3'
-      borderRadius='10px'
-      overflow='hidden'
-      boxShadow='md'
-    >
+    <Box
+			bg={{ base: 'white', _dark: 'its.gray.500' }}
+			p='3'
+			borderRadius='10px'
+			overflow='hidden'
+			boxShadow='md'
+		>
       <Table.ScrollArea>
         <Table.Root size='sm' w='full' striped>
           <Table.Header>
             <Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
-              <Table.ColumnHeader>N°</Table.ColumnHeader>
-              <Table.ColumnHeader>Fecha</Table.ColumnHeader>
-              <Table.ColumnHeader>Nombres del trámite</Table.ColumnHeader>
+              <Table.ColumnHeader>
+                <SortableHeader
+                  label='N°'
+                  columnKey='index'
+                  sortConfig={sortConfig}
+                  onSort={setSortConfig}
+                />
+              </Table.ColumnHeader>
+              <Table.ColumnHeader>
+                <SortableHeader
+                  label='Fecha de vencimiento'
+                  columnKey='due_date'
+                  sortConfig={sortConfig}
+                  onSort={setSortConfig}
+                />
+              </Table.ColumnHeader>
+              <Table.ColumnHeader>
+                <SortableHeader
+                  label='Nombre de la orden de pago'
+                  columnKey='payment_order_name'
+                  sortConfig={sortConfig}
+                  onSort={setSortConfig}
+                />
+              </Table.ColumnHeader>
               <Table.ColumnHeader>Acciones</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
@@ -94,50 +114,19 @@ export const PaymentOrdersByApplicationTable = ({ data }) => {
           </Table.Body>
         </Table.Root>
       </Table.ScrollArea>
-      <Stack
-        w='full'
-        direction={{ base: 'column', sm: 'row' }}
-        justify={{ base: 'center', sm: 'space-between' }}
-        pt='2'
-      >
-        <SelectRoot
-          collection={createListCollection({
-            items: pageSizeOptions,
-          })}
-          size='xs'
-          w='150px'
-          display={{ base: 'none', sm: 'block' }}
-          defaultValue={pageSize}
-          onChange={(event) => handlePageSizeChange(event.target.value)}
-        >
-          <SelectTrigger>
-            <SelectValueText placeholder='Seleccionar filas' />
-          </SelectTrigger>
-          <SelectContent bg={{ base: 'white', _dark: 'its.gray.500' }}>
-            {pageSizeOptions.map((option) => (
-              <SelectItem
-                _hover={{
-                  bg: {
-                    base: 'its.100',
-                    _dark: 'its.gray.400',
-                  },
-                }}
-                key={option.value}
-                item={option}
-              >
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </SelectRoot>
-
-        <Pagination
-          count={data?.length}
-          pageSize={pageSize}
-          currentPage={currentPage}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
-      </Stack>
+      
+      <Pagination
+        count={data?.length}
+        pageSize={Number(pageSize)}
+        currentPage={currentPage}
+        pageSizeOptions={pageSizeOptions}
+        onPageChange={(page) => setCurrentPage(page)}
+        onPageSizeChange={(size) => {
+          setPageSize(size);
+          setCurrentPage(1);
+        }}
+      />
+      
     </Box>
   )
 }
