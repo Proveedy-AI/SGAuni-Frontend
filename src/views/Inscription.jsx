@@ -182,7 +182,7 @@ export default function AdmissionForm() {
 		district: null,
 	});
 	const [isSaving, setIsSaving] = useState(false);
-	const { mutateAsync: create } = useCreatePersonWithAdmission();
+	const { mutate: create } = useCreatePersonWithAdmission();
 
 	const handleSubmitInscription = async () => {
 		const missingFields = [];
@@ -263,9 +263,30 @@ export default function AdmissionForm() {
 			},
 			onError: (error) => {
 				setIsSaving(false);
+
+				const errors = error?.response?.data?.errors;
+				let message = 'Error al inscribir.';
+
+				if (errors) {
+					const messages = [];
+
+					if (errors.user?.username?.length) {
+						messages.push('El correo electrónico ya está registrado.');
+					}
+
+					if (errors.person?.document_number?.length) {
+						messages.push('El número de documento ya está registrado.');
+					}
+
+					if (messages.length) {
+						message = messages.join(' ');
+					}
+				}
+
 				toaster.create({
-					title: error?.message || 'Error al inscribir',
-					status: 'error',
+					title: 'Error al inscribir',
+					description: message,
+					type: 'error',
 				});
 			},
 		});
@@ -601,7 +622,7 @@ export default function AdmissionForm() {
 											</Field>
 											<HStack justify='end'>
 												<Button
-													bg='#0661D8'
+													bg='uni.secondary'
 													px={10}
 													mt={5}
 													onClick={handleSubmitInscription}
