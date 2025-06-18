@@ -16,12 +16,17 @@ import { useReadMethodPayment } from '@/hooks/method_payments';
 import { useCreatePaymentRequest } from '@/hooks/payment_requests/useCreatePaymentRequest';
 import { useReadPaymentRequest } from '@/hooks/payment_requests/useReadPaymentRequest';
 import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
+import { useReadPaymentRules } from '@/hooks/payment_rules';
+import { useReadPurposes } from '@/hooks/purposes';
 
 export const PaymentApplicant = () => {
 	const { data: dataUser } = useReadUserLogged();
 
 	const { data: MethodPayment, isLoading: isLoadingMethodPayment } =
 		useReadMethodPayment();
+	const [isSelectCaja, setisSelectCaja] = useState(false);
+	const { data: PaymentRules } = useReadPaymentRules();
+	const { data: dataPurposes } = useReadPurposes();
 
 	const {
 		data: PaymentRequest,
@@ -58,32 +63,36 @@ export const PaymentApplicant = () => {
 
 	const item = EncryptedStorage.load('selectedApplicant');
 
-	const hasCarpetaAdmision = item?.rules?.some(
-		(rule) => rule.field_name === 'Carpeta Admision'
+	// Filtrar las reglas aplicables al postulante
+	const paymentRules = PaymentRules?.results?.filter(
+		(req) =>
+			req.program === item?.admission_program &&
+			req.admission_modality === item?.modality_id
 	);
 
-	const existingRequest = PaymentRequest?.results?.find(
-		(req) =>
-			req.application === item?.id &&
-			req.purpose === 2 && // propósito: Derecho de carpeta
-			req.status === 1
-	);
+	// Construir mapa de propósitos enriquecidos
+	const purposes = {};
 
-	const existingRequestAdmision = PaymentRequest?.results?.find(
-		(req) =>
-			req.application === item?.id &&
-			req.purpose === 1 && // propósito: Derecho de carpeta
-			req.status === 1
-	);
+	dataPurposes?.results?.forEach((purposeItem) => {
+		const id = purposeItem.id;
+		purposes[id] = {
+			name: item.name,
+			rule: paymentRules?.find((rule) => rule.payment_purpose === id) ?? null,
+			existingRequest:
+				PaymentRequest?.results?.find(
+					(req) => req.application === item?.id && req.purpose === id
+				) ?? null,
+		};
+	});
 
 	const { mutate: paymentRequests, isPending } = useCreatePaymentRequest();
 
 	const handleSubmitData = (e, propuse, values) => {
 		e.preventDefault();
-
+		const rule = purposes[propuse]?.rule;
 		const payload = {
 			payment_method: values.method.value,
-			amount: '250',
+			amount: rule?.amount || '0',
 			application: item.id,
 			purpose: propuse,
 			document_type: values.docType.value,
@@ -96,7 +105,7 @@ export const PaymentApplicant = () => {
 					title: 'Solicitud de pago fue exitoso',
 					type: 'success',
 				});
-
+				setisSelectCaja(false);
 				refetch();
 			},
 			onError: (error) => {
@@ -163,7 +172,8 @@ export const PaymentApplicant = () => {
 					}}
 					color={'gray.500'}
 				>
-					Orden de Pago: Derecho de Carpeta (S/. 250,00)
+					Orden de Pago: Derecho de Carpeta (S/
+					{purposes[1]?.rule?.amount ?? '-'})
 				</Heading>
 			</Stack>
 			{isLoadingPaymentRquest ? (
@@ -180,7 +190,7 @@ export const PaymentApplicant = () => {
 						color='uni.primary'
 					/>
 				</Flex>
-			) : existingRequest ? (
+			) : purposes[2]?.existingRequest ? (
 				<Box
 					width='100%'
 					bg='gray.50'
@@ -195,16 +205,26 @@ export const PaymentApplicant = () => {
 						Ya solicitaste esta orden de pago
 					</Heading>
 					<Text>
-						Estado: <strong>{existingRequest.status_display}</strong>
+						Estado:{' '}
+						<strong>{purposes[2].existingRequest.status_display}</strong>
 					</Text>
 					<Text>
-						Monto: <strong>S/. {existingRequest.amount}</strong>
+						Monto: <strong>S/. {purposes[2].existingRequest.amount}</strong>
+					</Text>
+					<Text fontSize='sm'>
+						Método:{' '}
+						<strong>
+							{purposes[2].existingRequest?.payment_method_display}
+						</strong>{' '}
+						{purposes[2].existingRequest?.payment_method === 2 && ( // Asumiendo que 3 es "Caja"
+							<Text as='span' fontSize='xs' color='gray.500' ml={1}>
+								(Acércate a FIEECS por tu recibo)
+							</Text>
+						)}
 					</Text>
 					<Text>
-						Método: <strong>{existingRequest.payment_method_display}</strong>
-					</Text>
-					<Text>
-						N° Documento: <strong>{existingRequest.num_document}</strong>
+						N° Documento:{' '}
+						<strong>{purposes[2].existingRequest.num_document}</strong>
 					</Text>
 				</Box>
 			) : (
@@ -241,7 +261,10 @@ export const PaymentApplicant = () => {
 								options={methodOptions}
 								value={methodCarpeta}
 								isLoading={isLoadingMethodPayment}
-								onChange={(option) => setmethodCarpeta(option)}
+								onChange={(option) => {
+									setmethodCarpeta(option);
+									setisSelectCaja(option.value === 2);
+								}}
 								isClearable={true}
 								placeholder='Seleccione Metodo de pago'
 							/>
@@ -263,7 +286,7 @@ export const PaymentApplicant = () => {
 					</Stack>
 				</Flex>
 			)}
-			{hasCarpetaAdmision && (
+			{purposes[1]?.rule && (
 				<>
 					{' '}
 					<Stack Stack align={{ base: 'start', sm: 'center' }} mb={5} mt={10}>
@@ -275,7 +298,8 @@ export const PaymentApplicant = () => {
 							}}
 							color={'gray.500'}
 						>
-							Orden de Pago: Derecho de Admisión (S/. 250,00)
+							Orden de Pago: Derecho de Admisión ( S/.
+							{purposes[1]?.rule?.amount ?? '-'})
 						</Heading>
 					</Stack>
 					{isLoadingPaymentRquest ? (
@@ -292,7 +316,7 @@ export const PaymentApplicant = () => {
 								color='uni.primary'
 							/>
 						</Flex>
-					) : existingRequestAdmision ? (
+					) : purposes[1]?.existingRequest ? (
 						<Box
 							width='100%'
 							bg='gray.50'
@@ -308,23 +332,29 @@ export const PaymentApplicant = () => {
 							</Heading>
 							<Text>
 								Estado:{' '}
-								<strong>{existingRequestAdmision.status_display}</strong>
+								<strong>{purposes[1].existingRequest.status_display}</strong>
 							</Text>
 							<Text>
-								Monto: <strong>S/. {existingRequestAdmision.amount}</strong>
+								Monto: <strong>S/. {purposes[1].existingRequest.amount}</strong>
 							</Text>
-							<Text>
+							<Text fontSize='sm'>
 								Método:{' '}
 								<strong>
-									{existingRequestAdmision.payment_method_display}
-								</strong>
+									{purposes[1].existingRequest?.payment_method_display}
+								</strong>{' '}
+								{purposes[1].existingRequest?.payment_method === 2 && ( // Asumiendo que 3 es "Caja"
+									<Text as='span' fontSize='xs' color='gray.500' ml={1}>
+										(Acércate a FIEECS por tu recibo)
+									</Text>
+								)}
 							</Text>
 							<Text>
 								N° Documento:{' '}
-								<strong>{existingRequestAdmision.num_document}</strong>
+								<strong>{purposes[1].existingRequest.num_document}</strong>
 							</Text>
 							<Text mt={2} fontSize={13} color={'gray.500'}>
-								*Si usted es egresado UNI se le aplicará el 15% de Descuento en esta orden.
+								*Si usted es egresado UNI se le aplicará el 15% de Descuento en
+								esta orden.
 							</Text>
 						</Box>
 					) : (
@@ -361,7 +391,10 @@ export const PaymentApplicant = () => {
 										options={methodOptions}
 										value={methodAdmision}
 										isLoading={isLoadingMethodPayment}
-										onChange={(option) => setMethodAdmision(option)}
+										onChange={(option) => {
+											setMethodAdmision(option);
+											setisSelectCaja(option.value === 2);
+										}}
 										isClearable={true}
 										placeholder='Seleccione Metodo de pago'
 									/>
@@ -386,6 +419,23 @@ export const PaymentApplicant = () => {
 				</>
 			)}
 
+			{isSelectCaja && (
+				<Box
+					mt={3}
+					bg='yellow.100'
+					p={3}
+					textAlign={'center'}
+					rounded='md'
+					border='1px solid'
+					borderColor='yellow.400'
+				>
+					<Text fontSize='sm' color='yellow.800'>
+						Luego de solicitar la orden de pago. Por favor, acércate a la
+						oficina de <b>FIEECS</b> para obtener tu recibo físico y poder
+						completar el proceso de pago.
+					</Text>
+				</Box>
+			)}
 			<Stack Stack align={{ base: 'start', sm: 'center' }} mt={5}>
 				<Heading
 					size={{

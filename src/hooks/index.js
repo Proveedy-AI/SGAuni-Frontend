@@ -14,3 +14,4 @@ export * from './modalityRules';
 export * from './nationalities';
 export * from './assignModalities';
 export * from './person';
+export * from './payment_rules';
