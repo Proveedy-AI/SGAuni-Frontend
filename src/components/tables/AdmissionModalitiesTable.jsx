@@ -1,197 +1,180 @@
 import PropTypes from 'prop-types';
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from 'react';
+import { Box, Group, HStack, Table, Switch } from '@chakra-ui/react';
+import { Pagination, toaster } from '@/components/ui';
 import {
-  Box,
-  createListCollection,
-  Group,
-  HStack,
-  Stack,
-  Table,
-  Switch
-} from '@chakra-ui/react';
-import {
-  Pagination,
-  SelectContent,
-  SelectItem,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
-  toaster,
-} from '@/components/ui'
-import { AssignModalityRules, DeleteModality, EditModality, ViewModality } from '../forms/management/modalities';
+	AssignModalityRules,
+	DeleteModality,
+	EditModality,
+	ViewModality,
+} from '../forms/management/modalities';
 import { useToggleModality } from '@/hooks';
+import { usePaginationSettings } from '../navigation/usePaginationSettings';
+import { SortableHeader } from '../ui/SortableHeader';
 
-const Row = memo(({ item, fetchData, startIndex, index }) => {
-  const { mutateAsync: toggleModalityRule, isPending: isPendingToggle } = useToggleModality();
+const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
+	const { mutateAsync: toggleModalityRule, isPending: isPendingToggle } =
+		useToggleModality();
 
-  const handleStatusChange = async (id) => {
-    try {
-      await toggleModalityRule(id);
-      // Realiza la acción de toggle en el rol
-      toaster.create({
-        title: `Estado del rol actualizado correctamente`,
-        type: 'success',
-      });
+	const handleStatusChange = async (id) => {
+		try {
+			await toggleModalityRule(id);
+			// Realiza la acción de toggle en el rol
+			toaster.create({
+				title: `Estado del rol actualizado correctamente`,
+				type: 'success',
+			});
 
-      fetchData(); // Refetch data after toggling status
-    } catch (error) {
-      toaster.create({
-        title: error?.message || 'Ocurrió un error al cambiar el estado del rol',
-        type: 'error',
-      });
-    }
-  }
+			fetchData(); // Refetch data after toggling status
+		} catch (error) {
+			toaster.create({
+				title:
+					error?.message || 'Ocurrió un error al cambiar el estado del rol',
+				type: 'error',
+			});
+		}
+	};
 
-  return (
-    <Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
-      <Table.Cell>{startIndex + index + 1}</Table.Cell>
-      <Table.Cell>{item.name}</Table.Cell>
-      <Table.Cell>
-        <Switch.Root
-          checked={item.enabled}
-          display='flex'
-          justifyContent='space-between'
-          onCheckedChange={() => handleStatusChange(item.id)}
-          disabled={isPendingToggle}
-        >
-          {' '}
-          <Switch.Label>
-            {item.enabled ? 'Activo' : 'Inactivo'}
-          </Switch.Label>
-          <Switch.HiddenInput />
-          <Switch.Control
-            _checked={{
-              bg: 'uni.secondary',
-            }}
-            bg='uni.red.400'
-          />
-        </Switch.Root>
-      </Table.Cell>
-      <Table.Cell>
-        <HStack justify='space-between'>
-          <Group>
-            <ViewModality item={item} />
-            <EditModality fetchData={fetchData} item={item} />
-            <AssignModalityRules item={item} fetchData={fetchData} />
-            <DeleteModality item={item} fetchData={fetchData} />
-          </Group>
-        </HStack>
-      </Table.Cell>
-    </Table.Row>
-  );
+	return (
+		<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
+			<Table.Cell>
+				{sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
+					? data.length - (startIndex + index)
+					: startIndex + index + 1}
+			</Table.Cell>
+			<Table.Cell>{item.name}</Table.Cell>
+			<Table.Cell>
+				<Switch.Root
+					checked={item.enabled}
+					onCheckedChange={() => handleStatusChange(item.id)}
+					disabled={isPendingToggle}
+				>
+					<Switch.Label>{item.enabled ? 'Activo' : 'Inactivo'}</Switch.Label>
+					<Switch.HiddenInput />
+					<Switch.Control
+						_checked={{
+							bg: 'uni.secondary',
+						}}
+						bg='uni.red.400'
+					/>
+				</Switch.Root>
+			</Table.Cell>
+			<Table.Cell>
+				<HStack justify='space-between'>
+					<Group>
+						<ViewModality item={item} />
+						<EditModality fetchData={fetchData} item={item} />
+						<AssignModalityRules item={item} fetchData={fetchData} />
+						<DeleteModality item={item} fetchData={fetchData} />
+					</Group>
+				</HStack>
+			</Table.Cell>
+		</Table.Row>
+	);
 });
 
 Row.displayName = 'Row';
 
 Row.propTypes = {
-  item: PropTypes.object,
-  fetchData: PropTypes.func,
-  startIndex: PropTypes.number,
-  index: PropTypes.number,
-  modalityRules: PropTypes.array,
+	item: PropTypes.object,
+	fetchData: PropTypes.func,
+	startIndex: PropTypes.number,
+	index: PropTypes.number,
+	modalityRules: PropTypes.array,
+	sortConfig: PropTypes.object,
+	data: PropTypes.array,
 };
 
 export const AdmissionModalitiesTable = ({ data, fetchData }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState('10');
+	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
+	const [currentPage, setCurrentPage] = useState(1);
+	const startIndex = (currentPage - 1) * pageSize;
+	const endIndex = startIndex + pageSize;
+	const [sortConfig, setSortConfig] = useState(null);
 
-  const startIndex = (currentPage - 1) * parseInt(pageSize);
-  const endIndex = startIndex + parseInt(pageSize);
-  const visibleRows = data?.slice(startIndex, endIndex);
+	const sortedData = useMemo(() => {
+		if (!sortConfig) return data;
 
-  const handlePageSizeChange = (newPageSize) => {
-    setPageSize(newPageSize);
-    setCurrentPage(1);
-  };
+		const sorted = [...data];
 
-  const pageSizeOptions = [
-    { label: '5 filas', value: '5' },
-    { label: '10 filas', value: '10' },
-    { label: '15 filas', value: '15' },
-    { label: '20 filas', value: '20' },
-    { label: '25 filas', value: '25' },
-  ];
+		if (sortConfig.key === 'index') {
+			return sortConfig.direction === 'asc' ? sorted : sorted.reverse();
+		}
+		return sorted.sort((a, b) => {
+			const aVal = a[sortConfig.key];
+			const bVal = b[sortConfig.key];
 
-  return (
-    <Box
-      bg={{ base: 'white', _dark: 'its.gray.500' }}
-      p='3'
-      borderRadius='10px'
-      overflow='hidden'
-      boxShadow='md'
-    >
-      <Table.ScrollArea>
-        <Table.Root size='sm' w='full' striped>
-          <Table.Header>
-            <Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
-              <Table.ColumnHeader>N°</Table.ColumnHeader>
-              <Table.ColumnHeader>Nombre del Rol</Table.ColumnHeader>
-              <Table.ColumnHeader w='150px'>Estado</Table.ColumnHeader>
-              <Table.ColumnHeader>Acciones</Table.ColumnHeader>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {visibleRows?.map((item, index) => (
-              <Row
-                key={item.id}
-                item={item}
-                fetchData={fetchData}
-                startIndex={startIndex}
-                index={index}
-              />
-            ))}
-          </Table.Body>
-        </Table.Root>
-      </Table.ScrollArea>
-      <Stack
-        w='full'
-        direction={{ base: 'column', sm: 'row' }}
-        justify={{ base: 'center', sm: 'space-between' }}
-        pt='2'
-      >
-        <SelectRoot
-          collection={createListCollection({
-            items: pageSizeOptions,
-          })}
-          size='xs'
-          w='150px'
-          display={{ base: 'none', sm: 'block' }}
-          defaultValue={pageSize}
-          onChange={(event) => handlePageSizeChange(event.target.value)}
-        >
-          <SelectTrigger>
-            <SelectValueText placeholder='Seleccionar filas' />
-          </SelectTrigger>
-          <SelectContent bg={{ base: 'white', _dark: 'its.gray.500' }}>
-            {pageSizeOptions.map((option) => (
-              <SelectItem
-                _hover={{
-                  bg: {
-                    base: 'its.100',
-                    _dark: 'its.gray.400',
-                  },
-                }}
-                key={option.value}
-                item={option}
-              >
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </SelectRoot>
+			if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+			if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+			return 0;
+		});
+	}, [data, sortConfig]);
 
-        <Pagination
-          count={data?.length}
-          pageSize={pageSize}
-          currentPage={currentPage}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
-      </Stack>
-    </Box>
-  )
-}
+	const visibleRows = sortedData?.slice(startIndex, endIndex);
+
+	return (
+		<Box
+			bg={{ base: 'white', _dark: 'its.gray.500' }}
+			p='3'
+			borderRadius='10px'
+			overflow='hidden'
+			boxShadow='md'
+		>
+			<Table.ScrollArea>
+				<Table.Root size='sm' w='full' striped>
+					<Table.Header>
+						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
+							<Table.ColumnHeader w='5%'>
+								<SortableHeader
+									label='N°'
+									columnKey='index'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader w='50%'>
+								<SortableHeader
+									label='Modalidad'
+									columnKey='name'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader w='30%'>Estado</Table.ColumnHeader>
+							<Table.ColumnHeader w='20%'>Acciones</Table.ColumnHeader>
+						</Table.Row>
+					</Table.Header>
+					<Table.Body>
+						{visibleRows?.map((item, index) => (
+							<Row
+								key={item.id}
+								item={item}
+								data={data}
+								sortConfig={sortConfig}
+								fetchData={fetchData}
+								startIndex={startIndex}
+								index={index}
+							/>
+						))}
+					</Table.Body>
+				</Table.Root>
+			</Table.ScrollArea>
+			<Pagination
+				count={data?.length}
+				pageSize={pageSize}
+				currentPage={currentPage}
+				pageSizeOptions={pageSizeOptions}
+				onPageChange={setCurrentPage}
+				onPageSizeChange={(size) => {
+					setPageSize(size);
+					setCurrentPage(1);
+				}}
+			/>
+		</Box>
+	);
+};
 
 AdmissionModalitiesTable.propTypes = {
-  data: PropTypes.array,
-  fetchData: PropTypes.func,
+	data: PropTypes.array,
+	fetchData: PropTypes.func,
 };
