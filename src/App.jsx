@@ -27,6 +27,7 @@ import AdmissionForm from './views/Inscription';
 import { AdmissionMyApplicants } from './views/admin/applicants/AdmissionMyApplicants';
 import { ApplicantsLayout } from './views/admin/applicants/ApplicantsLayout';
 import { PaymentApplicant } from './views/admin/applicants/PaymentApplicant';
+import { Debts } from './views/admin/debts';
 
 function App() {
 	return (
@@ -121,6 +122,12 @@ function App() {
 									<Route path='list' element={<Contracts />} />
 								</Route>
 							</Route>
+
+              <Route path='debts'>
+                <Route element={<ProtectedRoute requiredPermission='dashboard.debt.view' />}>
+                  <Route index element={<Debts />} />
+                </Route>
+              </Route>
 							{/* SETTINGS */}
 							<Route path='settings' element={<SettingsLayout />}>
 								<Route

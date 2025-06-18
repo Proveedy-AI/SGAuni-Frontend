@@ -33,22 +33,6 @@ export const AdmissionApplicantDetail = () => {
 	const statusEnumSelected = statusEnum.find(
 		(item) => item.id === dataApplicant?.status
 	);
-	const payment_orders = [
-		{
-			id: 1,
-			id_orden: '8384999',
-			sub_amount: '500.67',
-			discount_value: '0.50',
-			total_amount: '500.05',
-			payment_method_name: 'BCP',
-			name: 'German',
-			address: 'Villa Sur',
-			email: 'user@example.com',
-			document_num: '7854648',
-			due_date: '2025-06-17',
-			status_value: 'Pending',
-		},
-	];
 
 	return (
 		<Box spaceY='5'>
@@ -219,7 +203,7 @@ export const AdmissionApplicantDetail = () => {
 								<Text fontWeight='bold' color='red.600' mb={4}>
 									Trámites:
 								</Text>
-								<PaymentOrdersByApplicationTable data={payment_orders} />
+								<PaymentOrdersByApplicationTable data={dataApplicant?.payment_orders} />
 							</Box>
 						</Box>
 					) : (
