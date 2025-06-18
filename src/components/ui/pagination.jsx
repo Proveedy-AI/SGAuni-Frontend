@@ -20,7 +20,6 @@ import {
 	SelectTrigger,
 	SelectContent,
 	SelectItem,
-	SelectValueText,
 } from '@/components/ui/select';
 
 export const Pagination = ({
@@ -69,13 +68,14 @@ export const Pagination = ({
 					}}
 				>
 					<SelectTrigger>
-						<SelectValueText placeholder='Seleccionar filas' />
+						{pageSizeOptions.find((opt) => opt.value === pageSize)?.label ??
+							'Seleccionar filas'}
 					</SelectTrigger>
 					<SelectContent bg={{ base: 'white', _dark: 'its.gray.500' }}>
 						{options.map((option) => (
 							<SelectItem
 								key={option.value}
-								item={{ label: option.label, value: option.value }}
+								item={{ label: option.label, value: String(option.value) }}
 							>
 								{option.label}
 							</SelectItem>
