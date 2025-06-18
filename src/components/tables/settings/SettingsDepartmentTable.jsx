@@ -146,8 +146,22 @@ export const SettingsDepartmentTable = ({ data, fetchData, dataCountries }) => {
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='25%'>Código</Table.ColumnHeader>
-							<Table.ColumnHeader w='25%'>País</Table.ColumnHeader>
+							<Table.ColumnHeader w='25%'>
+								<SortableHeader
+									label='Código'
+									columnKey='code'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader w='25%'>
+								<SortableHeader
+									label='País'
+									columnKey='country_name'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
 							<Table.ColumnHeader w='10%'>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
