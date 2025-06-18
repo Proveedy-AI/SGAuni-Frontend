@@ -1,6 +1,7 @@
 import { AdminDashboard } from './AdminDashboard';
 import { ApplicantDashboard } from './ApplicantDashboard';
 import { CoordinatorDashboard } from './CoordinatorDashboard';
+import { DebtDashboard } from './DebtDashboard';
 
 export const dashboardsByPermission = [
 	{
@@ -15,4 +16,8 @@ export const dashboardsByPermission = [
 		permission: 'dashboard.applicant.view',
 		component: <ApplicantDashboard />,
 	},
+  {
+    permission: 'dashboard.debt.view',
+    component: <DebtDashboard />        
+  }
 ];

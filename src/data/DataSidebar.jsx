@@ -7,6 +7,7 @@ import {
 	FiCheck,
 	FiUserCheck,
 	FiList,
+  FiDollarSign,
 } from 'react-icons/fi';
 import { FaFileContract } from 'react-icons/fa';
 import { HiOutlineClipboardList } from 'react-icons/hi';
@@ -82,6 +83,12 @@ export const useDataSidebar = () => {
 				},
 			],
 		},
+    {
+      href: '/debts',
+      icon: FiDollarSign,
+      label: 'Cobranzas',
+      permission: 'dashboard.debt.view',
+    },
 		{
 			href: '/users',
 			icon: FiUsers,
