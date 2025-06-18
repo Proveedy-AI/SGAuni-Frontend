@@ -1,5 +1,7 @@
+import { ReactSelect } from '@/components/select';
 import { Field, Modal, toaster, Tooltip } from '@/components/ui';
-import { useCreateAdmissionEvaluation, useDeleteAdmissionEvaluation, useReadAdmissionEvaluations, useUpdateAdmissionEvaluation } from '@/hooks/admissions_evaluations';
+import { useCreateAdmissionEvaluation, useDeleteAdmissionEvaluation, useReadAdmissionEvaluationsByApplication, useUpdateAdmissionEvaluation } from '@/hooks/admissions_evaluations';
+import { useReadAdmissionEvaluators } from '@/hooks/admissions_evaluators';
 import { Box, Flex, IconButton, Input, Stack, Table, Text } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
@@ -11,25 +13,43 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
   const [open, setOpen] = useState(false);
   
   const { mutate: createEvaluation, isPending: isCreateEvaluationPending } = useCreateAdmissionEvaluation()
-  const { data: dataEvaluations, refetch: fetchEvaluations } = useReadAdmissionEvaluations();
+  const { data: dataEvaluations, refetch: fetchEvaluations } = useReadAdmissionEvaluationsByApplication(item?.id);
   const { mutate: editEvaluation, isPending: isEditEvaluationPending } = useUpdateAdmissionEvaluation();
   const { mutate: deleteEvaluation, isPending: isDeleteEvaluationPending } = useDeleteAdmissionEvaluation();
+  const { data: dataEvaluators, isLoading: evaluatorsLoading } = useReadAdmissionEvaluators();
+  const evaluatorOptions = dataEvaluators?.results?.map((evaluator) => {
+    return {
+      value: evaluator.evaluator,
+      label: evaluator.evaluator_display,
+    }
+  })
 
+  const applicationTypeOptions = [
+    { value: 1, label: 'Ensayo'},
+    { value: 2, label: 'Entrevista' },
+    { value: 3, label: 'Examen' }
+  ]
+
+  
   const filteredEvaluationsByStudent = dataEvaluations?.results?.filter(evaluation => evaluation.application === item?.id)
-  const [nameExamInput, setNameExamInput] = useState('');
-  const [dateExamInput, setDateExamInput] = useState('');
+  const [startDateExamInput, setStartDateExamInput] = useState('');
+  const [endDateExamInput, setEndDateExamInput] = useState('');
   const [timeExamInput, setTimeExamInput] = useState('');
+  const [evaluatorInput, setEvaluatorInput] = useState(null);
+  const [applicationTypeInput, setApplicationTypeInput] = useState(null);
   const [editingId, setEditingId] = useState(null);
 
   const handleResetForm = () => {
-    setNameExamInput('');
-    setDateExamInput('');
+    setStartDateExamInput('');
+    setEndDateExamInput('');
     setTimeExamInput('');
+    setEvaluatorInput(null);
+    setApplicationTypeInput(null);
     setEditingId(null);
   };
 
   const handleSubmit = () => {
-    if (!nameExamInput || !dateExamInput || !timeExamInput) {
+    if (!startDateExamInput || !timeExamInput || !endDateExamInput || !evaluatorInput || !applicationTypeInput) {
       toaster.create({
         title: 'Completa todos los campos obligatorios',
         type: 'warning',
@@ -38,12 +58,13 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
     }
 
     const payload = {
-      name: nameExamInput,
-      date: dateExamInput,
-      time: timeExamInput,
+      application: item?.id,
+      type_application: applicationTypeInput?.value,
+      start_date: startDateExamInput,
+      end_date: endDateExamInput,
+      evaluator: evaluatorInput?.value,
+      evaluation_time: timeExamInput,
     };
-
-    console.log('Payload:', payload);
 
     const onSuccess = () => {
       toaster.create({
@@ -121,59 +142,80 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
       <Stack spacing={4} css={{ '--field-label-width': '150px' }}>
         {/* Formulario para Examen */}
         <Flex
-          direction={{ base: 'column', md: 'row' }}
+          direction='column'
           justify='flex-start'
           align={'end'}
           gap={2}
           mt={2}
         >
-          <Field label='Nombre del Examen:'>
-            <Input
-              value={nameExamInput}
-              onChange={(e) => setNameExamInput(e.target.value)}
-              size='sm'
-              placeholder='Nombre'
-            />
-          </Field>
-          <Field label='Fecha:'>
-            <Input
-              type='date'
-              value={dateExamInput}
-              onChange={(e) => setDateExamInput(e.target.value)}
-              size='sm'
-            />
-          </Field>
-          <Field label='Hora:'>
-            <Input
-              type='time'
-              value={timeExamInput}
-              onChange={(e) => setTimeExamInput(e.target.value)}
-              size='sm'
-            />
-          </Field>
-          <IconButton
-            size='sm'
-            bg='green'
-            // loading={isCreatePending || isEditPending}
-            disabled={!nameExamInput || !dateExamInput || !timeExamInput}
-            onClick={handleSubmit}
-            isLoading={isCreateEvaluationPending || isEditEvaluationPending}
-            css={{ _icon: { width: '5', height: '5' } }}
-            aria-label={editingId ? 'Actualizar' : 'Guardar'}
-          >
-            <FaSave />
-          </IconButton>
-          <IconButton
-            size='sm'
-            bg='red'
-            // loading={isCreatePending || isEditPending}
-            disabled={!nameExamInput || !dateExamInput || !timeExamInput}
-            onClick={handleResetForm}
-            css={{ _icon: { width: '5', height: '5' } }}
-            aria-label={editingId ? 'Actualizar' : 'Guardar'}
-          >
-            <FaTimes />
-          </IconButton>
+          <Flex w={'full'} align={'end'} gap={6}>
+            <Field label='Fecha de inicio:'>
+              <Input
+                type='date'
+                value={startDateExamInput}
+                onChange={(e) => setStartDateExamInput(e.target.value)}
+                size='sm'
+              />
+            </Field>
+            <Field label='Fecha de fin:'>
+              <Input
+                type='date'
+                value={endDateExamInput}
+                onChange={(e) => setEndDateExamInput(e.target.value)}
+                size='sm'
+              />
+            </Field>
+            <Field label='Hora:'>
+              <Input
+                type='time'
+                value={timeExamInput}
+                onChange={(e) => setTimeExamInput(e.target.value)}
+                size='sm'
+              />
+            </Field>
+          </Flex>
+          <Flex w='full' align={'end'} gap={6}>
+            <Field label='Tipo de Examen'>
+              <ReactSelect
+                value={applicationTypeInput}
+                options={applicationTypeOptions}
+                onChange={(value) => setApplicationTypeInput(value)}
+              />
+            </Field>
+            <Field label='Coordinador:'>
+              <ReactSelect
+                value={evaluatorInput}
+                options={evaluatorOptions}
+                isLoading={evaluatorsLoading}
+                onChange={(value) => setEvaluatorInput(value) }
+              />
+            </Field>
+            <Flex gap={2}>
+              <IconButton
+                size='sm'
+                bg='green'
+                // loading={isCreatePending || isEditPending}
+                disabled={!startDateExamInput || !timeExamInput}
+                onClick={handleSubmit}
+                isLoading={isCreateEvaluationPending || isEditEvaluationPending}
+                css={{ _icon: { width: '5', height: '5' } }}
+                aria-label={editingId ? 'Actualizar' : 'Guardar'}
+              >
+                <FaSave />
+              </IconButton>
+              <IconButton
+                size='sm'
+                bg='red'
+                // loading={isCreatePending || isEditPending}
+                disabled={!startDateExamInput || !timeExamInput}
+                onClick={handleResetForm}
+                css={{ _icon: { width: '5', height: '5' } }}
+                aria-label={editingId ? 'Actualizar' : 'Guardar'}
+              >
+                <FaTimes />
+              </IconButton>
+            </Flex>
+          </Flex>
         </Flex>
         {/* Tabla de Exámenes */}
         <Box mt={6}>
@@ -185,7 +227,8 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
               <Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
                 <Table.ColumnHeader>N°</Table.ColumnHeader>
                 <Table.ColumnHeader>Nombre</Table.ColumnHeader>
-                <Table.ColumnHeader>Fecha</Table.ColumnHeader>
+                <Table.ColumnHeader>Fecha de Inicio</Table.ColumnHeader>
+                <Table.ColumnHeader>Fecha de Fin</Table.ColumnHeader>
                 <Table.ColumnHeader>Hora</Table.ColumnHeader>
                 <Table.ColumnHeader>Acciones</Table.ColumnHeader>
               </Table.Row>
@@ -196,19 +239,22 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
                   filteredEvaluationsByStudent.map((exam, index) => (
                     <Table.Row key={exam.id}>
                       <Table.Cell>{index + 1}</Table.Cell>
-                      <Table.Cell>{exam.name}</Table.Cell>
-                      <Table.Cell>{exam.date}</Table.Cell>
-                      <Table.Cell>{exam.time}</Table.Cell>
+                      <Table.Cell>{exam.type_application_display}</Table.Cell>
+                      <Table.Cell>{exam.start_date}</Table.Cell>
+                      <Table.Cell>{exam.end_date}</Table.Cell>
+                      <Table.Cell>{exam.evaluation_time}</Table.Cell>
                       <Table.Cell>
                         <Flex gap={2}>
                           <IconButton
                             size='xs'
                             colorPalette='blue'
                             onClick={() => {
-                              setEditingId(exam.id);
-                              setNameExamInput(exam.name);
-                              setDateExamInput(exam.date);
-                              setTimeExamInput(exam.time);
+                              setEditingId(exam?.id);
+                              setStartDateExamInput(exam?.start_date);
+                              setEndDateExamInput(exam?.end_date);
+                              setTimeExamInput(exam?.evaluation_time);
+                              setEvaluatorInput({ value: exam?.evaluator, label: exam?.evaluator_full_name })
+                              setApplicationTypeInput({ value: exam?.type_application, label: applicationTypeOptions.find(option => option.value === exam?.type_application)?.label })
                             }}
                             aria-label='Editar'
                           >
