@@ -23,6 +23,38 @@ export const AddModalityForm = ({ fetchData }) => {
 
   const handleSubmitData = (e) => {
     e.preventDefault();
+    console.log(modalityRequest)
+    if (!modalityRequest.name || !modalityRequest.description || !modalityRequest.min_grade || !modalityRequest.essay_weight || !modalityRequest.interview_weight) {
+      toaster.create({
+        title: 'Por favor, complete todos los campos correctamente.',
+        type: 'error',
+      });
+      return;
+    }
+
+    if (modalityRequest.min_grade < 0 || modalityRequest.min_grade > 20) {
+      toaster.create({
+        title: 'El grado mínimo debe estar entre 0 y 20.',
+        type: 'error',
+      });
+      return;
+    }
+
+    if (modalityRequest.essay_weight < 0 || modalityRequest.essay_weight > 1) {
+      toaster.create({
+        title: 'El peso del ensayo debe estar entre 0 y 1.',
+        type: 'error',
+      });
+      return;
+    }
+
+    if (modalityRequest.requires_interview && (modalityRequest.interview_weight < 0 || modalityRequest.interview_weight > 1)) {
+      toaster.create({
+        title: 'El peso de la entrevista debe estar entre 0 y 1.',
+        type: 'error',
+      });
+      return;
+    }
 
     create(modalityRequest, {
       onSuccess: () => {
@@ -35,6 +67,12 @@ export const AddModalityForm = ({ fetchData }) => {
         setModalityRequest({
           name: '',
           requires_pre_master_exam:false,
+          requires_interview: false,
+          requires_essay: false,
+          description: '',
+          essay_weight: 0.5,
+          interview_weight: 0.5,
+          min_grade: 0,
         })
       },
       onError: (error) => {
