@@ -26,14 +26,14 @@ export const AuthLayout = () => {
 				width='full'
 				height='full'
 				bgImage={bgImage}
-				backgroundSize='100%'
-				backgroundPosition='center'
+				backgroundSize='79%'
+				backgroundPosition='start'
 				zIndex={1}
 			/>
 			<Flex
 				width='full'
 				h='100svh'
-				justifyContent={{ base: 'center', lg: 'flex-end' }}
+				justifyContent={{ base: 'center', xl: 'flex-end' }}
 				zIndex={4}
 			>
 				<Outlet />
