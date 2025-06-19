@@ -294,52 +294,73 @@ export default function AdmissionForm() {
 
 	return (
 		<Box minH='100dvh' bg='gray.50'>
-			{/* Cabecera */}
-			<Box bg='#8B2635' py={4}>
-				<Container maxW='container.xl'>
-					<HStack>
-						<Image
-							w='40px'
-							src='/img/logo-UNI.png'
-							alt='Logo'
-							mr='2'
-							filter='brightness(0) invert(1)'
-						/>
-					</HStack>
-				</Container>
-			</Box>
-
-			{isAdmissionProgramLoading && (
-				<Box textAlign='center' py={10}>
-					<Spinner size='xl' color='#8B2635' />
-					<Text mt={4} color='#8B2635' fontSize='xl'>
-						Cargando información del proceso de admisión...
-					</Text>
-				</Box>
-			)}
-			{!isAdmissionProgramLoading && (
-				<>
-					{
-						/* Formulario de Inscripción */
-						dataAdmissionProgram?.end_date &&
-						new Date(dataAdmissionProgram.end_date) >= new Date() ? (
-							<Box>
-								<Container
-									maxW='container.xl'
-									py={5}
-									fontWeight='bold'
-									textAlign='center'
-								>
-									<Text color='#8B2635' fontSize='2xl'>
-										Formulario de Inscripción
-									</Text>
-									<Span color='gray.500' fontSize='xl'>
-										{dataAdmissionProgram?.admission_process_name.toUpperCase()}
-									</Span>
-								</Container>
-								<Container maxW='container.sm'>
-									<HStack align='start' justify='center' spacing={8}>
-										{/* Columna 1 */}
+      <Box bg='#8B2635' py={4}>
+        <Container maxW='container.xl'>
+          <HStack alignItems={'center'} justify="center">
+            <Image
+              w='40px'
+              src='/img/logo-UNI.png'
+              alt='Logo'
+              mr='2'
+              filter='brightness(0) invert(1)'
+            />
+            <Text
+              color='white'
+              fontWeight='semibold'
+              fontSize={{ base: 'md', lg: 'xl', xl:'2xl' }}
+              display={{ base: 'none', md: 'inline' }}
+              ml={2}
+            >
+              FACULTAD DE INGENIERÍA ECONÓMICA ESTADÍSTICAS Y CIENCIAS SOCIALES - UNI
+            </Text>
+            <Text
+              color='white'
+              fontWeight='semibold'
+              fontSize={{ base:'2xl' }}
+              display={{ base: 'inline', md: 'none' }}
+              ml={2}
+            >
+              FIEECS UNI 
+            </Text>
+            </HStack>
+        </Container>
+      </Box>
+            {isAdmissionProgramLoading && (
+              <Box textAlign='center' py={10}>
+                <Spinner size='xl' color='#8B2635' />
+                <Text mt={4} color='#8B2635' fontSize='xl'>
+                  Cargando información del proceso de admisión...
+                </Text>
+              </Box>
+            )}
+            {!isAdmissionProgramLoading && (
+              <>
+                {
+            /* Formulario de Inscripción */
+            dataAdmissionProgram?.end_date &&
+            new Date(dataAdmissionProgram.end_date) >= new Date() ? (
+              <Box>
+                <Container
+                  maxW='container.xl'
+                  py={5}
+                  fontWeight='bold'
+                  textAlign='center'
+                >
+                  <Text color='#8B2635' fontSize='2xl'>
+                    Formulario de Inscripción
+                  </Text>
+                  <Span color='gray.500' fontSize='xl'>
+                    {dataAdmissionProgram?.admission_process_name.toUpperCase()}
+                  </Span>
+                </Container>
+                <Container maxW='container.sm'>
+                  <Flex
+                    direction={{ base: 'column', md: 'row' }}
+                    align='start'
+                    justify='center'
+                    gap={8}
+                  >
+                    {/* Columna 1 */}
 										<Box w='100%' maxW='420px' p={6} spaceY={3}>
 											<Field label='Nombres completos'>
 												<Input
@@ -632,7 +653,7 @@ export default function AdmissionForm() {
 												</Button>
 											</HStack>
 										</Box>
-									</HStack>
+									</Flex>
 								</Container>
 							</Box>
 						) : (
