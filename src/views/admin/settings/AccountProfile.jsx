@@ -11,9 +11,9 @@ import { uploadToS3 } from '@/utils/uploadToS3';
 
 export const AccountProfile = () => {
 	const { data: dataUser, isLoading, error, refetch } = useReadUserLogged();
- 
+
 	const { mutate: update, loading: loadingUpdate } = useUpdateUser();
-	const [disableUpload, setDisableUpload] = useState(false)
+	const [disableUpload, setDisableUpload] = useState(false);
 
 	const [profile, setProfile] = useState({
 		id: '',
@@ -49,8 +49,8 @@ export const AccountProfile = () => {
 	useEffect(() => {
 		if (!isLoading && dataUser) {
 			const updatedProfile = {
-        first_name: dataUser.user.first_name,
-        last_name: dataUser.user.last_name,
+				first_name: dataUser.user.first_name,
+				last_name: dataUser.user.last_name,
 				...dataUser,
 			};
 			setProfile(updatedProfile);
@@ -72,7 +72,7 @@ export const AccountProfile = () => {
 
 	const handleUpdateProfile = async (e) => {
 		e.preventDefault();
-		setDisableUpload(true)
+		setDisableUpload(true);
 		let pathCvUrl = profile?.path_cv;
 		let pathGradeUrl = profile?.path_grade;
 
@@ -118,13 +118,12 @@ export const AccountProfile = () => {
 				type: 'success',
 			});
 			refetch();
-			setDisableUpload(false)
+			setDisableUpload(false);
 		} catch (error) {
-			setDisableUpload(false)
+			setDisableUpload(false);
 			toaster.create({ title: error.message, type: 'error' });
 		}
 	};
-
 
 	return (
 		<Box spaceY='5'>
