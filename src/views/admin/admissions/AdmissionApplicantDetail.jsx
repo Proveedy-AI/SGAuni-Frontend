@@ -18,7 +18,8 @@ import { Link as RouterLink } from 'react-router';
 
 export const AdmissionApplicantDetail = () => {
 	const { programId, id } = useParams();
-	const encodeProgram = encodeURIComponent(programId);
+	const decodedProgrma = decodeURIComponent(programId);
+	const encodeProgram = encodeURIComponent(decodedProgrma);
 	const decoded = decodeURIComponent(id);
 	const decrypted = Encryptor.decrypt(decoded);
 
