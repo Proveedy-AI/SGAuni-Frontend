@@ -6,20 +6,13 @@ import { Pagination } from '@/components/ui';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import { useReadProgramTypes } from '@/hooks';
 import { useReadAdmissions } from '@/hooks/admissions_proccess';
-import {
-	Box,
-	HStack,
-	Input,
-	Stack,
-	Table,
-	Text,
-} from '@chakra-ui/react';
+import { Box, HStack, Input, Stack, Table, Text } from '@chakra-ui/react';
 import { format, parseISO } from 'date-fns';
 import PropTypes from 'prop-types';
 import { memo, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 
-const Row = memo(({ item, fetchData, startIndex, index, permissions, sortConfig, data }) => {
+const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 	const navigate = useNavigate();
 	const encrypted = Encryptor.encrypt(item.id);
 	const encoded = encodeURIComponent(encrypted);
@@ -58,13 +51,7 @@ const Row = memo(({ item, fetchData, startIndex, index, permissions, sortConfig,
 			<Table.Cell>
 				{format(parseISO(item.semester_start_date), 'dd/MM/yyyy')}
 			</Table.Cell>
-			<Table.Cell onClick={(e) => e.stopPropagation()}>
-				<HStack>
-					{permissions?.includes('admissions.proccess.edit') && (
-						<UpdateAdmissionsProccessForm data={item} fetchData={fetchData} />
-					)}
-				</HStack>
-			</Table.Cell>
+			<Table.Cell onClick={(e) => e.stopPropagation()}></Table.Cell>
 		</Table.Row>
 	);
 });
@@ -77,8 +64,8 @@ Row.propTypes = {
 	startIndex: PropTypes.number,
 	index: PropTypes.number,
 	permissions: PropTypes.array,
-  sortConfig: PropTypes.object,
-  data: PropTypes.array,
+	sortConfig: PropTypes.object,
+	data: PropTypes.array,
 };
 
 export const AdmissionApplicantsTable = ({
@@ -114,30 +101,30 @@ export const AdmissionApplicantsTable = ({
 	}, [dataAdmissions, loadingAdmissions]);
 
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
-  const [currentPage, setCurrentPage] = useState(1);
-  const startIndex = (currentPage - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const [sortConfig, setSortConfig] = useState(null);
+	const [currentPage, setCurrentPage] = useState(1);
+	const startIndex = (currentPage - 1) * pageSize;
+	const endIndex = startIndex + pageSize;
+	const [sortConfig, setSortConfig] = useState(null);
 
-  const sortedData = useMemo(() => {
-    if (!sortConfig) return data;
+	const sortedData = useMemo(() => {
+		if (!sortConfig) return data;
 
-    const sorted = [...data];
+		const sorted = [...data];
 
-    if (sortConfig.key === 'index') {
-      return sortConfig.direction === 'asc' ? sorted : sorted.reverse();
-    }
-    return sorted.sort((a, b) => {
-      const aVal = a[sortConfig.key];
-      const bVal = b[sortConfig.key];
+		if (sortConfig.key === 'index') {
+			return sortConfig.direction === 'asc' ? sorted : sorted.reverse();
+		}
+		return sorted.sort((a, b) => {
+			const aVal = a[sortConfig.key];
+			const bVal = b[sortConfig.key];
 
-      if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
-      if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
-      return 0;
-    });
-  }, [data, sortConfig]);
+			if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+			if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+			return 0;
+		});
+	}, [data, sortConfig]);
 
-  const visibleRows = sortedData?.slice(startIndex, endIndex);
+	const visibleRows = sortedData?.slice(startIndex, endIndex);
 
 	return (
 		<Box
@@ -152,25 +139,25 @@ export const AdmissionApplicantsTable = ({
 					<Table.Header>
 						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
 							<Table.ColumnHeader>
-                <SortableHeader
-                  label='N°'
-                  columnKey='index'
-                  sortConfig={sortConfig}
-                  onSort={setSortConfig}
-                />
-              </Table.ColumnHeader>
+								<SortableHeader
+									label='N°'
+									columnKey='index'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
 							<Table.ColumnHeader>
-                <SortableHeader
-                  label='Nombres del programa'
-                  columnKey='program_name'
-                  sortConfig={sortConfig}
-                  onSort={setSortConfig}
-                />
-              </Table.ColumnHeader>
+								<SortableHeader
+									label='Nombres del programa'
+									columnKey='program_name'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
 							<Table.ColumnHeader>
 								<Stack direction='column' w='150px'>
 									<Text>Tipo del programa</Text>
-									<ReactSelect
+									{/*<ReactSelect
 										label='programType'
 										value={search?.program_type}
 										options={programTypeOptions}
@@ -178,13 +165,13 @@ export const AdmissionApplicantsTable = ({
 										onChange={(value) =>
 											setSearch({ ...search, program_type: value })
 										}
-									/>
+									/>*/}
 								</Stack>
 							</Table.ColumnHeader>
 							<Table.ColumnHeader>
 								<Stack direction='column' w='150px'>
 									<Text>Proceso de Admisión</Text>
-									<ReactSelect
+									{/*<ReactSelect
 										label='admissionProcess'
 										value={search?.admission_process}
 										options={admissionOptions}
@@ -192,22 +179,21 @@ export const AdmissionApplicantsTable = ({
 										onChange={(value) =>
 											setSearch({ ...search, admission_process: value })
 										}
-									/>
+									/>*/}
 								</Stack>
 							</Table.ColumnHeader>
 							<Table.ColumnHeader>
 								<Stack direction='column' w='150px'>
 									<Text>Fecha</Text>
-									<Input
+									{/*<Input
 										type='date'
 										value={search?.date}
 										onChange={(e) =>
 											setSearch({ ...search, date: e.target.value })
 										}
-									/>
+									/>*/}
 								</Stack>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
@@ -228,16 +214,16 @@ export const AdmissionApplicantsTable = ({
 			</Table.ScrollArea>
 
 			<Pagination
-        count={data?.length}
-        pageSize={Number(pageSize)}
-        currentPage={currentPage}
-        pageSizeOptions={pageSizeOptions}
-        onPageChange={(page) => setCurrentPage(page)}
-        onPageSizeChange={(size) => {
-          setPageSize(size);
-          setCurrentPage(1);
-        }}
-				/>
+				count={data?.length}
+				pageSize={Number(pageSize)}
+				currentPage={currentPage}
+				pageSizeOptions={pageSizeOptions}
+				onPageChange={(page) => setCurrentPage(page)}
+				onPageSizeChange={(size) => {
+					setPageSize(size);
+					setCurrentPage(1);
+				}}
+			/>
 		</Box>
 	);
 };
