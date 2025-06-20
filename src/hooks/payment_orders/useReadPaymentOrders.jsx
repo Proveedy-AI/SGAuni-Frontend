@@ -1,14 +1,14 @@
-import { useMutation } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useReadPaymentOrders = () => {
+export const useReadPaymentOrders = (params = {}) => {
   const axiosPrivate = useAxiosPrivate();
 
-  return useMutation({
-    queryKey: ['payment_orders'],
+	return useQuery({
+		queryKey: ['payment_orders', params],
 		queryFn: async () => {
-      const res = await axiosPrivate.get(`/api/v1/payment-orders/`);
-      return res.data;
-    },
-  });
+			const res = await axiosPrivate.get('/api/v1/payment-orders/', { params });
+			return res.data;
+		},
+	});
 };

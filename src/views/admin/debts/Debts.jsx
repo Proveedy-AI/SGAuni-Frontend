@@ -1,6 +1,7 @@
 import { PaymentRequestsTable } from "@/components/tables/payment_requests";
 import { LinkButton } from "@/components/ui/link-button";
 import { useProvideAuth } from "@/hooks/auth";
+import { useReadPaymentOrders } from "@/hooks/payment_orders";
 import { useReadPaymentRequest } from "@/hooks/payment_requests/useReadPaymentRequest";
 import { Box, Heading, InputGroup, Input, Stack, Spinner } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
@@ -8,7 +9,8 @@ import { FiSearch } from "react-icons/fi";
 
 export const Debts = () => {
   const { data: dataPaymentRequests, loading: isPaymentRequestsLoading, refetch: fetchPaymentRequets } = useReadPaymentRequest();
-  
+  const { data: dataPaymentOrders, loading: isPaymentOrdersLoading } = useReadPaymentOrders();
+
   const { getProfile } = useProvideAuth();
   const profile = getProfile();
   const roles = profile?.roles || [];
@@ -58,7 +60,7 @@ export const Debts = () => {
     if (loading && filteredPaymentRequests) {
       setInitialLoading(false);
     }
-  }, [loading, filteredPaymentRequests]);
+  }, [loading, filteredPaymentRequests, isPaymentOrdersLoading]);
 
   return (
     <Box spaceY='5'>
@@ -108,6 +110,7 @@ export const Debts = () => {
             <PaymentRequestsTable
               data={filteredPaymentRequests}
               fetchData={fetchPaymentRequets}
+              paymentOrders={dataPaymentOrders?.results}
               permissions={permissions}
               documentTypeOptions={documentTypeOptions}
               paymentMethodOptions={paymentMethodOptions}

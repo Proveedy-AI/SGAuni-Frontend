@@ -14,7 +14,8 @@ import { SortableHeader } from '@/components/ui/SortableHeader';
 import { GeneratePaymentOrderModal, ValidatePaymentOrderModal, ViewPaymentOrderVoucherModal } from '@/components/forms/payment_requests';
 import { ReactSelect } from '@/components/select';
 
-const Row = memo(({ item, startIndex, index, fetchData, permissions, sortConfig, data }) => {
+const Row = memo(({ item, startIndex, index, paymentOrders, fetchData, permissions, sortConfig, data }) => {
+  const filteredPaymentOrders = paymentOrders?.filter(order => order.request === item.id);
 
   const statusDisplay = [
     { id: 1, label: 'Pendiente', value: 'Pending', bg:'#AEAEAE', color:'#F5F5F5' },
@@ -46,7 +47,7 @@ const Row = memo(({ item, startIndex, index, fetchData, permissions, sortConfig,
         <HStack justify='space-between'>
           <Group>
             <ViewPaymentOrderVoucherModal item={item} />
-            <GeneratePaymentOrderModal item={item} fetchData={fetchData} />
+            <GeneratePaymentOrderModal item={item} paymentOrders={filteredPaymentOrders} fetchData={fetchData} />
             <ValidatePaymentOrderModal item={item} fetchData={fetchData} />
           </Group>
         </HStack>
@@ -62,12 +63,14 @@ Row.propTypes = {
   permissions: PropTypes.object,
   startIndex: PropTypes.number,
   index: PropTypes.number,
+  paymentOrders: PropTypes.array,
   fetchData: PropTypes.func,
   sortConfig: PropTypes.object,
   data: PropTypes.array,
 };
 
-export const PaymentRequestsTable = ({ data, fetchData, permissions, paymentMethodOptions, documentTypeOptions, searchValue, setSearchValue, statusOptions }) => {
+export const PaymentRequestsTable = ({ data, paymentOrders, fetchData, permissions, paymentMethodOptions, documentTypeOptions, searchValue, setSearchValue, statusOptions }) => {
+
   const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
     const [currentPage, setCurrentPage] = useState(1);
     const startIndex = (currentPage - 1) * pageSize;
@@ -188,6 +191,7 @@ export const PaymentRequestsTable = ({ data, fetchData, permissions, paymentMeth
                 startIndex={startIndex}
                 index={index}
                 permissions={permissions}
+                paymentOrders={paymentOrders}
                 fetchData={fetchData}
                 sortConfig={sortConfig}
                 data={data}
@@ -215,6 +219,7 @@ export const PaymentRequestsTable = ({ data, fetchData, permissions, paymentMeth
 
 PaymentRequestsTable.propTypes = {
   data: PropTypes.array,
+  paymentOrders: PropTypes.array,
   fetchData: PropTypes.func,
   permissions: PropTypes.object,
   paymentMethodOptions: PropTypes.array,
