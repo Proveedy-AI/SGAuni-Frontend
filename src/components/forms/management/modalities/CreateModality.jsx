@@ -1,7 +1,7 @@
-import { Field, Button, Radio, RadioGroup, toaster, Modal } from "@/components/ui"
-import { Flex, Input, Stack } from "@chakra-ui/react"
+import { Field, Button, Radio, RadioGroup, toaster, Modal, Checkbox } from "@/components/ui"
+import { Flex, Input, Stack, VStack } from "@chakra-ui/react"
 import { useRef, useState } from "react";
-import { useCreateModality } from "@/hooks";
+import { useCreateModality, useReadModalityRules } from "@/hooks";
 import PropTypes from "prop-types";
 import { FiPlus } from "react-icons/fi";
 
@@ -17,17 +17,28 @@ export const AddModalityForm = ({ fetchData }) => {
     essay_weight: 0.5,
     interview_weight: 0.5,
     min_grade: 0,
+    rules_ids: []
   })
+  const { data: dataModalityRules, isLoading: loadingRules } =
+      useReadModalityRules();
+
+  const [selectedRuleIds, setSelectedRuleIds] = useState([]);
+
+  const handleCheckboxChange = (ruleId, isChecked) => {
+		setSelectedRuleIds((prev) =>
+			isChecked ? [...prev, ruleId] : prev.filter((id) => id !== ruleId)
+		);
+	};
 
   const { mutate: create, isPending: loading } = useCreateModality();
 
   const handleSubmitData = (e) => {
     e.preventDefault();
-    console.log(modalityRequest)
+    
     if (!modalityRequest.name || !modalityRequest.description || !modalityRequest.min_grade || !modalityRequest.essay_weight || !modalityRequest.interview_weight) {
       toaster.create({
         title: 'Por favor, complete todos los campos correctamente.',
-        type: 'error',
+        type: 'warning',
       });
       return;
     }
@@ -35,7 +46,7 @@ export const AddModalityForm = ({ fetchData }) => {
     if (modalityRequest.min_grade < 0 || modalityRequest.min_grade > 20) {
       toaster.create({
         title: 'El grado mínimo debe estar entre 0 y 20.',
-        type: 'error',
+        type: 'warning',
       });
       return;
     }
@@ -43,7 +54,7 @@ export const AddModalityForm = ({ fetchData }) => {
     if (modalityRequest.essay_weight < 0 || modalityRequest.essay_weight > 1) {
       toaster.create({
         title: 'El peso del ensayo debe estar entre 0 y 1.',
-        type: 'error',
+        type: 'warning',
       });
       return;
     }
@@ -51,19 +62,32 @@ export const AddModalityForm = ({ fetchData }) => {
     if (modalityRequest.requires_interview && (modalityRequest.interview_weight < 0 || modalityRequest.interview_weight > 1)) {
       toaster.create({
         title: 'El peso de la entrevista debe estar entre 0 y 1.',
-        type: 'error',
+         type: 'warning',
       });
       return;
     }
 
-    create(modalityRequest, {
+    if (selectedRuleIds.length === 0) {
+      toaster.create({
+        title: 'Debe seleccionar al menos una regla.',
+        type: 'warning',
+      });
+      return;
+    }
+
+    const payload = {
+      ...modalityRequest,
+      rules_ids: selectedRuleIds,
+    }
+
+    create(payload, {
       onSuccess: () => {
         toaster.create({
           title: 'Modalidad registrada correctamente',
           type: 'success'
         })
         setOpen(false);
-				fetchData();
+        fetchData();
         setModalityRequest({
           name: '',
           requires_pre_master_exam:false,
@@ -74,6 +98,7 @@ export const AddModalityForm = ({ fetchData }) => {
           interview_weight: 0.5,
           min_grade: 0,
         })
+        setSelectedRuleIds([]);
       },
       onError: (error) => {
         toaster.create({
@@ -215,6 +240,22 @@ export const AddModalityForm = ({ fetchData }) => {
             </Field>
           )}
         </Flex>
+        <Field label='Reglas'>
+          <VStack align='start'>
+            {!loadingRules && dataModalityRules?.results?.map((rule) => (
+              <Field key={rule.id} orientation='horizontal'>
+                <Checkbox
+                  checked={selectedRuleIds.includes(rule.id)}
+                  onChange={(e) =>
+                    handleCheckboxChange(rule.id, e.target.checked)
+                  }
+                >
+                  {rule.field_name}
+                </Checkbox>
+              </Field>
+            ))}
+          </VStack>
+        </Field>
       </Stack>
     </Modal>
   )

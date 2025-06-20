@@ -36,7 +36,15 @@ export const AssignModalityRules = ({ item, fetchData }) => {
 	};
 
 	const handleSaveRules = async () => {
-		const payload = {
+		if (selectedRuleIds.length === 0) {
+      toaster.create({
+        title: 'Por favor, seleccione al menos una regla.',
+        type: 'warning',
+      });
+      return;
+    }
+    
+    const payload = {
 			modalityId: modalityId,
 			rulesId: selectedRuleIds,
 		};
