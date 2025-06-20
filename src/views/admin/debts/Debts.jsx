@@ -75,7 +75,7 @@ export const Debts = () => {
             md: 'md',
           }}
         >
-          Ordenes de Pago
+          Cobranza
         </Heading>
       </Stack>
 
