@@ -1,3 +1,3 @@
 export * from './GeneratePaymentOrderModal';
-export * from './ValidatePaymentOrderModal';
-export * from './ViewPaymentOrderVoucherModal';
+export * from './UpdatePaymentRequestModal';
+export * from './ViewPaymentRequestModal';

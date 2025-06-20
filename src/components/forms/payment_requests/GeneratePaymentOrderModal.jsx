@@ -3,8 +3,9 @@ import { Box, Flex, IconButton, Input, Stack, Table, Text } from "@chakra-ui/rea
 import { useEffect, useRef, useState } from "react";
 import { HiArrowUp } from "react-icons/hi2";
 import PropTypes from "prop-types";
-import { FaEye, FaSave, FaTimes } from "react-icons/fa";
+import { FaSave, FaTimes } from "react-icons/fa";
 import { useCreatePaymentOrder } from "@/hooks/payment_orders";
+import { ValidatePaymentOrderModal, ViewPaymentOrderVoucherModal } from "../payment_orders";
 
 export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchPaymentRequests, fetchPaymentOrders }) => {
   const contentRef = useRef();
@@ -136,6 +137,7 @@ export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchPaymentReq
                     size='sm'
                     bg='red'
                     onClick={handleReset}
+                    disabled={!orderIdInput && !discountInput && !dueDateInput}
                     css={{ _icon: { width: '5', height: '5' } }}
                     >
                     <FaTimes />
@@ -144,7 +146,7 @@ export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchPaymentReq
             </Flex>
             <Box>
               <Text fontWeight='semibold' mb={2}>
-                  Órdenes de pago generadas:
+                Órdenes de pago generadas:
               </Text>
               <Table.Root size='sm' striped>
                 <Table.Header>
@@ -169,13 +171,8 @@ export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchPaymentReq
                           <Table.Cell>{payOrd.total_amount}</Table.Cell>
                           <Table.Cell>
                             <Flex gap={2}>
-                              <IconButton
-                                size='xs'
-                                colorPalette='blue'
-                                aria-label='Ver voucher'
-                              >
-                                <FaEye />
-                              </IconButton>
+                              <ViewPaymentOrderVoucherModal item={payOrd} />
+                              <ValidatePaymentOrderModal item={payOrd} />
                             </Flex>
                           </Table.Cell>
                         </Table.Row>

@@ -11,7 +11,7 @@ import {
 import { Pagination } from '@/components/ui'
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { SortableHeader } from '@/components/ui/SortableHeader';
-import { GeneratePaymentOrderModal, ValidatePaymentOrderModal, ViewPaymentOrderVoucherModal } from '@/components/forms/payment_requests';
+import { GeneratePaymentOrderModal, UpdatePaymentRequestModal, ViewPaymentRequestModal } from '@/components/forms/payment_requests';
 import { ReactSelect } from '@/components/select';
 
 const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests, fetchPaymentOrders, permissions, sortConfig, data }) => {
@@ -46,14 +46,14 @@ const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests
       <Table.Cell>
         <HStack justify='space-between'>
           <Group>
-            <ViewPaymentOrderVoucherModal item={item} />
+            <ViewPaymentRequestModal item={item} />
             <GeneratePaymentOrderModal 
               item={item} 
               paymentOrders={filteredPaymentOrders}
               fetchPaymentRequests={fetchPaymentRequests}
               fetchPaymentOrders={fetchPaymentOrders}
             />
-            <ValidatePaymentOrderModal item={item} fetchData={fetchPaymentOrders} />
+            <UpdatePaymentRequestModal item={item} fetchData={fetchPaymentOrders} />
           </Group>
         </HStack>
       </Table.Cell>
@@ -65,7 +65,7 @@ Row.displayName = 'Row';
 
 Row.propTypes = {
   item: PropTypes.object,
-  permissions: PropTypes.object,
+  permissions: PropTypes.array,
   startIndex: PropTypes.number,
   index: PropTypes.number,
   paymentOrders: PropTypes.array,
@@ -229,7 +229,7 @@ PaymentRequestsTable.propTypes = {
   paymentOrders: PropTypes.array,
   fetchPaymentRequests: PropTypes.func,
   fetchPaymentOrders: PropTypes.func,
-  permissions: PropTypes.object,
+  permissions: PropTypes.array,
   paymentMethodOptions: PropTypes.array,
   documentTypeOptions: PropTypes.array,
   searchValue: PropTypes.object,

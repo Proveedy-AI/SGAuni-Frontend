@@ -1,10 +1,10 @@
 import { Field, ModalSimple } from "@/components/ui";
-import { IconButton, Stack, Text } from "@chakra-ui/react";
+import { IconButton, Stack } from "@chakra-ui/react";
 import { useState } from "react";
 import { HiCheck } from "react-icons/hi2";
 import PropTypes from "prop-types";
 
-export const ValidatePaymentOrderModal = ({ item }) => {
+export const UpdatePaymentRequestModal = ({ item }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -39,6 +39,6 @@ export const ValidatePaymentOrderModal = ({ item }) => {
   );
 }
 
-ValidatePaymentOrderModal.propTypes = {
+UpdatePaymentRequestModal.propTypes = {
   item: PropTypes.object
 };

@@ -1,5 +1,5 @@
-import { Field, ModalSimple } from "@/components/ui";
-import { IconButton, Stack, Text } from "@chakra-ui/react";
+import { Field, ModalSimple, Tooltip } from "@/components/ui";
+import { Box, IconButton, Stack, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { HiEye } from "react-icons/hi2";
 import PropTypes from "prop-types";
@@ -12,9 +12,18 @@ export const ViewPaymentOrderVoucherModal = ({ item }) => {
       <Field orientation={{ base: "vertical", sm: "horizontal" }}>
         <ModalSimple
           trigger={
-            <IconButton colorPalette='blue' size='xs'>
-              <HiEye />
-            </IconButton>
+            <Box>
+              <Tooltip
+                content='Ver Voucher'
+                positioning={{ placement: 'bottom-center' }}
+                showArrow
+                openDelay={0}
+              >
+                <IconButton colorPalette='blue' size='xs'>
+                  <HiEye />
+                </IconButton>
+              </Tooltip>
+            </Box>
           }
           title="Ver Voucher"
           placement="center"
