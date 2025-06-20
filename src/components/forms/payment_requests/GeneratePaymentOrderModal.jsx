@@ -4,11 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { HiArrowUp } from "react-icons/hi2";
 import PropTypes from "prop-types";
 import { FaEye, FaSave, FaTimes } from "react-icons/fa";
+import { useCreatePaymentOrder } from "@/hooks/payment_orders";
 
-export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchData }) => {
+export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchPaymentRequests, fetchPaymentOrders }) => {
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
-  //const { mutateAsync: generatePaymentOrder, isSaving } = useCreatePaymentOrder();
+  const { mutateAsync: generatePaymentOrder, isSaving } = useCreatePaymentOrder();
 
   const [orderIdInput, setOrderIdInput] = useState("");
   const [discountInput, setDiscountInput] = useState("");
@@ -34,22 +35,21 @@ export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchData }) =>
       })
     }
 
-
     const payload = {
       request: item.id,
       id_orden: orderIdInput,
       discount_value: (Number(discountInput)/100).toString(),
       due_date: dueDateInput
     }
-
-    /*
+    
     generatePaymentOrder(payload, {
       onSuccess: () => {
         toaster.create({
           title: 'Orden generada con éxito',
           type: 'success',
         });
-        fetchData();
+        fetchPaymentRequests();
+        fetchPaymentOrders();
         handleReset();
       },
       onError: (error) => {
@@ -59,12 +59,7 @@ export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchData }) =>
         });
       }
     })
-    */
 
-    //Quitar esto cuando se implemente el hook para crear ordenes de pago
-    console.log(payload)
-    handleReset();
-    setOpen(false);
   }
 
   return (
@@ -130,7 +125,7 @@ export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchData }) =>
                   <IconButton
                     size='sm'
                     bg='green'
-                    //loading={isSaving}
+                    loading={isSaving}
                     disabled={!orderIdInput || !discountInput || !dueDateInput}
                     onClick={handleSubmit}
                     css={{ _icon: { width: '5', height: '5' } }}
@@ -165,13 +160,13 @@ export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchData }) =>
                 <Table.Body>
                   {
                     paymentOrders?.length > 0 ? (
-                      paymentOrders.map((exam, index) => (
-                        <Table.Row key={exam.id}>
+                      paymentOrders.map((payOrd, index) => (
+                        <Table.Row key={payOrd.id}>
                           <Table.Cell>{index + 1}</Table.Cell>
-                          <Table.Cell>{exam.id_orden}</Table.Cell>
-                          <Table.Cell>{exam.sub_amount}</Table.Cell>
-                          <Table.Cell>{exam.discount_value}</Table.Cell>
-                          <Table.Cell>{exam.total_amount}</Table.Cell>
+                          <Table.Cell>{payOrd.id_orden}</Table.Cell>
+                          <Table.Cell>{payOrd.sub_amount}</Table.Cell>
+                          <Table.Cell>{payOrd.discount_value}</Table.Cell>
+                          <Table.Cell>{payOrd.total_amount}</Table.Cell>
                           <Table.Cell>
                             <Flex gap={2}>
                               <IconButton
@@ -180,13 +175,6 @@ export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchData }) =>
                                 aria-label='Ver voucher'
                               >
                                 <FaEye />
-                              </IconButton>
-                              <IconButton
-                                size='xs'
-                                colorPalette='red'
-                                aria-label='Eliminar'
-                              >
-                                <FaTimes />
                               </IconButton>
                             </Flex>
                           </Table.Cell>
@@ -213,5 +201,6 @@ export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchData }) =>
 GeneratePaymentOrderModal.propTypes = {
   item: PropTypes.object,
   paymentOrders: PropTypes.array,
-  fetchData: PropTypes.func
+  fetchPaymentRequests: PropTypes.func,
+  fetchPaymentOrders: PropTypes.func
 };

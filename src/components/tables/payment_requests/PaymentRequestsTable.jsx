@@ -14,7 +14,7 @@ import { SortableHeader } from '@/components/ui/SortableHeader';
 import { GeneratePaymentOrderModal, ValidatePaymentOrderModal, ViewPaymentOrderVoucherModal } from '@/components/forms/payment_requests';
 import { ReactSelect } from '@/components/select';
 
-const Row = memo(({ item, startIndex, index, paymentOrders, fetchData, permissions, sortConfig, data }) => {
+const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests, fetchPaymentOrders, permissions, sortConfig, data }) => {
   const filteredPaymentOrders = paymentOrders?.filter(order => order.request === item.id);
 
   const statusDisplay = [
@@ -47,8 +47,13 @@ const Row = memo(({ item, startIndex, index, paymentOrders, fetchData, permissio
         <HStack justify='space-between'>
           <Group>
             <ViewPaymentOrderVoucherModal item={item} />
-            <GeneratePaymentOrderModal item={item} paymentOrders={filteredPaymentOrders} fetchData={fetchData} />
-            <ValidatePaymentOrderModal item={item} fetchData={fetchData} />
+            <GeneratePaymentOrderModal 
+              item={item} 
+              paymentOrders={filteredPaymentOrders}
+              fetchPaymentRequests={fetchPaymentRequests}
+              fetchPaymentOrders={fetchPaymentOrders}
+            />
+            <ValidatePaymentOrderModal item={item} fetchData={fetchPaymentOrders} />
           </Group>
         </HStack>
       </Table.Cell>
@@ -64,12 +69,13 @@ Row.propTypes = {
   startIndex: PropTypes.number,
   index: PropTypes.number,
   paymentOrders: PropTypes.array,
-  fetchData: PropTypes.func,
+  fetchPaymentRequests: PropTypes.func,
+  fetchPaymentOrders: PropTypes.func,
   sortConfig: PropTypes.object,
   data: PropTypes.array,
 };
 
-export const PaymentRequestsTable = ({ data, paymentOrders, fetchData, permissions, paymentMethodOptions, documentTypeOptions, searchValue, setSearchValue, statusOptions }) => {
+export const PaymentRequestsTable = ({ data, paymentOrders, fetchPaymentRequests, fetchPaymentOrders, permissions, paymentMethodOptions, documentTypeOptions, searchValue, setSearchValue, statusOptions }) => {
 
   const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
     const [currentPage, setCurrentPage] = useState(1);
@@ -192,7 +198,8 @@ export const PaymentRequestsTable = ({ data, paymentOrders, fetchData, permissio
                 index={index}
                 permissions={permissions}
                 paymentOrders={paymentOrders}
-                fetchData={fetchData}
+                fetchPaymentRequests={fetchPaymentRequests}
+                fetchPaymentOrders={fetchPaymentOrders}
                 sortConfig={sortConfig}
                 data={data}
               />
@@ -220,7 +227,8 @@ export const PaymentRequestsTable = ({ data, paymentOrders, fetchData, permissio
 PaymentRequestsTable.propTypes = {
   data: PropTypes.array,
   paymentOrders: PropTypes.array,
-  fetchData: PropTypes.func,
+  fetchPaymentRequests: PropTypes.func,
+  fetchPaymentOrders: PropTypes.func,
   permissions: PropTypes.object,
   paymentMethodOptions: PropTypes.array,
   documentTypeOptions: PropTypes.array,

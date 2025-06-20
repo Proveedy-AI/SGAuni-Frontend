@@ -9,7 +9,7 @@ import { FiSearch } from "react-icons/fi";
 
 export const Debts = () => {
   const { data: dataPaymentRequests, loading: isPaymentRequestsLoading, refetch: fetchPaymentRequets } = useReadPaymentRequest();
-  const { data: dataPaymentOrders, loading: isPaymentOrdersLoading } = useReadPaymentOrders();
+  const { data: dataPaymentOrders, loading: isPaymentOrdersLoading, refetch: fetchPaymentOrders } = useReadPaymentOrders();
 
   const { getProfile } = useProvideAuth();
   const profile = getProfile();
@@ -110,6 +110,8 @@ export const Debts = () => {
             <PaymentRequestsTable
               data={filteredPaymentRequests}
               fetchData={fetchPaymentRequets}
+              fetchPaymentRequests={fetchPaymentRequets}
+              fetchPaymentOrders={fetchPaymentOrders}
               paymentOrders={dataPaymentOrders?.results}
               permissions={permissions}
               documentTypeOptions={documentTypeOptions}
