@@ -171,7 +171,7 @@ export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchPaymentReq
                           <Table.Cell>{payOrd.total_amount}</Table.Cell>
                           <Table.Cell>
                             <Flex gap={2}>
-                              <ViewPaymentOrderVoucherModal item={payOrd} />
+                              <ViewPaymentOrderVoucherModal item={payOrd} fetchPaymentOrders={fetchPaymentOrders} />
                               <ValidatePaymentOrderModal item={payOrd} />
                             </Flex>
                           </Table.Cell>

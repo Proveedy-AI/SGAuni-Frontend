@@ -1,5 +1,5 @@
 import { Field, ModalSimple, Tooltip } from "@/components/ui";
-import { Box, IconButton, Stack, Text } from "@chakra-ui/react";
+import { Box, IconButton, Stack } from "@chakra-ui/react";
 import { useState } from "react";
 import { HiEye } from "react-icons/hi2";
 import PropTypes from "prop-types";
@@ -27,7 +27,7 @@ export const ViewPaymentOrderVoucherModal = ({ item }) => {
           }
           title="Ver Voucher"
           placement="center"
-          size="xl"
+          size="5xl"
           open={open}
           onOpenChange={(e) => setOpen(e.open)}
           onSave={() => {}}
