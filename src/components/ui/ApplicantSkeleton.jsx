@@ -68,8 +68,8 @@ export default function ApplicantSkeleton() {
 				</Text>
 
 				<Box w='full' p={4}>
-					<SimpleGrid columns={[1, 4]} spacingY={2} columnGap={4}>
-						{Array.from({ length: 4 }).map((_, i) => (
+					<SimpleGrid columns={[1, 8]} spacingY={2} columnGap={3}>
+						{Array.from({ length: 8 }).map((_, i) => (
 							<Skeleton key={i} height='20px' borderRadius='md' />
 						))}
 					</SimpleGrid>

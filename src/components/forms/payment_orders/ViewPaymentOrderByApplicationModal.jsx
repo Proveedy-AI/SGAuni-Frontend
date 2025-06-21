@@ -55,7 +55,7 @@ export const ViewPaymentOrderByApplicationModal = ({ item }) => {
                     border="1px solid #E2E8F0"
                     borderRadius="md"
                   >
-                    {item.payment_order_name || 'No hay...'}
+                    {item.purpose || 'No hay...'}
                   </Text>
                 </Field>
                 <Field label="Nombre del postulante">
