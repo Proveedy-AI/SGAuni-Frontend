@@ -104,7 +104,7 @@ export const ModalityRulesTable = ({ data, fetchData, isLoading }) => {
 					</Table.Header>
 					<Table.Body>
 						{isLoading ? (
-							<SkeletonTable columns={4} />
+							<SkeletonTable columns={3} />
 						) : visibleRows?.length > 0 ? (
 							visibleRows.map((item, index) => (
 								<Row
@@ -119,7 +119,7 @@ export const ModalityRulesTable = ({ data, fetchData, isLoading }) => {
 							))
 						) : (
 							<Table.Row>
-								<Table.Cell colSpan={4} textAlign='center' py={2}>
+								<Table.Cell colSpan={3} textAlign='center' py={2}>
 									No hay datos disponibles.
 								</Table.Cell>
 							</Table.Row>
