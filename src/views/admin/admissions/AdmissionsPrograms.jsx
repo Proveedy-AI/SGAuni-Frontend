@@ -12,7 +12,7 @@ import {
 	Breadcrumb,
 	Tabs,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router';
@@ -40,8 +40,6 @@ export const AdmissionsPrograms = () => {
 
 	const [searchValue, setSearchValue] = useState('');
 
-	const [loading, setInitialLoading] = useState(true);
-
 	const filteredAdmissionsPrograms = dataAdmissionsPrograms?.results?.filter(
 		(item) =>
 			item.admission_process_name === data?.admission_process_name &&
@@ -57,12 +55,6 @@ export const AdmissionsPrograms = () => {
 			item.status === 4 &&
 			item.program_name.toLowerCase().includes(searchValue.toLowerCase())
 	);
-
-	useEffect(() => {
-		if (loading && filteredAdmissionsPrograms?.length > 0) {
-			setInitialLoading(false);
-		}
-	}, [loading, filteredAdmissionsPrograms]);
 
 	return (
 		<Box spaceY='5'>

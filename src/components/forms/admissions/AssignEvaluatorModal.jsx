@@ -21,7 +21,7 @@ import { useRef, useState } from 'react';
 import { FaSave } from 'react-icons/fa';
 import { FiCheckSquare, FiTrash2 } from 'react-icons/fi';
 
-export const AssignEvaluatorProgramModal = ({ item, fetchData }) => {
+export const AssignEvaluatorProgramModal = ({ data, fetchData }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 	const [editingId, setEditingId] = useState(null);
@@ -56,7 +56,7 @@ export const AssignEvaluatorProgramModal = ({ item, fetchData }) => {
 	];
 
 	const evaluatorsAssigned = dataAdmissionEvaluators?.results?.filter(
-		(evaluator) => evaluator.admission_program === item.id
+		(evaluator) => evaluator.admission_program === data.id
 	);
 
 	// Filtra los roles que NO están asignados al evaluador seleccionado
@@ -96,7 +96,7 @@ export const AssignEvaluatorProgramModal = ({ item, fetchData }) => {
 		}
 
 		const payload = {
-			admission_program: item.id,
+			admission_program: data.id,
 			evaluator: Number(evaluatorRequest.coordinator.value),
 			role: Number(evaluatorRequest.role.value),
 		};
@@ -206,7 +206,7 @@ export const AssignEvaluatorProgramModal = ({ item, fetchData }) => {
 							size='sm'
 							bg='uni.secondary'
 							loading={isSaving}
-							disabled={!evaluatorRequest.coordinator || !evaluatorRequest.role || item.status === 4}
+							disabled={!evaluatorRequest.coordinator || !evaluatorRequest.role || data.status === 4}
 							onClick={handleSubmit}
 							css={{ _icon: { width: '5', height: '5' } }}
 						>
@@ -247,6 +247,7 @@ export const AssignEvaluatorProgramModal = ({ item, fetchData }) => {
 											<Flex gap={2}>
 												<IconButton
 													size='xs'
+													disabled={data.status === 4}
 													colorPalette='red'
 													onClick={() => handleDelete(item.id)}
 													aria-label='Eliminar'
@@ -274,6 +275,6 @@ export const AssignEvaluatorProgramModal = ({ item, fetchData }) => {
 };
 
 AssignEvaluatorProgramModal.propTypes = {
-	item: PropTypes.object,
+	data: PropTypes.object,
 	fetchData: PropTypes.func,
 };
