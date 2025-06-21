@@ -105,7 +105,7 @@ export const UserList = () => {
 					{/* Tabla de usuarios */}
 
 					<UserTable
-						isLoadin={isLoading}
+						isLoading={isLoading}
 						data={filteredUsers}
 						fetchUsers={fetchUsers}
 						handleOpenModal={handleOpenModal}
