@@ -11,11 +11,15 @@ import {
 	Input,
 	Stack,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 
 export const Contracts = () => {
-	const { data: dataContracts, refetch: fetchContracts } = useReadContracts();
+	const {
+		data: dataContracts,
+		refetch: fetchContracts,
+		isLoading,
+	} = useReadContracts();
 	const { getProfile } = useProvideAuth();
 	const profile = getProfile();
 	const roles = profile?.roles || [];
@@ -25,17 +29,9 @@ export const Contracts = () => {
 
 	const [searchValue, setSearchValue] = useState('');
 
-	const [loading, setInitialLoading] = useState(true);
-
 	const filteredContracts = dataContracts?.results?.filter((item) =>
 		item.owner_name.toLowerCase().includes(searchValue.toLowerCase())
 	);
-
-	useEffect(() => {
-		if (loading && filteredContracts?.length > 0) {
-			setInitialLoading(false);
-		}
-	}, [loading, filteredContracts]);
 
 	return (
 		<Box spaceY='5'>
@@ -82,7 +78,7 @@ export const Contracts = () => {
 			<ContractsListTable
 				data={filteredContracts}
 				fetchData={fetchContracts}
-				loading={loading}
+				isLoading={isLoading}
 				permissions={permissions}
 			/>
 		</Box>
