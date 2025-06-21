@@ -1,20 +1,21 @@
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { PaymentOrdersByApplicationTable } from '@/components/tables/payment_orders';
+import ApplicantSkeleton from '@/components/ui/ApplicantSkeleton';
+import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
 import { useReadAdmissionApplicantById } from '@/hooks/admissions_applicants/useReadAdmissionApplicantById';
 import {
 	Badge,
 	Box,
-	Breadcrumb,
 	Flex,
+	Grid,
 	Heading,
+	HStack,
 	SimpleGrid,
-	Spinner,
 	Stack,
 	Text,
 } from '@chakra-ui/react';
-import { LiaSlashSolid } from 'react-icons/lia';
+import React from 'react';
 import { useParams } from 'react-router';
-import { Link as RouterLink } from 'react-router';
 
 export const AdmissionApplicantDetail = () => {
 	const { programId, id } = useParams();
@@ -23,7 +24,7 @@ export const AdmissionApplicantDetail = () => {
 	const decoded = decodeURIComponent(id);
 	const decrypted = Encryptor.decrypt(decoded);
 
-	const { data: dataApplicant, loading: isApplicantLoading } =
+	const { data: dataApplicant, isLoading: isApplicantLoading } =
 		useReadAdmissionApplicantById(decrypted);
 
 	const statusEnum = [
@@ -38,43 +39,18 @@ export const AdmissionApplicantDetail = () => {
 
 	return (
 		<Box spaceY='5'>
-			<Stack
-				Stack
-				direction={{ base: 'column', sm: 'row' }}
-				align={{ base: 'start', sm: 'center' }}
-				justify='space-between'
-			>
-				<Breadcrumb.Root size='lg'>
-					<Breadcrumb.List>
-						<Breadcrumb.Item>
-							<Breadcrumb.Link as={RouterLink} to='/admissions/applicants'>
-								Postulantes
-							</Breadcrumb.Link>
-						</Breadcrumb.Item>
-						<Breadcrumb.Separator>
-							<LiaSlashSolid />
-						</Breadcrumb.Separator>
-						<Breadcrumb.Item>
-							<Breadcrumb.Link
-								as={RouterLink}
-								to={`/admissions/applicants/programs/${encodeProgram}`}
-							>
-								{isApplicantLoading
-									? 'Cargando...'
-									: dataApplicant?.postgrade_name}
-							</Breadcrumb.Link>
-						</Breadcrumb.Item>
-						<Breadcrumb.Separator>
-							<LiaSlashSolid />
-						</Breadcrumb.Separator>
-						<Breadcrumb.Item>
-							<Breadcrumb.CurrentLink>
-								{dataApplicant?.person_full_name}
-							</Breadcrumb.CurrentLink>
-						</Breadcrumb.Item>
-					</Breadcrumb.List>
-				</Breadcrumb.Root>
-			</Stack>
+			<ResponsiveBreadcrumb
+				items={[
+					{ label: 'Postulantes', to: '/admissions/applicants' },
+					{
+						label: isApplicantLoading
+							? 'Cargando...'
+							: dataApplicant?.postgrade_name,
+						to: `/admissions/applicants/programs/${encodeProgram}`,
+					},
+					{ label: dataApplicant?.person_full_name },
+				]}
+			/>
 
 			<Stack
 				Stack
@@ -98,125 +74,174 @@ export const AdmissionApplicantDetail = () => {
 				</Heading>
 			</Stack>
 
-			{isApplicantLoading && <Spinner />}
-			{
-				<>
-					{!isApplicantLoading && dataApplicant ? (
-						<Box maxW='900px' mx='auto'>
-							<Flex
-								bg={{ base: 'white', _dark: 'its.gray.500' }}
-								borderRadius='10px'
-								overflow='hidden'
-								boxShadow='md'
-								mb={6}
-								px={6}
-								py={8}
-								align='center'
-								justify='space-between'
-								wrap='wrap'
+			{isApplicantLoading ? (
+				<ApplicantSkeleton />
+			) : dataApplicant ? (
+				<Box mx='auto'>
+					<Flex
+						bg={{ base: 'white', _dark: 'its.gray.500' }}
+						borderRadius='10px'
+						overflow='hidden'
+						boxShadow='md'
+						mb={6}
+						px={6}
+						py={8}
+						align='center'
+						justify='space-between'
+						wrap='wrap'
+					>
+						<HStack spacing={2} align='flex-end'>
+							<Text as='span' fontWeight='semibold'>
+								Estado:
+							</Text>
+							<Badge
+								bg={statusEnumSelected?.bg}
+								color={statusEnumSelected?.color}
+								variant='solid'
+								fontSize='0.9em'
 							>
-								<Flex align='center' gap={2}>
-									<Text fontWeight='semibold'>Estado:</Text>
-									<Badge
-										bg={statusEnumSelected?.bg}
-										color={statusEnumSelected?.color}
-										variant='solid'
-										fontSize='0.9em'
-									>
-										{statusEnumSelected?.label}
-									</Badge>
-								</Flex>
-								<Text>
-									<Text as='span' fontWeight='semibold'>
-										Programa académico:
-									</Text>{' '}
-									{dataApplicant?.postgrade_name}
-								</Text>
-								<Text>
-									<Text as='span' fontWeight='semibold'>
-										Modalidad:
-									</Text>{' '}
-									{dataApplicant?.modality_display}
-								</Text>
-							</Flex>
-							<Box
-								bg={{ base: 'white', _dark: 'its.gray.500' }}
-								borderRadius='10px'
-								overflow='hidden'
-								boxShadow='md'
-								p={6}
-								mb={6}
+								{statusEnumSelected?.label}
+							</Badge>
+						</HStack>
+
+						<HStack spacing={2} align='flex-end'>
+							<Text as='span' fontWeight='semibold'>
+								Programa académico:
+							</Text>
+							<Text
+								borderBottom='1px solid'
+								pb='1px'
+								minW={{ base: 'auto', lg: '350px' }}
+								borderColor='gray.300'
 							>
-								<Text fontWeight='bold' color='red.600' mb={4}>
-									Datos del postulante:
-								</Text>
-								<SimpleGrid columns={[1, 2]} spacing={4}>
-									<Box>
-										<Text>
-											<b>Fecha de Nacimiento:</b>{' '}
-											{dataApplicant?.person_details?.birth_date}
-										</Text>
-										<Text>
-											<b>País de Nacimiento:</b>{' '}
-											{dataApplicant?.person_details?.country_name}
-										</Text>
-										<Text>
-											<b>Nacionalidad:</b>{' '}
-											{dataApplicant?.person_details?.nationality_name}
-										</Text>
-										<Text>
-											<b>Celular:</b> {dataApplicant?.person_details?.phone}
-										</Text>
-										<Text>
-											<b>Correo:</b> {dataApplicant?.person_details?.email}
-										</Text>
-									</Box>
-									<Box>
-										<Text>
-											<b>Documento de identidad:</b>{' '}
-											{dataApplicant?.person_details?.document_number}
-										</Text>
-										<Text>
-											<b>Dirección:</b> {dataApplicant?.person_details?.address}
-										</Text>
-										<Text>
-											<b>Departamento:</b>{' '}
-											{dataApplicant?.person_details?.department_name}
-										</Text>
-										<Text>
-											<b>Provincia:</b>{' '}
-											{dataApplicant?.person_details?.province_name}
-										</Text>
-										<Text>
-											<b>Distrito:</b>{' '}
-											{dataApplicant?.person_details?.district_name}
-										</Text>
-									</Box>
-								</SimpleGrid>
-							</Box>
-							<Box
-								bg={{ base: 'white', _dark: 'its.gray.500' }}
-								borderRadius='10px'
-								overflow='hidden'
-								boxShadow='md'
-								p={6}
-								mb={6}
+								{dataApplicant?.postgrade_name}
+							</Text>
+						</HStack>
+						<HStack spacing={2} align='flex-end'>
+							<Text as='span' fontWeight='semibold'>
+								Modalidad:
+							</Text>
+							<Text
+								borderBottom='1px solid'
+								pb='1px'
+								minW={{ base: 'auto', lg: '200px' }}
+								borderColor='gray.300'
 							>
-								<Text fontWeight='bold' color='red.600' mb={4}>
-									Trámites:
-								</Text>
-								<PaymentOrdersByApplicationTable
-									data={dataApplicant?.payment_orders}
-								/>
-							</Box>
-						</Box>
-					) : (
-						<Heading size='sm' color='gray.500'>
-							Postulante no encontrado
-						</Heading>
-					)}
-				</>
-			}
+								{dataApplicant?.modality_display || '—'}
+							</Text>
+						</HStack>
+					</Flex>
+					<Box
+						bg={{ base: 'white', _dark: 'its.gray.500' }}
+						borderRadius='10px'
+						overflow='hidden'
+						boxShadow='md'
+						p={6}
+						mb={6}
+					>
+						<Text fontWeight='bold' color='red.600' mb={4}>
+							Datos del postulante:
+						</Text>
+						<SimpleGrid columns={[1, 2]} spacingY={2} columnGap={6}>
+							<Grid templateColumns={{ base: '1fr', md: '200px 1fr' }} gap={4}>
+								{[
+									{
+										label: 'Fecha de Nacimiento',
+										value: dataApplicant?.person_details?.birth_date || '—',
+									},
+									{
+										label: 'País de Nacimiento',
+										value: dataApplicant?.person_details?.country_name || '—',
+									},
+									{
+										label: 'Nacionalidad',
+										value:
+											dataApplicant?.person_details?.nationality_name || '—',
+									},
+									{
+										label: 'Celular',
+										value: dataApplicant?.person_details?.phone || '—',
+									},
+									{
+										label: 'Correo',
+										value: dataApplicant?.person_details?.email || '—',
+									},
+								].map(({ label, value }, index) => (
+									<React.Fragment key={index}>
+										<Text fontWeight='semibold'>{label}:</Text>
+										<Text
+											borderBottom='1px solid'
+											pb='1px'
+											maxW='full'
+											borderColor='gray.300'
+										>
+											{value}
+										</Text>
+									</React.Fragment>
+								))}
+							</Grid>
+
+							<Grid templateColumns={{ base: '1fr', md: '200px 1fr' }} gap={4}>
+								{[
+									{
+										label: 'Documento de identidad',
+										value:
+											dataApplicant?.person_details?.document_number || '—',
+									},
+									{
+										label: 'Dirección',
+										value: dataApplicant?.person_details?.address || '—',
+									},
+									{
+										label: 'Departamento',
+										value:
+											dataApplicant?.person_details?.department_name || '—',
+									},
+									{
+										label: 'Provincia',
+										value: dataApplicant?.person_details?.province_name || '—',
+									},
+									{
+										label: 'Distrito',
+										value: dataApplicant?.person_details?.district_name || '—',
+									},
+								].map(({ label, value }, index) => (
+									<React.Fragment key={index}>
+										<Text fontWeight='semibold'>{label}:</Text>
+										<Text
+											borderBottom='1px solid'
+											pb='1px'
+											maxW='full'
+											borderColor='gray.300'
+										>
+											{value}
+										</Text>
+									</React.Fragment>
+								))}
+							</Grid>
+						</SimpleGrid>
+					</Box>
+					<Box
+						bg={{ base: 'white', _dark: 'its.gray.500' }}
+						borderRadius='10px'
+						overflow='hidden'
+						boxShadow='md'
+						p={6}
+						mb={6}
+					>
+						<Text fontWeight='bold' color='red.600' mb={4}>
+							Trámites:
+						</Text>
+						<PaymentOrdersByApplicationTable
+							data={dataApplicant?.payment_orders}
+						/>
+					</Box>
+				</Box>
+			) : (
+				<Heading size='sm' color='gray.500'>
+					Postulante no encontrado
+				</Heading>
+			)}
 		</Box>
 	);
 };
