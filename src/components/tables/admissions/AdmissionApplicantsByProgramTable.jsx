@@ -3,19 +3,25 @@ import { CreateProgramExamToAdmissionProgram } from '@/components/forms/admissio
 import { ViewAdmissionProgramExams } from '@/components/forms/admissions/ViewAdmissionProgramExams';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { Pagination } from '@/components/ui';
+import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
-import {
-	Box,
-	HStack,
-	Span,
-	Table,
-} from '@chakra-ui/react';
+import useSortedData from '@/utils/useSortedData';
+import { Badge, Box, HStack, Table } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
-import { memo, useMemo, useState } from 'react';
+import { memo, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 const Row = memo(
-	({ programId, item, fetchData, startIndex, index, permissions, data, sortConfig }) => {
+	({
+		programId,
+		item,
+		fetchData,
+		startIndex,
+		index,
+		permissions,
+		data,
+		sortConfig,
+	}) => {
 		const navigate = useNavigate();
 		const encrypted = Encryptor.encrypt(item.id);
 		const encoded = encodeURIComponent(encrypted);
@@ -93,58 +99,52 @@ const Row = memo(
 				}}
 			>
 				<Table.Cell>
-				{sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
-					? data.length - (startIndex + index)
-					: startIndex + index + 1}
-			</Table.Cell>
-				<Table.Cell>{item.person_full_name}</Table.Cell>
-				<Table.Cell textAlign='center'>
-					<Span
-						bg={
-							applicationStatusEnum.find(
-								(status) => status.value === item.status_display
-							)?.bg
-						}
-						fontWeight='semibold'
-						px={2}
-						py={1}
-						rounded={'md'}
-						color={
-							applicationStatusEnum.find(
-								(status) => status.value === item.status_display
-							)?.color
-						}
-					>
-						{
-							applicationStatusEnum.find(
-								(status) => status.value === item.status_display
-							)?.label
-						}
-					</Span>
+					{sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
+						? data.length - (startIndex + index)
+						: startIndex + index + 1}
 				</Table.Cell>
-				<Table.Cell textAlign='center'>
-					<Span
+				<Table.Cell>{item.person_full_name}</Table.Cell>
+				<Table.Cell>
+					<Badge
+						bg={
+							applicationStatusEnum.find(
+								(status) => status.value === item.status_display
+							)?.bg
+						}
+						color={
+							applicationStatusEnum.find(
+								(status) => status.value === item.status_display
+							)?.color
+						}
+						fontWeight='semibold'
+					>
+						{
+							applicationStatusEnum.find(
+								(status) => status.value === item.status_display
+							)?.label
+						}
+					</Badge>
+				</Table.Cell>
+				<Table.Cell>
+					<Badge
 						bg={
 							calificationStatusEnum.find(
 								(status) => status.value === item.status_qualification_display
 							)?.bg
 						}
-						fontWeight='semibold'
-						px={2}
-						py={1}
-						rounded={'md'}
 						color={
 							calificationStatusEnum.find(
 								(status) => status.value === item.status_qualification_display
 							)?.color
 						}
+						fontWeight='semibold'
 					>
 						{
 							calificationStatusEnum.find(
 								(status) => status.value === item.status_qualification_display
 							)?.label
 						}
-					</Span>
+					</Badge>
 				</Table.Cell>
 				<Table.Cell textAlign='center'>{item.calification || '-'}</Table.Cell>
 				<Table.Cell onClick={(e) => e.stopPropagation()}>
@@ -172,8 +172,8 @@ Row.propTypes = {
 	startIndex: PropTypes.number,
 	index: PropTypes.number,
 	permissions: PropTypes.array,
-  sortConfig: PropTypes.object,
-  data: PropTypes.array,
+	sortConfig: PropTypes.object,
+	data: PropTypes.array,
 };
 
 export const AdmissionApplicantsByProgramTable = ({
@@ -181,32 +181,15 @@ export const AdmissionApplicantsByProgramTable = ({
 	data,
 	fetchData,
 	permissions,
+	isLoading,
 }) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
-  const [currentPage, setCurrentPage] = useState(1);
-  const startIndex = (currentPage - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const [sortConfig, setSortConfig] = useState(null);
-
-  const sortedData = useMemo(() => {
-    if (!sortConfig) return data;
-
-    const sorted = [...data];
-
-    if (sortConfig.key === 'index') {
-      return sortConfig.direction === 'asc' ? sorted : sorted.reverse();
-    }
-    return sorted.sort((a, b) => {
-      const aVal = a[sortConfig.key];
-      const bVal = b[sortConfig.key];
-
-      if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
-      if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
-      return 0;
-    });
-  }, [data, sortConfig]);
-
-  const visibleRows = sortedData?.slice(startIndex, endIndex);
+	const [currentPage, setCurrentPage] = useState(1);
+	const startIndex = (currentPage - 1) * pageSize;
+	const endIndex = startIndex + pageSize;
+	const [sortConfig, setSortConfig] = useState(null);
+	const sortedData = useSortedData(data, sortConfig);
+	const visibleRows = sortedData?.slice(startIndex, endIndex);
 
 	return (
 		<Box
@@ -220,78 +203,88 @@ export const AdmissionApplicantsByProgramTable = ({
 				<Table.Root size='sm' w='full'>
 					<Table.Header>
 						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
+							<Table.ColumnHeader w={'5%'}>
+								<SortableHeader
+									label='N°'
+									columnKey='index'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
 							<Table.ColumnHeader>
-                <SortableHeader
-                  label='N°'
-                  columnKey='index'
-                  sortConfig={sortConfig}
-                  onSort={setSortConfig}
-                />
-              </Table.ColumnHeader>
-							<Table.ColumnHeader>
-                <SortableHeader
-                  label='Nombres del postulante'
-                  columnKey='applicant_name'
-                  sortConfig={sortConfig}
-                  onSort={setSortConfig}
-                />
-              </Table.ColumnHeader>
-							<Table.ColumnHeader textAlign='center'>
-                <SortableHeader
-                  label='Estado de postulación'
-                  columnKey='status_display'
-                  sortConfig={sortConfig}
-                  onSort={setSortConfig}
-                />
+								<SortableHeader
+									label='Nombres del postulante'
+									columnKey='applicant_name'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
 							</Table.ColumnHeader>
 							<Table.ColumnHeader textAlign='center'>
-                <SortableHeader
-                  label='Estado de calificación'
-                  columnKey='status_qualification_display'
-                  sortConfig={sortConfig}
-                  onSort={setSortConfig}
-                />
+								<SortableHeader
+									label='Estado de postulación'
+									columnKey='status_display'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
 							</Table.ColumnHeader>
 							<Table.ColumnHeader textAlign='center'>
-                <SortableHeader
-                  label='Calificación'
-                  columnKey='calification'
-                  sortConfig={sortConfig}
-                  onSort={setSortConfig}
-                />
+								<SortableHeader
+									label='Estado de calificación'
+									columnKey='status_qualification_display'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader textAlign='center'>
+								<SortableHeader
+									label='Calificación'
+									columnKey='calification'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
 							</Table.ColumnHeader>
 							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{visibleRows?.map((item, index) => (
-							<Row
-								key={item.id}
-								programId={programId}
-								item={item}
-                data={data}
-                sortConfig={sortConfig}
-								permissions={permissions}
-								fetchData={fetchData}
-								startIndex={startIndex}
-								index={index}
-							/>
-						))}
+						{isLoading ? (
+							<SkeletonTable columns={6} />
+						) : visibleRows?.length > 0 ? (
+							visibleRows.map((item, index) => (
+								<Row
+									key={item.id}
+									programId={programId}
+									item={item}
+									data={data}
+									sortConfig={sortConfig}
+									permissions={permissions}
+									fetchData={fetchData}
+									startIndex={startIndex}
+									index={index}
+								/>
+							))
+						) : (
+							<Table.Row>
+								<Table.Cell colSpan={6} textAlign='center' py={2}>
+									No hay datos disponibles.
+								</Table.Cell>
+							</Table.Row>
+						)}
 					</Table.Body>
 				</Table.Root>
 			</Table.ScrollArea>
 
 			<Pagination
-        count={data?.length}
-        pageSize={Number(pageSize)}
-        currentPage={currentPage}
-        pageSizeOptions={pageSizeOptions}
-        onPageChange={(page) => setCurrentPage(page)}
-        onPageSizeChange={(size) => {
-          setPageSize(size);
-          setCurrentPage(1);
-        }}
-				/>
+				count={data?.length}
+				pageSize={Number(pageSize)}
+				currentPage={currentPage}
+				pageSizeOptions={pageSizeOptions}
+				onPageChange={(page) => setCurrentPage(page)}
+				onPageSizeChange={(size) => {
+					setPageSize(size);
+					setCurrentPage(1);
+				}}
+			/>
 		</Box>
 	);
 };
@@ -301,4 +294,5 @@ AdmissionApplicantsByProgramTable.propTypes = {
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
 	permissions: PropTypes.array,
+	isLoading: PropTypes.bool,
 };

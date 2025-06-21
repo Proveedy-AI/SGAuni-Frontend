@@ -10,11 +10,10 @@ import {
 	Heading,
 	Input,
 	Span,
-	Spinner,
 	Stack,
 	Text,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { LiaSlashSolid } from 'react-icons/lia';
 import { useParams } from 'react-router';
@@ -33,8 +32,11 @@ export const AdmissionApplicantsByProgram = () => {
 
 	const { data: dataProgram, loading: isProgramLoading } =
 		useReadAdmissionProgramsById(decrypted);
-	const { data: dataAdmissionApplicants, refetch: fetchAdmissionApplicants } =
-		useReadAdmissionApplicants();
+	const {
+		data: dataAdmissionApplicants,
+		refetch: fetchAdmissionApplicants,
+		isLoading,
+	} = useReadAdmissionApplicants();
 
 	const filteredApplicantsByProgramId =
 		dataAdmissionApplicants?.results?.filter(
@@ -42,17 +44,10 @@ export const AdmissionApplicantsByProgram = () => {
 		);
 
 	const [searchValue, setSearchValue] = useState('');
-	const [loading, setInitialLoading] = useState(true);
 
 	const filteredApplicants = filteredApplicantsByProgramId?.filter((item) =>
 		item.person_full_name.toLowerCase().includes(searchValue.toLowerCase())
 	);
-
-	useEffect(() => {
-		if (loading && filteredApplicantsByProgramId) {
-			setInitialLoading(false);
-		}
-	}, [loading, filteredApplicantsByProgramId]);
 
 	return (
 		<Box spaceY='5'>
@@ -123,23 +118,13 @@ export const AdmissionApplicantsByProgram = () => {
 				</InputGroup>
 			</Stack>
 
-			{loading && <Spinner />}
-			{
-				<>
-					{!loading && dataAdmissionApplicants?.results?.length > 0 ? (
-						<AdmissionApplicantsByProgramTable
-							programId={decrypted}
-							data={filteredApplicants}
-							fetchData={fetchAdmissionApplicants}
-							permissions={permissions}
-						/>
-					) : (
-						<Heading size='sm' color='gray.500'>
-							No se encontraron postulaciones
-						</Heading>
-					)}
-				</>
-			}
+			<AdmissionApplicantsByProgramTable
+				programId={decrypted}
+				isLoading={isLoading}
+				data={filteredApplicants}
+				fetchData={fetchAdmissionApplicants}
+				permissions={permissions}
+			/>
 		</Box>
 	);
 };
