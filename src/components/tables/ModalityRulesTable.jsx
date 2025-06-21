@@ -104,7 +104,7 @@ export const ModalityRulesTable = ({ data, fetchData, isLoading }) => {
 					</Table.Header>
 					<Table.Body>
 						{isLoading ? (
-							<SkeletonTable columns={4} rows={5} />
+							<SkeletonTable columns={4} />
 						) : visibleRows?.length > 0 ? (
 							visibleRows.map((item, index) => (
 								<Row
