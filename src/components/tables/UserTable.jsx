@@ -97,7 +97,7 @@ export const UserTable = ({ fetchUsers, data, handleOpenModal, isLoading }) => {
 
 						<Table.Body>
 							{isLoading ? (
-								<SkeletonTable columns={5} />
+								<SkeletonTable columns={6} />
 							) : visibleRows?.length > 0 ? (
 								visibleRows.map((item, idx) => (
 									<Table.Row key={idx}>
@@ -206,7 +206,7 @@ export const UserTable = ({ fetchUsers, data, handleOpenModal, isLoading }) => {
 								))
 							) : (
 								<Table.Row>
-									<Table.Cell colSpan={5} textAlign='center' py={2}>
+									<Table.Cell colSpan={6} textAlign='center' py={2}>
 										No hay datos disponibles.
 									</Table.Cell>
 								</Table.Row>
