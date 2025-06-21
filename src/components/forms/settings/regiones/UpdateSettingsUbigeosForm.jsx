@@ -100,6 +100,7 @@ export const UpdateSettingsUbigeosForm = ({
 						variant='flushed'
 						size='xs'
 						isSearchable={true}
+						isClearable
 						name='distrito'
 						options={DistrictOptions}
 					/>

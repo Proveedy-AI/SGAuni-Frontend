@@ -112,6 +112,7 @@ export const UpdateSettingsDepartmentForm = ({
 						}}
 						variant='flushed'
 						size='xs'
+						isClearable
 						isSearchable={true}
 						name='paises'
 						options={CountriesOptions}

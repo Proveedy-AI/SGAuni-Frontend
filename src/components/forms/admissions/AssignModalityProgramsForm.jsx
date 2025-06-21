@@ -147,6 +147,7 @@ export const AssignModalityToProgramForm = ({ data }) => {
 							options={modalityOptions}
 							variant='flushed'
 							size='xs'
+							isClearable
 							isSearchable
 						/>
 					</Field>

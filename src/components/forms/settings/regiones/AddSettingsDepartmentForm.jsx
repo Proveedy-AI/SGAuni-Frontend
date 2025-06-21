@@ -120,6 +120,7 @@ export const AddSettingsDepartmentForm = ({
 						isDisabled={isLoading}
 						isLoading={isLoading}
 						isSearchable={true}
+						isClearable
 						name='paises'
 						options={CountriesOptions}
 					/>

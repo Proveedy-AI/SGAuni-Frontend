@@ -110,6 +110,7 @@ export const EditProgram = ({
 						isDisabled={loadingProgramTypes}
 						isLoading={loadingProgramTypes}
 						isSearchable={true}
+						isClearable
 						name='Tipos de programa'
 						options={programTypesOptions}
 					/>
@@ -126,6 +127,7 @@ export const EditProgram = ({
 						isDisabled={loadingCoordinators}
 						isLoading={loadingCoordinators}
 						isSearchable={true}
+						isClearable
 						name='Coordinadores'
 						options={coordinatorsOptions}
 					/>
