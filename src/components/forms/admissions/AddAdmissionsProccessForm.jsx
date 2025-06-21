@@ -118,7 +118,8 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 						}}
 						variant='flushed'
 						size='xs'
-						isSearchable={true}
+						isSearchable
+						isClearable
 						name='paises'
 						options={LevelOptions}
 					/>
