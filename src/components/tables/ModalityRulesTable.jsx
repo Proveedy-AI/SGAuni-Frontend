@@ -9,6 +9,7 @@ import {
 } from '../forms/management/modalitiesRules';
 import { usePaginationSettings } from '../navigation/usePaginationSettings';
 import { SortableHeader } from '../ui/SortableHeader';
+import SkeletonTable from '../ui/SkeletonTable';
 
 const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 	return (
@@ -43,7 +44,7 @@ Row.propTypes = {
 	data: PropTypes.array,
 };
 
-export const ModalityRulesTable = ({ data, fetchData }) => {
+export const ModalityRulesTable = ({ data, fetchData, isLoading }) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [currentPage, setCurrentPage] = useState(1);
 	const startIndex = (currentPage - 1) * pageSize;
@@ -102,17 +103,27 @@ export const ModalityRulesTable = ({ data, fetchData }) => {
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{visibleRows?.map((item, index) => (
-							<Row
-								key={item.id}
-								item={item}
-								data={data}
-								sortConfig={sortConfig}
-								fetchData={fetchData}
-								startIndex={startIndex}
-								index={index}
-							/>
-						))}
+						{isLoading ? (
+							<SkeletonTable columns={4} rows={5} />
+						) : visibleRows?.length > 0 ? (
+							visibleRows.map((item, index) => (
+								<Row
+									key={item.id}
+									item={item}
+									data={data}
+									sortConfig={sortConfig}
+									fetchData={fetchData}
+									startIndex={startIndex}
+									index={index}
+								/>
+							))
+						) : (
+							<Table.Row>
+								<Table.Cell colSpan={4} textAlign='center' py={2}>
+									No hay datos disponibles.
+								</Table.Cell>
+							</Table.Row>
+						)}
 					</Table.Body>
 				</Table.Root>
 			</Table.ScrollArea>
@@ -134,4 +145,5 @@ export const ModalityRulesTable = ({ data, fetchData }) => {
 ModalityRulesTable.propTypes = {
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
+	isLoading: PropTypes.bool
 };
