@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { memo, useMemo, useState } from 'react';
+import { memo, useState } from 'react';
 import { Box, Group, HStack, Table, Switch } from '@chakra-ui/react';
 import { Pagination, toaster } from '@/components/ui';
 import {
@@ -11,6 +11,7 @@ import {
 import { useToggleModality } from '@/hooks';
 import { usePaginationSettings } from '../navigation/usePaginationSettings';
 import { SortableHeader } from '../ui/SortableHeader';
+import useSortedData from '@/utils/useSortedData';
 
 const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 	const { mutateAsync: toggleModalityRule, isPending: isPendingToggle } =
@@ -49,7 +50,7 @@ const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 					onCheckedChange={() => handleStatusChange(item.id)}
 					disabled={isPendingToggle}
 				>
-					<Switch.Label>{item.enabled ? 'Activo' : 'Inactivo'}</Switch.Label>
+					<Switch.Label mr={10}>{item.enabled ? 'Activo' : 'Inactivo'}</Switch.Label>
 					<Switch.HiddenInput />
 					<Switch.Control
 						_checked={{
@@ -92,24 +93,7 @@ export const AdmissionModalitiesTable = ({ data, fetchData }) => {
 	const endIndex = startIndex + pageSize;
 	const [sortConfig, setSortConfig] = useState(null);
 
-	const sortedData = useMemo(() => {
-		if (!sortConfig) return data;
-
-		const sorted = [...data];
-
-		if (sortConfig.key === 'index') {
-			return sortConfig.direction === 'asc' ? sorted : sorted.reverse();
-		}
-		return sorted.sort((a, b) => {
-			const aVal = a[sortConfig.key];
-			const bVal = b[sortConfig.key];
-
-			if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
-			if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
-			return 0;
-		});
-	}, [data, sortConfig]);
-
+	const sortedData = useSortedData(data, sortConfig);
 	const visibleRows = sortedData?.slice(startIndex, endIndex);
 
 	return (
