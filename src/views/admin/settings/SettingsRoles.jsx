@@ -1,13 +1,16 @@
 import { useState } from 'react';
 //import { SettingsPermissionsTable, SettingsRolesTable } from '@/components';
-import { Box, Heading, HStack, Input, Stack, Tabs, Text } from '@chakra-ui/react';
+import { Box, Heading, HStack, Input, Stack, Tabs } from '@chakra-ui/react';
 import { useReadPermissions } from '@/hooks/permissions';
 import { useReadRoles } from '@/hooks/roles';
 import { InputGroup } from '@/components/ui';
 import { FiSearch } from 'react-icons/fi';
 import { AddSettingsRoleForm } from '@/components/forms/settings/AddSettingsRoleForm';
 import { AddSettingsPermissionForm } from '@/components/forms/settings/AddSettingsPermissionForm';
-import { SettingsPermissionsTable, SettingsRolesTable } from '@/components/tables/settings';
+import {
+	SettingsPermissionsTable,
+	SettingsRolesTable,
+} from '@/components/tables/settings';
 
 export const SettingsRoles = () => {
 	const [tab, setTab] = useState(1);
@@ -15,8 +18,12 @@ export const SettingsRoles = () => {
 	const [searchRoleValue, setSearchRoleValue] = useState('');
 	const [searchPermissionValue, setSearchPermissionValue] = useState('');
 
-	const { data: dataRoles, refetch: fetchRoles } = useReadRoles();
-	const { data: dataPermissions, refetch: fetchPermissions } = useReadPermissions();
+	const { data: dataRoles, refetch: fetchRoles, isLoading } = useReadRoles();
+	const {
+		data: dataPermissions,
+		refetch: fetchPermissions,
+		isLoading: isLoadingPermission,
+	} = useReadPermissions();
 
 	const filteredRoles = dataRoles?.results?.filter((item) =>
 		item?.name?.toLowerCase().includes(searchRoleValue.toLowerCase())
@@ -86,11 +93,11 @@ export const SettingsRoles = () => {
 							</HStack>
 						</Stack>
 
-						{dataRoles?.results?.length > 0 ? (
-              <SettingsRolesTable data={filteredRoles} fetchData={fetchRoles} />
-            ) : (
-              <Text>No hay roles registrados.</Text>
-            )}
+						<SettingsRolesTable
+							isLoading={isLoading}
+							data={filteredRoles}
+							fetchData={fetchRoles}
+						/>
 					</Stack>
 				</Tabs.Content>
 
@@ -116,14 +123,11 @@ export const SettingsRoles = () => {
 							</HStack>
 						</Stack>
 
-						{dataPermissions?.results?.length > 0 ? (
-              <SettingsPermissionsTable
-                data={filteredPermissions}
-                fetchData={fetchPermissions}
-              />
-            ) : (
-              <Text>No hay permisos registrados.</Text>
-            )}
+						<SettingsPermissionsTable
+							isLoading={isLoadingPermission}
+							data={filteredPermissions}
+							fetchData={fetchPermissions}
+						/>
 					</Stack>
 				</Tabs.Content>
 			</Tabs.Root>
