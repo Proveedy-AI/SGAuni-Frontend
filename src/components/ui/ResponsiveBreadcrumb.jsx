@@ -3,6 +3,7 @@ import { Breadcrumb, Stack } from '@chakra-ui/react';
 import { LiaSlashSolid } from 'react-icons/lia';
 import { Link as RouterLink } from 'react-router';
 import PropTypes from 'prop-types';
+import React from 'react';
 
 export default function ResponsiveBreadcrumb({ items = [] }) {
 	return (
@@ -15,9 +16,9 @@ export default function ResponsiveBreadcrumb({ items = [] }) {
 		>
 			<Breadcrumb.Root size='lg'>
 				<Breadcrumb.List flexWrap='wrap'>
-					{items.map((item, index) => (
-						<>
-							<Breadcrumb.Item key={index}>
+					{items?.map((item, index) => (
+						<React.Fragment key={item.id || index}>
+							<Breadcrumb.Item>
 								{item.to ? (
 									<Breadcrumb.Link as={RouterLink} to={item.to}>
 										{item.label}
@@ -27,11 +28,11 @@ export default function ResponsiveBreadcrumb({ items = [] }) {
 								)}
 							</Breadcrumb.Item>
 							{index < items.length - 1 && (
-								<Breadcrumb.Separator key={`sep-${index}`}>
+								<Breadcrumb.Separator>
 									<LiaSlashSolid />
 								</Breadcrumb.Separator>
 							)}
-						</>
+						</React.Fragment>
 					))}
 				</Breadcrumb.List>
 			</Breadcrumb.Root>
