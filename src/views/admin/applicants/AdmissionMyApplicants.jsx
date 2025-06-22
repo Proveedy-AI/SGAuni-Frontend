@@ -40,7 +40,7 @@ export const AdmissionMyApplicants = () => {
 						md: 'md',
 					}}
 				>
-					Mis Postulantes
+					Mis Postulaciones
 				</Heading>
 			</Stack>
 

@@ -181,15 +181,12 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 				>
 					Inscripción: Datos Generales
 				</Heading>
-				<Text fontWeight='semibold' color={'gray.500'}>
-					1 de 3
-				</Text>
 			</Stack>
 			<Text fontWeight='semibold' color={'uni.secondary'} mb={2}>
 				1. Subir foto de documento:
 			</Text>
 			<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-				{!data?.document_path ? (
+				{!formData?.document_path || formData?.document_path === '' ? (
 					<Field label='Archivo'>
 						<Box
 							as='label'
@@ -254,6 +251,10 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 							onClick={() => {
 								setFilePDF(null);
 								updateProfileField('document_path', '');
+								setFormData((prev) => ({
+									...prev,
+									document_path: '',
+								}));
 							}}
 						>
 							Quitar documento

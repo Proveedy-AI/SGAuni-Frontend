@@ -1,138 +1,128 @@
-import { useColorMode } from '@/components/ui';
-import { useProvideAuth } from '@/hooks/auth';
+'use client';
 
-import {
-	Box,
-	Grid,
-	GridItem,
-	Heading,
-	Stack,
-	Text,
-	Flex,
-} from '@chakra-ui/react';
-import { FiArrowLeft } from 'react-icons/fi';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router';
-import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
+import { Box, Button, Flex, Steps } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
+import { PaymentApplicant } from './PaymentApplicant';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
+import { PersonalDataApplicants } from '@/components/forms/admissions/MyApplicants';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
+import { DocumentsApplicant } from './DocumentsApplicant';
 
 export const ApplicantsLayout = () => {
-	const { colorMode } = useColorMode();
-	const location = useLocation();
+	const [step, setStep] = useState(1);
+	const [isStepValid, setIsStepValid] = useState(false);
+	const {
+		data: dataUser,
+		isLoading: isLoadingDataUser,
+		refetch: fetchDataUser,
+	} = useReadUserLogged();
 
-	const { getProfile } = useProvideAuth();
-	const profile = getProfile();
+	useEffect(() => {
+		const validateStep = async () => {
+			switch (step) {
+				case 1: {
+					// validación para Datos Personales
+					const isValid = Boolean(dataUser?.document_path?.trim());
+					setIsStepValid(isValid);
+					break;
+				}
+				case 2: {
+					// validación para Solicitudes
+					// función tuya
 
-	const hasPermission = (permission) => {
-		if (!permission) return true;
-		const roles = profile?.roles || [];
-		const permissions = roles.flatMap((r) => r.permissions || []);
-		return permissions.some((p) => p.guard_name === permission);
-	};
+					break;
+				}
+				default: {
+					setIsStepValid(true); // permitir avance si no hay validación
+				}
+			}
+		};
 
-	const activeBg = colorMode === 'dark' ? 'uni.gray.400' : 'gray.200';
+		validateStep();
+	}, [step, dataUser]);
 
-	const settingsItems = [
+	const steps = [
 		{
-			href: '/admissions/myapplicants/proccess/payment',
-			label: 'Orden de Pago',
-			permission: null,
+			title: 'Datos Personales',
+			component: (
+				<PersonalDataApplicants
+					loading={isLoadingDataUser}
+					fetchUser={fetchDataUser}
+					data={dataUser}
+				/>
+			),
+		},
+		{
+			title: 'Solicitudes',
+			component: <PaymentApplicant />,
+		},
+		{
+			title: 'Documentación',
+			component: <DocumentsApplicant />,
+		},
+		{
+			title: 'Trabajos',
+			component: <PaymentApplicant />,
 		},
 	];
 
-	const navigate = useNavigate();
-
-	const item = EncryptedStorage.load('selectedApplicant');
-
-	if (!item) {
-		return <div>No se encontró la información del postulante.</div>;
-	}
-
 	return (
-		<Box>
-			<Flex
-				align='center'
-				cursor='pointer'
-				mb={4}
-				fontSize={'md'}
-				fontWeight='bold'
-				color={'uni.secondary'}
-				onClick={() => navigate(-1)} // Navegar a la página anterior
-				_hover={{ color: 'blue.500' }}
-			>
-				<FiArrowLeft />
-				<Text>Regresar</Text>
-			</Flex>
-			<Heading
-				display={{ base: 'none', md: 'block' }}
-				size={{ base: 'xs', sm: 'sm', md: 'md', lg: 'xl' }}
-				mb={6}
-			>
-				{item.postgrade_name}
-			</Heading>
-			<Grid
-				templateColumns={{
-					base: '1fr',
-					md: '200px 1fr',
-				}}
-				templateRows={{
-					base: 'auto',
-					md: '1fr',
-				}}
-				h={{ base: 'auto', md: 'auto' }}
-			>
-				<GridItem
-					bg={{ base: 'white', _dark: 'uni.gray.500' }}
-					py='6'
-					px={{ base: '2', md: '5' }}
-					overflowY='auto'
-					boxShadow='md'
-					css={{
-						msOverflowStyle: 'none',
-						scrollbarWidth: 'none',
-					}}
-				>
-					<Stack spaceY={5}>
-						<Stack direction={{ base: 'row', md: 'column' }} gap='1'>
-							{settingsItems
-								.filter((item) => hasPermission(item.permission))
-								.map((item, index) => {
-									const isActive = location.pathname === item.href;
-									return (
-										<Link key={index} to={item.href} cursor='pointer'>
-											<Flex
-												h={{ base: 'auto', md: '40px' }}
-												align='center'
-												px='2'
-												fontWeight='medium'
-												borderRadius='10px'
-												bg={isActive ? activeBg : 'transparent'}
-												color={isActive ? 'uni.secondary' : 'inherit'}
-												_hover={{
-													bg:
-														colorMode === 'dark' ? 'uni.gray.400' : 'gray.300',
-												}}
-											>
-												<Text
-													lineHeight='1.1'
-													fontSize={{
-														base: '10px',
-														xs: 'xs',
-														sm: 'sm',
-													}}
-												>
-													{item.label}
-												</Text>
-											</Flex>
-										</Link>
-									);
-								})}
-						</Stack>
-					</Stack>
-				</GridItem>
+		<Steps.Root
+			step={step}
+			onStepChange={(e) => setStep(e.step)}
+			count={steps.length}
+			colorPalette='red'
+		>
+			<ResponsiveBreadcrumb
+				items={[
+					{ label: 'Mis Postulaciones', to: '/admissions/myapplicants' },
+					{ label: 'Proceso' },
+				]}
+			/>
+			<Flex w='100%' align='center'>
+				<Steps.PrevTrigger asChild>
+					<Button colorPalette='red' variant='ghost'>
+						<FaChevronLeft /> Anterior
+					</Button>
+				</Steps.PrevTrigger>
 
-				<GridItem px={{ base: '3', md: '6' }} overflowY='auto'>
-					<Outlet />
-				</GridItem>
-			</Grid>
-		</Box>
+				<Box w='50%' mx='auto'>
+					<Steps.List>
+						{steps.map((step, index) => (
+							<Steps.Item key={index} index={index}>
+								<Steps.Trigger
+									disabled={!isStepValid}
+									flexDirection='column'
+									textAlign='center'
+								>
+									<Steps.Indicator />
+									<Steps.Title fontSize='xs'>{step.title}</Steps.Title>
+								</Steps.Trigger>
+								<Steps.Separator />
+							</Steps.Item>
+						))}
+					</Steps.List>
+				</Box>
+
+				<Steps.NextTrigger asChild disabled={!isStepValid}>
+					<Button colorPalette='red' variant='ghost'>
+						Siguiente <FaChevronRight />
+					</Button>
+				</Steps.NextTrigger>
+			</Flex>
+
+			{steps.map((step, index) => (
+				<Steps.Content key={index} index={index}>
+					{step.component}
+				</Steps.Content>
+			))}
+
+			<Steps.CompletedContent>
+				<Box textAlign='center' mt={4}>
+					¡Has completado todos los pasos!
+				</Box>
+			</Steps.CompletedContent>
+		</Steps.Root>
 	);
 };

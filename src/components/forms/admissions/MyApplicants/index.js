@@ -1,1 +1,2 @@
-export * from './PersonalDataApplicants'
+export * from './PersonalDataApplicants';
+export * from './UploadVoucherForm';
