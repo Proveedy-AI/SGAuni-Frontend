@@ -46,14 +46,20 @@ const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests
       <Table.Cell>
         <HStack justify='space-between'>
           <Group>
-            <ViewPaymentRequestModal item={item} />
-            <GeneratePaymentOrderModal 
-              item={item} 
-              paymentOrders={filteredPaymentOrders}
-              fetchPaymentRequests={fetchPaymentRequests}
-              fetchPaymentOrders={fetchPaymentOrders}
-            />
-            <UpdatePaymentRequestModal item={item} fetchData={fetchPaymentOrders} />
+            {permissions?.includes('dashboard.debt.view') &&
+              <ViewPaymentRequestModal item={item} />
+            }
+            {permissions?.includes('dashboard.debt.view') &&
+              <GeneratePaymentOrderModal 
+                item={item} 
+                paymentOrders={filteredPaymentOrders}
+                fetchPaymentRequests={fetchPaymentRequests}
+                fetchPaymentOrders={fetchPaymentOrders}
+              />
+            }
+            {permissions?.includes('dashboard.debt.view') &&
+              <UpdatePaymentRequestModal item={item} fetchData={fetchPaymentOrders} />
+            }
           </Group>
         </HStack>
       </Table.Cell>

@@ -32,6 +32,86 @@ export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
   }
   */
 
+  /*
+    <Modal
+      title='Aprobar o Rechazar Proceso'
+      placement='center'
+      trigger={
+        <Box>
+          <Tooltip
+            content='Aprobar / Rechazar'
+            positioning={{ placement: 'bottom-center' }}
+            showArrow
+            openDelay={0}
+          >
+            <IconButton
+              size='xs'
+              colorPalette='green'
+              css={{ _icon: { width: '5', height: '5' } }}
+            >
+              <LiaCheckCircleSolid />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      }
+      size='xl'
+      loading={isPending}
+      open={open}
+      onOpenChange={handleOpenChange}
+      contentRef={contentRef}
+      onSave={handleSubmitStatus}
+    >
+      <Stack spacingY={8}>
+        <Field label='Título:'>
+          <Text fontSize='xl' color={'uni.secondary'}>
+            {data?.program_name}
+          </Text>
+        </Field>
+
+        <Flex justify='flex-start' gap={2} mt={2}>
+          <Field label='Inicio Semestre:'>
+            <Text fontSize='lg'>{data?.semester_start_date}</Text>
+          </Field>
+          <Field label='Nivel:'>
+            <Text fontSize='lg'>{data?.post_grad_type_display}</Text>
+          </Field>
+        </Flex>
+
+        <Flex justify='flex-start' gap={2} mt={2}>
+          <Button
+            colorPalette={selectedStatus === 4 ? 'green' : 'gray'}
+            variant={selectedStatus === 4 ? 'solid' : 'subtle'}
+            size='sm'
+            onClick={() => setSelectedStatus(4)}
+          >
+            <FaCheck />
+            Aprobar
+          </Button>
+          <Button
+            colorPalette={selectedStatus === 3 ? 'red' : 'gray'}
+            variant={selectedStatus === 3 ? 'solid' : 'subtle'}
+            size='sm'
+            onClick={() => setSelectedStatus(3)}
+          >
+            <FaBan />
+            Rechazar
+          </Button>
+        </Flex>
+
+        {selectedStatus === 3 && (
+          <Field label='Comentario:'>
+            <Textarea
+              value={comments}
+              onChange={(e) => setComments(e.target.value)}
+              placeholder='Agrega un comentario para rechazar...'
+              size='sm'
+            />
+          </Field>
+        )}
+      </Stack>
+    </Modal>
+  */
+
   //const { mutateAsync: validatePaymentOrder, isSaving } = useValidatePaymentOrder();
 
   const handleValidate = async () => {
