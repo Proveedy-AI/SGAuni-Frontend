@@ -11,7 +11,7 @@ import {
 import { Pagination } from '@/components/ui'
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { SortableHeader } from '@/components/ui/SortableHeader';
-import { GeneratePaymentOrderModal, UpdatePaymentRequestModal, ViewPaymentRequestModal } from '@/components/forms/payment_requests';
+import { GeneratePaymentOrderModal, UpdatePaymentRequestModal, ValidatePaymentRequestModal, ViewPaymentRequestModal } from '@/components/forms/payment_requests';
 import { ReactSelect } from '@/components/select';
 
 const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests, fetchPaymentOrders, permissions, sortConfig, data }) => {
@@ -58,7 +58,14 @@ const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests
               />
             }
             {permissions?.includes('dashboard.debt.view') &&
-              <UpdatePaymentRequestModal item={item} fetchData={fetchPaymentOrders} />
+              <ValidatePaymentRequestModal item={item} fetchData={fetchPaymentOrders} />
+            }
+            {permissions?.includes('dashboard.debt.view') &&
+              <UpdatePaymentRequestModal 
+                item={item} 
+                fetchPaymentRequests={fetchPaymentRequests}
+                statusOptions={statusDisplay}
+              />
             }
           </Group>
         </HStack>
