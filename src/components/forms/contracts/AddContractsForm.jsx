@@ -129,6 +129,7 @@ export const AddContractsForm = ({ fetchData }) => {
 						isDisabled={isLoading}
 						isLoading={isLoading}
 						isSearchable={true}
+						isClearable
 						name='paises'
 						options={UserstOptions}
 					/>

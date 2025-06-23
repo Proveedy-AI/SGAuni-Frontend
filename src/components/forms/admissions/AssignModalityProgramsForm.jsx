@@ -147,6 +147,7 @@ export const AssignModalityToProgramForm = ({ data }) => {
 							options={modalityOptions}
 							variant='flushed'
 							size='xs'
+							isClearable
 							isSearchable
 						/>
 					</Field>
@@ -198,6 +199,7 @@ export const AssignModalityToProgramForm = ({ data }) => {
 										<Flex gap={2}>
 											<IconButton
 												size='xs'
+												disabled={data.status === 4}
 												colorPalette='red'
 												onClick={() => handleDelete(item.id)}
 												aria-label='Eliminar'

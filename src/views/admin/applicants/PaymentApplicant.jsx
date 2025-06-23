@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Field, toaster } from '@/components/ui';
 import {
 	Box,
@@ -9,6 +9,8 @@ import {
 	Input,
 	Button,
 	Spinner,
+	Grid,
+	Badge,
 } from '@chakra-ui/react';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { ReactSelect } from '@/components';
@@ -18,6 +20,8 @@ import { useReadPaymentRequest } from '@/hooks/payment_requests/useReadPaymentRe
 import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
 import { useReadPaymentRules } from '@/hooks/payment_rules';
 import { useReadPurposes } from '@/hooks/purposes';
+import { useReadPaymentOrders } from '@/hooks/payment_orders';
+import { UploadVoucherForm } from '@/components/forms/admissions/MyApplicants';
 
 export const PaymentApplicant = () => {
 	const { data: dataUser } = useReadUserLogged();
@@ -52,6 +56,37 @@ export const PaymentApplicant = () => {
 	const [numDocAdmision, setNumDocAdmision] = useState('');
 	const [methodAdmision, setMethodAdmision] = useState(null);
 
+	const statusDisplay = [
+		{
+			id: 1,
+			label: 'Pendiente',
+			value: 'Pending',
+			bg: '#AEAEAE',
+			color: '#F5F5F5',
+		},
+		{
+			id: 2,
+			label: 'Disponible',
+			value: 'Available',
+			bg: '#FDD9C6',
+			color: '#F86A1E',
+		},
+		{
+			id: 3,
+			label: 'Verificado',
+			value: 'Verified',
+			bg: '#D0EDD0',
+			color: '#2D9F2D',
+		},
+		{
+			id: 4,
+			label: 'Expirado',
+			value: 'Expired',
+			bg: '#F7CDCE',
+			color: '#E0383B',
+		},
+	];
+
 	useEffect(() => {
 		if (docTypeCarpeta?.value === 1 && dataUser?.document_number) {
 			setnumDocCarpeta(dataUser.document_number);
@@ -66,22 +101,35 @@ export const PaymentApplicant = () => {
 	// Filtrar las reglas aplicables al postulante
 	const paymentRules = PaymentRules?.results?.filter(
 		(req) =>
-			req.program === item?.admission_program &&
-			req.admission_modality === item?.modality_id
+			req.admission_modality === item?.modality_id &&
+			req.applies_to_applicants === true
 	);
 
+	const {
+		data: PaymentOrder,
+		isLoading: isLoadingPaymentOrder,
+		refetch: refetchPaymentOrder,
+	} = useReadPaymentOrders();
 	// Construir mapa de propósitos enriquecidos
 	const purposes = {};
 
 	dataPurposes?.results?.forEach((purposeItem) => {
 		const id = purposeItem.id;
+		const existingRequest =
+			PaymentRequest?.results?.find(
+				(req) => req.application === item?.id && req.purpose === id
+			) ?? null;
+
+		const correspondingOrder =
+			PaymentOrder?.results?.find(
+				(order) => existingRequest && order.request === existingRequest.id
+			) ?? null;
+
 		purposes[id] = {
 			name: item.name,
 			rule: paymentRules?.find((rule) => rule.payment_purpose === id) ?? null,
-			existingRequest:
-				PaymentRequest?.results?.find(
-					(req) => req.application === item?.id && req.purpose === id
-				) ?? null,
+			existingRequest,
+			existingOrder: correspondingOrder,
 		};
 	});
 
@@ -144,7 +192,7 @@ export const PaymentApplicant = () => {
 			<Stack
 				Stack
 				direction={{ base: 'column', sm: 'row' }}
-				align={{ base: 'start', sm: 'center' }}
+				align={{ base: 'center', sm: 'center' }}
 				justify='space-between'
 				mb={5}
 			>
@@ -158,12 +206,9 @@ export const PaymentApplicant = () => {
 				>
 					Solicitar Ordenes de pago
 				</Heading>
-				<Text fontWeight='semibold' color={'gray.500'}>
-					2 de 4
-				</Text>
 			</Stack>
 
-			<Stack Stack align={{ base: 'start', sm: 'center' }} mb={5}>
+			<Stack textAlign={{ base: 'center', sm: 'center' }} mb={5}>
 				<Heading
 					size={{
 						xs: 'xs',
@@ -201,31 +246,109 @@ export const PaymentApplicant = () => {
 					mt={5}
 					textAlign='center'
 				>
-					<Heading size='sm' color='green.600' mb={2}>
+					<Heading size='sm' color='uni.secondary' mb={2}>
 						Ya solicitaste esta orden de pago
 					</Heading>
-					<Text>
-						Estado:{' '}
-						<strong>{purposes[2].existingRequest.status_display}</strong>
-					</Text>
-					<Text>
-						Monto: <strong>S/. {purposes[2].existingRequest.amount}</strong>
-					</Text>
-					<Text fontSize='sm'>
-						Método:{' '}
-						<strong>
-							{purposes[2].existingRequest?.payment_method_display}
-						</strong>{' '}
-						{purposes[2].existingRequest?.payment_method === 2 && ( // Asumiendo que 3 es "Caja"
-							<Text as='span' fontSize='xs' color='gray.500' ml={1}>
-								(Acércate a FIEECS por tu recibo)
-							</Text>
-						)}
-					</Text>
-					<Text>
-						N° Documento:{' '}
-						<strong>{purposes[2].existingRequest.num_document}</strong>
-					</Text>
+					<Grid
+						templateColumns={{ base: '1fr', md: '200px 1fr' }}
+						gap={{ base: 2, md: 1 }}
+						maxW='400px'
+						mx='auto'
+						textAlign={{ base: 'left', md: 'right' }}
+						alignItems='center'
+					>
+						{[
+							{
+								label: 'Estado',
+								value: (
+									<Badge
+										bg={
+											statusDisplay.find(
+												(status) =>
+													status.id === purposes[2].existingRequest?.status
+											)?.bg
+										}
+										color={
+											statusDisplay.find(
+												(status) =>
+													status.id === purposes[2].existingRequest?.status
+											)?.color
+										}
+									>
+										{statusDisplay.find(
+											(status) =>
+												status.id === purposes[2].existingRequest?.status
+										)?.label || 'N/A'}
+									</Badge>
+								),
+							},
+							{
+								label: 'Monto',
+								value: purposes[2].existingRequest.amount || '—',
+							},
+							{
+								label: 'Método',
+								value: (
+									<>
+										<Text as='span'>
+											{purposes[2].existingRequest?.payment_method_display ||
+												'—'}
+										</Text>
+										{purposes[2].existingRequest?.payment_method === 2 && (
+											<Text
+												as='span'
+												fontSize='xs'
+												color='gray.500'
+												display={{ base: 'block', md: 'inline' }}
+												mt={{ base: 1, md: 0 }}
+											>
+												(Acércate a FIEECS por tu recibo)
+											</Text>
+										)}
+									</>
+								),
+							},
+							{
+								label: 'N° Documento',
+								value: purposes[2].existingRequest.num_document || '—',
+							},
+						].map(({ label, value }, index) => (
+							<React.Fragment key={index}>
+								<Text
+									fontWeight='semibold'
+									textAlign={{ base: 'center', md: 'right' }}
+									mr={{ md: 5 }}
+								>
+									{label}:
+								</Text>
+								<Text textAlign={{ base: 'center', md: 'left' }} mr={{ md: 5 }}>
+									{value}
+								</Text>
+							</React.Fragment>
+						))}
+					</Grid>
+					{purposes[2]?.existingRequest && purposes[2]?.existingOrder && (
+						<Box
+							width='100%'
+							bg='gray.50'
+							border='1px solid'
+							borderColor='gray.200'
+							borderRadius='md'
+							p={6}
+							mt={5}
+							textAlign='center'
+						>
+							<Heading size='sm' color='green.600' mb={2}>
+								Orden de Pago Disponible
+							</Heading>
+
+							<UploadVoucherForm
+								isLoading={isLoadingPaymentOrder}
+								data={purposes[2]?.existingOrder}
+								refetch={refetchPaymentOrder}
+							/>
+						</Box>
+					)}
 				</Box>
 			) : (
 				<Flex justify='center' align='center' width='100%'>
@@ -327,35 +450,111 @@ export const PaymentApplicant = () => {
 							mt={5}
 							textAlign='center'
 						>
-							<Heading size='sm' color='green.600' mb={2}>
+							<Heading size='sm' color='uni.secondary' mb={2}>
 								Ya solicitaste esta orden de pago
 							</Heading>
-							<Text>
-								Estado:{' '}
-								<strong>{purposes[1].existingRequest.status_display}</strong>
-							</Text>
-							<Text>
-								Monto: <strong>S/. {purposes[1].existingRequest.amount}</strong>
-							</Text>
-							<Text fontSize='sm'>
-								Método:{' '}
-								<strong>
-									{purposes[1].existingRequest?.payment_method_display}
-								</strong>{' '}
-								{purposes[1].existingRequest?.payment_method === 2 && ( // Asumiendo que 3 es "Caja"
-									<Text as='span' fontSize='xs' color='gray.500' ml={1}>
-										(Acércate a FIEECS por tu recibo)
-									</Text>
-								)}
-							</Text>
-							<Text>
-								N° Documento:{' '}
-								<strong>{purposes[1].existingRequest.num_document}</strong>
-							</Text>
-							<Text mt={2} fontSize={13} color={'gray.500'}>
-								*Si usted es egresado UNI se le aplicará el 15% de Descuento en
-								esta orden.
-							</Text>
+							<Grid
+								templateColumns={{ base: '1fr', md: '200px 1fr' }}
+								gap={1}
+								maxW='400px'
+								mx='auto'
+								textAlign='end'
+							>
+								{[
+									{
+										label: 'Estado',
+										value: (
+											<Badge
+												bg={
+													statusDisplay.find(
+														(status) =>
+															status.id === purposes[1].existingRequest?.status
+													)?.bg
+												}
+												color={
+													statusDisplay.find(
+														(status) =>
+															status.id === purposes[1].existingRequest?.status
+													)?.color
+												}
+											>
+												{statusDisplay.find(
+													(status) =>
+														status.id === purposes[1].existingRequest?.status
+												)?.label || 'N/A'}
+											</Badge>
+										),
+									},
+									{
+										label: 'Monto',
+										value: purposes[1].existingRequest.amount || '—',
+									},
+									{
+										label: 'Método',
+										value: (
+											<>
+												<Text as='span'>
+													{purposes[1].existingRequest
+														?.payment_method_display || '—'}
+												</Text>
+												{purposes[1].existingRequest?.payment_method === 2 && (
+													<Text
+														as='span'
+														fontSize='xs'
+														color='gray.500'
+														display={{ base: 'block', md: 'inline' }}
+														mt={{ base: 1, md: 0 }}
+													>
+														(Acércate a FIEECS por tu recibo)
+													</Text>
+												)}
+											</>
+										),
+									},
+									{
+										label: 'N° Documento',
+										value: purposes[2].existingRequest.num_document || '—',
+									},
+								].map(({ label, value }, index) => (
+									<React.Fragment key={index}>
+										<Text
+											fontWeight='semibold'
+											textAlign={{ base: 'center', md: 'right' }}
+											mr={{ md: 5 }}
+										>
+											{label}:
+										</Text>
+										<Text
+											textAlign={{ base: 'center', md: 'left' }}
+											mr={{ md: 5 }}
+										>
+											{value}
+										</Text>
+									</React.Fragment>
+								))}
+							</Grid>
+							{purposes[1]?.existingRequest && purposes[1]?.existingOrder && (
+								<Box
+									width='100%'
+									bg='gray.50'
+									border='1px solid'
+									borderColor='gray.200'
+									borderRadius='md'
+									p={6}
+									mt={5}
+									textAlign='center'
+								>
+									<Heading size='sm' color='green.600' mb={2}>
+										Orden de Pago Disponible
+									</Heading>
+
+									<UploadVoucherForm
+										isLoading={isLoadingPaymentOrder}
+										data={purposes[1]?.existingOrder}
+										refetch={refetchPaymentOrder}
+									/>
+								</Box>
+							)}
 						</Box>
 					) : (
 						<Flex justify='center' align='center' width='100%'>
@@ -436,18 +635,20 @@ export const PaymentApplicant = () => {
 					</Text>
 				</Box>
 			)}
-			<Stack Stack align={{ base: 'start', sm: 'center' }} mt={5}>
-				<Heading
-					size={{
-						xs: 'xs',
-						sm: 'sm',
-						md: 'sm',
-					}}
-					color={'gray.500'}
-				>
-					Te notificaremos cuando podrás realizar el pago
-				</Heading>
-			</Stack>
+			{!(purposes[2]?.existingOrder && purposes[1]?.existingOrder) && (
+				<Stack textAlign={{ base: 'center', sm: 'center' }} mt={5}>
+					<Heading
+						size={{
+							xs: 'xs',
+							sm: 'sm',
+							md: 'sm',
+						}}
+						color={'gray.500'}
+					>
+						Te notificaremos cuando podrás realizar el pago
+					</Heading>
+				</Stack>
+			)}
 		</Box>
 	);
 };

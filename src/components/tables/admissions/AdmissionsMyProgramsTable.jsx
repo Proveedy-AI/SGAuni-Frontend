@@ -15,13 +15,15 @@ import {
 	toaster,
 	Tooltip,
 } from '@/components/ui';
+import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import { useDeleteAdmissionsPrograms } from '@/hooks/admissions_programs';
 import { useCreateProgramsReview } from '@/hooks/admissions_review_programs/useCreateProgramsReview';
+import useSortedData from '@/utils/useSortedData';
 import { Box, HStack, IconButton, Span, Table, Text } from '@chakra-ui/react';
 import { format } from 'date-fns';
 import PropTypes from 'prop-types';
-import { memo, useMemo, useState } from 'react';
+import { memo, useState } from 'react';
 import { FiSend, FiTrash2 } from 'react-icons/fi';
 
 const Row = memo(
@@ -148,7 +150,7 @@ const Row = memo(
 						)}
 
 						{permissions?.includes('admissions.myprograms.assignevaluator') && (
-							<AssignEvaluatorProgramModal item={item} fetchData={fetchData} />
+							<AssignEvaluatorProgramModal data={item} fetchData={fetchData} />
 						)}
 						{permissions?.includes('admissions.myprograms.edit') && (
 							<UpdateAdmissionsProgramsForm data={item} fetchData={fetchData} />
@@ -198,31 +200,18 @@ Row.propTypes = {
 	data: PropTypes.array,
 };
 
-export const AdmissionsMyProgramsTable = ({ data, fetchData, permissions }) => {
+export const AdmissionsMyProgramsTable = ({
+	data,
+	fetchData,
+	permissions,
+	isLoading,
+}) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [currentPage, setCurrentPage] = useState(1);
 	const startIndex = (currentPage - 1) * pageSize;
 	const endIndex = startIndex + pageSize;
 	const [sortConfig, setSortConfig] = useState(null);
-
-	const sortedData = useMemo(() => {
-		if (!sortConfig) return data;
-
-		const sorted = [...data];
-
-		if (sortConfig.key === 'index') {
-			return sortConfig.direction === 'asc' ? sorted : sorted.reverse();
-		}
-		return sorted.sort((a, b) => {
-			const aVal = a[sortConfig.key];
-			const bVal = b[sortConfig.key];
-
-			if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
-			if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
-			return 0;
-		});
-	}, [data, sortConfig]);
-
+	const sortedData = useSortedData(data, sortConfig);
 	const visibleRows = sortedData?.slice(startIndex, endIndex);
 
 	return (
@@ -237,7 +226,7 @@ export const AdmissionsMyProgramsTable = ({ data, fetchData, permissions }) => {
 				<Table.Root size='sm' w='full' striped>
 					<Table.Header>
 						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
-							<Table.ColumnHeader>
+							<Table.ColumnHeader w={'5%'}>
 								<SortableHeader
 									label='N°'
 									columnKey='index'
@@ -261,7 +250,9 @@ export const AdmissionsMyProgramsTable = ({ data, fetchData, permissions }) => {
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{visibleRows?.length > 0 ? (
+						{isLoading ? (
+							<SkeletonTable columns={7} />
+						) : visibleRows?.length > 0 ? (
 							visibleRows.map((item, index) => (
 								<Row
 									key={item.id}
@@ -276,8 +267,8 @@ export const AdmissionsMyProgramsTable = ({ data, fetchData, permissions }) => {
 							))
 						) : (
 							<Table.Row>
-								<Table.Cell colSpan={7} textAlign='center'>
-									Sin datos disponibles
+								<Table.Cell colSpan={7} textAlign='center' py={2}>
+									No hay datos disponibles.
 								</Table.Cell>
 							</Table.Row>
 						)}
@@ -303,6 +294,6 @@ export const AdmissionsMyProgramsTable = ({ data, fetchData, permissions }) => {
 AdmissionsMyProgramsTable.propTypes = {
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
-	loading: PropTypes.bool,
+	isLoading: PropTypes.bool,
 	permissions: PropTypes.array,
 };

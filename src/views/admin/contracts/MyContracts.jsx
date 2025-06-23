@@ -3,22 +3,18 @@ import { useProvideAuth } from '@/hooks/auth';
 import { useReadContracts } from '@/hooks/contracts';
 
 import { Box, Heading, Stack } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
 
 export const MyContracts = () => {
 	const { getProfile } = useProvideAuth();
 	const profile = getProfile();
 
-	const [loading, setInitialLoading] = useState(true);
-
-	const { data: dataContracts, refetch: fetchContracts } = useReadContracts({
+	const {
+		data: dataContracts,
+		refetch: fetchContracts,
+		isLoading,
+	} = useReadContracts({
 		owner_id: profile?.id,
 	});
-	useEffect(() => {
-		if (loading && dataContracts?.results?.length > 0) {
-			setInitialLoading(false);
-		}
-	}, [loading, dataContracts?.results]);
 
 	return (
 		<Box spaceY='5'>
@@ -40,9 +36,9 @@ export const MyContracts = () => {
 			</Stack>
 
 			<ContractsMyListTable
+				isLoading={isLoading}
 				data={dataContracts?.results}
 				fetchData={fetchContracts}
-				loading={loading}
 			/>
 		</Box>
 	);

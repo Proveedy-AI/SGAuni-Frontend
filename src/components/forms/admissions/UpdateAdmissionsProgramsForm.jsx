@@ -190,6 +190,7 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 						variant='flushed'
 						size='xs'
 						isSearchable
+						isClearable
 						options={ProgramsOptions}
 					/>
 				</Field>
@@ -200,6 +201,7 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 						variant='flushed'
 						size='xs'
 						isSearchable
+						isClearable
 						options={dataType}
 					/>
 				</Field>
@@ -211,6 +213,7 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 						variant='flushed'
 						size='xs'
 						isSearchable
+						isClearable
 						options={dataMode}
 					/>
 				</Field>
@@ -222,7 +225,8 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 						size='xs'
 						isDisabled={isLoading}
 						isLoading={isLoading}
-						isSearchable={true}
+						isSearchable
+						isClearable
 						name='paises'
 						options={UserstOptions}
 					/>

@@ -102,6 +102,7 @@ export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
 							size='xs'
 							variant='flushed'
 							isSearchable={false}
+							isClearable
 						/>
 					</Field>
 				</Stack>

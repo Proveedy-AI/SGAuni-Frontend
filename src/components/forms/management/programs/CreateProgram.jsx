@@ -98,6 +98,7 @@ export const AddProgram = ({ fetchData, programTypesOptions, coordinatorsOptions
 						isDisabled={loadingProgramTypes}
 						isLoading={loadingProgramTypes}
 						isSearchable={true}
+            isClearable
             onChange={(select) => { setProgramRequest({ ...programRequest, type: select }) }}
             name='Tipos de Programa'
             options={programTypesOptions}
@@ -112,6 +113,7 @@ export const AddProgram = ({ fetchData, programTypesOptions, coordinatorsOptions
 						isDisabled={loadingCoordinators}
 						isLoading={loadingCoordinators}
 						isSearchable={true}
+            isClearable
 						name='Coordinadores'
             options={coordinatorsOptions}
           />

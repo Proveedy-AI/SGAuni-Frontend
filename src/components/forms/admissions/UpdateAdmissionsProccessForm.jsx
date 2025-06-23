@@ -146,6 +146,7 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 						variant='flushed'
 						size='xs'
 						isSearchable={true}
+						isClearable
 						name='paises'
 						options={LevelOptions}
 					/>

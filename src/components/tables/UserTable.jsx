@@ -1,6 +1,5 @@
 import { Button, Pagination, toaster, Tooltip } from '@/components/ui';
 import { Badge, Box, HStack, Switch, Table } from '@chakra-ui/react';
-import { useMemo, useState } from 'react';
 import { FiUserPlus } from 'react-icons/fi';
 import { HiPencil } from 'react-icons/hi2';
 import PropTypes from 'prop-types';
@@ -8,32 +7,17 @@ import { useToggleUser } from '@/hooks/users/useToggleUser';
 import { ViewUserModal } from '../forms/management/user/ViewUserModal';
 import { usePaginationSettings } from '../navigation/usePaginationSettings';
 import { SortableHeader } from '../ui/SortableHeader';
+import useSortedData from '@/utils/useSortedData';
+import SkeletonTable from '../ui/SkeletonTable';
+import { useState } from 'react';
 
-export const UserTable = ({ fetchUsers, data, handleOpenModal }) => {
+export const UserTable = ({ fetchUsers, data, handleOpenModal, isLoading }) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [currentPage, setCurrentPage] = useState(1);
 	const startIndex = (currentPage - 1) * pageSize;
 	const endIndex = startIndex + pageSize;
 	const [sortConfig, setSortConfig] = useState(null);
-
-	const sortedData = useMemo(() => {
-		if (!sortConfig) return data;
-
-		const sorted = [...data];
-
-		if (sortConfig.key === 'index') {
-			return sortConfig.direction === 'asc' ? sorted : sorted.reverse();
-		}
-		return sorted.sort((a, b) => {
-			const aVal = a[sortConfig.key];
-			const bVal = b[sortConfig.key];
-
-			if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
-			if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
-			return 0;
-		});
-	}, [data, sortConfig]);
-
+	const sortedData = useSortedData(data, sortConfig);
 	const visibleRows = sortedData?.slice(startIndex, endIndex);
 
 	const { mutateAsync: toggleUser, isPending: isPendingToggle } =
@@ -112,106 +96,121 @@ export const UserTable = ({ fetchUsers, data, handleOpenModal }) => {
 						</Table.Header>
 
 						<Table.Body>
-							{visibleRows.map((item, idx) => (
-								<Table.Row key={idx}>
-									<Table.Cell>
-										{sortConfig?.key === 'index' &&
-										sortConfig?.direction === 'desc'
-											? data.length - (startIndex + idx)
-											: startIndex + idx + 1}
-									</Table.Cell>
-									<Table.Cell>{item.full_name}</Table.Cell>
-									<Table.Cell>{item.uni_email}</Table.Cell>
-									<Table.Cell>
-										{item.roles.length > 0 ? (
-											<HStack spacing={1} wrap='wrap'>
-												<Badge
-													bg='uni.secondary'
-													color='white'
-													fontSize='0.8em'
-												>
-													{item.roles[0].name}
-												</Badge>
-												{item.roles.length > 1 && (
+							{isLoading ? (
+								<SkeletonTable columns={6} />
+							) : visibleRows?.length > 0 ? (
+								visibleRows.map((item, idx) => (
+									<Table.Row key={idx}>
+										<Table.Cell>
+											{sortConfig?.key === 'index' &&
+											sortConfig?.direction === 'desc'
+												? data.length - (startIndex + idx)
+												: startIndex + idx + 1}
+										</Table.Cell>
+										<Table.Cell>{item.full_name}</Table.Cell>
+										<Table.Cell>{item.uni_email}</Table.Cell>
+										<Table.Cell>
+											{item.roles.length > 0 ? (
+												<HStack spacing={1} wrap='wrap'>
 													<Badge
 														bg='uni.secondary'
 														color='white'
 														fontSize='0.8em'
 													>
-														{' ...'}
+														{item.roles[0].name}
 													</Badge>
-												)}
-											</HStack>
-										) : (
-											<Badge colorScheme='gray' fontSize='0.8em'>
-												Sin rol
-											</Badge>
-										)}
-									</Table.Cell>
-									<Table.Cell>
-										<Switch.Root
-											checked={item.is_active}
-											display='flex'
-											onCheckedChange={() => handleStatusChange(item.id)}
-											disabled={isPendingToggle}
-										>
-											{' '}
-											<Switch.Label>
-												{item.is_active ? 'Activo' : 'Inactivo'}
-											</Switch.Label>
-											<Switch.HiddenInput />
-											<Switch.Control
-												_checked={{
-													bg: 'uni.secondary',
-												}}
-												bg='uni.red.400'
-											/>
-										</Switch.Root>
-									</Table.Cell>
-									<Table.Cell>
-										<HStack>
-											<ViewUserModal selectedUser={item} />
-											<Button
-												background={{ base: '#2D9F2D', _dark: '#38a169' }}
-												color='white'
-												width='1'
-												variant='outline'
-												size='xs'
-												borderRadius='md'
-												onClick={() => handleOpenModal('edit', item)}
-												_hover={{
-													background: { base: '#217821', _dark: '#276749' },
-												}}
+													{item.roles.length > 1 && (
+														<Badge
+															bg='uni.secondary'
+															color='white'
+															fontSize='0.8em'
+														>
+															{' ...'}
+														</Badge>
+													)}
+												</HStack>
+											) : (
+												<Badge colorScheme='gray' fontSize='0.8em'>
+													Sin rol
+												</Badge>
+											)}
+										</Table.Cell>
+										<Table.Cell>
+											<Switch.Root
+												checked={item.is_active}
+												display='flex'
+												onCheckedChange={() => handleStatusChange(item.id)}
+												disabled={isPendingToggle}
 											>
-												<HiPencil />
-											</Button>
-											<Box>
-												<Tooltip
-													content='Asignar rol'
-													positioning={{ placement: 'bottom-center' }}
-													showArrow
-													openDelay={0}
+												{' '}
+												<Switch.Label>
+													{item.is_active ? 'Activo' : 'Inactivo'}
+												</Switch.Label>
+												<Switch.HiddenInput />
+												<Switch.Control
+													_checked={{
+														bg: 'uni.secondary',
+													}}
+													bg='uni.red.400'
+												/>
+											</Switch.Root>
+										</Table.Cell>
+										<Table.Cell>
+											<HStack>
+												<ViewUserModal selectedUser={item} />
+												<Button
+													background={{ base: '#2D9F2D', _dark: '#38a169' }}
+													color='white'
+													width='1'
+													variant='outline'
+													size='xs'
+													borderRadius='md'
+													onClick={() => handleOpenModal('edit', item)}
+													_hover={{
+														background: { base: '#217821', _dark: '#276749' },
+													}}
 												>
-													<Button
-														background={{ base: '#9049DB', _dark: '#805ad5' }}
-														color='white'
-														width='1'
-														variant='outline'
-														size='xs'
-														borderRadius='md'
-														onClick={() => handleOpenModal('toogleRole', item)}
-														_hover={{
-															background: { base: '#6c32a6', _dark: '#6b46c1' },
-														}}
+													<HiPencil />
+												</Button>
+												<Box>
+													<Tooltip
+														content='Asignar rol'
+														positioning={{ placement: 'bottom-center' }}
+														showArrow
+														openDelay={0}
 													>
-														<FiUserPlus />
-													</Button>
-												</Tooltip>
-											</Box>
-										</HStack>
+														<Button
+															background={{ base: '#9049DB', _dark: '#805ad5' }}
+															color='white'
+															width='1'
+															variant='outline'
+															size='xs'
+															borderRadius='md'
+															onClick={() =>
+																handleOpenModal('toogleRole', item)
+															}
+															_hover={{
+																background: {
+																	base: '#6c32a6',
+																	_dark: '#6b46c1',
+																},
+															}}
+														>
+															<FiUserPlus />
+														</Button>
+													</Tooltip>
+												</Box>
+											</HStack>
+										</Table.Cell>
+									</Table.Row>
+								))
+							) : (
+								<Table.Row>
+									<Table.Cell colSpan={6} textAlign='center' py={2}>
+										No hay datos disponibles.
 									</Table.Cell>
 								</Table.Row>
-							))}
+							)}
 						</Table.Body>
 					</Table.Root>
 				</Table.ScrollArea>
@@ -237,4 +236,5 @@ UserTable.propTypes = {
 	handleOpenModal: PropTypes.func,
 	loading: PropTypes.bool,
 	fetchUsers: PropTypes.func,
+	isLoading: PropTypes.bool,
 };

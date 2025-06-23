@@ -26,7 +26,6 @@ import { Contracts, MyContracts } from './views/admin/contracts';
 import AdmissionForm from './views/Inscription';
 import { AdmissionMyApplicants } from './views/admin/applicants/AdmissionMyApplicants';
 import { ApplicantsLayout } from './views/admin/applicants/ApplicantsLayout';
-import { PaymentApplicant } from './views/admin/applicants/PaymentApplicant';
 import { Debts } from './views/admin/debts';
 
 function App() {
@@ -100,9 +99,10 @@ function App() {
 								>
 									<Route path='myapplicants'>
 										<Route index element={<AdmissionMyApplicants />} />
-										<Route path='proccess' element={<ApplicantsLayout />}>
-											<Route path='payment' element={<PaymentApplicant />} />
-										</Route>
+										<Route
+											path='proccess'
+											element={<ApplicantsLayout />}
+										></Route>
 									</Route>
 								</Route>
 							</Route>
@@ -123,11 +123,15 @@ function App() {
 								</Route>
 							</Route>
 
-              <Route path='debts'>
-                <Route element={<ProtectedRoute requiredPermission='dashboard.debt.view' />}>
-                  <Route index element={<Debts />} />
-                </Route>
-              </Route>
+							<Route path='debts'>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='dashboard.debt.view' />
+									}
+								>
+									<Route index element={<Debts />} />
+								</Route>
+							</Route>
 							{/* SETTINGS */}
 							<Route path='settings' element={<SettingsLayout />}>
 								<Route

@@ -9,6 +9,9 @@ import { Flex, Grid, HStack, Input, Stack } from '@chakra-ui/react';
 import { HiMagnifyingGlass, HiPlus } from 'react-icons/hi2';
 import PropTypes from 'prop-types';
 import { useCreateUser } from '@/hooks/users';
+import { useState } from 'react';
+import { ReactSelect } from '@/components/select';
+import { useReadRoles } from '@/hooks';
 
 export const CreateAndFilterUser = ({
 	search,
@@ -19,6 +22,15 @@ export const CreateAndFilterUser = ({
 	fetchUsers,
 }) => {
 	const { mutateAsync: createUser, isPending } = useCreateUser();
+	const [selectedRoles, setSelectedRoles] = useState([]);
+	const { data: rolesData } = useReadRoles(); // rolesData.results = lista de roles
+
+	const rolesOptions =
+		rolesData?.results?.map((role) => ({
+			label: role.name,
+			value: role.id,
+		})) || [];
+
 	const handleCreateUser = async (e) => {
 		e.preventDefault();
 		const { elements } = e.currentTarget;
@@ -33,6 +45,7 @@ export const CreateAndFilterUser = ({
 				first_name,
 				last_name,
 			},
+			roles_ids: selectedRoles.map((r) => r.value),
 		};
 
 		const optionalFields = ['num_doc', 'uni_email', 'phone'];
@@ -49,19 +62,34 @@ export const CreateAndFilterUser = ({
 				title: 'Usuario creado correctamente',
 				type: 'success',
 			});
-			fetchUsers(); // Assuming fetchUsers is defined to refresh the user list
+			fetchUsers();
+			setSelectedRoles([]);
 			setIsModalOpen((s) => ({ ...s, create: false }));
 		} catch (error) {
-			const message =
-				error?.response?.data?.message ||
-				error?.response?.data?.error ||
-				error?.message ||
-				'Error al crear usuario';
+			const errorData = error.response?.data;
 
-			toaster.create({
-				title: message,
-				type: 'error',
-			});
+			if (errorData && typeof errorData === 'object') {
+				Object.entries(errorData).forEach(([field, messages]) => {
+					if (Array.isArray(messages)) {
+						messages.forEach((message) => {
+							const readableField =
+								field === 'non_field_errors'
+									? 'Error general'
+									: field.replaceAll('_', ' ');
+
+							toaster.create({
+								title: `${readableField}: ${message}`,
+								type: 'error',
+							});
+						});
+					}
+				});
+			} else {
+				toaster.create({
+					title: 'Error al registrar el Programa',
+					type: 'error',
+				});
+			}
 		}
 	};
 
@@ -136,6 +164,22 @@ export const CreateAndFilterUser = ({
 										<Input name='phone' placeholder='Opcional' />
 									</Field>
 								</Grid>
+								<Field label='Rol' mt={4}>
+									<ReactSelect
+										value={selectedRoles}
+										onChange={(select) => {
+											setSelectedRoles(select);
+										}}
+										variant='flushed'
+										size='xs'
+										isClea
+										isClearable={true}
+										isSearchable={true}
+										isMulti
+										name='paises'
+										options={rolesOptions}
+									/>
+								</Field>
 
 								<Flex justify='end' mt='6' gap='2'>
 									<Button

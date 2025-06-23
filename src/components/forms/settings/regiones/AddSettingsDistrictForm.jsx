@@ -122,6 +122,7 @@ export const AddSettingsDistrictForm = ({
 						isDisabled={isLoading}
 						isLoading={isLoading}
 						isSearchable={true}
+						isClearable
 						name='provincia'
 						options={ProvinceOptions}
 					/>

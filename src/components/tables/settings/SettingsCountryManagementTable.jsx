@@ -2,12 +2,14 @@
 import { UpdateSettingsCountryForm } from '@/components/forms/settings';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { ConfirmModal, Pagination, toaster } from '@/components/ui';
+import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import { useDeleteCountry } from '@/hooks';
+import useSortedData from '@/utils/useSortedData';
 
 import { Box, HStack, IconButton, Span, Table, Text } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
-import { memo, useMemo, useState } from 'react';
+import { memo, useState } from 'react';
 import { FiTrash2 } from 'react-icons/fi';
 
 const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
@@ -85,31 +87,17 @@ Row.propTypes = {
 	data: PropTypes.array,
 };
 
-export const SettingsCountryManagementTable = ({ data, fetchData }) => {
+export const SettingsCountryManagementTable = ({
+	data,
+	fetchData,
+	isLoading,
+}) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [currentPage, setCurrentPage] = useState(1);
 	const startIndex = (currentPage - 1) * pageSize;
 	const endIndex = startIndex + pageSize;
 	const [sortConfig, setSortConfig] = useState(null);
-
-	const sortedData = useMemo(() => {
-		if (!sortConfig) return data;
-
-		const sorted = [...data];
-
-		if (sortConfig.key === 'index') {
-			return sortConfig.direction === 'asc' ? sorted : sorted.reverse();
-		}
-		return sorted.sort((a, b) => {
-			const aVal = a[sortConfig.key];
-			const bVal = b[sortConfig.key];
-
-			if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
-			if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
-			return 0;
-		});
-	}, [data, sortConfig]);
-
+	const sortedData = useSortedData(data, sortConfig);
 	const visibleRows = sortedData?.slice(startIndex, endIndex);
 
 	return (
@@ -154,17 +142,27 @@ export const SettingsCountryManagementTable = ({ data, fetchData }) => {
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{visibleRows?.map((item, index) => (
-							<Row
-								key={item.id}
-								item={item}
-								data={data}
-								sortConfig={sortConfig}
-								fetchData={fetchData}
-								startIndex={startIndex}
-								index={index}
-							/>
-						))}
+						{isLoading ? (
+							<SkeletonTable columns={6} />
+						) : visibleRows?.length > 0 ? (
+							visibleRows.map((item, index) => (
+								<Row
+									key={item.id}
+									item={item}
+									data={data}
+									sortConfig={sortConfig}
+									fetchData={fetchData}
+									startIndex={startIndex}
+									index={index}
+								/>
+							))
+						) : (
+							<Table.Row>
+								<Table.Cell colSpan={6} textAlign='center' py={2}>
+									No hay datos disponibles.
+								</Table.Cell>
+							</Table.Row>
+						)}
 					</Table.Body>
 				</Table.Root>
 			</Table.ScrollArea>
@@ -188,4 +186,5 @@ SettingsCountryManagementTable.propTypes = {
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
 	loading: PropTypes.bool,
+	isLoading: PropTypes.bool,
 };

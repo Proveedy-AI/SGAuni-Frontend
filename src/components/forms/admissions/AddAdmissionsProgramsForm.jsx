@@ -151,6 +151,7 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 						variant='flushed'
 						size='xs'
 						isSearchable
+						isClearable
 						options={ProgramsOptions}
 					/>
 				</Field>
@@ -160,6 +161,7 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 						onChange={setSelectedType}
 						variant='flushed'
 						size='xs'
+						isClearable
 						isSearchable
 						options={dataType}
 					/>
@@ -170,6 +172,7 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 						value={selectedMode}
 						onChange={setSelectedMode}
 						variant='flushed'
+						isClearable
 						size='xs'
 						isSearchable
 						options={dataMode}
@@ -183,6 +186,7 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 						size='xs'
 						isDisabled={isLoading}
 						isLoading={isLoading}
+						isClearable
 						isSearchable={true}
 						name='paises'
 						options={UserstOptions}

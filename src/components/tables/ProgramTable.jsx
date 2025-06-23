@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { memo, useMemo, useState } from 'react';
+import { memo, useState } from 'react';
 import { Box, Group, HStack, Table } from '@chakra-ui/react';
 import { Pagination } from '@/components/ui';
 import { ViewProgram } from '../forms/management/programs/ViewProgram';
@@ -8,6 +8,8 @@ import { EditProgram } from '../forms/management/programs/EditProgram';
 import { AssignDebtConditionProgram } from '../forms/management/programs';
 import { SortableHeader } from '../ui/SortableHeader';
 import { usePaginationSettings } from '../navigation/usePaginationSettings';
+import useSortedData from '@/utils/useSortedData';
+import SkeletonTable from '../ui/SkeletonTable';
 
 const Row = memo(
 	({
@@ -75,31 +77,14 @@ export const ProgramTable = ({
 	coordinatorsOptions,
 	loadingProgramTypes,
 	loadingCoordinators,
+	isLoading,
 }) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [currentPage, setCurrentPage] = useState(1);
 	const startIndex = (currentPage - 1) * pageSize;
 	const endIndex = startIndex + pageSize;
 	const [sortConfig, setSortConfig] = useState(null);
-
-	const sortedData = useMemo(() => {
-		if (!sortConfig) return data;
-
-		const sorted = [...data];
-
-		if (sortConfig.key === 'index') {
-			return sortConfig.direction === 'asc' ? sorted : sorted.reverse();
-		}
-		return sorted.sort((a, b) => {
-			const aVal = a[sortConfig.key];
-			const bVal = b[sortConfig.key];
-
-			if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
-			if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
-			return 0;
-		});
-	}, [data, sortConfig]);
-
+	const sortedData = useSortedData(data, sortConfig);
 	const visibleRows = sortedData?.slice(startIndex, endIndex);
 
 	return (
@@ -135,21 +120,31 @@ export const ProgramTable = ({
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{visibleRows?.map((item, index) => (
-							<Row
-								key={item.id}
-								item={item}
-								data={data}
-								sortConfig={sortConfig}
-								fetchData={fetchData}
-								startIndex={startIndex}
-								index={index}
-								programTypesOptions={programTypesOptions}
-								coordinatorsOptions={coordinatorsOptions}
-								loadingProgramTypes={loadingProgramTypes}
-								loadingCoordinators={loadingCoordinators}
-							/>
-						))}
+						{isLoading ? (
+							<SkeletonTable columns={4} />
+						) : visibleRows?.length > 0 ? (
+							visibleRows.map((item, index) => (
+								<Row
+									key={item.id}
+									item={item}
+									data={data}
+									sortConfig={sortConfig}
+									fetchData={fetchData}
+									startIndex={startIndex}
+									index={index}
+									programTypesOptions={programTypesOptions}
+									coordinatorsOptions={coordinatorsOptions}
+									loadingProgramTypes={loadingProgramTypes}
+									loadingCoordinators={loadingCoordinators}
+								/>
+							))
+						) : (
+							<Table.Row>
+								<Table.Cell colSpan={4} textAlign='center' py={2}>
+									No hay datos disponibles.
+								</Table.Cell>
+							</Table.Row>
+						)}
 					</Table.Body>
 				</Table.Root>
 			</Table.ScrollArea>
@@ -175,4 +170,5 @@ ProgramTable.propTypes = {
 	coordinatorsOptions: PropTypes.array,
 	loadingProgramTypes: PropTypes.bool,
 	loadingCoordinators: PropTypes.bool,
+	isLoading: PropTypes.bool,
 };

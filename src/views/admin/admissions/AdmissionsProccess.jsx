@@ -4,11 +4,15 @@ import { useReadAdmissions } from '@/hooks/admissions_proccess';
 import { useProvideAuth } from '@/hooks/auth';
 
 import { Box, Heading, InputGroup, Input, Stack } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 
 export const AdmissionsProccess = () => {
-	const { data: dataAdmissions, refetch: fetchCountries } = useReadAdmissions();
+	const {
+		data: dataAdmissions,
+		refetch: fetchAdmissions,
+		isLoading,
+	} = useReadAdmissions();
 	const { getProfile } = useProvideAuth();
 	const profile = getProfile();
 	const roles = profile?.roles || [];
@@ -18,19 +22,11 @@ export const AdmissionsProccess = () => {
 
 	const [searchValue, setSearchValue] = useState('');
 
-	const [loading, setInitialLoading] = useState(true);
-
 	const filteredAdmissions = dataAdmissions?.results?.filter((item) =>
 		item.admission_process_name
 			.toLowerCase()
 			.includes(searchValue.toLowerCase())
 	);
-
-	useEffect(() => {
-		if (loading && filteredAdmissions?.length > 0) {
-			setInitialLoading(false);
-		}
-	}, [loading, filteredAdmissions]);
 
 	return (
 		<Box spaceY='5'>
@@ -69,14 +65,15 @@ export const AdmissionsProccess = () => {
 					/>
 				</InputGroup>
 				{permissions?.includes('admissions.proccess.create') && (
-					<AddAdmissionsProccessForm fetchData={fetchCountries} />
+					<AddAdmissionsProccessForm fetchData={fetchAdmissions} />
 				)}
 			</Stack>
 
 			<AdmissionsListTable
 				data={filteredAdmissions}
-				fetchData={fetchCountries}
+				fetchData={fetchAdmissions}
 				permissions={permissions}
+				isLoading={isLoading}
 			/>
 		</Box>
 	);

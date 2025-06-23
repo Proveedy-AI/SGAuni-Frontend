@@ -90,30 +90,27 @@ export const UserList = () => {
 					</Box>
 				)}
 
-				{isLoading && <Box>Cargando contenido...</Box>}
+				<VStack py='4' align='start' gap='3'>
+					{/* Componente para crear y filtrar usuarios */}
+					<CreateAndFilterUser
+						search={search}
+						setSearch={setSearch}
+						handleOpenModal={handleOpenModal}
+						isCreateModalOpen={isModalOpen.create}
+						setIsModalOpen={setIsModalOpen}
+						fetchUsers={fetchUsers}
+						handleCloseModal={handleCloseModal}
+					/>
 
-				{!isLoading && !error && filteredUsers && (
-					<VStack py='4' align='start' gap='3'>
-						{/* Componente para crear y filtrar usuarios */}
-						<CreateAndFilterUser
-							search={search}
-							setSearch={setSearch}
-							handleOpenModal={handleOpenModal}
-							isCreateModalOpen={isModalOpen.create}
-							setIsModalOpen={setIsModalOpen}
-							fetchUsers={fetchUsers}
-							handleCloseModal={handleCloseModal}
-						/>
+					{/* Tabla de usuarios */}
 
-						{/* Tabla de usuarios */}
-
-						<UserTable
-							data={filteredUsers}
-							fetchUsers={fetchUsers}
-							handleOpenModal={handleOpenModal}
-						/>
-					</VStack>
-				)}
+					<UserTable
+						isLoading={isLoading}
+						data={filteredUsers}
+						fetchUsers={fetchUsers}
+						handleOpenModal={handleOpenModal}
+					/>
+				</VStack>
 
 				{/* Modal para editar usuario */}
 				<EditUserModal

@@ -26,7 +26,7 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 
 				EncryptedStorage.save('selectedApplicant', item);
 
-				navigate(`/admissions/myapplicants/proccess/payment`, {
+				navigate(`/admissions/myapplicants/proccess`, {
 					state: { item },
 				});
 			}}

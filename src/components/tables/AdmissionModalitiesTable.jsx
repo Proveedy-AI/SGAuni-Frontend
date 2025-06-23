@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { memo, useMemo, useState } from 'react';
+import { memo, useState } from 'react';
 import { Box, Group, HStack, Table, Switch } from '@chakra-ui/react';
 import { Pagination, toaster } from '@/components/ui';
 import {
@@ -11,6 +11,8 @@ import {
 import { useToggleModality } from '@/hooks';
 import { usePaginationSettings } from '../navigation/usePaginationSettings';
 import { SortableHeader } from '../ui/SortableHeader';
+import useSortedData from '@/utils/useSortedData';
+import SkeletonTable from '@/components/ui/SkeletonTable';
 
 const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 	const { mutateAsync: toggleModalityRule, isPending: isPendingToggle } =
@@ -37,38 +39,42 @@ const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 
 	return (
 		<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
-			<Table.Cell>
-				{sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
-					? data.length - (startIndex + index)
-					: startIndex + index + 1}
-			</Table.Cell>
-			<Table.Cell>{item.name}</Table.Cell>
-			<Table.Cell>
-				<Switch.Root
-					checked={item.enabled}
-					onCheckedChange={() => handleStatusChange(item.id)}
-					disabled={isPendingToggle}
-				>
-					<Switch.Label>{item.enabled ? 'Activo' : 'Inactivo'}</Switch.Label>
-					<Switch.HiddenInput />
-					<Switch.Control
-						_checked={{
-							bg: 'uni.secondary',
-						}}
-						bg='uni.red.400'
-					/>
-				</Switch.Root>
-			</Table.Cell>
-			<Table.Cell>
-				<HStack justify='space-between'>
-					<Group>
-						<ViewModality item={item} />
-						<EditModality fetchData={fetchData} item={item} />
-						<AssignModalityRules item={item} fetchData={fetchData} />
-						<DeleteModality item={item} fetchData={fetchData} />
-					</Group>
-				</HStack>
-			</Table.Cell>
+			<>
+				<Table.Cell>
+					{sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
+						? data.length - (startIndex + index)
+						: startIndex + index + 1}
+				</Table.Cell>
+				<Table.Cell>{item.name}</Table.Cell>
+				<Table.Cell>
+					<Switch.Root
+						checked={item.enabled}
+						onCheckedChange={() => handleStatusChange(item.id)}
+						disabled={isPendingToggle}
+					>
+						<Switch.Label mr={10}>
+							{item.enabled ? 'Activo' : 'Inactivo'}
+						</Switch.Label>
+						<Switch.HiddenInput />
+						<Switch.Control
+							_checked={{
+								bg: 'uni.secondary',
+							}}
+							bg='uni.red.400'
+						/>
+					</Switch.Root>
+				</Table.Cell>
+				<Table.Cell>
+					<HStack justify='space-between'>
+						<Group>
+							<ViewModality item={item} />
+							<EditModality fetchData={fetchData} item={item} />
+							<AssignModalityRules item={item} fetchData={fetchData} />
+							<DeleteModality item={item} fetchData={fetchData} />
+						</Group>
+					</HStack>
+				</Table.Cell>
+			</>
 		</Table.Row>
 	);
 });
@@ -83,33 +89,17 @@ Row.propTypes = {
 	modalityRules: PropTypes.array,
 	sortConfig: PropTypes.object,
 	data: PropTypes.array,
+	isLoading: PropTypes.bool,
 };
 
-export const AdmissionModalitiesTable = ({ data, fetchData }) => {
+export const AdmissionModalitiesTable = ({ isLoading, data, fetchData }) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [currentPage, setCurrentPage] = useState(1);
 	const startIndex = (currentPage - 1) * pageSize;
 	const endIndex = startIndex + pageSize;
 	const [sortConfig, setSortConfig] = useState(null);
 
-	const sortedData = useMemo(() => {
-		if (!sortConfig) return data;
-
-		const sorted = [...data];
-
-		if (sortConfig.key === 'index') {
-			return sortConfig.direction === 'asc' ? sorted : sorted.reverse();
-		}
-		return sorted.sort((a, b) => {
-			const aVal = a[sortConfig.key];
-			const bVal = b[sortConfig.key];
-
-			if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
-			if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
-			return 0;
-		});
-	}, [data, sortConfig]);
-
+	const sortedData = useSortedData(data, sortConfig);
 	const visibleRows = sortedData?.slice(startIndex, endIndex);
 
 	return (
@@ -145,17 +135,27 @@ export const AdmissionModalitiesTable = ({ data, fetchData }) => {
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{visibleRows?.map((item, index) => (
-							<Row
-								key={item.id}
-								item={item}
-								data={data}
-								sortConfig={sortConfig}
-								fetchData={fetchData}
-								startIndex={startIndex}
-								index={index}
-							/>
-						))}
+						{isLoading ? (
+							<SkeletonTable columns={4} />
+						) : visibleRows?.length > 0 ? (
+							visibleRows.map((item, index) => (
+								<Row
+									key={item.id}
+									item={item}
+									data={data}
+									sortConfig={sortConfig}
+									fetchData={fetchData}
+									startIndex={startIndex}
+									index={index}
+								/>
+							))
+						) : (
+							<Table.Row>
+								<Table.Cell colSpan={4} textAlign='center' py={2}>
+									No hay datos disponibles.
+								</Table.Cell>
+							</Table.Row>
+						)}
 					</Table.Body>
 				</Table.Root>
 			</Table.ScrollArea>
@@ -177,4 +177,5 @@ export const AdmissionModalitiesTable = ({ data, fetchData }) => {
 AdmissionModalitiesTable.propTypes = {
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
+	isLoading: PropTypes.bool,
 };

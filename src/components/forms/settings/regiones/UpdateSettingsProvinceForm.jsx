@@ -113,6 +113,7 @@ export const UpdateSettingsProvinceForm = ({
 						variant='flushed'
 						size='xs'
 						isSearchable={true}
+						isClearable
 						name='departamento'
 						options={DepartmentOptions}
 					/>

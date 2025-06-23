@@ -113,6 +113,7 @@ export const UpdateSettingsNationalityForm = ({
 						variant='flushed'
 						size='xs'
 						isSearchable={true}
+						isClearable
 						name='paises'
 						options={CountriesOptions}
 					/>

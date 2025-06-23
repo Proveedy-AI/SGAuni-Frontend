@@ -113,6 +113,7 @@ export const UpdateSettingsDistrictForm = ({
 						variant='flushed'
 						size='xs'
 						isSearchable={true}
+						isClearable
 						name='provincia'
 						options={ProvinceOptions}
 					/>

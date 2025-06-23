@@ -30,3 +30,4 @@ export * from './toaster';
 export * from './tooltip';
 export * from './date-picker';
 export * from './input-phone-with-mask';
+export * from './ResponsiveBreadcrumb'
