@@ -3,22 +3,9 @@ import { Box, IconButton, Stack, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { HiEye } from "react-icons/hi2";
 import PropTypes from "prop-types";
-import { useReadPaymentVoucherById } from "@/hooks/payment_vouchers";
 
 export const ViewPaymentOrderVoucherModal = ({ item }) => {
   const [open, setOpen] = useState(false);
-  const { data: dataPaymentVoucher, loading: isPaymentVoucherLoading } = useReadPaymentVoucherById(item?.id);
-  console.log(dataPaymentVoucher);
-  /*
-    {
-      "id": 2,
-      "order": 2,
-      "file_path": "https://iacerts-v2.s3.us-east-1.amazonaws.com/sga_uni/voucher/images-71111544-2025-06-22.pdf",
-      "is_verified": false,
-      "verified_at": null,
-      "verified_by": null
-    } 
-  */
 
   return (
     <Stack css={{ "--field-label-width": "180px" }}>
@@ -53,10 +40,10 @@ export const ViewPaymentOrderVoucherModal = ({ item }) => {
               w="full"
             >
               {
-                dataPaymentVoucher?.file_path ? (
+                item?.voucher?.file_path ? (
                   <Box w='full' h='600px'>
                     <iframe
-                      src={dataPaymentVoucher?.file_path}
+                      src={item?.voucher?.file_path}
                       width="100%"
                       height="100%"
                       title="Payment Voucher"

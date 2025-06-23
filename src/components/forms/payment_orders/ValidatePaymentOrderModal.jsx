@@ -1,122 +1,23 @@
-import { Field, ModalSimple, Tooltip } from "@/components/ui";
+import { Field, ModalSimple, toaster, Tooltip } from "@/components/ui";
 import { Box, Button, Flex, IconButton, Stack, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { HiCheck } from "react-icons/hi2";
 import PropTypes from "prop-types";
 import { FaCheck } from "react-icons/fa";
+import { useUpdatePaymentVoucherStatus } from "@/hooks/payment_vouchers";
 
 export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
   const [open, setOpen] = useState(false);
-  /*
-  {
-    "id": 1,
-    "request": 1,
-    "created_by": 3,
-    "created_by_name": "Jose Armando Diaz Torres",
-    "id_orden": "123456",
-    "sub_amount": "250.00",
-    "discount_value": "0.20",
-    "status": 1,
-    "status_display": "Pending",
-    "total_amount": "200.00",
-    "payment_method": 1,
-    "payment_method_slug": "bcp",
-    "name": "Jeferson Farfan Lopez",
-    "address": "Av. La Paz #2196",
-    "email": "71111544@pronabec.edu.pe",
-    "document_num": "71111544",
-    "due_date": "2025-06-27",
-    "document_type_display": "Receipt",
-    "modality": 1,
-    "modality_name": "Pre Maestría"
-  }
-  */
 
-  /*
-    <Modal
-      title='Aprobar o Rechazar Proceso'
-      placement='center'
-      trigger={
-        <Box>
-          <Tooltip
-            content='Aprobar / Rechazar'
-            positioning={{ placement: 'bottom-center' }}
-            showArrow
-            openDelay={0}
-          >
-            <IconButton
-              size='xs'
-              colorPalette='green'
-              css={{ _icon: { width: '5', height: '5' } }}
-            >
-              <LiaCheckCircleSolid />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      }
-      size='xl'
-      loading={isPending}
-      open={open}
-      onOpenChange={handleOpenChange}
-      contentRef={contentRef}
-      onSave={handleSubmitStatus}
-    >
-      <Stack spacingY={8}>
-        <Field label='Título:'>
-          <Text fontSize='xl' color={'uni.secondary'}>
-            {data?.program_name}
-          </Text>
-        </Field>
-
-        <Flex justify='flex-start' gap={2} mt={2}>
-          <Field label='Inicio Semestre:'>
-            <Text fontSize='lg'>{data?.semester_start_date}</Text>
-          </Field>
-          <Field label='Nivel:'>
-            <Text fontSize='lg'>{data?.post_grad_type_display}</Text>
-          </Field>
-        </Flex>
-
-        <Flex justify='flex-start' gap={2} mt={2}>
-          <Button
-            colorPalette={selectedStatus === 4 ? 'green' : 'gray'}
-            variant={selectedStatus === 4 ? 'solid' : 'subtle'}
-            size='sm'
-            onClick={() => setSelectedStatus(4)}
-          >
-            <FaCheck />
-            Aprobar
-          </Button>
-          <Button
-            colorPalette={selectedStatus === 3 ? 'red' : 'gray'}
-            variant={selectedStatus === 3 ? 'solid' : 'subtle'}
-            size='sm'
-            onClick={() => setSelectedStatus(3)}
-          >
-            <FaBan />
-            Rechazar
-          </Button>
-        </Flex>
-
-        {selectedStatus === 3 && (
-          <Field label='Comentario:'>
-            <Textarea
-              value={comments}
-              onChange={(e) => setComments(e.target.value)}
-              placeholder='Agrega un comentario para rechazar...'
-              size='sm'
-            />
-          </Field>
-        )}
-      </Stack>
-    </Modal>
-  */
-
-  //const { mutateAsync: validatePaymentOrder, isSaving } = useValidatePaymentOrder();
+  const { mutateAsync: validatePaymentVoucher, isSaving } = useUpdatePaymentVoucherStatus();
 
   const handleValidate = async () => {
-    /*
-    validatePaymentOrder( item.id_orden, {
+    const payload = {
+      id_orden: item.id_orden,
+      verified_by: item?.id,
+      file_path: item?.voucher?.file_path,
+    }
+    validatePaymentVoucher( payload, {
       onSuccess: () => {
         toaster.create({
           title: "Orden de pago validada correctamente",
@@ -127,16 +28,11 @@ export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
       },
       onError: (error) => {
         toaster.create({
-          title: "Error al validar la orden de pago",
+          title: error ? error.message : "Error al validar la orden de pago",
           status: "error",
         });
       }
     })
-    */
-
-    // Simulación de validación
-    setOpen(false);
-    fetchPaymentOrders();
   }
 
   return (
@@ -146,7 +42,7 @@ export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
           trigger={
             <Box>
               <Tooltip
-                content='Validar Manualmente Orden de Pago'
+                content='Validar Voucher de Pago'
                 positioning={{ placement: 'bottom-center' }}
                 showArrow
                 openDelay={0}
@@ -157,7 +53,7 @@ export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
               </Tooltip>
             </Box>
           }
-          title="Validar Manualmente Orden de Pago"
+          title="Validar Voucher de Pago"
           placement="center"
           size="3xl"
           open={open}
@@ -209,7 +105,7 @@ export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
                 <Button
                   colorPalette={'green'}
                   variant={'solid'}
-                  //isLoading={isSaving}
+                  isLoading={isSaving}
                   size='sm'
                   onClick={handleValidate}
                 >
