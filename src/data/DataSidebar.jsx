@@ -8,6 +8,7 @@ import {
 	FiUserCheck,
 	FiList,
   FiDollarSign,
+  FiFileText,
 } from 'react-icons/fi';
 import { FaFileContract } from 'react-icons/fa';
 import { HiOutlineClipboardList } from 'react-icons/hi';
@@ -56,6 +57,12 @@ export const useDataSidebar = () => {
 					label: 'Postulantes',
 					permission: 'admissions.applicants.view',
 				},
+				{
+					href: '/admissions/evaluators',
+					icon: FiFileText,
+					label: 'Mis Asignaciones',
+					permission: 'admissions.evaluators.view',
+				}
 			],
 		},
 		{
