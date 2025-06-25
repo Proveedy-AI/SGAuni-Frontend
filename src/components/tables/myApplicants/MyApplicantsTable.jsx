@@ -43,8 +43,8 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 					: startIndex + index + 1}
 			</Table.Cell>
 			<Table.Cell>{item.admission_process_name}</Table.Cell>
-			<Table.Cell>{item.postgrade_name}</Table.Cell>
-			<Table.Cell>{item.postgrade_type}</Table.Cell>
+			<Table.Cell>{item.postgraduate_name}</Table.Cell>
+			<Table.Cell>{item.postgraduate_type}</Table.Cell>
 			<Table.Cell>{item.modality_display}</Table.Cell>
 
 			<Table.Cell>
@@ -134,7 +134,7 @@ export const MyApplicantsTable = ({ data, fetchData, permissions }) => {
 							<Table.ColumnHeader>
 								<SortableHeader
 									label='Programa'
-									columnKey='postgrade_name'
+									columnKey='postgraduate_name'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
@@ -142,7 +142,7 @@ export const MyApplicantsTable = ({ data, fetchData, permissions }) => {
 							<Table.ColumnHeader>
 								<SortableHeader
 									label='Tipo'
-									columnKey='postgrade_type'
+									columnKey='postgraduate_type'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
