@@ -47,8 +47,8 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 			end_date: endDate,
 			editable: true,
 		};
-		console.log(payload);
-		/*createAdmissions(payload, {
+
+		createAdmissions(payload, {
 			onSuccess: () => {
 				toaster.create({
 					title: 'Proceso registrado correctamente',
@@ -68,7 +68,7 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 					type: 'error',
 				});
 			},
-		});*/
+		});
 	};
 
 	const dataLevel = [
