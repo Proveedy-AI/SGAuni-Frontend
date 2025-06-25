@@ -41,7 +41,6 @@ FieldWithInputText.propTypes = {
 };
 
 export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
-	console.log(profile);
 	return (
 		<Grid
 			w='full'
