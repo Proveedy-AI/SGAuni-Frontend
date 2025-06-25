@@ -21,18 +21,30 @@ export const SettingsRoles = () => {
 	const { data: dataRoles, refetch: fetchRoles, isLoading } = useReadRoles();
 	const {
 		data: dataPermissions,
-		refetch: fetchPermissions,
+		fetchNextPage: fetchNextPermissions,
+		hasNextPage: hasNextPagePermissions,
+		isFetchingNextPage: isFetchingNextPermision,
 		isLoading: isLoadingPermission,
+		refetch: refetchPermissions,
 	} = useReadPermissions();
-	
+
+	const allPermissions =
+		dataPermissions?.pages?.flatMap((page) => page.results) ?? [];
+	const isFiltering = searchPermissionValue.trim().length > 0;
+
+	const filteredPermissions = allPermissions.filter((item) =>
+		item?.name
+			?.toLowerCase()
+			.includes(searchPermissionValue.trim().toLowerCase())
+	);
+
+	const totalCount = isFiltering
+		? filteredPermissions.length
+		: (dataPermissions?.pages?.[0]?.count ?? 0);
 
 	const filteredRoles = dataRoles?.results?.filter((item) =>
 		item?.name?.toLowerCase().includes(searchRoleValue.toLowerCase())
 	);
-	const filteredPermissions = dataPermissions?.results?.filter((item) =>
-		item?.name?.toLowerCase().includes(searchPermissionValue.toLowerCase())
-	);
-
 
 	return (
 		<Box spaceY='5'>
@@ -54,7 +66,7 @@ export const SettingsRoles = () => {
 				{tab === 1 ? (
 					<AddSettingsRoleForm fetchData={fetchRoles} />
 				) : (
-					<AddSettingsPermissionForm fetchData={fetchPermissions} />
+					<AddSettingsPermissionForm fetchData={refetchPermissions} />
 				)}
 			</Stack>
 
@@ -129,7 +141,12 @@ export const SettingsRoles = () => {
 						<SettingsPermissionsTable
 							isLoading={isLoadingPermission}
 							data={filteredPermissions}
-							fetchData={fetchPermissions}
+							fetchNextPage={fetchNextPermissions}
+							fetchData={refetchPermissions}
+							totalCount={totalCount}
+							hasNextPage={hasNextPagePermissions}
+							isFetchingNext={isFetchingNextPermision}
+							resetPageTrigger={searchPermissionValue}
 						/>
 					</Stack>
 				</Tabs.Content>
