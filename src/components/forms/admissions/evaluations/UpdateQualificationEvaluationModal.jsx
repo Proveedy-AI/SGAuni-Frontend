@@ -31,9 +31,11 @@ export const UpdateQualificationEvaluationModal = ({ data, fetchData }) => {
   }
   */
 
+  const [open, setOpen] = useState(false);
+  const [qualification, setQualification] = useState(data.qualification || '');
+ 
   const { mutateAsync: updateExam, isSaving } = useUpdateAdmissionEvaluation();
-
-
+  
   const handleUpdateQualification = async () => {
     if (qualification < 0 || qualification > 20) {
       toaster.create({
@@ -65,10 +67,6 @@ export const UpdateQualificationEvaluationModal = ({ data, fetchData }) => {
       },
     })
   }
-
-  const [open, setOpen] = useState(false);
-  const [qualification, setQualification] = useState(data.qualification || '');
-  console.log(qualification)
 
   return (
     <Modal

@@ -1,6 +1,6 @@
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { AdmissionApplicantsByProgramTable } from '@/components/tables/admissions';
-import { InputGroup } from '@/components/ui';
+import { Button, InputGroup, MenuContent, MenuItem, MenuRoot, MenuSeparator, MenuTrigger, Tooltip } from '@/components/ui';
 import { useReadAdmissionApplicants } from '@/hooks/admissions_applicants';
 import { useReadAdmissionProgramsById } from '@/hooks/admissions_programs';
 import { useProvideAuth } from '@/hooks/auth';
@@ -8,6 +8,7 @@ import {
 	Box,
 	Breadcrumb,
 	Heading,
+	HStack,
 	Input,
 	Span,
 	Stack,
@@ -83,6 +84,7 @@ export const AdmissionApplicantsByProgram = () => {
 				justify='space-between'
 			>
 				<Heading
+          w={'100%'}
 					size={{
 						xs: 'xs',
 						sm: 'md',
@@ -90,12 +92,27 @@ export const AdmissionApplicantsByProgram = () => {
 					}}
 					color={'uni.secondary'}
 				>
-					<Text>{dataProgram?.program_name}</Text>
-					<Span fontSize='md' color='gray.500'>
-						{isProgramLoading
-							? 'Cargando...'
-							: dataProgram?.admission_process_name}
-					</Span>
+					 <HStack w={'100%'} justifyContent={'space-between'} alignItems='center'>
+            <Box>
+              <Text>{dataProgram?.program_name}</Text>
+              <Span fontSize='md' color='gray.500'>
+                {isProgramLoading
+                  ? 'Cargando...'
+                  : dataProgram?.admission_process_name}
+              </Span>
+            </Box>
+            <MenuRoot>
+              <MenuTrigger>
+                <Button size="sm" colorScheme="blue">Acciones</Button>
+              </MenuTrigger>
+              <MenuContent>
+                <MenuItem onClick={() => alert('Exportar Excel')}>Exportar Excel</MenuItem>
+                <MenuItem onClick={() => alert('Otra acción')}>Otra acción</MenuItem>
+                <MenuSeparator />
+                <MenuItem onClick={() => alert('Ayuda')}>Ayuda</MenuItem>
+              </MenuContent>
+            </MenuRoot>
+          </HStack>
 				</Heading>
 			</Stack>
 
