@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { LuUpload, LuX, LuFile, LuEye } from 'react-icons/lu';
+import { Tooltip } from '.';
 
 export function CompactFileUpload({
 	name,
@@ -34,15 +35,15 @@ export function CompactFileUpload({
 			/>
 
 			<FileUpload.Context>
-				{({ acceptedFiles, clearFiles  }) => {
+				{({ acceptedFiles, clearFiles }) => {
 					const file = acceptedFiles[0];
 					const hasTempFile = !!file;
 					const hasDefaultFile = !!defaultFile;
 
 					const handleClear = () => {
-						clearFiles()
-						onChange?.(null);    // limpia en el componente padre
-						onClear?.();         // permite que el padre limpie el defaultFile si es necesario
+						clearFiles();
+						onChange?.(null); // limpia en el componente padre
+						onClear?.(); // permite que el padre limpie el defaultFile si es necesario
 					};
 
 					return (
@@ -64,29 +65,44 @@ export function CompactFileUpload({
 									<Text cursor='pointer' fontSize='xs' flex='1' isTruncated>
 										{file?.name || defaultFile?.split('/').pop()}
 									</Text>
-
-									<IconButton
-										as='a'
-										href={hasTempFile ? URL.createObjectURL(file) : defaultFile}
-										target='_blank'
-										rel='noopener noreferrer'
-										aria-label='Ver archivo'
-										variant='ghost'
-										size='xs'
-										color='uni.secondary'
+									<Tooltip
+										content='Ver Archivo'
+										positioning={{ placement: 'bottom-center' }}
+										showArrow
+										openDelay={0}
 									>
-										<LuEye />
-									</IconButton>
+										<IconButton
+											as='a'
+											href={
+												hasTempFile ? URL.createObjectURL(file) : defaultFile
+											}
+											target='_blank'
+											rel='noopener noreferrer'
+											aria-label='Ver archivo'
+											variant='ghost'
+											size='xs'
+											color='uni.secondary'
+										>
+											<LuEye />
+										</IconButton>
+									</Tooltip>
 
-									<IconButton
-										aria-label='Quitar archivo'
-										variant='ghost'
-										size='xs'
-										color='uni.secondary'
-										onClick={handleClear}
+									<Tooltip
+										content='Eliminar Archivo'
+										positioning={{ placement: 'bottom-center' }}
+										showArrow
+										openDelay={0}
 									>
-										<LuX />
-									</IconButton>
+										<IconButton
+											aria-label='Quitar archivo'
+											variant='ghost'
+											size='xs'
+											color='uni.secondary'
+											onClick={handleClear}
+										>
+											<LuX />
+										</IconButton>
+									</Tooltip>
 								</>
 							) : (
 								<>
@@ -119,7 +135,7 @@ export function CompactFileUpload({
 								</>
 							)}
 						</Flex>
-				 );
+					);
 				}}
 			</FileUpload.Context>
 		</FileUpload.Root>
