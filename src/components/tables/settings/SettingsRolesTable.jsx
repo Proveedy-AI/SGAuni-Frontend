@@ -21,82 +21,93 @@ import { SortableHeader } from '@/components/ui/SortableHeader';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
 
-const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
-	const [open, setOpen] = useState(false);
+const Row = memo(
+	({
+		item,
+		fetchData,
+		startIndex,
+		index,
+		sortConfig,
+		data,
+		dataPermissions,
+	}) => {
+		const [open, setOpen] = useState(false);
 
-	const { mutateAsync: remove, isPending: loadingDelete } = useDeleteRole();
+		const { mutateAsync: remove, isPending: loadingDelete } = useDeleteRole();
 
-	const handleDelete = async (id) => {
-		try {
-			await remove(id);
-			toaster.create({
-				title: 'Rol eliminado correctamente',
-				type: 'success',
-			});
-			setOpen(false);
-			fetchData();
-		} catch (error) {
-			toaster.create({
-				title: error.message,
-				type: 'error',
-			});
-		}
-	};
+		const handleDelete = async (id) => {
+			try {
+				await remove(id);
+				toaster.create({
+					title: 'Rol eliminado correctamente',
+					type: 'success',
+				});
+				setOpen(false);
+				fetchData();
+			} catch (error) {
+				toaster.create({
+					title: error.message,
+					type: 'error',
+				});
+			}
+		};
 
-	return (
-		<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
-			<Table.Cell>
-				{sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
-					? data.length - (startIndex + index)
-					: startIndex + index + 1}
-			</Table.Cell>
-			<Table.Cell>{item.name}</Table.Cell>
-			<Table.Cell>
-				<HStack justify='space-between'>
-					<Group>
-						<UpdateSettingsRoleForm data={item} fetchData={fetchData} />
+		return (
+			<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
+				<Table.Cell>
+					{sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
+						? data.length - (startIndex + index)
+						: startIndex + index + 1}
+				</Table.Cell>
+				<Table.Cell>{item.name}</Table.Cell>
+				<Table.Cell>
+					<HStack justify='space-between'>
+						<Group>
+							<UpdateSettingsRoleForm data={item} fetchData={fetchData} />
 
-						<AssignSettingsRolePermissionsForm
-							data={item}
-							fetchData={fetchData}
-						/>
+							<AssignSettingsRolePermissionsForm
+								dataPermissions={dataPermissions}
+								data={item}
+								fetchData={fetchData}
+							/>
 
-						<ConfirmModal
-							title='Eliminar rol'
-							placement='center'
-							trigger={
-								<Box>
-									<Tooltip
-										content='Eliminar'
-										positioning={{ placement: 'bottom-center' }}
-										showArrow
-										openDelay={0}
-									>
-										<IconButton colorPalette='red' size='xs'>
-											<FiTrash2 />
-										</IconButton>
-									</Tooltip>
-								</Box>
-							}
-							open={open}
-							onOpenChange={(e) => setOpen(e.open)}
-							onConfirm={() => handleDelete(item.id)}
-							loading={loadingDelete}
-						>
-							<Text>
-								¿Estás seguro que quieres eliminar el
-								<Span fontWeight='semibold' px='1'>
-									{item.name}
-								</Span>
-								de la lista de roles?
-							</Text>
-						</ConfirmModal>
-					</Group>
-				</HStack>
-			</Table.Cell>
-		</Table.Row>
-	);
-});
+							<ConfirmModal
+								title='Eliminar rol'
+								placement='center'
+								trigger={
+									<Box>
+										<Tooltip
+											content='Eliminar'
+											positioning={{ placement: 'bottom-center' }}
+											showArrow
+											openDelay={0}
+										>
+											<IconButton colorPalette='red' size='xs'>
+												<FiTrash2 />
+											</IconButton>
+										</Tooltip>
+									</Box>
+								}
+								open={open}
+								onOpenChange={(e) => setOpen(e.open)}
+								onConfirm={() => handleDelete(item.id)}
+								loading={loadingDelete}
+							>
+								<Text>
+									¿Estás seguro que quieres eliminar el
+									<Span fontWeight='semibold' px='1'>
+										{item.name}
+									</Span>
+									de la lista de roles?
+								</Text>
+							</ConfirmModal>
+						</Group>
+					</HStack>
+				</Table.Cell>
+			</Table.Row>
+		);
+	}
+);
 
 Row.displayName = 'Row';
 
@@ -107,9 +118,15 @@ Row.propTypes = {
 	index: PropTypes.number,
 	sortConfig: PropTypes.object,
 	data: PropTypes.array,
+	dataPermissions: PropTypes.array,
 };
 
-export const SettingsRolesTable = ({ data, fetchData, isLoading }) => {
+export const SettingsRolesTable = ({
+	data,
+	fetchData,
+	isLoading,
+	dataPermissions,
+}) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [currentPage, setCurrentPage] = useState(1);
 	const startIndex = (currentPage - 1) * pageSize;
@@ -159,6 +176,7 @@ export const SettingsRolesTable = ({ data, fetchData, isLoading }) => {
 									key={item.id}
 									item={item}
 									data={data}
+									dataPermissions={dataPermissions}
 									sortConfig={sortConfig}
 									fetchData={fetchData}
 									startIndex={startIndex}
@@ -195,4 +213,5 @@ SettingsRolesTable.propTypes = {
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
 	isLoading: PropTypes.bool,
+	dataPermissions: PropTypes.array,
 };
