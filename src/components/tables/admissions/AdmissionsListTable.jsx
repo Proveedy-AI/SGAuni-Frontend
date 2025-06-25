@@ -8,7 +8,6 @@ import { SortableHeader } from '@/components/ui/SortableHeader';
 import { useDeleteAdmissions } from '@/hooks/admissions_proccess';
 import useSortedData from '@/utils/useSortedData';
 import { Box, HStack, IconButton, Span, Table, Text } from '@chakra-ui/react';
-import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
 import { FiTrash2 } from 'react-icons/fi';
