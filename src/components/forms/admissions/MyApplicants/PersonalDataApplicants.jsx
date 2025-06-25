@@ -1,5 +1,7 @@
 import { ReactSelect } from '@/components/select';
 import { Field, Radio, RadioGroup, toaster } from '@/components/ui';
+import { CompactFileUpload } from '@/components/ui/CompactFileInput';
+import { FileViewActions } from '@/components/ui/FileViewActions';
 import { useUpdatePerson } from '@/hooks';
 import { useReadDisabilities } from '@/hooks/disabilities';
 import { useReadUbigeos } from '@/hooks/ubigeos';
@@ -187,79 +189,34 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 			</Text>
 			<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
 				{!formData?.document_path || formData?.document_path === '' ? (
-					<Field label='Archivo'>
-						<Box
-							as='label'
-							htmlFor='pdf-upload'
-							borderWidth='2px'
-							borderStyle='dashed'
-							borderColor={'uni.secondary'}
-							borderRadius='lg'
-							bg='gray.50'
-							_hover={{
-								borderColor: 'uni.secondary',
-								bg: 'gray.10',
-							}}
-							p={4}
-							w='100%'
-							cursor='pointer'
-							textAlign='center'
-						>
-							<Flex direction='column' align='center' justify='center' gap={2}>
-								<Icon as={FiUploadCloud} boxSize={6} color='teal.400' />
-								<Text fontSize='sm' color='gray.600'>
-									{filePDF
-										? filePDF.name
-										: 'Haz clic para subir un archivo PDF'}
-								</Text>
-								<Input
-									id='pdf-upload'
-									type='file'
-									accept='application/pdf'
-									hidden
-									onChange={(e) => {
-										const file = e.target.files[0];
-										if (file?.type === 'application/pdf') {
-											setFilePDF(file);
-											updateProfileField('document_path', file);
-										} else {
-											toaster.create({
-												title: 'Solo se permiten archivos PDF.',
-												type: 'error',
-											});
-										}
-									}}
-								/>
-							</Flex>
-						</Box>
-					</Field>
+					<CompactFileUpload
+						name='document_path'
+						accept='.pdf'
+						placeholder='Haz clic para subir un archivo PDF'
+						onChange={(file) => {
+							if (file?.type === 'application/pdf') {
+								setFilePDF(file);
+								updateProfileField('document_path', file);
+							} else {
+								toaster.create({
+									title: 'Solo se permiten archivos PDF.',
+									type: 'error',
+								});
+							}
+						}}
+					/>
 				) : (
-					<Flex gap={2} justify='flex-start'>
-						<Button
-							size='xs'
-							colorScheme='blue'
-							as='a'
-							href={formData?.document_path}
-							target='_blank'
-							rel='noopener noreferrer'
-						>
-							Ver documento
-						</Button>
-						<Button
-							size='xs'
-							colorScheme='red'
-							onClick={() => {
-								setFilePDF(null);
-								updateProfileField('document_path', '');
-								setFormData((prev) => ({
-									...prev,
-									document_path: '',
-								}));
-							}}
-						>
-							Quitar documento
-						</Button>
-					</Flex>
+					<FileViewActions
+						fileUrl={formData.document_path}
+						onRemove={() => {
+							setFilePDF(null);
+							updateProfileField('document_path', '');
+							setFormData((prev) => ({
+								...prev,
+								document_path: '',
+							}));
+						}}
+					/>
 				)}
 			</SimpleGrid>
 
