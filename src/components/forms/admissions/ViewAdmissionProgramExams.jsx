@@ -4,10 +4,10 @@ import { Box, Group, IconButton, Spinner, Stack, Table } from '@chakra-ui/react'
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
 import { FiCheckCircle } from 'react-icons/fi';
-import { AverageScoresModal, /*UpdateQualificationEvaluationModal,*/ ViewEvaluationDetailModal } from './evaluations';
+import { AverageScoresModal, UpdateQualificationEvaluationModal, ViewEvaluationDetailModal } from './evaluations';
 
 export const ViewAdmissionProgramExams = ({ item, fetchData }) => {
-  const { data: dataEvaluationsByApplication, isLoading } = useReadAdmissionEvaluationsByApplication(item.id);
+  const { data: dataEvaluationsByApplication, refetch: fetchExams,  isLoading } = useReadAdmissionEvaluationsByApplication(item.id);
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
 
@@ -64,7 +64,7 @@ export const ViewAdmissionProgramExams = ({ item, fetchData }) => {
                     <Table.Cell>
                       <Group gap={2}>
                         <ViewEvaluationDetailModal data={evaluation} />
-                        {/* <UpdateQualificationEvaluationModal data={evaluation} fetchData={fetchData} /> */}
+                        <UpdateQualificationEvaluationModal data={evaluation} fetchData={fetchExams} />
                       </Group>
                     </Table.Cell>
                   </Table.Row>

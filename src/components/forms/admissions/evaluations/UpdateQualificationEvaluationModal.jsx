@@ -3,12 +3,12 @@ import {
   Box,
   IconButton,
   Input,
-  SimpleGrid,
   Stack,
 } from '@chakra-ui/react';
-import { Field, Modal, Tooltip } from '@/components/ui';
+import { Field, Modal, toaster, Tooltip } from '@/components/ui';
 import { FiCheckCircle } from 'react-icons/fi';
 import { useState } from 'react';
+import { useUpdateAdmissionEvaluation } from '@/hooks/admissions_evaluations';
 
 export const UpdateQualificationEvaluationModal = ({ data, fetchData }) => {
   /*
@@ -31,7 +31,44 @@ export const UpdateQualificationEvaluationModal = ({ data, fetchData }) => {
   }
   */
 
+  const { mutateAsync: updateExam, isSaving } = useUpdateAdmissionEvaluation();
+
+
+  const handleUpdateQualification = async () => {
+    if (qualification < 0 || qualification > 20) {
+      toaster.create({
+        title: 'la calificación debe estar entre 0 y 20',
+        type: 'warning',
+      })
+      return;
+    }
+
+    const payload = {
+      application: data?.application,
+      qualification: qualification
+    }
+
+    updateExam({ id: data.id, payload }, {
+      onSuccess: () => {
+        toaster.create({
+          title: 'Calificación actualizada correctamente',
+          type: 'success',
+        });
+        fetchData();
+        setOpen(false);
+      },
+      onError: (error) => {
+        toaster.create({
+          title: error?.message || 'Error al actualizar la calificación',
+          type: 'error',
+        });
+      },
+    })
+  }
+
   const [open, setOpen] = useState(false);
+  const [qualification, setQualification] = useState(data.qualification || '');
+  console.log(qualification)
 
   return (
     <Modal
@@ -58,34 +95,29 @@ export const UpdateQualificationEvaluationModal = ({ data, fetchData }) => {
       open={open}
       onOpenChange={(e) => setOpen(e.open)}
       size='4xl'
-      hiddenFooter={true}
+      isSaving={isSaving}
+      onSave={handleUpdateQualification}
     >
       <Stack css={{ '--field-label-width': '140px' }}>
         <Field label='Nombre de la evaluación:'>
-          <Input value={data.type_application_display} />
+          <Input readOnly value={data.type_application_display} />
         </Field>
 
         <Field label='Evaluador asignado:'>
-          <Input value={data.evaluator_full_name || 'Sin evaluador'} size='xs' />
+          <Input readOnly value={data.evaluator_full_name || 'Sin evaluador'} size='xs' />
         </Field>
 
-        <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-          <Field label='Inicio de examen:'>
-            <Input value={data.start_date || ''} size='xs' />
-          </Field>
-
-          <Field label='Fin de examen:'>
-            <Input value={data.end_date || ''} size='xs' />
-          </Field>
-
-          <Field label='Hora:'>
-            <Input value={data.evaluation_time || ''} size='xs' />
-          </Field>
-
-          <Field label='Estado:'>
-            <Input value={data.status_qualification_display || ''} size='xs' />
-          </Field>
-        </SimpleGrid>
+        <Field label='Ingresar calificación: (0-20)'>
+          <Input
+            type='number'
+            min={0}
+            max={20}
+            placeholder='Calificación'
+            size='xs'
+            value={qualification}
+            onChange={(e) => setQualification(e.target.value)}
+          />
+        </Field>
       </Stack>
     </Modal>
   );
