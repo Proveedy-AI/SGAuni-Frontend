@@ -24,6 +24,7 @@ export const SettingsRoles = () => {
 		refetch: fetchPermissions,
 		isLoading: isLoadingPermission,
 	} = useReadPermissions();
+	
 
 	const filteredRoles = dataRoles?.results?.filter((item) =>
 		item?.name?.toLowerCase().includes(searchRoleValue.toLowerCase())
@@ -31,6 +32,7 @@ export const SettingsRoles = () => {
 	const filteredPermissions = dataPermissions?.results?.filter((item) =>
 		item?.name?.toLowerCase().includes(searchPermissionValue.toLowerCase())
 	);
+
 
 	return (
 		<Box spaceY='5'>
@@ -94,6 +96,7 @@ export const SettingsRoles = () => {
 						</Stack>
 
 						<SettingsRolesTable
+							dataPermissions={filteredPermissions}
 							isLoading={isLoading}
 							data={filteredRoles}
 							fetchData={fetchRoles}
