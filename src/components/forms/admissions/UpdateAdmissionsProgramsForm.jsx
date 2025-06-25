@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
-import { Box, IconButton, Input, SimpleGrid, Stack } from '@chakra-ui/react';
+import { Box, IconButton, SimpleGrid, Stack } from '@chakra-ui/react';
 import { Field, Modal, toaster, Tooltip } from '@/components/ui';
 import { FiEdit2 } from 'react-icons/fi';
 import { ReactSelect } from '@/components/select';
 import { useReadPrograms } from '@/hooks';
 import { useUpdateAdmissionsPrograms } from '@/hooks/admissions_programs';
 import { useReadUsers } from '@/hooks/users';
+import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
+import { format } from 'date-fns';
 
 export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 	const contentRef = useRef();
@@ -232,66 +234,77 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 					/>
 				</Field>
 				<Field label='Inicio de semestre:'>
-					<Input
-						value={semesterStart}
-						onChange={(e) => setSemesterStart(e.target.value)}
-						type='date'
-						size='xs'
+					<CustomDatePicker
+						selectedDate={semesterStart}
+						onDateChange={(date) => {
+							const formatted = format(date, 'yyyy-MM-dd');
+							setSemesterStart(formatted);
+						}}
+						buttonSize='xs'
+						size={{ base: '330px', md: '850px' }}
 					/>
 				</Field>
 
 				<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
 					<Field label='Inicio de inscripción:'>
-						<Input
-							value={registrationStart}
-							onChange={(e) => setRegistrationStart(e.target.value)}
-							type='date'
-							size='xs'
+						<CustomDatePicker
+							selectedDate={registrationStart}
+							onDateChange={(date) =>
+								setRegistrationStart(format(date, 'yyyy-MM-dd'))
+							}
+							buttonSize='xs'
+							size={{ base: '330px', md: '420px' }}
 						/>
 					</Field>
 
 					<Field label='Fin de inscripción:'>
-						<Input
-							value={registrationEnd}
-							onChange={(e) => setRegistrationEnd(e.target.value)}
-							type='date'
-							size='xs'
+						<CustomDatePicker
+							selectedDate={registrationEnd}
+							onDateChange={(date) =>
+								setRegistrationEnd(format(date, 'yyyy-MM-dd'))
+							}
+							buttonSize='xs'
+							size={{ base: '330px', md: '420px' }}
 						/>
 					</Field>
 
 					<Field label='Inicio de examen:'>
-						<Input
-							value={examStart}
-							onChange={(e) => setExamStart(e.target.value)}
-							type='date'
-							size='xs'
+						<CustomDatePicker
+							selectedDate={examStart}
+							onDateChange={(date) => setExamStart(format(date, 'yyyy-MM-dd'))}
+							buttonSize='xs'
+							size={{ base: '330px', md: '420px' }}
 						/>
 					</Field>
 
 					<Field label='Fin de examen:'>
-						<Input
-							value={examEnd}
-							onChange={(e) => setExamEnd(e.target.value)}
-							type='date'
-							size='xs'
+						<CustomDatePicker
+							selectedDate={examEnd}
+							onDateChange={(date) => setExamEnd(format(date, 'yyyy-MM-dd'))}
+							buttonSize='xs'
+							size={{ base: '330px', md: '420px' }}
 						/>
 					</Field>
 
 					<Field label='Inicio Pre-Maestría:'>
-						<Input
-							value={preMasterStart}
-							onChange={(e) => setPreMasterStart(e.target.value)}
-							type='date'
-							size='xs'
+						<CustomDatePicker
+							selectedDate={preMasterStart}
+							onDateChange={(date) =>
+								setPreMasterStart(format(date, 'yyyy-MM-dd'))
+							}
+							buttonSize='xs'
+							size={{ base: '330px', md: '420px' }}
 						/>
 					</Field>
 
 					<Field label='Fin Pre-Maestría:'>
-						<Input
-							value={preMasterEnd}
-							onChange={(e) => setPreMasterEnd(e.target.value)}
-							type='date'
-							size='xs'
+						<CustomDatePicker
+							selectedDate={preMasterEnd}
+							onDateChange={(date) =>
+								setPreMasterEnd(format(date, 'yyyy-MM-dd'))
+							}
+							buttonSize='xs'
+							size={{ base: '330px', md: '420px' }}
 						/>
 					</Field>
 				</SimpleGrid>
