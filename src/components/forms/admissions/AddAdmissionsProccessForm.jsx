@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
-import { Button, Input, Stack } from '@chakra-ui/react';
+import { Box, Button, Input, Stack } from '@chakra-ui/react';
 import { Field, Modal, toaster } from '@/components/ui';
 import { FiPlus } from 'react-icons/fi';
 import { useCreateAdmissions } from '@/hooks/admissions_proccess';
 import { ReactSelect } from '@/components/select';
+import { CustomDatePicker } from '@/components/ui/customDatepicker';
+import { format } from 'date-fns';
 
 export const AddAdmissionsProccessForm = ({ fetchData }) => {
 	const contentRef = useRef();
@@ -13,8 +15,18 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 	const [startDate, setStartDate] = useState('');
 	const [endDate, setEndDate] = useState('');
 	const [selectedLevel, setSelectedLevel] = useState(null);
-
+	console.log(startDate, endDate);
 	const { mutate: createAdmissions, isPending } = useCreateAdmissions();
+
+	const handleDateChange = (field) => (date) => {
+		const formatted = format(date, 'yyyy-MM-dd');
+		console.log(`Fecha ${field} para API:`, formatted);
+		if (field === 'start') {
+			setStartDate(formatted);
+		} else if (field === 'end') {
+			setEndDate(formatted);
+		}
+	};
 
 	const handleSubmitData = (e) => {
 		e.preventDefault();
@@ -35,8 +47,8 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 			end_date: endDate,
 			editable: true,
 		};
-
-		createAdmissions(payload, {
+		console.log(payload);
+		/*createAdmissions(payload, {
 			onSuccess: () => {
 				toaster.create({
 					title: 'Proceso registrado correctamente',
@@ -56,7 +68,7 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 					type: 'error',
 				});
 			},
-		});
+		});*/
 	};
 
 	const dataLevel = [
@@ -128,24 +140,28 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
 					label='Fecha Inicio'
 				>
-					<Input
-						value={startDate}
-						onChange={(e) => setStartDate(e.target.value)}
-						type='date'
-						size='xs'
-					/>
+					<Box w={'full'}>
+						<CustomDatePicker
+							selectedDate={startDate}
+							onDateChange={handleDateChange('start')}
+							placeholder='Selecciona una fecha'
+							size={{ base: '330px', md: '470px' }}
+						/>
+					</Box>
 				</Field>
 
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
 					label='Fecha Fin:'
 				>
-					<Input
-						value={endDate}
-						onChange={(e) => setEndDate(e.target.value)}
-						type='date'
-						size='xs'
-					/>
+					<Box w={'full'}>
+						<CustomDatePicker
+							selectedDate={endDate}
+							onDateChange={handleDateChange('end')}
+							placeholder='Selecciona una fecha'
+							size={{ base: '330px', md: '470px' }}
+						/>
+					</Box>
 				</Field>
 			</Stack>
 		</Modal>
