@@ -69,8 +69,8 @@ const Row = memo(
 				</Table.Cell>
 				<Table.Cell>{item.admission_process_name}</Table.Cell>
 				<Table.Cell>{item.admission_level_display}</Table.Cell>
-				<Table.Cell>{format(new Date(item.start_date), 'dd/MM/yy')}</Table.Cell>
-				<Table.Cell>{format(new Date(item.end_date), 'dd/MM/yy')}</Table.Cell>
+				<Table.Cell>{item.start_date}</Table.Cell>
+				<Table.Cell>{item.end_date}</Table.Cell>
 				<Table.Cell>
 					<a
 						href={`${import.meta.env.VITE_DOMAIN_MAIN}${item.uri_url}`}
@@ -139,6 +139,8 @@ export const AdmissionsListTable = ({
 	const [sortConfig, setSortConfig] = useState(null);
 	const sortedData = useSortedData(data, sortConfig);
 	const visibleRows = sortedData?.slice(startIndex, endIndex);
+
+	console.log(data);
 	return (
 		<Box
 			bg={{ base: 'white', _dark: 'its.gray.500' }}
