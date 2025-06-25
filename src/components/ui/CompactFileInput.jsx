@@ -20,6 +20,10 @@ export function CompactFileUpload({
 	defaultFile,
 	onClear, // <- opcional para controlar desde afuera
 }) {
+	const truncateFilename = (name, maxLength = 30) => {
+		if (!name) return '';
+		return name.length > maxLength ? name.slice(0, maxLength) + '...' : name;
+	};
 	return (
 		<FileUpload.Root
 			name={name}
@@ -60,10 +64,26 @@ export function CompactFileUpload({
 							_hover={{ bg: 'gray.100' }}
 						>
 							{hasTempFile || hasDefaultFile ? (
-								<>
+								<Flex
+									align='center'
+									gap={2}
+									w='100%'
+									overflow='hidden'
+									textOverflow='ellipsis'
+								>
 									<Icon as={LuFile} color='gray.500' boxSize={5} />
-									<Text cursor='pointer' fontSize='xs' flex='1' isTruncated>
-										{file?.name || defaultFile?.split('/').pop()}
+									<Text
+										cursor='pointer'
+										fontSize='xs'
+										flex='1'
+										isTruncated
+										whiteSpace='nowrap'
+										overflow='hidden'
+										textOverflow='ellipsis'
+									>
+										{truncateFilename(
+											file?.name || defaultFile?.split('/').pop()
+										)}
 									</Text>
 									<Tooltip
 										content='Ver Archivo'
@@ -103,7 +123,7 @@ export function CompactFileUpload({
 											<LuX />
 										</IconButton>
 									</Tooltip>
-								</>
+								</Flex>
 							) : (
 								<>
 									<Icon as={LuUpload} color='gray.400' boxSize={5} />
