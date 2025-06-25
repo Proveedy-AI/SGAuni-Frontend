@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
-import { Box, Button, Input, Stack } from '@chakra-ui/react';
+import { Button, Input, Stack } from '@chakra-ui/react';
 import { Field, Modal, toaster } from '@/components/ui';
 import { FiPlus } from 'react-icons/fi';
 import { useCreateAdmissions } from '@/hooks/admissions_proccess';
@@ -140,28 +140,24 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
 					label='Fecha Inicio'
 				>
-					<Box w={'full'}>
-						<CustomDatePicker
-							selectedDate={startDate}
-							onDateChange={handleDateChange('start')}
-							placeholder='Selecciona una fecha'
-							size={{ base: '330px', md: '470px' }}
-						/>
-					</Box>
+					<CustomDatePicker
+						selectedDate={startDate}
+						onDateChange={handleDateChange('start')}
+						placeholder='Selecciona una fecha'
+						size={{ base: '330px', md: '470px' }}
+					/>
 				</Field>
 
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
 					label='Fecha Fin:'
 				>
-					<Box w={'full'}>
-						<CustomDatePicker
-							selectedDate={endDate}
-							onDateChange={handleDateChange('end')}
-							placeholder='Selecciona una fecha'
-							size={{ base: '330px', md: '470px' }}
-						/>
-					</Box>
+					<CustomDatePicker
+						selectedDate={endDate}
+						onDateChange={handleDateChange('end')}
+						placeholder='Selecciona una fecha'
+						size={{ base: '330px', md: '470px' }}
+					/>
 				</Field>
 			</Stack>
 		</Modal>

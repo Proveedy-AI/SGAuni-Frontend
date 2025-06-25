@@ -108,7 +108,7 @@ export const AdmissionsMyPrograms = () => {
 				</InputGroup>
 				{permissions?.includes('admissions.myprograms.create') && (
 					<AddAdmissionsProgramsForm
-						id={id}
+						id={decrypted}
 						profileId={profile?.id}
 						fetchData={fetchAdmissionsPrograms}
 					/>
