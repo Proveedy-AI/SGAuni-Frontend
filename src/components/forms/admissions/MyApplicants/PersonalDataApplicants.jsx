@@ -1,7 +1,6 @@
 import { ReactSelect } from '@/components/select';
 import { Field, Radio, RadioGroup, toaster } from '@/components/ui';
 import { CompactFileUpload } from '@/components/ui/CompactFileInput';
-import { FileViewActions } from '@/components/ui/FileViewActions';
 import { useUpdatePerson } from '@/hooks';
 import { useReadDisabilities } from '@/hooks/disabilities';
 import { useReadUbigeos } from '@/hooks/ubigeos';
@@ -185,34 +184,16 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 				1. Subir foto de documento:
 			</Text>
 			<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-				{!formData?.document_path || formData?.document_path === '' ? (
-					<CompactFileUpload
-						name='document_path'
-						accept='.pdf'
-						placeholder='Haz clic para subir un archivo PDF'
-						onChange={(file) => {
-							if (file?.type === 'application/pdf') {
-								updateProfileField('document_path', file);
-							} else {
-								toaster.create({
-									title: 'Solo se permiten archivos PDF.',
-									type: 'error',
-								});
-							}
-						}}
-					/>
-				) : (
-					<FileViewActions
-						fileUrl={formData.document_path}
-						onRemove={() => {
-							updateProfileField('document_path', '');
-							setFormData((prev) => ({
-								...prev,
-								document_path: '',
-							}));
-						}}
-					/>
-				)}
+				<CompactFileUpload
+					name='document_path'
+					onChange={(file) => updateProfileField('document_path', file)}
+					defaultFile={
+						typeof formData.document_path === 'string'
+							? formData.document_path
+							: undefined
+					}
+					onClear={() => updateProfileField('document_path', null)}
+				/>
 			</SimpleGrid>
 
 			<SimpleGrid columns={{ base: 1, md: 2 }} gap={4} mt={4}>
