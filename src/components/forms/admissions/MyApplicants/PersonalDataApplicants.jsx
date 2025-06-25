@@ -11,7 +11,6 @@ import {
 	Button,
 	Flex,
 	Heading,
-	Icon,
 	Input,
 	SimpleGrid,
 	Stack,
@@ -19,12 +18,10 @@ import {
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-import { FiUploadCloud } from 'react-icons/fi';
 
 export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 	const { mutate: update } = useUpdatePerson();
 	const [loadingUpdate, setloadingUpdate] = useState(false);
-	const [filePDF, setFilePDF] = useState(null);
 	const { data: dataUbigeo, isLoading: loadingUbigeo } = useReadUbigeos();
 	const { data: dataDisabilities, isLoading: loadingDisabilities } =
 		useReadDisabilities();
@@ -195,7 +192,6 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 						placeholder='Haz clic para subir un archivo PDF'
 						onChange={(file) => {
 							if (file?.type === 'application/pdf') {
-								setFilePDF(file);
 								updateProfileField('document_path', file);
 							} else {
 								toaster.create({
@@ -209,7 +205,6 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 					<FileViewActions
 						fileUrl={formData.document_path}
 						onRemove={() => {
-							setFilePDF(null);
 							updateProfileField('document_path', '');
 							setFormData((prev) => ({
 								...prev,
