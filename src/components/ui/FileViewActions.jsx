@@ -5,7 +5,7 @@ import { Tooltip } from '.';
 
 export function FileViewActions({ fileUrl, onRemove }) {
 	return (
-		<HStack spacing={1}>
+		<HStack spacing={1} w='full'>
 			<Tooltip
 				content='Ver Archivo'
 				positioning={{ placement: 'bottom-center' }}
@@ -20,7 +20,7 @@ export function FileViewActions({ fileUrl, onRemove }) {
 					rel='noopener noreferrer'
 					size='sm'
 					colorPalette='blue'
-                     px={2}
+					px={2}
 					aria-label='Ver archivo'
 				>
 					<LuFile /> Ver archivo
@@ -37,9 +37,9 @@ export function FileViewActions({ fileUrl, onRemove }) {
 					onClick={onRemove}
 					size='sm'
 					colorPalette='red'
-                    variant={'outline'}
+					variant={'outline'}
 					aria-label='Quitar archivo'
-                    px={2}
+					px={2}
 				>
 					<LuTrash /> Quitar archivo
 				</IconButton>
