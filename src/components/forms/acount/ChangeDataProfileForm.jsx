@@ -11,6 +11,8 @@ import {
 import { Field } from '@/components/ui';
 import PropTypes from 'prop-types';
 import { ReactSelect } from '@/components/select';
+import { CompactFileUpload } from '@/components/ui/CompactFileInput';
+import { FileViewActions } from '@/components/ui/FileViewActions';
 
 const FieldWithInputText = ({ label, field, value, updateProfileField }) => {
 	return (
@@ -40,6 +42,7 @@ FieldWithInputText.propTypes = {
 };
 
 export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
+	console.log(profile);
 	return (
 		<Grid
 			w='full'
@@ -122,35 +125,15 @@ export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
 						label='Curriculum:'
 					>
 						{!profile.path_cv ? (
-							<Input
-								type='file'
-								accept='application/pdf'
-								size='sx'
-								onChange={(e) => {
-									const file = e.target.files?.[0];
-									updateProfileField('path_cv', file);
-								}}
+							<CompactFileUpload
+								name='path_cv'
+								onChange={(file) => updateProfileField('path_cv', file)}
 							/>
 						) : (
-							<Flex gap={2} justify='flex-start'>
-								<Button
-									size='xs'
-									colorScheme='blue'
-									as='a'
-									href={profile.path_cv || '#'}
-									target='_blank'
-									rel='noopener noreferrer'
-								>
-									Ver CV
-								</Button>
-								<Button
-									size='xs'
-									colorScheme='red'
-									onClick={() => updateProfileField('path_cv', '')}
-								>
-									Quitar CV
-								</Button>
-							</Flex>
+							<FileViewActions
+								fileUrl={profile.path_cv}
+								onRemove={() => updateProfileField('path_cv', '')}
+							/>
 						)}
 					</Field>
 
@@ -159,35 +142,17 @@ export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
 						label='Título o grado:'
 					>
 						{!profile.path_grade ? (
-							<Input
-								type='file'
-								accept='application/pdf'
-								size='sx'
-								onChange={(e) => {
-									const file = e.target.files?.[0];
+							<CompactFileUpload
+								name='path_grade'
+								onChange={(file) => {
 									updateProfileField('path_grade', file);
 								}}
 							/>
 						) : (
-							<Flex gap={2} justify='flex-start'>
-								<Button
-									size='xs'
-									colorScheme='blue'
-									as='a'
-									href={profile.path_grade || '#'}
-									target='_blank'
-									rel='noopener noreferrer'
-								>
-									Ver Título
-								</Button>
-								<Button
-									size='xs'
-									colorScheme='red'
-									onClick={() => updateProfileField('path_grade', '')}
-								>
-									Quitar Título
-								</Button>
-							</Flex>
+							<FileViewActions
+								fileUrl={profile.path_grade}
+								onRemove={() => updateProfileField('path_grade', '')}
+							/>
 						)}
 					</Field>
 				</Stack>
