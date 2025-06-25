@@ -8,7 +8,6 @@ import { SortableHeader } from '@/components/ui/SortableHeader';
 import useSortedData from '@/utils/useSortedData';
 
 import { Badge, Box, HStack, Table } from '@chakra-ui/react';
-import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
 
