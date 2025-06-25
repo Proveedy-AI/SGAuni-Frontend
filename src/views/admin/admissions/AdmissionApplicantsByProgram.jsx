@@ -1,6 +1,7 @@
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
+import { GeneratePdfApliccationsModal } from '@/components/forms/admissions';
 import { AdmissionApplicantsByProgramTable } from '@/components/tables/admissions';
-import { Button, InputGroup, MenuContent, MenuItem, MenuRoot, MenuSeparator, MenuTrigger, Tooltip } from '@/components/ui';
+import { Button, InputGroup, MenuContent, MenuItem, MenuRoot, MenuTrigger } from '@/components/ui';
 import { useReadAdmissionApplicants } from '@/hooks/admissions_applicants';
 import { useReadAdmissionProgramsById } from '@/hooks/admissions_programs';
 import { useProvideAuth } from '@/hooks/auth';
@@ -14,11 +15,43 @@ import {
 	Stack,
 	Text,
 } from '@chakra-ui/react';
+import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { LiaSlashSolid } from 'react-icons/lia';
 import { useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router';
+
+export const AdmissionApplicantsMenu = ({ data }) => {
+  const [openGeneratePdfModal, setOpenGeneratePdfModal] = useState(false);
+  
+  return (
+    <Box>
+      <MenuRoot>
+        <MenuTrigger>
+          <Button 
+            size="sm" 
+            bg="white" 
+            color="black" 
+            border={'1px solid'}
+            _hover={{ bg: 'gray.100' }}
+          >
+            Más Acciones
+          </Button>
+        </MenuTrigger>
+        <MenuContent>
+          <MenuItem onClick={() => setOpenGeneratePdfModal(true)}>Generar acta de notas</MenuItem>
+        </MenuContent>
+      </MenuRoot>
+
+      <GeneratePdfApliccationsModal data={data} open={openGeneratePdfModal} setOpen={setOpenGeneratePdfModal} />
+    </Box>
+  )
+}
+
+AdmissionApplicantsMenu.propTypes = {
+  data: PropTypes.object,
+};
 
 export const AdmissionApplicantsByProgram = () => {
 	const { id } = useParams();
@@ -101,17 +134,7 @@ export const AdmissionApplicantsByProgram = () => {
                   : dataProgram?.admission_process_name}
               </Span>
             </Box>
-            <MenuRoot>
-              <MenuTrigger>
-                <Button size="sm" colorScheme="blue">Acciones</Button>
-              </MenuTrigger>
-              <MenuContent>
-                <MenuItem onClick={() => alert('Exportar Excel')}>Exportar Excel</MenuItem>
-                <MenuItem onClick={() => alert('Otra acción')}>Otra acción</MenuItem>
-                <MenuSeparator />
-                <MenuItem onClick={() => alert('Ayuda')}>Ayuda</MenuItem>
-              </MenuContent>
-            </MenuRoot>
+            <AdmissionApplicantsMenu data={dataProgram} />
           </HStack>
 				</Heading>
 			</Stack>
