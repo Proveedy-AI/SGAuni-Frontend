@@ -61,6 +61,7 @@ export function CustomDatePicker({
 										onDateChange(date);
 									}}
 									locale={es}
+									color='#711610'
 								/>
 							</Box>
 						</Popover.Body>
