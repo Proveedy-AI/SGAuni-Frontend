@@ -1,17 +1,8 @@
-import {
-	Badge,
-	Box,
-	Flex,
-	Grid,
-	Input,
-	Stack,
-	Text,
-} from '@chakra-ui/react';
+import { Badge, Box, Flex, Grid, Input, Stack, Text } from '@chakra-ui/react';
 import { Field } from '@/components/ui';
 import PropTypes from 'prop-types';
 import { ReactSelect } from '@/components/select';
 import { CompactFileUpload } from '@/components/ui/CompactFileInput';
-import { FileViewActions } from '@/components/ui/FileViewActions';
 
 const FieldWithInputText = ({ label, field, value, updateProfileField }) => {
 	return (
@@ -122,36 +113,32 @@ export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
 						orientation={{ base: 'vertical', sm: 'horizontal' }}
 						label='Curriculum:'
 					>
-						{!profile.path_cv ? (
-							<CompactFileUpload
-								name='path_cv'
-								onChange={(file) => updateProfileField('path_cv', file)}
-							/>
-						) : (
-							<FileViewActions
-								fileUrl={profile.path_cv}
-								onRemove={() => updateProfileField('path_cv', '')}
-							/>
-						)}
+						<CompactFileUpload
+							name='path_cv'
+							onChange={(file) => updateProfileField('path_cv', file)}
+							defaultFile={
+								typeof profile.path_cv === 'string'
+									? profile.path_cv
+									: undefined
+							}
+							onClear={() => updateProfileField('path_cv', null)}
+						/>
 					</Field>
 
 					<Field
 						orientation={{ base: 'vertical', sm: 'horizontal' }}
 						label='Título o grado:'
 					>
-						{!profile.path_grade ? (
-							<CompactFileUpload
-								name='path_grade'
-								onChange={(file) => {
-									updateProfileField('path_grade', file);
-								}}
-							/>
-						) : (
-							<FileViewActions
-								fileUrl={profile.path_grade}
-								onRemove={() => updateProfileField('path_grade', '')}
-							/>
-						)}
+						<CompactFileUpload
+							name='path_grade'
+							onChange={(file) => updateProfileField('path_grade', file)}
+							defaultFile={
+								typeof profile.path_grade === 'string'
+									? profile.path_grade
+									: undefined
+							}
+							onClear={() => updateProfileField('path_grade', null)}
+						/>
 					</Field>
 				</Stack>
 			</Box>

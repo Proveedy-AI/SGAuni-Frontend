@@ -10,7 +10,6 @@ import {
 import { useEffect } from 'react';
 import { useReadUbigeos } from '@/hooks/ubigeos';
 import { CompactFileUpload } from '@/components/ui/CompactFileInput';
-import { FileViewActions } from '@/components/ui/FileViewActions';
 
 const FieldWithInputText = ({
 	placeholder,
@@ -325,19 +324,16 @@ export const ChangeDataStudentProfileForm = ({
 							label='Foto de Documento:'
 							mt={4}
 						>
-							{!profile.document_path ? (
-								<CompactFileUpload
-									name='document_path'
-									onChange={(file) => {
-										updateProfileField('document_path', file);
-									}}
-								/>
-							) : (
-								<FileViewActions
-									fileUrl={profile.document_path}
-									onRemove={() => updateProfileField('document_path', '')}
-								/>
-							)}
+							<CompactFileUpload
+								name='document_path'
+								onChange={(file) => updateProfileField('document_path', file)}
+								defaultFile={
+									typeof profile.document_path === 'string'
+										? profile.document_path
+										: undefined
+								}
+								onClear={() => updateProfileField('document_path', null)}
+							/>
 						</Field>
 					</Stack>
 				</Box>

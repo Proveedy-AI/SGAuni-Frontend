@@ -17,7 +17,7 @@ export function CompactFileUpload({
 	placeholder = 'Selecciona un archivo',
 	onChange,
 	defaultFile,
-	onClear, // <- nueva prop
+	onClear, // <- opcional para controlar desde afuera
 }) {
 	return (
 		<FileUpload.Root
@@ -34,17 +34,15 @@ export function CompactFileUpload({
 			/>
 
 			<FileUpload.Context>
-				{({ acceptedFiles, clear }) => {
+				{({ acceptedFiles, clearFiles  }) => {
 					const file = acceptedFiles[0];
 					const hasTempFile = !!file;
 					const hasDefaultFile = !!defaultFile;
 
 					const handleClear = () => {
-						if (hasTempFile) {
-							clear(); // limpia archivo temporal
-						}
-						onChange?.(null); // notifica limpieza
-						onClear?.(); // permite limpiar estado externo
+						clearFiles()
+						onChange?.(null);    // limpia en el componente padre
+						onClear?.();         // permite que el padre limpie el defaultFile si es necesario
 					};
 
 					return (
@@ -64,7 +62,7 @@ export function CompactFileUpload({
 								<>
 									<Icon as={LuFile} color='gray.500' boxSize={5} />
 									<Text cursor='pointer' fontSize='xs' flex='1' isTruncated>
-										{file?.name || defaultFile.split('/').pop()}
+										{file?.name || defaultFile?.split('/').pop()}
 									</Text>
 
 									<IconButton
@@ -121,7 +119,7 @@ export function CompactFileUpload({
 								</>
 							)}
 						</Flex>
-					);
+				 );
 				}}
 			</FileUpload.Context>
 		</FileUpload.Root>
@@ -134,5 +132,5 @@ CompactFileUpload.propTypes = {
 	placeholder: PropTypes.string,
 	onChange: PropTypes.func,
 	defaultFile: PropTypes.string,
-	onClear: PropTypes.func, // <- nueva prop
+	onClear: PropTypes.func, // <- para limpiar desde afuera si quieres
 };
