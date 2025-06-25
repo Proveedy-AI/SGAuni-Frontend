@@ -1,12 +1,15 @@
 import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
-import { IconButton, Input, Stack } from '@chakra-ui/react';
+import { IconButton, Stack } from '@chakra-ui/react';
 import { Field, Modal, toaster } from '@/components/ui';
 import { FiEdit2 } from 'react-icons/fi';
 import { useUpdateContracts } from '@/hooks/contracts';
 import { useReadUsers } from '@/hooks/users';
 import { ReactSelect } from '@/components/select';
 import { uploadToS3 } from '@/utils/uploadToS3';
+import { CompactFileUpload } from '@/components/ui/CompactFileInput';
+import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
+import { format } from 'date-fns';
 
 export const UpdateContractsForm = ({ data, fetchData }) => {
 	const contentRef = useRef();
@@ -16,13 +19,6 @@ export const UpdateContractsForm = ({ data, fetchData }) => {
 	const [expiresAt, setExpiresAt] = useState(data?.expires_at);
 	//const [isSigned, setIsSigned] = useState(data?.is_signed);
 	const [selectedUser, setSelectedUser] = useState(null);
-
-	const handleFileChange = (e) => {
-		const file = e.target.files[0];
-		if (file) {
-			setFilePDF(file);
-		}
-	};
 
 	const { mutate: updateContracts } = useUpdateContracts();
 	const { data: dataUsers, isLoading } = useReadUsers();
@@ -123,11 +119,12 @@ export const UpdateContractsForm = ({ data, fetchData }) => {
 		>
 			<Stack css={{ '--field-label-width': '150px' }}>
 				<Field label='Subir contrato (.pdf):'>
-					<Input
-						type='file'
+					<CompactFileUpload
+						name='contract_pdf'
+						onChange={(file) => setFilePDF(file)}
+						defaultFile={typeof filePDF === 'string' ? filePDF : undefined}
+						onClear={() => setFilePDF(null)}
 						accept='application/pdf'
-						size='sx'
-						onChange={handleFileChange}
 					/>
 				</Field>
 
@@ -147,11 +144,11 @@ export const UpdateContractsForm = ({ data, fetchData }) => {
 				</Field>
 
 				<Field label='Fecha de expiración:'>
-					<Input
-						value={expiresAt}
-						onChange={(e) => setExpiresAt(e.target.value)}
-						type='date'
-						size='xs'
+					<CustomDatePicker
+						selectedDate={expiresAt}
+						onDateChange={(date) => setExpiresAt(format(date, 'yyyy-MM-dd'))}
+						buttonSize='xs'
+						size={{ base: '330px', md: '465px' }}
 					/>
 				</Field>
 
