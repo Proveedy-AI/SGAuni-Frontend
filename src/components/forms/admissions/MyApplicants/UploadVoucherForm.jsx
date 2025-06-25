@@ -253,7 +253,12 @@ export const UploadVoucherForm = ({ data, refetch }) => {
 										'image/jpeg',
 										'image/jpg',
 									];
-									if (file && allowedTypes.includes(file.type)) {
+									if (!file) {
+										setFilePDF(null);
+										return; // no mostrar el toast si solo se limpió
+									}
+
+									if (allowedTypes.includes(file.type)) {
 										setFilePDF(file);
 									} else {
 										setFilePDF(null);
