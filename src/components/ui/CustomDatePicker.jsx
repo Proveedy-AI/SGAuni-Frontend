@@ -48,7 +48,6 @@ export function CustomDatePicker({
 			<Portal>
 				<Popover.Positioner>
 					<Popover.Content>
-						<Popover.Arrow />
 						<Popover.Body>
 							<Box
 								mt='-8'
