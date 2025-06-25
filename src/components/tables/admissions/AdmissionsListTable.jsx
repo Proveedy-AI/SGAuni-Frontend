@@ -3,6 +3,7 @@ import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { UpdateAdmissionsProccessForm } from '@/components/forms/admissions';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { ConfirmModal, Pagination, toaster } from '@/components/ui';
+import { formatDateString } from '@/components/ui/dateHelpers';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import { useDeleteAdmissions } from '@/hooks/admissions_proccess';
@@ -68,8 +69,8 @@ const Row = memo(
 				</Table.Cell>
 				<Table.Cell>{item.admission_process_name}</Table.Cell>
 				<Table.Cell>{item.admission_level_display}</Table.Cell>
-				<Table.Cell>{item.start_date}</Table.Cell>
-				<Table.Cell>{item.end_date}</Table.Cell>
+				<Table.Cell>{formatDateString(item.start_date)}</Table.Cell>
+				<Table.Cell>{formatDateString(item.end_date)}</Table.Cell>
 				<Table.Cell>
 					<a
 						href={`${import.meta.env.VITE_DOMAIN_MAIN}${item.uri_url}`}
