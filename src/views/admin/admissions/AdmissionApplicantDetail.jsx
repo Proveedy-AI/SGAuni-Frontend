@@ -1,4 +1,5 @@
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
+import { GenerateApplicantDataPdfModal } from '@/components/forms/admissions';
 import { PaymentOrdersByApplicationTable } from '@/components/tables/payment_orders';
 import ApplicantSkeleton from '@/components/ui/ApplicantSkeleton';
 import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
@@ -139,9 +140,12 @@ export const AdmissionApplicantDetail = () => {
 						p={6}
 						mb={6}
 					>
-						<Text fontWeight='bold' color='red.600' mb={4}>
-							Datos del postulante:
-						</Text>
+						<Flex justify='space-between' align='center' mb={4}>
+              <Text fontWeight='bold' color='red.600' mb={4}>
+                Datos del postulante:
+              </Text>
+              <GenerateApplicantDataPdfModal applicationPersonalData={dataApplicant} />
+            </Flex>
 						<SimpleGrid columns={[1, 2]} spacingY={2} columnGap={6}>
 							<Grid templateColumns={{ base: '1fr', md: '200px 1fr' }} gap={4}>
 								{[
