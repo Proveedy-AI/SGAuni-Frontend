@@ -103,14 +103,14 @@ export const ResetPassword = () => {
 				<VStack spacing={6} align='stretch'>
 					<Box display='flex' alignItems='center' gap='0.5rem'>
 						<LuArrowLeft size={18} />
-						<Link to='/login'>
+						<Link to='/auth/login'>
 							<Text
 								fontSize='sm'
 								color='gray.500'
 								_hover={{ color: 'blue.500' }}
 								as='span'
 							>
-								Volver al login
+								Volver al Inicio
 							</Text>
 						</Link>
 					</Box>
