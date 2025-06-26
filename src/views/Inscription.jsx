@@ -447,7 +447,7 @@ export default function AdmissionForm() {
 														})
 													}
 													buttonSize='md'
-													size={{ base: '330px', md: '375px' }}
+													size={{ base: '295px', md: '375px' }}
 												/>
 											</Field>
 											<Field label='País de Nacimiento'>
