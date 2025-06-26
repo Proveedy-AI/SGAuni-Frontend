@@ -4,7 +4,7 @@ import { Stack, Text } from "@chakra-ui/react";
 
 export const ConfirmDownloadSuneduModal = ({ open, setOpen }) => {
 
-  //const { mutate: downloadSunedu, isSaving } = useDownloadSunedu();
+  //const { mutate: downloadSunedu, isSaving } = useExportSuneduStudentExcel();
 
   const handleDownload = () => {
     // downloadSunedu();
