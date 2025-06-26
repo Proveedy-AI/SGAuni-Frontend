@@ -21,6 +21,8 @@ import {
 	AdmissionsMyPrograms,
 	AdmissionsProccess,
 	AdmissionsPrograms,
+	AdmissionEvaluators,
+	AdmissionEvaluatorsByProgram,
 } from './views/admin/admissions';
 import { Contracts, MyContracts } from './views/admin/contracts';
 import AdmissionForm from './views/Inscription';
@@ -103,6 +105,20 @@ function App() {
 											path='proccess'
 											element={<ApplicantsLayout />}
 										></Route>
+									</Route>
+								</Route>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='admissions.evaluators.view' />
+									}
+								>
+									<Route path='evaluators'>
+										<Route index element={<AdmissionEvaluators />} />
+
+										<Route
+											path='programs/:id'
+											element={<AdmissionEvaluatorsByProgram />}
+										/>
 									</Route>
 								</Route>
 							</Route>
