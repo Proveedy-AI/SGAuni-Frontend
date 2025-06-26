@@ -78,7 +78,7 @@ const Row = memo(
 			},
 			{
 				id: 2,
-				value: 'Calificado',
+				value: 'Completed',
 				label: 'Calificado',
 				bg: '#D0EDD0',
 				color: '#2D9F2D',
@@ -146,7 +146,7 @@ const Row = memo(
 						}
 					</Badge>
 				</Table.Cell>
-				<Table.Cell textAlign='center'>{item.calification || '-'}</Table.Cell>
+				<Table.Cell textAlign='center'>{item.qualification_average || '-'}</Table.Cell>
 				<Table.Cell onClick={(e) => e.stopPropagation()}>
 					<HStack>
 						<ViewAdmissionProgramExams item={item} fetchData={fetchData} />
