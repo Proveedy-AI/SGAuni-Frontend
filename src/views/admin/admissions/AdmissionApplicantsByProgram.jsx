@@ -1,5 +1,5 @@
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
-import { GeneratePdfApliccationsModal } from '@/components/forms/admissions';
+import { ConfirmDownloadSuneduModal, GeneratePdfApliccationsModal } from '@/components/forms/admissions';
 import { AdmissionApplicantsByProgramTable } from '@/components/tables/admissions';
 import { Button, InputGroup, MenuContent, MenuItem, MenuRoot, MenuTrigger } from '@/components/ui';
 import { useReadAdmissionApplicants } from '@/hooks/admissions_applicants';
@@ -24,6 +24,7 @@ import { Link as RouterLink } from 'react-router';
 
 export const AdmissionApplicantsMenu = ({ data }) => {
   const [openGeneratePdfModal, setOpenGeneratePdfModal] = useState(false);
+  const [openGenerateSuneduExcelModal, setOpenGenerateSuneduExcelModal] = useState(false);
   
   return (
     <Box>
@@ -40,11 +41,13 @@ export const AdmissionApplicantsMenu = ({ data }) => {
           </Button>
         </MenuTrigger>
         <MenuContent>
-          <MenuItem onClick={() => setOpenGeneratePdfModal(true)}>Generar acta de notas</MenuItem>
+          <MenuItem cursor="pointer" _hover={{ bg: 'gray.100', color: 'uni.secondary' }} onClick={() => setOpenGeneratePdfModal(true)}>Generar acta de notas</MenuItem>
+          <MenuItem cursor="pointer" _hover={{ bg: 'gray.100', color: 'uni.secondary' }} onClick={() => setOpenGenerateSuneduExcelModal(true)}>Descargar estudiantes (SUNEDU)</MenuItem>
         </MenuContent>
       </MenuRoot>
 
       <GeneratePdfApliccationsModal data={data} open={openGeneratePdfModal} setOpen={setOpenGeneratePdfModal} />
+      <ConfirmDownloadSuneduModal open={openGenerateSuneduExcelModal} setOpen={setOpenGenerateSuneduExcelModal} />
     </Box>
   )
 }

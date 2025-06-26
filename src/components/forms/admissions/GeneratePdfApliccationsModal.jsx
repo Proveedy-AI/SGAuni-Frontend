@@ -3,7 +3,7 @@ import {
   Stack,
 } from '@chakra-ui/react';
 import { ControlledModal } from '@/components/ui';
-import { PdfDocument } from '@/components/pdf';
+import { FinalRecordDocument } from '@/components/pdf';
 
 export const GeneratePdfApliccationsModal = ({ data, open, setOpen }) => {
 
@@ -39,7 +39,7 @@ export const GeneratePdfApliccationsModal = ({ data, open, setOpen }) => {
       hiddenFooter={true}
     >
       <Stack css={{ '--field-label-width': '140px' }}>
-        <PdfDocument dataProgram={data} headers={PDFHeaders} data={PDFData} />
+        <FinalRecordDocument dataProgram={data} headers={PDFHeaders} data={PDFData} />
       </Stack>
     </ControlledModal>
   );

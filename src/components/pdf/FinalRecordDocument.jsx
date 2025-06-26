@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
   cellScore: { flex: 1 }, // Puntajes
 });
 
-export const PdfDocument = ({ dataProgram, headers, data }) => {
+export const FinalRecordDocument = ({ dataProgram, headers, data }) => {
   const faviconUrl = `${window.location.origin}/favicon.png`;
 
   return (
@@ -88,7 +88,7 @@ export const PdfDocument = ({ dataProgram, headers, data }) => {
   );
 }
 
-PdfDocument.propTypes = {
+FinalRecordDocument.propTypes = {
   dataProgram: PropTypes.object,
   headers: PropTypes.arrayOf(PropTypes.string),
   data: PropTypes.arrayOf(PropTypes.object),
