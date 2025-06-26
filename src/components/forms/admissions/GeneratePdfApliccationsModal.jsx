@@ -6,41 +6,6 @@ import { ControlledModal } from '@/components/ui';
 import { PdfDocument } from '@/components/pdf';
 
 export const GeneratePdfApliccationsModal = ({ data, open, setOpen }) => {
-  /*
-    {
-      "id": 1,
-      "postgrad_type": 2,
-      "postgrad_type_display": "Professional",
-      "study_mode": 3,
-      "study_mode_display": "Presential",
-      "director": 4,
-      "director_name": "Pedro Lopez",
-      "admission_process": 1,
-      "admission_process_name": "Proceso 2025 - II",
-      "program": 1,
-      "program_name": "Maestría en Administración de Empresas",
-      "status": 4,
-      "status_display": "Approved",
-      "program_type": "Maestría",
-      "coordinator": 2,
-      "coordinator_name": "Rodrigo Torres",
-      "registration_start_date": "2025-06-16",
-      "registration_end_date": "2025-06-30",
-      "exam_date_start": "2025-07-01",
-      "exam_date_end": "2025-07-06",
-      "semester_start_date": "2025-09-01",
-      "pre_master_start_date": "2025-07-08",
-      "pre_master_end_date": "2025-12-31",
-      "uuid": "ac0f74a9-dd8e-44e9-b023-02244bdf8805",
-      "modalities": [
-          {
-              "id": 1,
-              "modality_name": "Pre Maestría",
-              "vacancies": 20
-          }
-      ]
-  }
-  */
 
   const PDFHeaders = [
     'No.',
