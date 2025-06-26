@@ -17,11 +17,16 @@ import { CompactFileUpload } from '@/components/ui/CompactFileInput';
 import { uploadToS3 } from '@/utils/uploadToS3';
 import { useCreateDocuments, useReadDocuments } from '@/hooks/documents';
 import PropTypes from 'prop-types';
+import { FaDownload } from 'react-icons/fa';
+import { GenerateApplicantDataPdfModal } from '@/components/forms/admissions';
+import { useReadAdmissionApplicantById } from '@/hooks/admissions_applicants/useReadAdmissionApplicantById';
 
 export const DocumentsApplicant = ({ onValidationChange }) => {
 	const item = EncryptedStorage.load('selectedApplicant');
 	const [documentsData, setDocumentsData] = useState({});
 	const [isLoading, setIsLoading] = useState(false);
+
+	const { data: dataApplicant } = useReadAdmissionApplicantById(item.id);
 
 	const handleFileChange = (key, file) => {
 		setDocumentsData((prev) => ({
@@ -191,6 +196,23 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 		);
 	};
 
+	const handleDownloadGuides = () => {
+		const files = [
+			'/templates/Carta-presentación.docx',
+			'/templates/Solicitud-Maestria.docx',
+			'/templates/Declaración-Jurada.docx',
+		];
+
+		files.forEach((file) => {
+			const link = document.createElement('a');
+			link.href = file;
+			link.download = '';
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		});
+	};
+
 	const renderDocumentList = (section) =>
 		section.filter(shouldShowDocument).map(({ key, label, tooltip }) => {
 			const rule = key != null ? documentRulesMap?.[key] : null;
@@ -258,6 +280,19 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 				<Heading size={{ xs: 'xs', sm: 'sm', md: 'md' }} color='gray.500'>
 					Subir documentos requeridos
 				</Heading>
+				<Box spaceX={2}>
+					<GenerateApplicantDataPdfModal
+						applicationPersonalData={dataApplicant}
+					/>
+					<Button
+						colorPalette='blue'
+						variant='ghost'
+						onClick={handleDownloadGuides}
+					>
+						<FaDownload />
+						Documentos guías
+					</Button>
+				</Box>
 			</Stack>
 			<Stack p={4} spacing={4} css={{ '--field-label-width': '150px' }}>
 				<SimpleGrid columns={[1, 2]} spacingY={2} columnGap={6}>

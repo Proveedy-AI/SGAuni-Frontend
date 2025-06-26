@@ -1,19 +1,20 @@
 'use client';
 
-import { Box, Button, Flex, Steps } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, Steps, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { PaymentApplicant } from './PaymentApplicant';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { PersonalDataApplicants } from '@/components/forms/admissions/MyApplicants';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaCheckCircle, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
 import { DocumentsApplicant } from './DocumentsApplicant';
+import { WorkApplicant } from './WorkApplicant';
 
 export const ApplicantsLayout = () => {
 	const [step, setStep] = useState(0);
 	const [isStepValid, setIsStepValid] = useState(false);
 	const [isDocumentsStepValid, setIsDocumentsStepValid] = useState(false);
-	console.log(isDocumentsStepValid);
+
 	const {
 		data: dataUser,
 		isLoading: isLoadingDataUser,
@@ -38,7 +39,7 @@ export const ApplicantsLayout = () => {
 					break;
 				}
 				case 3: {
-					setIsStepValid(false);
+					setIsStepValid(true);
 					break;
 				}
 			}
@@ -72,7 +73,7 @@ export const ApplicantsLayout = () => {
 		},
 		{
 			title: 'Trabajos',
-			component: <PaymentApplicant />,
+			component: <WorkApplicant />,
 		},
 	];
 
@@ -128,9 +129,29 @@ export const ApplicantsLayout = () => {
 			))}
 
 			<Steps.CompletedContent>
-				<Box textAlign='center' mt={4}>
-					¡Has completado todos los pasos!
-				</Box>
+				<Flex
+					direction='column'
+					align='center'
+					justify='center'
+					mt={10}
+					mb={10}
+					px={4}
+					py={6}
+					borderWidth={1}
+					borderColor='green.200'
+					borderRadius='lg'
+					bg='green.50'
+					boxShadow='sm'
+				>
+					<FaCheckCircle size="60px" color="#38A169" style={{ marginBottom: '16px' }} />
+					<Heading size='md' color='green.700' mb={2}>
+						¡Proceso completado con éxito!
+					</Heading>
+					<Text fontSize='sm' color='gray.700' textAlign='center' maxW='400px'>
+						Has finalizado todos los pasos de tu postulación. Puedes revisar el
+						estado desde el panel de postulaciones.
+					</Text>
+				</Flex>
 			</Steps.CompletedContent>
 		</Steps.Root>
 	);
