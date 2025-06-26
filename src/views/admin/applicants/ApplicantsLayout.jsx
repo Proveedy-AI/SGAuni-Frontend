@@ -10,8 +10,10 @@ import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
 import { DocumentsApplicant } from './DocumentsApplicant';
 
 export const ApplicantsLayout = () => {
-	const [step, setStep] = useState(1);
+	const [step, setStep] = useState(0);
 	const [isStepValid, setIsStepValid] = useState(false);
+	const [isDocumentsStepValid, setIsDocumentsStepValid] = useState(false);
+	console.log(isDocumentsStepValid);
 	const {
 		data: dataUser,
 		isLoading: isLoadingDataUser,
@@ -21,26 +23,29 @@ export const ApplicantsLayout = () => {
 	useEffect(() => {
 		const validateStep = async () => {
 			switch (step) {
-				case 1: {
+				case 0: {
 					// validación para Datos Personales
 					const isValid = Boolean(dataUser?.document_path?.trim());
 					setIsStepValid(isValid);
 					break;
 				}
-				case 2: {
-					// validación para Solicitudes
-					// función tuya
-
+				case 1: {
+					setIsStepValid(true);
 					break;
 				}
-				default: {
-					setIsStepValid(true); // permitir avance si no hay validación
+				case 2: {
+					setIsStepValid(isDocumentsStepValid);
+					break;
+				}
+				case 3: {
+					setIsStepValid(false);
+					break;
 				}
 			}
 		};
 
 		validateStep();
-	}, [step, dataUser]);
+	}, [step, dataUser, isDocumentsStepValid]);
 
 	const steps = [
 		{
@@ -59,7 +64,11 @@ export const ApplicantsLayout = () => {
 		},
 		{
 			title: 'Documentación',
-			component: <DocumentsApplicant />,
+			component: (
+				<DocumentsApplicant
+					onValidationChange={(valid) => setIsDocumentsStepValid(valid)}
+				/>
+			),
 		},
 		{
 			title: 'Trabajos',

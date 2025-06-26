@@ -68,7 +68,7 @@ export const useDataSidebar = () => {
 		{
 			href: '/admissions/myapplicants',
 			icon: FiUserCheck,
-			label: 'Mis Postulantes',
+			label: 'Mis Postulaciones',
 			permission: 'admissions.myapplicants.view',
 		},
 		{
