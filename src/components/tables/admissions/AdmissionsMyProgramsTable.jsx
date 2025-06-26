@@ -15,13 +15,13 @@ import {
 	toaster,
 	Tooltip,
 } from '@/components/ui';
+import { formatDateString } from '@/components/ui/dateHelpers';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import { useDeleteAdmissionsPrograms } from '@/hooks/admissions_programs';
 import { useCreateProgramsReview } from '@/hooks/admissions_review_programs/useCreateProgramsReview';
 import useSortedData from '@/utils/useSortedData';
 import { Box, HStack, IconButton, Span, Table, Text } from '@chakra-ui/react';
-import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
 import { FiSend, FiTrash2 } from 'react-icons/fi';
@@ -89,15 +89,11 @@ const Row = memo(
 						: startIndex + index + 1}
 				</Table.Cell>
 				<Table.Cell>{item.program_name}</Table.Cell>
+				<Table.Cell>{formatDateString(item.semester_start_date)}</Table.Cell>
 				<Table.Cell>
-					{format(new Date(item.semester_start_date), 'dd/MM/yyyy')}
+					{formatDateString(item.registration_start_date)}
 				</Table.Cell>
-				<Table.Cell>
-					{format(new Date(item.registration_start_date), 'dd/MM/yyyy')}
-				</Table.Cell>
-				<Table.Cell>
-					{format(new Date(item.registration_end_date), 'dd/MM/yyyy')}
-				</Table.Cell>
+				<Table.Cell>{formatDateString(item.registration_end_date)}</Table.Cell>
 				<Table.Cell>
 					<HistoryStatusProgramsView
 						data={item}

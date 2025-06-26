@@ -1,16 +1,8 @@
-import {
-	Badge,
-	Box,
-	Button,
-	Flex,
-	Grid,
-	Input,
-	Stack,
-	Text,
-} from '@chakra-ui/react';
+import { Badge, Box, Flex, Grid, Input, Stack, Text } from '@chakra-ui/react';
 import { Field } from '@/components/ui';
 import PropTypes from 'prop-types';
 import { ReactSelect } from '@/components/select';
+import { CompactFileUpload } from '@/components/ui/CompactFileInput';
 
 const FieldWithInputText = ({ label, field, value, updateProfileField }) => {
 	return (
@@ -121,74 +113,32 @@ export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
 						orientation={{ base: 'vertical', sm: 'horizontal' }}
 						label='Curriculum:'
 					>
-						{!profile.path_cv ? (
-							<Input
-								type='file'
-								accept='application/pdf'
-								size='sx'
-								onChange={(e) => {
-									const file = e.target.files?.[0];
-									updateProfileField('path_cv', file);
-								}}
-							/>
-						) : (
-							<Flex gap={2} justify='flex-start'>
-								<Button
-									size='xs'
-									colorScheme='blue'
-									as='a'
-									href={profile.path_cv || '#'}
-									target='_blank'
-									rel='noopener noreferrer'
-								>
-									Ver CV
-								</Button>
-								<Button
-									size='xs'
-									colorScheme='red'
-									onClick={() => updateProfileField('path_cv', '')}
-								>
-									Quitar CV
-								</Button>
-							</Flex>
-						)}
+						<CompactFileUpload
+							name='path_cv'
+							onChange={(file) => updateProfileField('path_cv', file)}
+							defaultFile={
+								typeof profile.path_cv === 'string'
+									? profile.path_cv
+									: undefined
+							}
+							onClear={() => updateProfileField('path_cv', null)}
+						/>
 					</Field>
 
 					<Field
 						orientation={{ base: 'vertical', sm: 'horizontal' }}
 						label='Título o grado:'
 					>
-						{!profile.path_grade ? (
-							<Input
-								type='file'
-								accept='application/pdf'
-								size='sx'
-								onChange={(e) => {
-									const file = e.target.files?.[0];
-									updateProfileField('path_grade', file);
-								}}
-							/>
-						) : (
-							<Flex gap={2} justify='flex-start'>
-								<Button
-									size='xs'
-									colorScheme='blue'
-									as='a'
-									href={profile.path_grade || '#'}
-									target='_blank'
-									rel='noopener noreferrer'
-								>
-									Ver Título
-								</Button>
-								<Button
-									size='xs'
-									colorScheme='red'
-									onClick={() => updateProfileField('path_grade', '')}
-								>
-									Quitar Título
-								</Button>
-							</Flex>
-						)}
+						<CompactFileUpload
+							name='path_grade'
+							onChange={(file) => updateProfileField('path_grade', file)}
+							defaultFile={
+								typeof profile.path_grade === 'string'
+									? profile.path_grade
+									: undefined
+							}
+							onClear={() => updateProfileField('path_grade', null)}
+						/>
 					</Field>
 				</Stack>
 			</Box>

@@ -1,5 +1,6 @@
 import { ReactSelect } from '@/components/select';
 import { Field, Radio, RadioGroup, toaster } from '@/components/ui';
+import { CompactFileUpload } from '@/components/ui/CompactFileInput';
 import { useUpdatePerson } from '@/hooks';
 import { useReadDisabilities } from '@/hooks/disabilities';
 import { useReadUbigeos } from '@/hooks/ubigeos';
@@ -9,7 +10,6 @@ import {
 	Button,
 	Flex,
 	Heading,
-	Icon,
 	Input,
 	SimpleGrid,
 	Stack,
@@ -17,12 +17,10 @@ import {
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-import { FiUploadCloud } from 'react-icons/fi';
 
 export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 	const { mutate: update } = useUpdatePerson();
 	const [loadingUpdate, setloadingUpdate] = useState(false);
-	const [filePDF, setFilePDF] = useState(null);
 	const { data: dataUbigeo, isLoading: loadingUbigeo } = useReadUbigeos();
 	const { data: dataDisabilities, isLoading: loadingDisabilities } =
 		useReadDisabilities();
@@ -186,81 +184,16 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 				1. Subir foto de documento:
 			</Text>
 			<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-				{!formData?.document_path || formData?.document_path === '' ? (
-					<Field label='Archivo'>
-						<Box
-							as='label'
-							htmlFor='pdf-upload'
-							borderWidth='2px'
-							borderStyle='dashed'
-							borderColor={'uni.secondary'}
-							borderRadius='lg'
-							bg='gray.50'
-							_hover={{
-								borderColor: 'uni.secondary',
-								bg: 'gray.10',
-							}}
-							p={4}
-							w='100%'
-							cursor='pointer'
-							textAlign='center'
-						>
-							<Flex direction='column' align='center' justify='center' gap={2}>
-								<Icon as={FiUploadCloud} boxSize={6} color='teal.400' />
-								<Text fontSize='sm' color='gray.600'>
-									{filePDF
-										? filePDF.name
-										: 'Haz clic para subir un archivo PDF'}
-								</Text>
-								<Input
-									id='pdf-upload'
-									type='file'
-									accept='application/pdf'
-									hidden
-									onChange={(e) => {
-										const file = e.target.files[0];
-										if (file?.type === 'application/pdf') {
-											setFilePDF(file);
-											updateProfileField('document_path', file);
-										} else {
-											toaster.create({
-												title: 'Solo se permiten archivos PDF.',
-												type: 'error',
-											});
-										}
-									}}
-								/>
-							</Flex>
-						</Box>
-					</Field>
-				) : (
-					<Flex gap={2} justify='flex-start'>
-						<Button
-							size='xs'
-							colorScheme='blue'
-							as='a'
-							href={formData?.document_path}
-							target='_blank'
-							rel='noopener noreferrer'
-						>
-							Ver documento
-						</Button>
-						<Button
-							size='xs'
-							colorScheme='red'
-							onClick={() => {
-								setFilePDF(null);
-								updateProfileField('document_path', '');
-								setFormData((prev) => ({
-									...prev,
-									document_path: '',
-								}));
-							}}
-						>
-							Quitar documento
-						</Button>
-					</Flex>
-				)}
+				<CompactFileUpload
+					name='document_path'
+					onChange={(file) => updateProfileField('document_path', file)}
+					defaultFile={
+						typeof formData.document_path === 'string'
+							? formData.document_path
+							: undefined
+					}
+					onClear={() => updateProfileField('document_path', null)}
+				/>
 			</SimpleGrid>
 
 			<SimpleGrid columns={{ base: 1, md: 2 }} gap={4} mt={4}>

@@ -1,13 +1,4 @@
-import {
-	Box,
-	Button,
-	Flex,
-	Grid,
-	Input,
-	Stack,
-	Switch,
-	Text,
-} from '@chakra-ui/react';
+import { Box, Grid, Input, Stack, Switch, Text } from '@chakra-ui/react';
 import { Field } from '@/components/ui';
 import PropTypes from 'prop-types';
 import { ReactSelect } from '@/components/select';
@@ -18,6 +9,7 @@ import {
 } from '@/hooks';
 import { useEffect } from 'react';
 import { useReadUbigeos } from '@/hooks/ubigeos';
+import { CompactFileUpload } from '@/components/ui/CompactFileInput';
 
 const FieldWithInputText = ({
 	placeholder,
@@ -332,37 +324,16 @@ export const ChangeDataStudentProfileForm = ({
 							label='Foto de Documento:'
 							mt={4}
 						>
-							{!profile.document_path ? (
-								<Input
-									type='file'
-									accept='application/pdf'
-									size='sx'
-									onChange={(e) => {
-										const file = e.target.files?.[0];
-										updateProfileField('document_path', file);
-									}}
-								/>
-							) : (
-								<Flex gap={2} justify='flex-start'>
-									<Button
-										size='xs'
-										colorScheme='blue'
-										as='a'
-										href={profile.document_path || '#'}
-										target='_blank'
-										rel='noopener noreferrer'
-									>
-										Ver documento
-									</Button>
-									<Button
-										size='xs'
-										colorScheme='red'
-										onClick={() => updateProfileField('document_path', '')}
-									>
-										Quitar documento
-									</Button>
-								</Flex>
-							)}
+							<CompactFileUpload
+								name='document_path'
+								onChange={(file) => updateProfileField('document_path', file)}
+								defaultFile={
+									typeof profile.document_path === 'string'
+										? profile.document_path
+										: undefined
+								}
+								onClear={() => updateProfileField('document_path', null)}
+							/>
 						</Field>
 					</Stack>
 				</Box>

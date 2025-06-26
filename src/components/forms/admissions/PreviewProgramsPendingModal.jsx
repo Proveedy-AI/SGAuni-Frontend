@@ -11,7 +11,7 @@ import {
 import { Field, Modal, Tooltip } from '@/components/ui';
 import { FiEye } from 'react-icons/fi';
 import { useState } from 'react';
-import { format } from 'date-fns';
+import { formatDateString } from '@/components/ui/dateHelpers';
 
 export const PreviewProgramsPendingModal = ({ data }) => {
 	const [open, setOpen] = useState(false);
@@ -61,19 +61,19 @@ export const PreviewProgramsPendingModal = ({ data }) => {
 			<Stack css={{ '--field-label-width': '140px' }}>
 				<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
 					<Field color={'uni.secondary'} label='Programa:'>
-						<Text color={'black'}   fontWeight='medium'>
+						<Text color={'black'} fontWeight='medium'>
 							{data.program_name}
 						</Text>
 					</Field>
 
 					<Field color={'uni.secondary'} label='Tipo de Postgrado:'>
-						<Text color='black'  fontWeight='medium'>
+						<Text color='black' fontWeight='medium'>
 							{typeMap[data.postgrad_type] || 'No definido'}
 						</Text>
 					</Field>
 
 					<Field color={'uni.secondary'} label='Modo de estudio:'>
-						<Text color={'black'}  fontWeight='medium'>
+						<Text color={'black'} fontWeight='medium'>
 							{data.study_mode_display}
 						</Text>
 					</Field>
@@ -91,11 +91,11 @@ export const PreviewProgramsPendingModal = ({ data }) => {
 						})()}
 					</Field>
 				</SimpleGrid>
-				<Stack spacing={4} >
+				<Stack spacing={4}>
 					{/* Inicio de semestre */}
 					<Field color={'uni.secondary'} label='Inicio de semestre:'>
 						<Text color='black' fontWeight='medium'>
-							{format(new Date(data.semester_start_date), 'dd/MM/yyyy')}
+							{formatDateString(data.semester_start_date)}
 						</Text>
 					</Field>
 
@@ -107,17 +107,12 @@ export const PreviewProgramsPendingModal = ({ data }) => {
 						<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
 							<Field label='Inicio:'>
 								<Text>
-									{format(
-										new Date(data.registration_start_date),
-										'dd/MM/yyyy'
-									) || '—'}
+									{formatDateString(data.registration_start_date) || '—'}
 								</Text>
 							</Field>
 							<Field label='Fin:'>
 								<Text>
-									{' '}
-									{format(new Date(data.registration_end_date), 'dd/MM/yyyy') ||
-										'—'}
+									{formatDateString(data.registration_end_date) || '—'}
 								</Text>
 							</Field>
 						</SimpleGrid>
@@ -130,14 +125,10 @@ export const PreviewProgramsPendingModal = ({ data }) => {
 						</Text>
 						<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
 							<Field label='Inicio:'>
-								<Text>
-									{format(new Date(data.exam_date_start), 'dd/MM/yyyy') || '—'}
-								</Text>
+								<Text>{formatDateString(data.exam_date_start) || '—'}</Text>
 							</Field>
 							<Field label='Fin:'>
-								<Text>
-									{format(new Date(data.exam_date_end), 'dd/MM/yyyy') || '—'}
-								</Text>
+								<Text>{formatDateString(data.exam_date_end) || '—'}</Text>
 							</Field>
 						</SimpleGrid>
 					</Box>
@@ -151,15 +142,12 @@ export const PreviewProgramsPendingModal = ({ data }) => {
 							<Field label='Inicio:'>
 								<Text>
 									{data.pre_master_start_date
-										? format(new Date(data.pre_master_start_date), 'dd/MM/yyyy')
+										? formatDateString(data.pre_master_start_date)
 										: '—'}
 								</Text>
 							</Field>
 							<Field label='Fin:'>
-								<Text>
-									{format(new Date(data.pre_master_end_date), 'dd/MM/yyyy') ||
-										'—'}
-								</Text>
+								<Text>{formatDateString(data.pre_master_end_date) || '—'}</Text>
 							</Field>
 						</SimpleGrid>
 					</Box>

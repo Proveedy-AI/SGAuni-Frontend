@@ -3,12 +3,12 @@ import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { UpdateAdmissionsProccessForm } from '@/components/forms/admissions';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { ConfirmModal, Pagination, toaster } from '@/components/ui';
+import { formatDateString } from '@/components/ui/dateHelpers';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import { useDeleteAdmissions } from '@/hooks/admissions_proccess';
 import useSortedData from '@/utils/useSortedData';
 import { Box, HStack, IconButton, Span, Table, Text } from '@chakra-ui/react';
-import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
 import { FiTrash2 } from 'react-icons/fi';
@@ -69,8 +69,8 @@ const Row = memo(
 				</Table.Cell>
 				<Table.Cell>{item.admission_process_name}</Table.Cell>
 				<Table.Cell>{item.admission_level_display}</Table.Cell>
-				<Table.Cell>{format(new Date(item.start_date), 'dd/MM/yy')}</Table.Cell>
-				<Table.Cell>{format(new Date(item.end_date), 'dd/MM/yy')}</Table.Cell>
+				<Table.Cell>{formatDateString(item.start_date)}</Table.Cell>
+				<Table.Cell>{formatDateString(item.end_date)}</Table.Cell>
 				<Table.Cell>
 					<a
 						href={`${import.meta.env.VITE_DOMAIN_MAIN}${item.uri_url}`}
@@ -139,6 +139,8 @@ export const AdmissionsListTable = ({
 	const [sortConfig, setSortConfig] = useState(null);
 	const sortedData = useSortedData(data, sortConfig);
 	const visibleRows = sortedData?.slice(startIndex, endIndex);
+
+	console.log(data);
 	return (
 		<Box
 			bg={{ base: 'white', _dark: 'its.gray.500' }}

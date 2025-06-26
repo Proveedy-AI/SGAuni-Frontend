@@ -14,16 +14,16 @@ import {
 } from '@chakra-ui/react';
 import { useRef, useState, useEffect } from 'react';
 import { FiCheckSquare } from 'react-icons/fi';
-import { useReadPermissions } from '@/hooks/permissions';
 import { useAssignPermission, useReadPermissionHasRole } from '@/hooks';
 
-export const AssignSettingsRolePermissionsForm = ({ data, fetchData }) => {
+export const AssignSettingsRolePermissionsForm = ({
+	data,
+	fetchData,
+	dataPermissions,
+}) => {
 	const contentRef = useRef();
 	const roleId = data?.id;
 	const [open, setOpen] = useState(false);
-
-	const { data: dataPermissions, isLoading: loadingPermissions } =
-		useReadPermissions();
 	const { data: permissionsInRole, isLoading: loadingAssigned } =
 		useReadPermissionHasRole(roleId);
 	const { mutateAsync: assignPermissionsBulk, isPending: isSaving } =
@@ -66,16 +66,13 @@ export const AssignSettingsRolePermissionsForm = ({ data, fetchData }) => {
 	};
 
 	// Agrupar permisos
-	const groupedPermissions = dataPermissions?.results?.reduce(
-		(acc, permission) => {
-			const [category, subcategory] = permission.guard_name.split('.');
-			if (!acc[category]) acc[category] = {};
-			if (!acc[category][subcategory]) acc[category][subcategory] = [];
-			acc[category][subcategory].push(permission);
-			return acc;
-		},
-		{}
-	);
+	const groupedPermissions = dataPermissions?.reduce((acc, permission) => {
+		const [category, subcategory] = permission.guard_name.split('.');
+		if (!acc[category]) acc[category] = {};
+		if (!acc[category][subcategory]) acc[category][subcategory] = [];
+		acc[category][subcategory].push(permission);
+		return acc;
+	}, {});
 
 	return (
 		<Modal
@@ -102,7 +99,7 @@ export const AssignSettingsRolePermissionsForm = ({ data, fetchData }) => {
 			open={open}
 			onOpenChange={(e) => setOpen(e.open)}
 		>
-			{loadingPermissions || loadingAssigned ? (
+			{loadingAssigned ? (
 				<Flex justify='center' align='center' minH='200px'>
 					<Spinner size='xl' />
 				</Flex>
@@ -165,6 +162,7 @@ export const AssignSettingsRolePermissionsForm = ({ data, fetchData }) => {
 AssignSettingsRolePermissionsForm.propTypes = {
 	data: PropTypes.object,
 	fetchData: PropTypes.func,
+	dataPermissions: PropTypes.array,
 };
 
 const groupTitles = {
