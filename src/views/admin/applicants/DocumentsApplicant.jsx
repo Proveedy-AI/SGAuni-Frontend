@@ -34,6 +34,7 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 			[key]: {
 				...prev[key],
 				file,
+				initialFilePath: prev[key]?.initialFilePath || null, // ✅ conserva valor original
 			},
 		}));
 	};
@@ -79,6 +80,7 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 
 				mappedDocs[key] = {
 					file: doc.file_path,
+					initialFilePath: doc.file_path, // ✅ aquí
 					description: doc.description_display,
 					id: doc.id,
 				};
@@ -133,7 +135,7 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 			const isRequired = rule?.is_required ?? false;
 
 			const uploadedFile = documentsData[doc.key]?.file;
-			console.log(uploadedFile);
+
 			if (isRequired && !uploadedFile) {
 				missingRequiredDocs.push(doc.label);
 			}
@@ -152,23 +154,32 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 		}
 
 		const documentsPayload = await Promise.all(
-			Object.entries(documentsData).map(async ([key, { file }]) => {
-				const docInfo = allDocuments.find((d) => `${d.key}` === key);
-				if (!docInfo?.type_document || !file) return null;
+			Object.entries(documentsData).map(
+				async ([key, { file, initialFilePath }]) => {
+					const docInfo = allDocuments.find((d) => `${d.key}` === key);
+					if (!docInfo?.type_document || !file) return null;
 
-				const filePath = await uploadToS3(
-					file,
-					'sga_uni/applicants_documents',
-					`${item.first_name?.replace(/\s+/g, '_') || 'document'}_${docInfo.label}`
-				);
+					// ✅ Si el archivo es una URL (string), no lo subas
+					if (typeof file === 'string') return null;
 
-				return {
-					type_document_id: docInfo.type_document,
-					description: 1, //CAMBIAR O BORRAR
-					file_path: filePath,
-				};
-			})
-		);
+					// ✅ Si no hay cambio detectado, no lo subas
+					const originalFileName = initialFilePath?.split('/').pop();
+					if (originalFileName && file.name === originalFileName) return null;
+
+					const filePath = await uploadToS3(
+						file,
+						'sga_uni/applicants_documents',
+						`${item.first_name?.replace(/\s+/g, '_') || 'document'}_${docInfo.label}`
+					);
+
+					return {
+						type_document_id: docInfo.type_document,
+						description: 1, // CAMBIAR O BORRAR
+						file_path: filePath,
+					};
+				}
+			)
+		).then((res) => res.filter(Boolean));
 		const filteredPayload = documentsPayload.filter(Boolean);
 		create(
 			{
@@ -181,7 +192,7 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 					toaster.create({
 						title: 'Documentos guardados',
 						description: 'Los documentos fueron enviados correctamente.',
-						status: 'success',
+						type: 'success',
 					});
 				},
 				onError: () => {
