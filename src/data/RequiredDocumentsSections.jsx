@@ -42,9 +42,13 @@ export const RequiredDocumentsSections = {
 		},
 		{
 			key: 5,
-			tooltip: 'Subir 2 cartas de presentación en un archivo pdf',
-			label: 'Carta de Presentación',
+			label: 'Carta de Presentación 1',
 			type_document: 9,
+		},
+			{
+			key: 18,
+			label: 'Carta de Presentación 2',
+			type_document: 16,
 		},
 		{
 			key: 8,
