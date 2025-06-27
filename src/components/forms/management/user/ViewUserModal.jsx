@@ -16,14 +16,8 @@ export const ViewUserModal = ({ selectedUser }) => {
 	const [open, setOpen] = useState(false);
 	const { data: dataUser, refetch: fetchUser } = useReadUserById({
 		id: selectedUser?.id,
-		enabled: false,
+		enabled: open,
 	});
-
-	useEffect(() => {
-		if (open && selectedUser?.id) {
-			fetchUser();
-		}
-	}, [open, selectedUser?.id, fetchUser]);
 
 	return (
 		<Modal
