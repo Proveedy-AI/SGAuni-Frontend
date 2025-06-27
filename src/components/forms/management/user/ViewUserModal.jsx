@@ -20,10 +20,10 @@ export const ViewUserModal = ({ selectedUser }) => {
 	});
 
 	useEffect(() => {
-		if (selectedUser?.id) {
+		if (open && selectedUser?.id) {
 			fetchUser();
 		}
-	}, [selectedUser?.id, fetchUser]);
+	}, [open, selectedUser?.id, fetchUser]);
 
 	return (
 		<Modal
