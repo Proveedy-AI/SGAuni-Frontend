@@ -46,16 +46,12 @@ export const AdmissionApplicantsMenu = ({ applicants, data }) => {
         </MenuTrigger>
         <MenuContent>
           <MenuItem
-            cursor={applicants.length <= 0 ? 'not-allowed' : 'pointer'}
-            disabled={applicants.length <= 0} 
             _hover={{ bg: 'gray.100', color: 'uni.secondary' }} 
             onClick={() => setOpenGeneratePdfModal(applicants.length > 0)}
           >
             Generar acta de notas
           </MenuItem>
           <MenuItem
-            cursor={applicants.length <= 0 ? 'not-allowed' : 'pointer'}
-            disabled={applicants.length <= 0}
             _hover={{ bg: 'gray.100', color: 'uni.secondary' }}
             onClick={() => {
               setOpenGenerateSuneduExcelModal(applicants.length > 0);
