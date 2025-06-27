@@ -17,6 +17,7 @@ import {
 	Table,
 	Text,
 } from '@chakra-ui/react';
+import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
 import { FaSave, FaTimes } from 'react-icons/fa';
@@ -141,7 +142,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 
 	return (
 		<Modal
-			title='Programa Tareas'
+			title='Programar Tareas'
 			placement='center'
 			trigger={
 				<Box>
@@ -169,34 +170,34 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 		>
 			<Stack spacing={4} css={{ '--field-label-width': '150px' }}>
 				{/* Formulario para Examen */}
-				<Flex
-					direction='column'
-					justify='flex-start'
-					align={'end'}
-					gap={2}
-					mt={2}
-				>
-					<Flex w={'full'} align={'end'} gap={6}>
-						<Field label='Fecha de inicio:'>
+				<Flex direction='column' gap={4} mt={2}>
+					<Flex
+						direction={{ base: 'column', md: 'row' }}
+						w='full'
+						gap={4}
+						align={{ base: 'start', md: 'end' }}
+					>
+						<Field label='Fecha de inicio:' w='full'>
 							<CustomDatePicker
 								selectedDate={startDateExamInput}
-								onDateChange={(date) => setStartDateExamInput(date)}
+								onDateChange={(date) => setStartDateExamInput(format(date, 'yyyy-MM-dd'))}
 								placeholder='Selecciona una fecha de inicio'
-                buttonSize='sm'
+								buttonSize='md'
 								size={{ base: '330px', md: '250px' }}
 							/>
 						</Field>
 
-						<Field label='Fecha de fin:'>
+						<Field label='Fecha de fin:' w='full'>
 							<CustomDatePicker
 								selectedDate={endDateExamInput}
-								onDateChange={(date) => setEndDateExamInput(date)}
+								onDateChange={(date) => setEndDateExamInput(format(date, 'yyyy-MM-dd'))}
 								placeholder='Selecciona una fecha de fin'
-                buttonSize='sm'
+								buttonSize='md'
 								size={{ base: '330px', md: '250px' }}
 							/>
 						</Field>
-						<Field label='Hora:'>
+
+						<Field label='Hora:' w='full'>
 							<Input
 								type='time'
 								value={timeExamInput}
@@ -205,15 +206,22 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 							/>
 						</Field>
 					</Flex>
-					<Flex w='full' align={'end'} gap={6}>
-						<Field label='Tipo de Examen'>
+
+					<Flex
+						direction={{ base: 'column', md: 'row' }}
+						w='full'
+						gap={6}
+						align={{ base: 'start', md: 'end' }}
+					>
+						<Field label='Tipo de Examen' w='full'>
 							<ReactSelect
 								value={applicationTypeInput}
 								options={applicationTypeOptions}
 								onChange={(value) => setApplicationTypeInput(value)}
 							/>
 						</Field>
-						<Field label='Evaluador:'>
+
+						<Field label='Evaluador:' w='full'>
 							<ReactSelect
 								value={evaluatorInput}
 								options={evaluatorOptions}
@@ -221,11 +229,15 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 								onChange={(value) => setEvaluatorInput(value)}
 							/>
 						</Field>
-						<Flex gap={2}>
+
+						<Flex
+							gap={2}
+							mt={{ base: 2, md: 0 }}
+							alignSelf={{ base: 'flex-end', md: 'auto' }}
+						>
 							<IconButton
 								size='sm'
 								bg='green'
-								// loading={isCreatePending || isEditPending}
 								disabled={!startDateExamInput || !timeExamInput}
 								onClick={handleSubmit}
 								isLoading={isCreateEvaluationPending || isEditEvaluationPending}
@@ -237,17 +249,17 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 							<IconButton
 								size='sm'
 								bg='red'
-								// loading={isCreatePending || isEditPending}
 								disabled={!startDateExamInput || !timeExamInput}
 								onClick={handleResetForm}
 								css={{ _icon: { width: '5', height: '5' } }}
-								aria-label={editingId ? 'Actualizar' : 'Guardar'}
+								aria-label='Cancelar'
 							>
 								<FaTimes />
 							</IconButton>
 						</Flex>
 					</Flex>
 				</Flex>
+
 				{/* Tabla de Exámenes */}
 				<Box mt={6}>
 					<Text fontWeight='semibold' mb={2}>
