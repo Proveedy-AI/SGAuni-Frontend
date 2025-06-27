@@ -6,19 +6,19 @@ import { useRef, useState } from 'react';
 import { FiCheckCircle } from 'react-icons/fi';
 import { UpdateQualificationEvaluationModal, ViewEvaluationDetailModal } from './evaluations';
 
-export const ViewAdmissionProgramExams = ({ item, fetchData }) => {
+export const ViewAdmissionProgramExams = ({ item }) => {
   const { data: dataEvaluationsByApplication, refetch: fetchExams,  isLoading } = useReadAdmissionEvaluationsByApplication(item.id);
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
 
   return (
     <Modal
-      title='Ver exámenes'
+      title='Ver Tareas'
       placement='center'
       trigger={
         <Box>
           <Tooltip
-            content='Ver exámenes'
+            content='Ver Tareas'
             positioning={{ placement: 'bottom-center' }}
             showArrow
             openDelay={0}
@@ -45,7 +45,7 @@ export const ViewAdmissionProgramExams = ({ item, fetchData }) => {
             <Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
               <Table.ColumnHeader>N°</Table.ColumnHeader>
               <Table.ColumnHeader>Fecha</Table.ColumnHeader>
-              <Table.ColumnHeader>Examenes realizados</Table.ColumnHeader>
+              <Table.ColumnHeader>Tareas realizadas</Table.ColumnHeader>
               <Table.ColumnHeader>Calificación</Table.ColumnHeader>
               <Table.ColumnHeader>Acciones</Table.ColumnHeader>
             </Table.Row>
