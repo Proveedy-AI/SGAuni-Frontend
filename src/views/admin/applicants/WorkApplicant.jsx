@@ -7,6 +7,7 @@ import {
 	Badge,
 	IconButton,
 	Stack,
+	Button,
 } from '@chakra-ui/react';
 import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
 import {
@@ -15,7 +16,7 @@ import {
 } from '@/hooks/admissions_evaluations';
 import { useEffect, useState } from 'react';
 import { CompactFileUpload } from '@/components/ui/CompactFileInput';
-import { FaUpload } from 'react-icons/fa';
+import { FaDownload, FaUpload } from 'react-icons/fa';
 import { uploadToS3 } from '@/utils/uploadToS3';
 import { toaster } from '@/components/ui';
 import PropTypes from 'prop-types';
@@ -108,6 +109,21 @@ export const WorkApplicant = ({ onAllCompleted }) => {
 		Interview: [],
 		Exam: [],
 	});
+
+	const handleDownloadGuides = () => {
+		const files = [
+			'/templates/GUIA-DE-ENSAYO.pdf',
+		];
+
+		files.forEach((file) => {
+			const link = document.createElement('a');
+			link.href = file;
+			link.download = '';
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		});
+	};
 
 	useEffect(() => {
 		if (!dataEvaluationsByApplication?.results) return;
@@ -235,6 +251,14 @@ export const WorkApplicant = ({ onAllCompleted }) => {
 								>
 									<FaUpload /> Subir ensayo
 								</IconButton>
+								<Button
+									colorPalette='blue'
+									variant='ghost'
+									onClick={handleDownloadGuides}
+								>
+									<FaDownload />
+									Guía de Ensayo
+								</Button>
 							</Flex>
 						) : (
 							<Text color='red.500' fontWeight='semibold'>
@@ -254,9 +278,16 @@ export const WorkApplicant = ({ onAllCompleted }) => {
 
 	return (
 		<Box bg='white' p={6} borderRadius='lg' boxShadow='md' mt={4}>
-			<Heading size='md' color='gray.600' mb={4}>
-				Trabajos Asignados
-			</Heading>
+			<Stack
+				direction={{ base: 'column', sm: 'row' }}
+				align='center'
+				justify='space-between'
+				mb={5}
+			>
+				<Heading size='md' color='gray.600' mb={4}>
+					Trabajos Asignados
+				</Heading>
+			</Stack>
 
 			{['Essay', 'Interview', 'Exam'].map(
 				(type) =>
