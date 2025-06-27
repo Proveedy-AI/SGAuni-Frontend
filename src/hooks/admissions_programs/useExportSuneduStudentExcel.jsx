@@ -7,7 +7,7 @@ export const useExportSuneduStudentExcel = () => {
   return useMutation({
     mutationFn: async (uuid) => {
       if (!uuid) throw new Error('UUID requerido');
-      const res = await axiosPrivate.post(`/api/v1/admission-processes/report-applicants/${uuid}`);
+      const res = await axiosPrivate.post(`/api/v1/admission-processes/report-applicants/${uuid}/`);
       return res.data;
     },
   });

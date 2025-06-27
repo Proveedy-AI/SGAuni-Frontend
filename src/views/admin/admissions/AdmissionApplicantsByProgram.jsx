@@ -3,6 +3,7 @@ import { ConfirmDownloadSuneduModal, GeneratePdfApliccationsModal } from '@/comp
 import { AdmissionApplicantsByProgramTable } from '@/components/tables/admissions';
 import { Button, InputGroup, MenuContent, MenuItem, MenuRoot, MenuTrigger } from '@/components/ui';
 import { useReadAdmissionApplicants } from '@/hooks/admissions_applicants';
+import { useReadAdmissionById } from '@/hooks/admissions_proccess/useReadAdmissionsbyId';
 import { useReadAdmissionProgramsById } from '@/hooks/admissions_programs';
 import { useProvideAuth } from '@/hooks/auth';
 import {
@@ -12,6 +13,7 @@ import {
 	HStack,
 	Input,
 	Span,
+	Spinner,
 	Stack,
 	Text,
 } from '@chakra-ui/react';
@@ -22,9 +24,11 @@ import { LiaSlashSolid } from 'react-icons/lia';
 import { useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router';
 
-export const AdmissionApplicantsMenu = ({ data }) => {
+export const AdmissionApplicantsMenu = ({ applicants, data }) => {
   const [openGeneratePdfModal, setOpenGeneratePdfModal] = useState(false);
   const [openGenerateSuneduExcelModal, setOpenGenerateSuneduExcelModal] = useState(false);
+  const admissionProcessId = data?.admission_process || null;
+  const { data: dataAdmissionProcess, loading: isAdmissionProcessLoading } = useReadAdmissionById(admissionProcessId);
   
   return (
     <Box>
@@ -41,18 +45,38 @@ export const AdmissionApplicantsMenu = ({ data }) => {
           </Button>
         </MenuTrigger>
         <MenuContent>
-          <MenuItem cursor="pointer" _hover={{ bg: 'gray.100', color: 'uni.secondary' }} onClick={() => setOpenGeneratePdfModal(true)}>Generar acta de notas</MenuItem>
-          <MenuItem cursor="pointer" _hover={{ bg: 'gray.100', color: 'uni.secondary' }} onClick={() => setOpenGenerateSuneduExcelModal(true)}>Descargar estudiantes (SUNEDU)</MenuItem>
+          <MenuItem
+            cursor={applicants.length <= 0 ? 'not-allowed' : 'pointer'}
+            disabled={applicants.length <= 0} 
+            _hover={{ bg: 'gray.100', color: 'uni.secondary' }} 
+            onClick={() => setOpenGeneratePdfModal(applicants.length > 0)}
+          >
+            Generar acta de notas
+          </MenuItem>
+          <MenuItem
+            cursor={applicants.length <= 0 ? 'not-allowed' : 'pointer'}
+            disabled={applicants.length <= 0}
+            _hover={{ bg: 'gray.100', color: 'uni.secondary' }}
+            onClick={() => {
+              setOpenGenerateSuneduExcelModal(applicants.length > 0);
+            }}
+            >
+              Descargar estudiantes (SUNEDU)
+		      </MenuItem>
         </MenuContent>
       </MenuRoot>
 
       <GeneratePdfApliccationsModal data={data} open={openGeneratePdfModal} setOpen={setOpenGeneratePdfModal} />
-      <ConfirmDownloadSuneduModal open={openGenerateSuneduExcelModal} setOpen={setOpenGenerateSuneduExcelModal} />
-    </Box>
+      {isAdmissionProcessLoading && <Spinner /> }
+      {!isAdmissionProcessLoading && dataAdmissionProcess && (
+          <ConfirmDownloadSuneduModal admissionProcess={dataAdmissionProcess} open={openGenerateSuneduExcelModal} setOpen={setOpenGenerateSuneduExcelModal} />
+      )}
+      </Box>
   )
 }
 
 AdmissionApplicantsMenu.propTypes = {
+  applicants: PropTypes.array,
   data: PropTypes.object,
 };
 
@@ -137,7 +161,7 @@ export const AdmissionApplicantsByProgram = () => {
                   : dataProgram?.admission_process_name}
               </Span>
             </Box>
-            <AdmissionApplicantsMenu data={dataProgram} />
+            <AdmissionApplicantsMenu applicants={filteredApplicantsByProgramId} data={dataProgram} />
           </HStack>
 				</Heading>
 			</Stack>
