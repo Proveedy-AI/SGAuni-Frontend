@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useListAssignedModalities = (params = {}) => {
+export const useListAssignedModalities = (params = {}, options = {}) => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useQuery({
@@ -13,5 +13,6 @@ export const useListAssignedModalities = (params = {}) => {
 			});
 			return res.data;
 		},
+		...options,
 	});
 };

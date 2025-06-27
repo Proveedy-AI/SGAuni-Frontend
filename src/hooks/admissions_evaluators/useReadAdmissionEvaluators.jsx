@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useReadAdmissionEvaluators = (params = {}) => {
+export const useReadAdmissionEvaluators = (params = {}, options = {}) => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useQuery({
@@ -13,5 +13,6 @@ export const useReadAdmissionEvaluators = (params = {}) => {
 			});
 			return res.data;
 		},
+		...options, // permite opciones como enabled, refetchOnWindowFocus, etc.
 	});
 };

@@ -29,8 +29,11 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 
 	const { mutate: createAdmissionsPrograms, isPending } =
 		useCreateAdmissionsPrograms();
-	const { data: dataPrograms } = useReadPrograms({ coordinator_id: profileId });
-	const { data: dataUsers, isLoading } = useReadUsers();
+	const { data: dataPrograms } = useReadPrograms(
+		{ coordinator_id: profileId },
+		{ enabled: open }
+	);
+	const { data: dataUsers, isLoading } = useReadUsers({}, { enabled: open });
 
 	const handleSubmitData = (e) => {
 		e.preventDefault();

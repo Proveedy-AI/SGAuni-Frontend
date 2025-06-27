@@ -33,10 +33,13 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 	const [selectedUser, setSelectedUser] = useState(null);
 	const { mutate: updateAdmissionsPrograms, isPending } =
 		useUpdateAdmissionsPrograms();
-	const { data: dataPrograms } = useReadPrograms({
-		coordinator_id: data?.coordinator,
-	});
-	const { data: dataUsers, isLoading } = useReadUsers();
+	const { data: dataPrograms } = useReadPrograms(
+		{
+			coordinator_id: data?.coordinator,
+		},
+		{ enabled: open }
+	);
+	const { data: dataUsers, isLoading } = useReadUsers({}, { enabled: open });
 
 	const handleSubmitData = (e) => {
 		e.preventDefault();
