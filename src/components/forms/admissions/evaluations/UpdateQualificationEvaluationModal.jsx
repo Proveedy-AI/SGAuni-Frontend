@@ -92,7 +92,7 @@ export const UpdateQualificationEvaluationModal = ({ data, fetchData }) => {
 			open={open}
 			onOpenChange={(e) => setOpen(e.open)}
 			size='4xl'
-			isSaving={isSaving}
+			loading={isSaving}
 			onSave={handleUpdateQualification}
 		>
 			<Stack css={{ '--field-label-width': '140px' }}>
