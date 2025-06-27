@@ -1,4 +1,4 @@
-import { AdmissionEvaluatorsTable } from '@/components/tables/admissions/AdmissionEvaluatorsTable';
+import { AdmissionEvaluatorsTable } from '@/components/tables/admissions';
 import { useReadProgramsForEvaluator } from '@/hooks/admissions_evaluators';
 import { useProvideAuth } from '@/hooks/auth';
 import { Box, Heading, Input, InputGroup, Stack } from '@chakra-ui/react';
@@ -22,7 +22,7 @@ export const AdmissionEvaluators = () => {
 
     const filteredProgramsForEvaluator = Array.isArray(dataProgramsForEvaluator)
         ? dataProgramsForEvaluator.filter((item) => {
-            return item.evaluator_display
+            return item.admission_process_name
                 ?.toLowerCase()
                 .includes(searchValue.toLowerCase());
             })

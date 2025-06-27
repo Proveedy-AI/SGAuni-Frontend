@@ -11,10 +11,10 @@ import { Encryptor } from "@/components/CrytoJS/Encryptor"
 const Row = memo(({ item, startIndex, index, permissions, sortConfig, data }) => {
     const navigate = useNavigate();
 	const encrypted = Encryptor.encrypt(item.id);
-	const encoded = encodeURIComponent(encrypted);
+	const encodedId = encodeURIComponent(encrypted);
 
     const handleRowClick = () => {
-        navigate(`/admissions/evaluators/programs/${encoded}`);
+        navigate(`/admissions/evaluators/programs/${encodedId}?uuid=${item.uuid}`);
     }
     
     return (
@@ -35,7 +35,6 @@ const Row = memo(({ item, startIndex, index, permissions, sortConfig, data }) =>
                     ? data.length - (startIndex + index)
                     : startIndex + index + 1}
             </Table.Cell>
-            <Table.Cell>{item.evaluator_display}</Table.Cell>
             <Table.Cell>{item.admission_process_name}</Table.Cell>
             <Table.Cell>{item.role_display}</Table.Cell>
 			<Table.Cell onClick={(e) => e.stopPropagation()}></Table.Cell>
@@ -89,7 +88,6 @@ export const AdmissionEvaluatorsTable = ({
                                     onSort={setSortConfig}
                                 />
                             </Table.ColumnHeader>
-                            <Table.ColumnHeader minW={'200px'}>Evaluador Asignado</Table.ColumnHeader>
                             <Table.ColumnHeader minW={'200px'}>Proceso de Admisión</Table.ColumnHeader>
                             <Table.ColumnHeader minW={'200px'}>Tipo de Evaluación</Table.ColumnHeader>
                         </Table.Row>

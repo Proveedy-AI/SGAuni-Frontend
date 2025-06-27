@@ -1,10 +1,13 @@
 import { Modal, Tooltip } from '@/components/ui';
-import { Box, IconButton, Stack } from '@chakra-ui/react';
+import { useReadAdmissionEvaluationsByApplication } from '@/hooks/admissions_evaluations';
+import { Box, Group, IconButton, Spinner, Stack, Table } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
 import { FiCheckCircle } from 'react-icons/fi';
+import { UpdateQualificationEvaluationModal, ViewEvaluationDetailModal } from './evaluations';
 
 export const ViewAdmissionProgramExams = ({ item, fetchData }) => {
+  const { data: dataEvaluationsByApplication, isLoading } = useReadAdmissionEvaluationsByApplication(item.id);
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
 
@@ -37,7 +40,44 @@ export const ViewAdmissionProgramExams = ({ item, fetchData }) => {
       contentRef={contentRef}
     >
       <Stack spacing={4} css={{ '--field-label-width': '150px' }}>
-        
+        <Table.Root size='sm' striped>
+          <Table.Header>
+            <Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
+              <Table.ColumnHeader>N°</Table.ColumnHeader>
+              <Table.ColumnHeader>Fecha</Table.ColumnHeader>
+              <Table.ColumnHeader>Examenes realizados</Table.ColumnHeader>
+              <Table.ColumnHeader>Calificación</Table.ColumnHeader>
+              <Table.ColumnHeader>Acciones</Table.ColumnHeader>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            { isLoading && <Spinner /> }
+            {
+              !isLoading && dataEvaluationsByApplication?.results?.length > 0 ? (
+                dataEvaluationsByApplication?.results?.map((evaluation, index) => (
+                  <Table.Row key={evaluation.id}>
+                    <Table.Cell>{index + 1}</Table.Cell>
+                    <Table.Cell>{evaluation.start_date}</Table.Cell>
+                    <Table.Cell>{evaluation.type_application_display}</Table.Cell>
+                    <Table.Cell>{evaluation.qualification ?? '-'}</Table.Cell>
+                    <Table.Cell>
+                      <Group gap={2}>
+                        <ViewEvaluationDetailModal data={evaluation} />
+                        <UpdateQualificationEvaluationModal data={evaluation} fetchData={fetchData} />
+                      </Group>
+                    </Table.Cell>
+                  </Table.Row>
+                ))
+              ) : (
+                <Table.Row>
+                  <Table.Cell colSpan={6} textAlign='center'>
+                    Sin datos disponibles
+                  </Table.Cell>
+                </Table.Row>
+              )
+            }
+          </Table.Body>
+                      </Table.Root>
       </Stack>
     </Modal>
   );
