@@ -14,12 +14,19 @@ export const ApplicantsLayout = () => {
 	const [step, setStep] = useState(0);
 	const [isStepValid, setIsStepValid] = useState(false);
 	const [isDocumentsStepValid, setIsDocumentsStepValid] = useState(false);
+	const [allWorksCompleted, setAllWorksCompleted] = useState(false);
 
 	const {
 		data: dataUser,
 		isLoading: isLoadingDataUser,
 		refetch: fetchDataUser,
 	} = useReadUserLogged();
+
+	const handleCompleteProcess = () => {
+		// Aquí puedes hacer una llamada a la API o actualizar el estado final
+		console.log('Proceso finalizado');
+		setStep(step + 1); // esto muestra Steps.CompletedContent
+	};
 
 	useEffect(() => {
 		const validateStep = async () => {
@@ -39,14 +46,14 @@ export const ApplicantsLayout = () => {
 					break;
 				}
 				case 3: {
-					setIsStepValid(true);
+					setIsStepValid(allWorksCompleted);
 					break;
 				}
 			}
 		};
 
 		validateStep();
-	}, [step, dataUser, isDocumentsStepValid]);
+	}, [step, dataUser, isDocumentsStepValid, allWorksCompleted]);
 
 	const steps = [
 		{
@@ -73,7 +80,7 @@ export const ApplicantsLayout = () => {
 		},
 		{
 			title: 'Trabajos',
-			component: <WorkApplicant />,
+			component: <WorkApplicant onAllCompleted={setAllWorksCompleted} />,
 		},
 	];
 
@@ -115,11 +122,22 @@ export const ApplicantsLayout = () => {
 					</Steps.List>
 				</Box>
 
-				<Steps.NextTrigger asChild disabled={!isStepValid}>
-					<Button colorPalette='gray' variant='ghost'>
-						Siguiente <FaChevronRight />
-					</Button>
-				</Steps.NextTrigger>
+				{step < steps.length &&
+					(step === steps.length - 1 ? (
+						<Button
+							colorPalette='gray'
+							variant='ghost'
+							onClick={handleCompleteProcess}
+						>
+							Completar <FaChevronRight />
+						</Button>
+					) : (
+						<Steps.NextTrigger asChild disabled={!isStepValid}>
+							<Button colorPalette='gray' variant='ghost'>
+								Siguiente <FaChevronRight />
+							</Button>
+						</Steps.NextTrigger>
+					))}
 			</Flex>
 
 			{steps.map((step, index) => (
@@ -143,7 +161,11 @@ export const ApplicantsLayout = () => {
 					bg='green.50'
 					boxShadow='sm'
 				>
-					<FaCheckCircle size="60px" color="#38A169" style={{ marginBottom: '16px' }} />
+					<FaCheckCircle
+						size='60px'
+						color='#38A169'
+						style={{ marginBottom: '16px' }}
+					/>
 					<Heading size='md' color='green.700' mb={2}>
 						¡Proceso completado con éxito!
 					</Heading>
@@ -151,6 +173,14 @@ export const ApplicantsLayout = () => {
 						Has finalizado todos los pasos de tu postulación. Puedes revisar el
 						estado desde el panel de postulaciones.
 					</Text>
+					<Button
+						mt={4}
+						colorScheme='green'
+						variant='solid'
+						onClick={() => (window.location.href = '/admissions/myapplicants')}
+					>
+						Volver al Inicio
+					</Button>
 				</Flex>
 			</Steps.CompletedContent>
 		</Steps.Root>

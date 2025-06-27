@@ -199,7 +199,7 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 	const handleDownloadGuides = () => {
 		const files = [
 			'/templates/Carta-presentación.docx',
-			'/templates/Solicitud-Maestria.docx',
+			'/templates/Solicitud.docx',
 			'/templates/Declaración-Jurada.docx',
 		];
 

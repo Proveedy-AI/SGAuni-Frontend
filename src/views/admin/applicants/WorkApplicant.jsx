@@ -18,6 +18,7 @@ import { CompactFileUpload } from '@/components/ui/CompactFileInput';
 import { FaUpload } from 'react-icons/fa';
 import { uploadToS3 } from '@/utils/uploadToS3';
 import { toaster } from '@/components/ui';
+import PropTypes from 'prop-types';
 
 const formatDateTime = (dateStr, timeStr) => {
 	const date = new Date(`${dateStr}T${timeStr}`);
@@ -32,7 +33,7 @@ const formatDateTime = (dateStr, timeStr) => {
 	});
 };
 
-export const WorkApplicant = () => {
+export const WorkApplicant = ({ onAllCompleted }) => {
 	const item = EncryptedStorage.load('selectedApplicant');
 	const { data: dataEvaluationsByApplication, refetch: fetchExams } =
 		useReadAdmissionEvaluationsByApplication(item?.id ?? '');
@@ -123,6 +124,34 @@ export const WorkApplicant = () => {
 		}
 
 		setGroupedWorks(grouped);
+	}, [dataEvaluationsByApplication]);
+
+	useEffect(() => {
+		if (!dataEvaluationsByApplication?.results) return;
+
+		const grouped = {
+			Essay: [],
+			Interview: [],
+			Exam: [],
+		};
+
+		let allCompleted = true;
+
+		for (const item of dataEvaluationsByApplication.results) {
+			const type = item.type_application_display;
+			if (grouped[type]) grouped[type].push(item);
+
+			if (item.status_qualification_display !== 'Completed') {
+				allCompleted = false;
+			}
+		}
+
+		setGroupedWorks(grouped);
+
+		// Llamamos al callback si está definido
+		if (typeof onAllCompleted === 'function') {
+			onAllCompleted(allCompleted);
+		}
 	}, [dataEvaluationsByApplication]);
 
 	const renderWorkItem = (work) => {
@@ -270,4 +299,8 @@ export const WorkApplicant = () => {
 			</Stack>
 		</Box>
 	);
+};
+
+WorkApplicant.propTypes = {
+	onAllCompleted: PropTypes.bool,
 };
