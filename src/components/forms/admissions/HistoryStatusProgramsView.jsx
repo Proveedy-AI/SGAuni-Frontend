@@ -9,9 +9,10 @@ export const HistoryStatusProgramsView = ({ data, statusMap }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 
-	const { data: admissionReviews } = useReadAdmissionsProgramsReview({
-		program_id: data.id,
-	});
+	const { data: admissionReviews } = useReadAdmissionsProgramsReview(
+		{ program_id: data.id },
+		{ enabled: open } // Evita llamada automática
+	);
 
 	return (
 		<Modal
