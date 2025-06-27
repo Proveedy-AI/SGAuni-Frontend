@@ -3,8 +3,8 @@ export const RequiredDocumentsSections = {
 		{ key: 4, label: 'Curriculum:', type_document: 2 },
 		{
 			key: 12,
-			label: 'Ficha de Datos:',
-			tooltip: 'Se puede obtener en la Sección de Datos Personales',
+			label: 'Ficha de Inscripción:',
+			tooltip: 'Descargar y Completar ficha',
 			type_document: 3,
 		},
 		{

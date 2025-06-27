@@ -82,7 +82,7 @@ export const ApplicantsLayout = () => {
 			step={step}
 			onStepChange={(e) => setStep(e.step)}
 			count={steps.length}
-			colorPalette='red'
+			colorPalette='green'
 		>
 			<ResponsiveBreadcrumb
 				items={[
@@ -92,7 +92,7 @@ export const ApplicantsLayout = () => {
 			/>
 			<Flex w='100%' align='center'>
 				<Steps.PrevTrigger asChild>
-					<Button colorPalette='red' variant='ghost'>
+					<Button colorPalette='gray' variant='ghost'>
 						<FaChevronLeft /> Anterior
 					</Button>
 				</Steps.PrevTrigger>
@@ -116,7 +116,7 @@ export const ApplicantsLayout = () => {
 				</Box>
 
 				<Steps.NextTrigger asChild disabled={!isStepValid}>
-					<Button colorPalette='red' variant='ghost'>
+					<Button colorPalette='gray' variant='ghost'>
 						Siguiente <FaChevronRight />
 					</Button>
 				</Steps.NextTrigger>
