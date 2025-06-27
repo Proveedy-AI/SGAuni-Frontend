@@ -3,6 +3,7 @@ import { Button, ModalSimple } from '@/components/ui';
 import { Stack } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
+import { FaDownload } from 'react-icons/fa';
 
 export const GenerateApplicantDataPdfModal = ({ applicationPersonalData }) => {
   const [open, setOpen] = useState(false);
@@ -12,8 +13,8 @@ export const GenerateApplicantDataPdfModal = ({ applicationPersonalData }) => {
       title="Documento de Datos Personales"
       placement='center'
       trigger={
-        <Button bg='uni.secondary'>
-          Generar PDF
+        <Button variant='outline'>
+         <FaDownload /> Ficha Inscripción
         </Button>
       }
       open={open}

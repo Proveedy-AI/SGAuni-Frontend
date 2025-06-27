@@ -22,7 +22,7 @@ export const AddContractsForm = ({ fetchData }) => {
 	const [selectedUser, setSelectedUser] = useState(null);
 
 	const { mutate: createContracts } = useCreateContracts();
-	const { data: dataUsers, isLoading } = useReadUsers();
+	const { data: dataUsers, isLoading } = useReadUsers({}, { enabled: open });
 
 	const handleSubmitData = async (e) => {
 		e.preventDefault();

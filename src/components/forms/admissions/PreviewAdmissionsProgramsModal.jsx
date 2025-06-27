@@ -9,7 +9,7 @@ import { formatDateString } from '@/components/ui/dateHelpers';
 
 export const PreviewAdmissionsProgramsModal = ({ data }) => {
 	const [open, setOpen] = useState(false);
-	const { data: dataPrograms } = useReadPrograms();
+	const { data: dataPrograms } = useReadPrograms({}, { enabled: open });
 
 	const dataMode = [
 		{ label: 'Virtual', value: 1 },

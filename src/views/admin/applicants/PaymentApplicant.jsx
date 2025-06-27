@@ -38,8 +38,6 @@ export const PaymentApplicant = () => {
 		refetch,
 	} = useReadMyPaymentRequest();
 
-	console.log(PaymentRequest);
-
 	const methodOptions =
 		MethodPayment?.results?.map((method) => ({
 			value: method.id,
@@ -231,7 +229,7 @@ export const PaymentApplicant = () => {
 					color={'gray.500'}
 				>
 					Orden de Pago: Derecho de Carpeta (S/
-					{purposes[1]?.rule?.amount ?? '-'})
+					{purposes[2]?.rule?.amount ?? '-'})
 				</Heading>
 			</Stack>
 			{isLoadingPaymentRquest ? (

@@ -42,10 +42,10 @@ export const AssignDebtConditionProgram = ({ item, fetchData }) => {
 	const { mutateAsync: assignDebtCondition, isPending: isSaving } =
 		useAssignDebtConditionProgram();
 
-	const {
-		data: dataDebts,
-		refetch: fetchDebts,
-	} = useReadDebtConditionProgram();
+	const { data: dataDebts, refetch: fetchDebts } = useReadDebtConditionProgram(
+		{},
+		{ enabled: open }
+	);
 
 	const { mutate: deleteDebtCondition } = useDeleteDebtConditionProgram();
 
@@ -161,7 +161,7 @@ export const AssignDebtConditionProgram = ({ item, fetchData }) => {
 								<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 							</Table.Row>
 						</Table.Header>
-						
+
 						<Table.Body>
 							{dataDebts?.results?.map((item, index) => (
 								<Table.Row

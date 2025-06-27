@@ -25,7 +25,7 @@ export const AssignSettingsRolePermissionsForm = ({
 	const roleId = data?.id;
 	const [open, setOpen] = useState(false);
 	const { data: permissionsInRole, isLoading: loadingAssigned } =
-		useReadPermissionHasRole(roleId);
+		useReadPermissionHasRole(roleId, {}, { enabled: open && !!roleId });
 	const { mutateAsync: assignPermissionsBulk, isPending: isSaving } =
 		useAssignPermission();
 

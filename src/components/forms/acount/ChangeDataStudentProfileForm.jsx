@@ -10,6 +10,8 @@ import {
 import { useEffect } from 'react';
 import { useReadUbigeos } from '@/hooks/ubigeos';
 import { CompactFileUpload } from '@/components/ui/CompactFileInput';
+import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
+import { format } from 'date-fns';
 
 const FieldWithInputText = ({
 	placeholder,
@@ -215,12 +217,13 @@ export const ChangeDataStudentProfileForm = ({
 							orientation={{ base: 'vertical', sm: 'horizontal' }}
 							label='Fecha de nacimiento:'
 						>
-							<Input
-								type='date'
-								value={profile.birth_date || ''}
-								onChange={(e) =>
-									updateProfileField('birth_date', e.target.value)
+							<CustomDatePicker
+								selectedDate={profile.birth_date ? profile.birth_date : null}
+								onDateChange={(date) =>
+									updateProfileField('birth_date', format(date, 'yyyy-MM-dd'))
 								}
+								buttonSize='md'
+								size={{ base: '240px', md: '510px' }}
 							/>
 						</Field>
 						<Field

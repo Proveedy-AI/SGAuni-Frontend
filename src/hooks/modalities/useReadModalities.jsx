@@ -2,14 +2,17 @@
 import { useQuery } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useReadModalities = (params = {}) => {
-  const axiosPrivate = useAxiosPrivate();
+export const useReadModalities = (params = {}, options = {}) => {
+	const axiosPrivate = useAxiosPrivate();
 
-  return useQuery({
-    queryKey: ['modalities', params],
-    queryFn: async () => {
-      const res = await axiosPrivate.get('/api/v1/admission-modalities/', { params });
-      return res.data;
-    },
-  });
+	return useQuery({
+		queryKey: ['modalities', params],
+		queryFn: async () => {
+			const res = await axiosPrivate.get('/api/v1/admission-modalities/', {
+				params,
+			});
+			return res.data;
+		},
+		...options, // Permite `enabled`, `staleTime`, etc.
+	});
 };
