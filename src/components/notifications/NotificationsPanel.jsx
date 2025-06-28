@@ -12,12 +12,14 @@ import {
 	Text,
 	VStack,
 } from '@chakra-ui/react';
-import { Fragment } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { FiBell, FiX } from 'react-icons/fi';
 import { BsCheck2All, BsPlus } from 'react-icons/bs';
 import { MenuContent, MenuRoot, MenuTrigger, Modal } from '../ui';
 
 export const NotificationsPanel = () => {
+	const [isOpen, setIsOpen] = useState(false);
+
 	const dummyNotifications = [
 		{
 			id: 1,
@@ -51,14 +53,20 @@ export const NotificationsPanel = () => {
 
 	return (
 		<>
-			<MenuRoot open>
+			<MenuRoot>
 				<MenuTrigger asChild bg='transparent'>
-					<IconButton variant='ghost' aria-label='Botón notificaciones' size='sm'>
-						<FiBell />
+					<IconButton 
+						variant='ghost' 
+						aria-label='Botón notificaciones' 
+						outline='none'
+						size='24'
+						boxShadow='none'
+						_focus={{ outline: 'none', boxShadow: 'none' }}
+						minW='auto'
+					>
+						<FiBell size='24' />
 						<Float>
-							<Circle size='4' bg='red' color='white'>
-								4
-							</Circle>
+							<Circle size='4' bg='red' color='white' style={{ fontSize: 12 }}>4</Circle>
 						</Float>
 					</IconButton>
 				</MenuTrigger>
@@ -67,7 +75,13 @@ export const NotificationsPanel = () => {
 					<Stack>
 						<HStack justify='space-between' align='center' px='3' pt='3'>
 							<Heading size='lg'>Notificaciones</Heading>
-							<Button size='2xs' bg='uni.secondary' color='white'>
+							<Button 
+								size='2xs' 
+								bg='uni.secondary' 
+								color='white'
+								outline='none'
+								_focus={{ outline: 'none', boxShadow: 'none' }}
+							>
 								<BsCheck2All />
 								<Text fontSize='11px'>Marcar todos</Text>
 							</Button>
@@ -99,7 +113,7 @@ export const NotificationsPanel = () => {
 				</MenuContent>
 			</MenuRoot>
 
-			<NotificationToast open />
+			{/* <NotificationToast open /> */}
 		</>
 	);
 };
@@ -151,7 +165,22 @@ export const NotificationItem = ({ data }) => {
 	);
 };
 
-export const NotificationToast = ({ open }) => {
+export const NotificationToast = ({ 
+	open, 
+	onClose, 
+	title = 'Notificación', 
+	message = 'Acción realizada correctamente.', 
+	duration = 3000
+}) => {
+	useEffect(() => {
+		if (open) {
+			const timer = setTimeout(() => {
+				onClose?.();
+			}, duration);
+			return () => clearTimeout(timer);
+		}
+	}, [open, duration, onClose]);
+
 	if (!open) return null;
 
 	return (
@@ -160,24 +189,24 @@ export const NotificationToast = ({ open }) => {
 				position='fixed'
 				bottom='20px'
 				right='20px'
-				zIndex='9999'
+				zIndex='99999'
 				bg='uni.gray.500'
 				color='white'
 				p='4'
 				borderRadius='md'
 				boxShadow='lg'
 				maxW='350px'
+				onClick={(e) => e.stopPropagation()}
+				pointerEvents='auto'
 			>
 				<VStack align='start' spacing='3'>
 					<HStack w='full' justify='space-between'>
-						<Text fontSize='md' fontWeight='bold'>
-							Nueva notificación
-						</Text>
-						<IconButton colorPalette='red' size='xs' aria-label='Cerrar toast'>
+						<Text fontSize='md' fontWeight='bold'>{title}</Text>
+						<IconButton colorPalette='red' size='xs' aria-label='Cerrar toast' onClick={onClose}>
 							<FiX />
 						</IconButton>
 					</HStack>
-					<Text>Tienes una nueva notificación en el CRM uni.</Text>
+					<Text>{message}</Text>
 				</VStack>
 			</Box>
 		</Portal>

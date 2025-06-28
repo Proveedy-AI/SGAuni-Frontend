@@ -8,3 +8,4 @@ export * from './AssignEvaluatorModal';
 export * from './GeneratePdfApliccationsModal';
 export * from './GenerateApplicantDataPdfModal';
 export * from './ConfirmDownloadSuneduModal';
+export * from './ViewAdmissionEvaluatorsProgramExams';

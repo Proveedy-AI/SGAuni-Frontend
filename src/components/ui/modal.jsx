@@ -34,7 +34,12 @@ export const Modal = ({
 }) => {
 	return (
 		<DialogRoot {...props}>
-			<DialogTrigger asChild>{trigger}</DialogTrigger>
+			{/* <DialogTrigger asChild>{trigger}</DialogTrigger> */}
+			{trigger && (
+				<DialogTrigger asChild>
+					{trigger}
+				</DialogTrigger>
+			)}
 			<DialogContent
 				bg={{ base: 'white', _dark: 'uni.gray.500' }}
 				ref={contentRef}

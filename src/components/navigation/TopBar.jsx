@@ -15,6 +15,7 @@ import {
 import { Avatar, MenuContent, MenuItem, MenuRoot, MenuTrigger } from '../ui';
 import { FiChevronDown, FiLogOut } from 'react-icons/fi';
 import { useProvideAuth } from '@/hooks/auth';
+import { NotificationsPanel } from '../notifications';
 
 export const TopBar = () => {
 	const { getProfile, logout } = useProvideAuth();
@@ -85,7 +86,9 @@ export const TopBar = () => {
 					{mensaje}
 				</Text>
 			</HStack>
-			<HStack spacing='4'>
+			<HStack	ack style={{ gap: 19 }}>
+				<NotificationsPanel />
+
 				<MenuRoot>
 					<MenuTrigger asChild>
 						<HStack gap={['1', '3']} cursor='pointer'>
