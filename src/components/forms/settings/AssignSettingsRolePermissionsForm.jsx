@@ -172,6 +172,7 @@ const groupTitles = {
 		users: 'Usuarios',
 		admissions: 'Admisiones',
 		contracts: 'Contratos',
+		tuition: 'Matrícula'
 	},
 	subCategory: {
 		program: 'Programas',
@@ -186,5 +187,13 @@ const groupTitles = {
 		mylist: 'Lista Personal',
 		myprograms: 'Mis Programas de Admisión',
 		programs: 'Programas de Admisión',
+		processes: 'Procesos de Matricula',
+		evaluators: 'Evaluaciones',
+		studenprofile: 'Perfil de Estudiante',
+		myapplicants: 'Mis Postulaciones',
+		applicants: 'Postulantes',
+		applicant: 'Postulante',
+		debt: 'Cobranzas',
+		adminprofile: 'Perfil de Administrador',
 	},
 };
