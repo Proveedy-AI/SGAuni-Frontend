@@ -197,6 +197,9 @@ export const PaymentApplicant = () => {
 			borderRadius='10px'
 			overflow='hidden'
 			boxShadow='md'
+			justifyContent={'center'}	
+			mx={'auto'}
+			w={'80%'}
 			mb={10}
 			mt={1}
 		>
