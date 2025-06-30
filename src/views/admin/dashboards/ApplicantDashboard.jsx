@@ -13,7 +13,7 @@ import { LuCheckCheck } from 'react-icons/lu';
 
 export const ApplicantDashboard = () => {
 	return (
-		<Collapsible.Root unmountOnExit>
+		<Collapsible.Root unmountOnExit defaultOpen={true}>
 			<Collapsible.Content>
 				<Box
 					p={6}
