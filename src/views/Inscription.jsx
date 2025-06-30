@@ -29,6 +29,8 @@ import {
 import { useNavigate, useParams } from 'react-router';
 import { useReadAdmissionByUUID } from '@/hooks/admissions_proccess';
 import { useCreatePersonWithAdmission } from '@/hooks/admissions_applicants';
+import { format } from 'date-fns';
+import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 
 export default function AdmissionForm() {
 	const { uuid } = useParams();
@@ -270,7 +272,7 @@ export default function AdmissionForm() {
 				if (errors) {
 					const messages = [];
 
-					if (errors.user?.username?.length) {
+					if (errors.person?.user?.username?.length) {
 						messages.push('El correo electrónico ya está registrado.');
 					}
 
@@ -294,73 +296,74 @@ export default function AdmissionForm() {
 
 	return (
 		<Box minH='100dvh' bg='gray.50'>
-      <Box bg='#8B2635' py={4}>
-        <Container maxW='container.xl'>
-          <HStack alignItems={'center'} justify="center">
-            <Image
-              w='40px'
-              src='/img/logo-UNI.png'
-              alt='Logo'
-              mr='2'
-              filter='brightness(0) invert(1)'
-            />
-            <Text
-              color='white'
-              fontWeight='semibold'
-              fontSize={{ base: 'md', lg: 'xl', xl:'2xl' }}
-              display={{ base: 'none', md: 'inline' }}
-              ml={2}
-            >
-              FACULTAD DE INGENIERÍA ECONÓMICA ESTADÍSTICAS Y CIENCIAS SOCIALES - UNI
-            </Text>
-            <Text
-              color='white'
-              fontWeight='semibold'
-              fontSize={{ base:'2xl' }}
-              display={{ base: 'inline', md: 'none' }}
-              ml={2}
-            >
-              FIEECS UNI 
-            </Text>
-            </HStack>
-        </Container>
-      </Box>
-            {isAdmissionProgramLoading && (
-              <Box textAlign='center' py={10}>
-                <Spinner size='xl' color='#8B2635' />
-                <Text mt={4} color='#8B2635' fontSize='xl'>
-                  Cargando información del proceso de admisión...
-                </Text>
-              </Box>
-            )}
-            {!isAdmissionProgramLoading && (
-              <>
-                {
-            /* Formulario de Inscripción */
-            dataAdmissionProgram?.end_date &&
-            new Date(dataAdmissionProgram.end_date) >= new Date() ? (
-              <Box>
-                <Container
-                  maxW='container.xl'
-                  py={5}
-                  fontWeight='bold'
-                  textAlign='center'
-                >
-                  <Text color='#8B2635' fontSize='2xl'>
-                    Formulario de Inscripción
-                  </Text>
-                  <Span color='gray.500' fontSize='xl'>
-                    {dataAdmissionProgram?.admission_process_name.toUpperCase()}
-                  </Span>
-                </Container>
-                <Container maxW='container.sm'>
-                  <Flex
-                    direction={{ base: 'column', md: 'row' }}
-                    align='start'
-                    justify='center'
-                    gap={8}
-                  >
-                    {/* Columna 1 */}
+			<Box bg='#8B2635' py={4}>
+				<Container maxW='container.xl'>
+					<HStack alignItems={'center'} justify='center'>
+						<Image
+							w='40px'
+							src='/img/logo-UNI.png'
+							alt='Logo'
+							mr='2'
+							filter='brightness(0) invert(1)'
+						/>
+						<Text
+							color='white'
+							fontWeight='semibold'
+							fontSize={{ base: 'md', lg: 'xl', xl: '2xl' }}
+							display={{ base: 'none', md: 'inline' }}
+							ml={2}
+						>
+							FACULTAD DE INGENIERÍA ECONÓMICA ESTADÍSTICAS Y CIENCIAS SOCIALES
+							- UNI
+						</Text>
+						<Text
+							color='white'
+							fontWeight='semibold'
+							fontSize={{ base: '2xl' }}
+							display={{ base: 'inline', md: 'none' }}
+							ml={2}
+						>
+							FIEECS UNI
+						</Text>
+					</HStack>
+				</Container>
+			</Box>
+			{isAdmissionProgramLoading && (
+				<Box textAlign='center' py={10}>
+					<Spinner size='xl' color='#8B2635' />
+					<Text mt={4} color='#8B2635' fontSize='xl'>
+						Cargando información del proceso de admisión...
+					</Text>
+				</Box>
+			)}
+			{!isAdmissionProgramLoading && (
+				<>
+					{
+						/* Formulario de Inscripción */
+						dataAdmissionProgram?.end_date &&
+						new Date(dataAdmissionProgram.end_date) >= new Date() ? (
+							<Box>
+								<Container
+									maxW='container.xl'
+									py={5}
+									fontWeight='bold'
+									textAlign='center'
+								>
+									<Text color='#8B2635' fontSize='2xl'>
+										Formulario de Inscripción
+									</Text>
+									<Span color='gray.500' fontSize='xl'>
+										{dataAdmissionProgram?.admission_process_name.toUpperCase()}
+									</Span>
+								</Container>
+								<Container maxW='container.sm'>
+									<Flex
+										direction={{ base: 'column', md: 'row' }}
+										align='start'
+										justify='center'
+										gap={8}
+									>
+										{/* Columna 1 */}
 										<Box w='100%' maxW='420px' p={6} spaceY={3}>
 											<Field label='Nombres completos'>
 												<Input
@@ -435,15 +438,16 @@ export default function AdmissionForm() {
 												</>
 											)}
 											<Field label='Fecha de Nacimiento'>
-												<Input
-													type='date'
-													value={inscriptionRequest.birth_date}
-													onChange={(e) =>
+												<CustomDatePicker
+													selectedDate={inscriptionRequest.birth_date}
+													onDateChange={(date) =>
 														setInscriptionRequest({
 															...inscriptionRequest,
-															birth_date: e.target.value,
+															birth_date: format(date, 'yyyy-MM-dd'),
 														})
 													}
+													buttonSize='md'
+													size={{ base: '295px', md: '375px' }}
 												/>
 											</Field>
 											<Field label='País de Nacimiento'>

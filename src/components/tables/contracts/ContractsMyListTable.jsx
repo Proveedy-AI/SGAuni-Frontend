@@ -2,12 +2,12 @@
 import { SignContractsForm } from '@/components/forms';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { Pagination } from '@/components/ui';
+import { formatDateString } from '@/components/ui/dateHelpers';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import useSortedData from '@/utils/useSortedData';
 
 import { Badge, Box, HStack, Table } from '@chakra-ui/react';
-import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
 
@@ -19,10 +19,8 @@ const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 					? data.length - (startIndex + index)
 					: startIndex + index + 1}
 			</Table.Cell>
-			<Table.Cell>
-				{format(item.submit_by_admin_at, 'dd/MM/yy hh:mm a')}{' '}
-			</Table.Cell>
-			<Table.Cell>{format(item.expires_at, 'dd/MM/yy')}</Table.Cell>
+			<Table.Cell>{formatDateString(item.submit_by_admin_at)} </Table.Cell>
+			<Table.Cell>{formatDateString(item.expires_at)}</Table.Cell>
 			<Table.Cell>
 				<Badge
 					bg={item.is_signed ? 'green.100' : 'red.100'}
@@ -34,7 +32,7 @@ const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 			</Table.Cell>
 			<Table.Cell>
 				{item.submit_by_teacher_at
-					? format(new Date(item.submit_by_teacher_at), 'dd/MM/yy')
+					? formatDateString(item.submit_by_teacher_at)
 					: ''}
 			</Table.Cell>
 			<Table.Cell>
@@ -95,10 +93,38 @@ export const ContractsMyListTable = ({ data, fetchData, isLoading }) => {
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader>Fecha Registro</Table.ColumnHeader>
-							<Table.ColumnHeader>Expiración</Table.ColumnHeader>
-							<Table.ColumnHeader>Estado</Table.ColumnHeader>
-							<Table.ColumnHeader>Fecha firmado</Table.ColumnHeader>
+							<Table.ColumnHeader>
+								<SortableHeader
+									label='Fecha de registro'
+									columnKey='submit_by_admin_at'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader>
+								<SortableHeader
+									label='Expiración'
+									columnKey='expires_at'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader>
+								<SortableHeader
+									label='Estado'
+									columnKey='is_signed'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader>
+								<SortableHeader
+									label='Fecha Firmada'
+									columnKey='submit_by_teacher_at'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
 							<Table.ColumnHeader>Contrato</Table.ColumnHeader>
 							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 						</Table.Row>

@@ -2,12 +2,12 @@ import { PreviewProgramsPendingModal } from '@/components/forms/admissions';
 import { UpdateStatusAdmissionsProccessForm } from '@/components/forms/admissions/UpdateStatusAdmissionsProccessForm';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { Pagination } from '@/components/ui';
+import { formatDateString } from '@/components/ui/dateHelpers';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import useSortedData from '@/utils/useSortedData';
 
 import { Badge, Box, HStack, Table } from '@chakra-ui/react';
-import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
 
@@ -28,15 +28,11 @@ const Row = memo(
 				</Table.Cell>
 				<Table.Cell>{item.program_name}</Table.Cell>
 				<Table.Cell>{item.coordinator_name}</Table.Cell>
+				<Table.Cell>{formatDateString(item.semester_start_date)}</Table.Cell>
 				<Table.Cell>
-					{format(new Date(item.semester_start_date), 'dd/MM/yyyy')}
+					{formatDateString(item.registration_start_date)}
 				</Table.Cell>
-				<Table.Cell>
-					{format(new Date(item.registration_start_date), 'dd/MM/yyyy')}
-				</Table.Cell>
-				<Table.Cell>
-					{format(new Date(item.registration_end_date), 'dd/MM/yyyy')}
-				</Table.Cell>
+				<Table.Cell>{formatDateString(item.registration_end_date)}</Table.Cell>
 				<Table.Cell>
 					{(() => {
 						const status = statusMap[item.status_display] || {
@@ -128,10 +124,38 @@ export const AdmissionsProgramsTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader>Inicio Semestre</Table.ColumnHeader>
-							<Table.ColumnHeader>Inicio de Inscripciones</Table.ColumnHeader>
-							<Table.ColumnHeader>Fin de Inscripciones</Table.ColumnHeader>
-							<Table.ColumnHeader>Estado</Table.ColumnHeader>
+							<Table.ColumnHeader>
+								<SortableHeader
+									label='Inicio Semestre'
+									columnKey='semester_start_date'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader>
+								<SortableHeader
+									label='Inicio Inscripción'
+									columnKey='registration_start_date'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader>
+								<SortableHeader
+									label='Fin Inscripción'
+									columnKey='registration_end_date'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader>
+								<SortableHeader
+									label='Estado'
+									columnKey='status'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
 							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>

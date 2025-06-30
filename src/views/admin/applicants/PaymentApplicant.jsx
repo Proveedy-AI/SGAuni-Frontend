@@ -16,12 +16,12 @@ import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { ReactSelect } from '@/components';
 import { useReadMethodPayment } from '@/hooks/method_payments';
 import { useCreatePaymentRequest } from '@/hooks/payment_requests/useCreatePaymentRequest';
-import { useReadPaymentRequest } from '@/hooks/payment_requests/useReadPaymentRequest';
 import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
 import { useReadPaymentRules } from '@/hooks/payment_rules';
 import { useReadPurposes } from '@/hooks/purposes';
 import { useReadPaymentOrders } from '@/hooks/payment_orders';
 import { UploadVoucherForm } from '@/components/forms/admissions/MyApplicants';
+import { useReadMyPaymentRequest } from '@/hooks/payment_requests/useReadMyPaymentRequest';
 
 export const PaymentApplicant = () => {
 	const { data: dataUser } = useReadUserLogged();
@@ -36,7 +36,7 @@ export const PaymentApplicant = () => {
 		data: PaymentRequest,
 		isLoading: isLoadingPaymentRquest,
 		refetch,
-	} = useReadPaymentRequest();
+	} = useReadMyPaymentRequest();
 
 	const methodOptions =
 		MethodPayment?.results?.map((method) => ({
@@ -116,7 +116,7 @@ export const PaymentApplicant = () => {
 	dataPurposes?.results?.forEach((purposeItem) => {
 		const id = purposeItem.id;
 		const existingRequest =
-			PaymentRequest?.results?.find(
+			PaymentRequest?.find(
 				(req) => req.application === item?.id && req.purpose === id
 			) ?? null;
 
@@ -137,6 +137,17 @@ export const PaymentApplicant = () => {
 
 	const handleSubmitData = (e, propuse, values) => {
 		e.preventDefault();
+		if (
+			!values.method?.value ||
+			!values.docType?.value ||
+			!values.numDoc?.trim()
+		) {
+			toaster.create({
+				title: 'Por favor, completa todos los campos requeridos.',
+				type: 'warning',
+			});
+			return;
+		}
 		const rule = purposes[propuse]?.rule;
 		const payload = {
 			payment_method: values.method.value,
@@ -218,7 +229,7 @@ export const PaymentApplicant = () => {
 					color={'gray.500'}
 				>
 					Orden de Pago: Derecho de Carpeta (S/
-					{purposes[1]?.rule?.amount ?? '-'})
+					{purposes[2]?.rule?.amount ?? '-'})
 				</Heading>
 			</Stack>
 			{isLoadingPaymentRquest ? (

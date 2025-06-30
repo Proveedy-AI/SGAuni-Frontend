@@ -1,20 +1,15 @@
 import PropTypes from 'prop-types';
-import {
-	Box,
-	IconButton,
-	Input,
-	SimpleGrid,
-	Stack,
-} from '@chakra-ui/react';
+import { Box, IconButton, Input, SimpleGrid, Stack } from '@chakra-ui/react';
 import { Field, Modal, Tooltip } from '@/components/ui';
 import { FiEye } from 'react-icons/fi';
 import { ReactSelect } from '@/components/select';
 import { useReadPrograms } from '@/hooks';
 import { useState } from 'react';
+import { formatDateString } from '@/components/ui/dateHelpers';
 
 export const PreviewAdmissionsProgramsModal = ({ data }) => {
 	const [open, setOpen] = useState(false);
-	const { data: dataPrograms } = useReadPrograms();
+	const { data: dataPrograms } = useReadPrograms({}, { enabled: open });
 
 	const dataMode = [
 		{ label: 'Virtual', value: 1 },
@@ -100,13 +95,17 @@ export const PreviewAdmissionsProgramsModal = ({ data }) => {
 				</Field>
 
 				<Field label='Inicio de semestre:'>
-					<Input value={data.semester_start_date || ''} isReadOnly size='xs' />
+					<Input
+						value={formatDateString(data.semester_start_date) || ''}
+						isReadOnly
+						size='xs'
+					/>
 				</Field>
 
 				<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
 					<Field label='Inicio de inscripción:'>
 						<Input
-							value={data.registration_start_date || ''}
+							value={formatDateString(data.registration_start_date) || ''}
 							isReadOnly
 							size='xs'
 						/>
@@ -114,23 +113,31 @@ export const PreviewAdmissionsProgramsModal = ({ data }) => {
 
 					<Field label='Fin de inscripción:'>
 						<Input
-							value={data.registration_end_date || ''}
+							value={formatDateString(data.registration_end_date) || ''}
 							isReadOnly
 							size='xs'
 						/>
 					</Field>
 
 					<Field label='Inicio de examen:'>
-						<Input value={data.exam_date_start || ''} isReadOnly size='xs' />
+						<Input
+							value={formatDateString(data.exam_date_start) || ''}
+							isReadOnly
+							size='xs'
+						/>
 					</Field>
 
 					<Field label='Fin de examen:'>
-						<Input value={data.exam_date_end || ''} isReadOnly size='xs' />
+						<Input
+							value={formatDateString(data.exam_date_end) || ''}
+							isReadOnly
+							size='xs'
+						/>
 					</Field>
 
 					<Field label='Inicio Pre-Maestría:'>
 						<Input
-							value={data.pre_master_start_date || ''}
+							value={formatDateString(data.pre_master_start_date) || ''}
 							isReadOnly
 							size='xs'
 						/>
@@ -138,7 +145,7 @@ export const PreviewAdmissionsProgramsModal = ({ data }) => {
 
 					<Field label='Fin Pre-Maestría:'>
 						<Input
-							value={data.pre_master_end_date || ''}
+							value={formatDateString(data.pre_master_end_date) || ''}
 							isReadOnly
 							size='xs'
 						/>

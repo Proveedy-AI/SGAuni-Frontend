@@ -8,22 +8,16 @@ import {
 	Stack,
 	Text,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { FiEye } from 'react-icons/fi';
 
 export const ViewUserModal = ({ selectedUser }) => {
 	const [open, setOpen] = useState(false);
-	const { data: dataUser, refetch: fetchUser } = useReadUserById({
+	const { data: dataUser } = useReadUserById({
 		id: selectedUser?.id,
-		enabled: false,
+		enabled: open,
 	});
-
-	useEffect(() => {
-		if (selectedUser?.id) {
-			fetchUser();
-		}
-	}, [selectedUser?.id, fetchUser]);
 
 	return (
 		<Modal

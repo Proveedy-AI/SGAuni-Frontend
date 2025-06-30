@@ -1,17 +1,12 @@
 import PropTypes from 'prop-types';
-import {
-  Box,
-  IconButton,
-  Input,
-  SimpleGrid,
-  Stack,
-} from '@chakra-ui/react';
-import { Field, Modal, Tooltip } from '@/components/ui';
+import { Box, IconButton, Input, Stack, Textarea } from '@chakra-ui/react';
+import { Field, Modal, toaster, Tooltip } from '@/components/ui';
 import { FiCheckCircle } from 'react-icons/fi';
 import { useState } from 'react';
+import { useQualificationAdmissionEvaluation } from '@/hooks/admissions_evaluations/useQualificationAdmissionEvaluation';
 
 export const UpdateQualificationEvaluationModal = ({ data, fetchData }) => {
-  /*
+	/*
   {
     "id": 1,
     "application": 1,
@@ -31,67 +26,113 @@ export const UpdateQualificationEvaluationModal = ({ data, fetchData }) => {
   }
   */
 
-  const [open, setOpen] = useState(false);
+	const [open, setOpen] = useState(false);
+	const [qualification, setQualification] = useState(data.qualification || '');
+	const [comment, setComments] = useState(data.feedback || '');
+	const { mutateAsync: updateExam, isSaving } =
+		useQualificationAdmissionEvaluation();
 
-  return (
-    <Modal
-      title='Ver detalles del examen'
-      placement='center'
-      trigger={
-        <Box>
-          <Tooltip
-            content='Calificar examen'
-            positioning={{ placement: 'bottom-center' }}
-            showArrow
-            openDelay={0}
-          >
-            <IconButton
-              size='xs'
-              colorPalette='green'
-              css={{ _icon: { width: '5', height: '5' } }}
-            >
-              <FiCheckCircle />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      }
-      open={open}
-      onOpenChange={(e) => setOpen(e.open)}
-      size='4xl'
-      hiddenFooter={true}
-    >
-      <Stack css={{ '--field-label-width': '140px' }}>
-        <Field label='Nombre de la evaluación:'>
-          <Input value={data.type_application_display} />
-        </Field>
+	const handleUpdateQualification = async () => {
+		if (qualification < 0 || qualification > 20) {
+			toaster.create({
+				title: 'la calificación debe estar entre 0 y 20',
+				type: 'warning',
+			});
+			return;
+		}
 
-        <Field label='Evaluador asignado:'>
-          <Input value={data.evaluator_full_name || 'Sin evaluador'} size='xs' />
-        </Field>
+		const payload = {
+			feedback: comment,
+			qualification: qualification,
+		};
 
-        <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-          <Field label='Inicio de examen:'>
-            <Input value={data.start_date || ''} size='xs' />
-          </Field>
+		updateExam(
+			{ id: data.uuid, payload },
+			{
+				onSuccess: () => {
+					toaster.create({
+						title: 'Calificación actualizada correctamente',
+						type: 'success',
+					});
+					fetchData();
+					setOpen(false);
+				},
+				onError: (error) => {
+					toaster.create({
+						title: error?.message || 'Error al actualizar la calificación',
+						type: 'error',
+					});
+				},
+			}
+		);
+	};
 
-          <Field label='Fin de examen:'>
-            <Input value={data.end_date || ''} size='xs' />
-          </Field>
+	return (
+		<Modal
+			title='Ver detalles de Tareas'
+			placement='center'
+			trigger={
+				<Box>
+					<Tooltip
+						content='Calificar tarea'
+						positioning={{ placement: 'bottom-center' }}
+						showArrow
+						openDelay={0}
+					>
+						<IconButton
+							size='xs'
+							colorPalette='green'
+							css={{ _icon: { width: '5', height: '5' } }}
+						>
+							<FiCheckCircle />
+						</IconButton>
+					</Tooltip>
+				</Box>
+			}
+			open={open}
+			onOpenChange={(e) => setOpen(e.open)}
+			size='4xl'
+			loading={isSaving}
+			onSave={handleUpdateQualification}
+		>
+			<Stack css={{ '--field-label-width': '140px' }}>
+				<Field label='Nombre de la evaluación:'>
+					<Input readOnly value={data.type_application_display} />
+				</Field>
 
-          <Field label='Hora:'>
-            <Input value={data.evaluation_time || ''} size='xs' />
-          </Field>
+				<Field label='Evaluador asignado:'>
+					<Input
+						readOnly
+						value={data.evaluator_full_name || 'Sin evaluador'}
+						size='xs'
+					/>
+				</Field>
 
-          <Field label='Estado:'>
-            <Input value={data.status_qualification_display || ''} size='xs' />
-          </Field>
-        </SimpleGrid>
-      </Stack>
-    </Modal>
-  );
+				<Field label='Ingresar calificación: (0-20)'>
+					<Input
+						type='number'
+						min={0}
+						max={20}
+						placeholder='Calificación'
+						size='xs'
+						value={qualification}
+						onChange={(e) => setQualification(e.target.value)}
+					/>
+				</Field>
+				<Field label='Ingresar observación'>
+					<Textarea
+						placeholder='Observación'
+						size='sm'
+						value={comment}
+						onChange={(e) => setComments(e.target.value)}
+					/>
+				</Field>
+			</Stack>
+		</Modal>
+	);
 };
 
 UpdateQualificationEvaluationModal.propTypes = {
-  data: PropTypes.object.isRequired,
-  fetchData: PropTypes.func.isRequired,
+	data: PropTypes.object.isRequired,
+	fetchData: PropTypes.func.isRequired,
 };

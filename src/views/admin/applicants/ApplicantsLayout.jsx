@@ -1,46 +1,59 @@
 'use client';
 
-import { Box, Button, Flex, Steps } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, Steps, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { PaymentApplicant } from './PaymentApplicant';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { PersonalDataApplicants } from '@/components/forms/admissions/MyApplicants';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaCheckCircle, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
 import { DocumentsApplicant } from './DocumentsApplicant';
+import { WorkApplicant } from './WorkApplicant';
 
 export const ApplicantsLayout = () => {
-	const [step, setStep] = useState(1);
+	const [step, setStep] = useState(0);
 	const [isStepValid, setIsStepValid] = useState(false);
+	const [isDocumentsStepValid, setIsDocumentsStepValid] = useState(false);
+	const [allWorksCompleted, setAllWorksCompleted] = useState(false);
+
 	const {
 		data: dataUser,
 		isLoading: isLoadingDataUser,
 		refetch: fetchDataUser,
 	} = useReadUserLogged();
 
+	const handleCompleteProcess = () => {
+		// Aquí puedes hacer una llamada a la API o actualizar el estado final
+		console.log('Proceso finalizado');
+		setStep(step + 1); // esto muestra Steps.CompletedContent
+	};
+
 	useEffect(() => {
 		const validateStep = async () => {
 			switch (step) {
-				case 1: {
+				case 0: {
 					// validación para Datos Personales
 					const isValid = Boolean(dataUser?.document_path?.trim());
 					setIsStepValid(isValid);
 					break;
 				}
-				case 2: {
-					// validación para Solicitudes
-					// función tuya
-
+				case 1: {
+					setIsStepValid(true);
 					break;
 				}
-				default: {
-					setIsStepValid(true); // permitir avance si no hay validación
+				case 2: {
+					setIsStepValid(isDocumentsStepValid);
+					break;
+				}
+				case 3: {
+					setIsStepValid(allWorksCompleted);
+					break;
 				}
 			}
 		};
 
 		validateStep();
-	}, [step, dataUser]);
+	}, [step, dataUser, isDocumentsStepValid, allWorksCompleted]);
 
 	const steps = [
 		{
@@ -59,11 +72,15 @@ export const ApplicantsLayout = () => {
 		},
 		{
 			title: 'Documentación',
-			component: <DocumentsApplicant />,
+			component: (
+				<DocumentsApplicant
+					onValidationChange={(valid) => setIsDocumentsStepValid(valid)}
+				/>
+			),
 		},
 		{
 			title: 'Trabajos',
-			component: <PaymentApplicant />,
+			component: <WorkApplicant onAllCompleted={setAllWorksCompleted} />,
 		},
 	];
 
@@ -72,7 +89,7 @@ export const ApplicantsLayout = () => {
 			step={step}
 			onStepChange={(e) => setStep(e.step)}
 			count={steps.length}
-			colorPalette='red'
+			colorPalette='green'
 		>
 			<ResponsiveBreadcrumb
 				items={[
@@ -82,7 +99,7 @@ export const ApplicantsLayout = () => {
 			/>
 			<Flex w='100%' align='center'>
 				<Steps.PrevTrigger asChild>
-					<Button colorPalette='red' variant='ghost'>
+					<Button colorPalette='gray' variant='ghost'>
 						<FaChevronLeft /> Anterior
 					</Button>
 				</Steps.PrevTrigger>
@@ -105,11 +122,22 @@ export const ApplicantsLayout = () => {
 					</Steps.List>
 				</Box>
 
-				<Steps.NextTrigger asChild disabled={!isStepValid}>
-					<Button colorPalette='red' variant='ghost'>
-						Siguiente <FaChevronRight />
-					</Button>
-				</Steps.NextTrigger>
+				{step < steps.length &&
+					(step === steps.length - 1 ? (
+						<Button
+							colorPalette='gray'
+							variant='ghost'
+							onClick={handleCompleteProcess}
+						>
+							Completar <FaChevronRight />
+						</Button>
+					) : (
+						<Steps.NextTrigger asChild disabled={!isStepValid}>
+							<Button colorPalette='gray' variant='ghost'>
+								Siguiente <FaChevronRight />
+							</Button>
+						</Steps.NextTrigger>
+					))}
 			</Flex>
 
 			{steps.map((step, index) => (
@@ -119,9 +147,41 @@ export const ApplicantsLayout = () => {
 			))}
 
 			<Steps.CompletedContent>
-				<Box textAlign='center' mt={4}>
-					¡Has completado todos los pasos!
-				</Box>
+				<Flex
+					direction='column'
+					align='center'
+					justify='center'
+					mt={10}
+					mb={10}
+					px={4}
+					py={6}
+					borderWidth={1}
+					borderColor='green.200'
+					borderRadius='lg'
+					bg='green.50'
+					boxShadow='sm'
+				>
+					<FaCheckCircle
+						size='60px'
+						color='#38A169'
+						style={{ marginBottom: '16px' }}
+					/>
+					<Heading size='md' color='green.700' mb={2}>
+						¡Proceso completado con éxito!
+					</Heading>
+					<Text fontSize='sm' color='gray.700' textAlign='center' maxW='400px'>
+						Has finalizado todos los pasos de tu postulación. Puedes revisar el
+						estado desde el panel de postulaciones.
+					</Text>
+					<Button
+						mt={4}
+						colorScheme='green'
+						variant='solid'
+						onClick={() => (window.location.href = '/admissions/myapplicants')}
+					>
+						Volver al Inicio
+					</Button>
+				</Flex>
 			</Steps.CompletedContent>
 		</Steps.Root>
 	);

@@ -29,11 +29,21 @@ export const AssignModalityToProgramForm = ({ data }) => {
 	const [vacancies, setVacancies] = useState('');
 	const [editingId, setEditingId] = useState(null);
 
-	const { data: modalityAssignList, refetch } = useListAssignedModalities();
+	const { data: modalityAssignList, refetch } = useListAssignedModalities(
+		{},
+		{
+			enabled: open,
+		}
+	);
 	const { mutate: createAssignment, isPending } = useCreateModalityAssignment();
 	const { mutate: deleteAssignment } = useDeleteModalityAssignment();
 	const { mutate: updateAssignment } = useUpdateModalityAssignment();
-	const { data: modalityList } = useReadModalities();
+	const { data: modalityList } = useReadModalities(
+		{},
+		{
+			enabled: open,
+		}
+	);
 
 	const filteredModality = modalityAssignList?.results?.filter(
 		(item) => item?.admission_process_program === data?.id

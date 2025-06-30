@@ -2,14 +2,16 @@ import PropTypes from 'prop-types';
 import {
   Badge,
   FieldErrorText,
+  Flex,
   Input,
+  Spinner,
   Stack,
   Textarea,
 } from '@chakra-ui/react';
 import { Field, Modal } from '@/components/ui';
 import { useEffect, useState } from 'react';
 
-export const UpdateQualificationEvaluatorsModal = ({ data, isOpen, onClose, onSubmit }) => {
+export const UpdateQualificationEvaluatorsModal = ({ data, isLoading, isOpen, onClose, onSubmit }) => {
   const [qualification, setQualification] = useState(data.qualification || '');
   const [feedback, setFeedback] = useState(data.feedback || '');
   const [error, setError] = useState('');
@@ -45,6 +47,7 @@ export const UpdateQualificationEvaluatorsModal = ({ data, isOpen, onClose, onSu
 
   return (
     <Modal
+      scrollBehavior='inside'
       title='Calificar examen'
       role='alertdialog'
       placement='center'
@@ -62,54 +65,61 @@ export const UpdateQualificationEvaluatorsModal = ({ data, isOpen, onClose, onSu
       open={isOpen}
       onOpenChange={onClose}
     >
-      <Stack gap='4'>
-        <Field label='Tipo de evaluación:'>{data.type_application_display}</Field>
-        <Field label='Estado:'>
-          <Badge
-            bg={data.status_qualification_display === 'Completed' ? '#D0EDD0' : '#AEAEAE'}
-            color={data.status_qualification_display === 'Completed' ? '#2D9F2D' : '#F5F5F5'}
-            fontWeight='semibold'
+      {isLoading ? (
+        <Flex justify='center' align='center' minH='200px'>
+          <Spinner size='xl' />
+        </Flex>
+      ): (
+        <Stack gap='4'>
+          <Field label='Tipo de evaluación:'>{data.type_application_display}</Field>
+          <Field label='Estado:'>
+            <Badge
+              bg={data.status_qualification_display === 'Completed' ? '#D0EDD0' : '#AEAEAE'}
+              color={data.status_qualification_display === 'Completed' ? '#2D9F2D' : '#F5F5F5'}
+              fontWeight='semibold'
+            >
+              {data.status_qualification_display === 'Completed' ? 'Calificado' : 'Pendiente'}
+            </Badge>
+          </Field>
+          
+          <Field 
+            label='Nota'
+            invalid={error}
           >
-            {data.status_qualification_display === 'Completed' ? 'Calificado' : 'Pendiente'}
-          </Badge>
-        </Field>
-        
-        <Field 
-          label='Nota'
-          invalid={error}
-        >
-          <Input
-            value={qualification}
-            onChange={(e) => handleQualificationChange(e)}
-            type='number'
-            min='0'
-            max='20'
-            step='0.1'
-            css={{ 
-              "--focus-color": "blue",
-              "&::-webkit-outer-spin-button": { WebkitAppearance: "none", margin: 0 },
-              "&::-webkit-inner-spin-button": { WebkitAppearance: "none", margin: 0 },
-              MozAppearance: "textfield"
-            }}
-          />
-          {error && (
-            <FieldErrorText>Ingrese una nota válida (0.00 - 20.00)</FieldErrorText>
-          )}
-        </Field>
+            <Input
+              value={qualification}
+              onChange={(e) => handleQualificationChange(e)}
+              type='number'
+              min='0'
+              max='20'
+              step='0.1'
+              css={{ 
+                "--focus-color": "blue",
+                "&::-webkit-outer-spin-button": { WebkitAppearance: "none", margin: 0 },
+                "&::-webkit-inner-spin-button": { WebkitAppearance: "none", margin: 0 },
+                MozAppearance: "textfield"
+              }}
+            />
+            {error && (
+              <FieldErrorText>Ingrese una nota válida (0.00 - 20.00)</FieldErrorText>
+            )}
+          </Field>
 
-        <Field label='Observaciones'>
-          <Textarea
-            value={feedback}
-            onChange={(e) => setFeedback(e.target.value)}
-          />
-        </Field>
-      </Stack>
+          <Field label='Observaciones'>
+            <Textarea
+              value={feedback}
+              onChange={(e) => setFeedback(e.target.value)}
+            />
+          </Field>
+        </Stack>
+      )}
     </Modal>
   );
 };
 
 UpdateQualificationEvaluatorsModal.propTypes = {
   data: PropTypes.object,
+  isLoading: PropTypes.bool,
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
   onSubmit: PropTypes.func

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { memo, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import {
 	Box,
 	Group,
@@ -23,6 +23,7 @@ import { usePaginationSettings } from '@/components/navigation/usePaginationSett
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
+import { usePaginatedInfiniteData } from '@/components/navigation';
 
 const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 	const [open, setOpen] = useState(false);
@@ -104,16 +105,38 @@ Row.propTypes = {
 	data: PropTypes.array,
 };
 
-export const SettingsPermissionsTable = ({ data, fetchData, isLoading }) => {
+export const SettingsPermissionsTable = ({
+	data,
+	fetchData,
+	isLoading,
+	isFetchingNextPage,
+	totalCount,
+	fetchNextPage,
+	hasNextPage,
+	resetPageTrigger,
+}) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
-	const [currentPage, setCurrentPage] = useState(1);
-	const startIndex = (currentPage - 1) * pageSize;
-	const endIndex = startIndex + pageSize;
 	const [sortConfig, setSortConfig] = useState(null);
 
 	const sortedData = useSortedData(data, sortConfig);
 
-	const visibleRows = sortedData?.slice(startIndex, endIndex);
+	const {
+		currentPage,
+		startIndex,
+		visibleRows,
+		loadUntilPage,
+		setCurrentPage,
+	} = usePaginatedInfiniteData({
+		data: sortedData,
+		pageSize,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	});
+
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [resetPageTrigger]);
 
 	return (
 		<Box
@@ -155,7 +178,7 @@ export const SettingsPermissionsTable = ({ data, fetchData, isLoading }) => {
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{isLoading ? (
+						{isLoading || (isFetchingNextPage && hasNextPage) ? (
 							<SkeletonTable columns={4} />
 						) : visibleRows?.length > 0 ? (
 							visibleRows.map((item, index) => (
@@ -181,11 +204,11 @@ export const SettingsPermissionsTable = ({ data, fetchData, isLoading }) => {
 			</Table.ScrollArea>
 
 			<Pagination
-				count={data?.length}
+				count={totalCount}
 				pageSize={pageSize}
 				currentPage={currentPage}
 				pageSizeOptions={pageSizeOptions}
-				onPageChange={setCurrentPage}
+				onPageChange={loadUntilPage}
 				onPageSizeChange={(size) => {
 					setPageSize(size);
 					setCurrentPage(1);
@@ -199,4 +222,9 @@ SettingsPermissionsTable.propTypes = {
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
 	isLoading: PropTypes.bool,
+	totalCount: PropTypes.number,
+	fetchNextPage: PropTypes.func,
+	hasNextPage: PropTypes.bool,
+	isFetchingNextPage: PropTypes.bool,
+	resetPageTrigger: PropTypes.func
 };

@@ -30,12 +30,18 @@ export const AssignEvaluatorProgramModal = ({ data, fetchData }) => {
 		role: null,
 	});
 
-	const { data: dataUsers, isLoading: loadingUsers } = useReadUsers();
+	const { data: dataUsers, isLoading: loadingUsers } = useReadUsers(
+		{},
+		{
+			enabled: open,
+		}
+	);
+
 	const {
 		data: dataAdmissionEvaluators,
 		isLoading: loading,
 		refetch: fetchAdmissionEvaluators,
-	} = useReadAdmissionEvaluators();
+	} = useReadAdmissionEvaluators({}, { enabled: open });
 
 	const coordinatorOptions = dataUsers?.results
 		?.filter(
@@ -206,7 +212,11 @@ export const AssignEvaluatorProgramModal = ({ data, fetchData }) => {
 							size='sm'
 							bg='uni.secondary'
 							loading={isSaving}
-							disabled={!evaluatorRequest.coordinator || !evaluatorRequest.role || data.status === 4}
+							disabled={
+								!evaluatorRequest.coordinator ||
+								!evaluatorRequest.role ||
+								data.status === 4
+							}
 							onClick={handleSubmit}
 							css={{ _icon: { width: '5', height: '5' } }}
 						>

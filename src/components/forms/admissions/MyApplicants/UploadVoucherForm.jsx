@@ -5,7 +5,6 @@ import {
 	Stack,
 	Flex,
 	Text,
-	Input,
 	Button,
 	Badge,
 	Grid,
@@ -20,6 +19,7 @@ import { FiHelpCircle, FiTrash2 } from 'react-icons/fi';
 import { FaSave } from 'react-icons/fa';
 import { uploadToS3 } from '@/utils/uploadToS3';
 import { useCreateVouchers, useDeleteVoucher } from '@/hooks/vouchers';
+import { CompactFileUpload } from '@/components/ui/CompactFileInput';
 
 export const UploadVoucherForm = ({ data, refetch }) => {
 	const contentRef = useRef();
@@ -238,27 +238,30 @@ export const UploadVoucherForm = ({ data, refetch }) => {
 					<Flex
 						direction={{ base: 'column', md: 'row' }}
 						justify='flex-start'
-						align={'end'}
+						align='end'
 						gap={6}
 						mt={2}
 					>
 						<Field label='Subir Voucher de pago:'>
-							<Input
-								type='file'
+							<CompactFileUpload
+								name='voucher_path'
 								accept='application/pdf,image/png,image/jpeg,image/jpg'
-								size='sm'
-								onChange={(e) => {
-									const file = e.target.files[0];
+								onChange={(file) => {
 									const allowedTypes = [
 										'application/pdf',
 										'image/png',
 										'image/jpeg',
 										'image/jpg',
 									];
+									if (!file) {
+										setFilePDF(null);
+										return; // no mostrar el toast si solo se limpió
+									}
 
-									if (file && allowedTypes.includes(file.type)) {
+									if (allowedTypes.includes(file.type)) {
 										setFilePDF(file);
 									} else {
+										setFilePDF(null);
 										toaster.create({
 											title:
 												'Solo se permiten archivos PDF o imágenes (JPG, PNG).',
@@ -266,6 +269,8 @@ export const UploadVoucherForm = ({ data, refetch }) => {
 										});
 									}
 								}}
+								defaultFile={null}
+								onClear={() => setFilePDF(null)}
 							/>
 						</Field>
 

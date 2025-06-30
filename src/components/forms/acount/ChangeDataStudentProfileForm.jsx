@@ -1,13 +1,4 @@
-import {
-	Box,
-	Button,
-	Flex,
-	Grid,
-	Input,
-	Stack,
-	Switch,
-	Text,
-} from '@chakra-ui/react';
+import { Box, Grid, Input, Stack, Switch, Text } from '@chakra-ui/react';
 import { Field } from '@/components/ui';
 import PropTypes from 'prop-types';
 import { ReactSelect } from '@/components/select';
@@ -18,6 +9,9 @@ import {
 } from '@/hooks';
 import { useEffect } from 'react';
 import { useReadUbigeos } from '@/hooks/ubigeos';
+import { CompactFileUpload } from '@/components/ui/CompactFileInput';
+import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
+import { format } from 'date-fns';
 
 const FieldWithInputText = ({
 	placeholder,
@@ -223,12 +217,13 @@ export const ChangeDataStudentProfileForm = ({
 							orientation={{ base: 'vertical', sm: 'horizontal' }}
 							label='Fecha de nacimiento:'
 						>
-							<Input
-								type='date'
-								value={profile.birth_date || ''}
-								onChange={(e) =>
-									updateProfileField('birth_date', e.target.value)
+							<CustomDatePicker
+								selectedDate={profile.birth_date ? profile.birth_date : null}
+								onDateChange={(date) =>
+									updateProfileField('birth_date', format(date, 'yyyy-MM-dd'))
 								}
+								buttonSize='md'
+								size={{ base: '240px', md: '510px' }}
 							/>
 						</Field>
 						<Field
@@ -332,37 +327,16 @@ export const ChangeDataStudentProfileForm = ({
 							label='Foto de Documento:'
 							mt={4}
 						>
-							{!profile.document_path ? (
-								<Input
-									type='file'
-									accept='application/pdf'
-									size='sx'
-									onChange={(e) => {
-										const file = e.target.files?.[0];
-										updateProfileField('document_path', file);
-									}}
-								/>
-							) : (
-								<Flex gap={2} justify='flex-start'>
-									<Button
-										size='xs'
-										colorScheme='blue'
-										as='a'
-										href={profile.document_path || '#'}
-										target='_blank'
-										rel='noopener noreferrer'
-									>
-										Ver documento
-									</Button>
-									<Button
-										size='xs'
-										colorScheme='red'
-										onClick={() => updateProfileField('document_path', '')}
-									>
-										Quitar documento
-									</Button>
-								</Flex>
-							)}
+							<CompactFileUpload
+								name='document_path'
+								onChange={(file) => updateProfileField('document_path', file)}
+								defaultFile={
+									typeof profile.document_path === 'string'
+										? profile.document_path
+										: undefined
+								}
+								onClear={() => updateProfileField('document_path', null)}
+							/>
 						</Field>
 					</Stack>
 				</Box>

@@ -5,6 +5,8 @@ import { Field, Modal, toaster, Tooltip } from '@/components/ui';
 import { FiEdit2 } from 'react-icons/fi';
 import { useUpdateAdmissions } from '@/hooks/admissions_proccess';
 import { ReactSelect } from '@/components/select';
+import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
+import { format } from 'date-fns';
 
 export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 	const contentRef = useRef();
@@ -13,6 +15,16 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 	const [startDate, setStartDate] = useState(data?.start_date);
 	const [endDate, setEndDate] = useState(data?.end_date);
 	const [selectedLevel, setSelectedLevel] = useState(null);
+
+	const handleDateChange = (field) => (date) => {
+		const formatted = format(date, 'yyyy-MM-dd');
+		console.log(`Fecha ${field} para API:`, formatted);
+		if (field === 'start') {
+			setStartDate(formatted);
+		} else if (field === 'end') {
+			setEndDate(formatted);
+		}
+	};
 
 	const { mutate: UpdateAdmissions, isPending } = useUpdateAdmissions();
 
@@ -113,7 +125,7 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 				</Box>
 			}
 			onSave={handleSubmitData}
-			size='4xl'
+			size='2xl'
 			loading={isPending}
 			open={open}
 			onOpenChange={(e) => setOpen(e.open)}
@@ -155,24 +167,28 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
 					label='Fecha Inicio'
 				>
-					<Input
-						value={startDate}
-						onChange={(e) => setStartDate(e.target.value)}
-						type='date'
-						size='xs'
-					/>
+					<Box w={'full'}>
+						<CustomDatePicker
+							selectedDate={startDate}
+							onDateChange={handleDateChange('start')}
+							placeholder='Selecciona una fecha'
+							size={{ base: '330px', md: '470px' }}
+						/>
+					</Box>
 				</Field>
 
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
 					label='Fecha Fin:'
 				>
-					<Input
-						value={endDate}
-						onChange={(e) => setEndDate(e.target.value)}
-						type='date'
-						size='xs'
-					/>
+					<Box w={'full'}>
+						<CustomDatePicker
+							selectedDate={endDate}
+							onDateChange={handleDateChange('end')}
+							placeholder='Selecciona una fecha'
+							size={{ base: '330px', md: '470px' }}
+						/>
+					</Box>
 				</Field>
 			</Stack>
 		</Modal>
