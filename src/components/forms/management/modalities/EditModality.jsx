@@ -120,6 +120,36 @@ export const EditModality = ({ fetchData, item }) => {
 		);
 	};
 
+	const handleWeightChange = (type, value) => {
+		const numericValue = value === '' ? '' : Number(value);
+		const otherType =
+			type === 'essay_weight' ? 'interview_weight' : 'essay_weight';
+		const otherKey =
+			type === 'essay_weight' ? 'requires_interview' : 'requires_essay';
+		const isOtherActive = modalityEditable[otherKey];
+
+		// Si el otro está activo y numérico, ajusta al complemento
+		if (
+			isOtherActive &&
+			typeof numericValue === 'number' &&
+			numericValue >= 0 &&
+			numericValue <= 100
+		) {
+			const adjustedOther = 100 - numericValue;
+			setModalityEditable((prev) => ({
+				...prev,
+				[type]: numericValue,
+				[otherType]: adjustedOther,
+			}));
+		} else {
+			// Solo uno activo o valor en blanco
+			setModalityEditable((prev) => ({
+				...prev,
+				[type]: numericValue,
+			}));
+		}
+	};
+
 	return (
 		<Modal
 			title='Editar Modalidad'
@@ -228,11 +258,25 @@ export const EditModality = ({ fetchData, item }) => {
 							value={modalityEditable.requires_essay ? 'true' : 'false'}
 							onChange={(e) => {
 								const requiresEssay = e.target.value === 'true';
-								setModalityEditable((prev) => ({
-									...prev,
-									requires_essay: requiresEssay,
-									essay_weight: requiresEssay ? prev.essay_weight : 0,
-								}));
+								setModalityEditable((prev) => {
+									const updated = {
+										...prev,
+										requires_essay: requiresEssay,
+										essay_weight: requiresEssay
+											? prev.requires_interview
+												? 50
+												: 100
+											: 0,
+									};
+									if (!requiresEssay && !prev.requires_interview) {
+										updated.essay_weight = 0;
+										updated.interview_weight = 0;
+									}
+									if (!requiresEssay && prev.requires_interview) {
+										updated.interview_weight = 100;
+									}
+									return updated;
+								});
 							}}
 						>
 							<Flex gap={5}>
@@ -253,15 +297,16 @@ export const EditModality = ({ fetchData, item }) => {
 								type='number'
 								value={modalityEditable.essay_weight}
 								onChange={(e) =>
-									setModalityEditable((prev) => ({
-										...prev,
-										essay_weight: e.target.value,
-									}))
+									handleWeightChange('essay_weight', e.target.value)
 								}
 								min={0}
 								max={100}
 								step={1}
 								placeholder='Ej: 50'
+								disabled={
+									modalityEditable.requires_essay &&
+									!modalityEditable.requires_interview
+								}
 							/>
 						</Field>
 					)}
@@ -273,13 +318,25 @@ export const EditModality = ({ fetchData, item }) => {
 							value={modalityEditable.requires_interview ? 'true' : 'false'}
 							onChange={(e) => {
 								const requiresInterview = e.target.value === 'true';
-								setModalityEditable((prev) => ({
-									...prev,
-									requires_interview: requiresInterview,
-									interview_weight: requiresInterview
-										? prev.interview_weight
-										: 0,
-								}));
+								setModalityEditable((prev) => {
+									const updated = {
+										...prev,
+										requires_interview: requiresInterview,
+										interview_weight: requiresInterview
+											? prev.requires_essay
+												? 50
+												: 100
+											: 0,
+									};
+									if (!requiresInterview && !prev.requires_essay) {
+										updated.essay_weight = 0;
+										updated.interview_weight = 0;
+									}
+									if (!requiresInterview && prev.requires_essay) {
+										updated.essay_weight = 100;
+									}
+									return updated;
+								});
 							}}
 						>
 							<Flex gap={5}>
@@ -299,15 +356,16 @@ export const EditModality = ({ fetchData, item }) => {
 								type='number'
 								value={modalityEditable.interview_weight}
 								onChange={(e) =>
-									setModalityEditable((prev) => ({
-										...prev,
-										interview_weight: e.target.value,
-									}))
+									handleWeightChange('interview_weight', e.target.value)
 								}
 								min={0}
 								max={100}
 								step={1}
 								placeholder='Ej: 50'
+								disabled={
+									modalityEditable.requires_interview &&
+									!modalityEditable.requires_essay
+								}
 							/>
 						</Field>
 					)}

@@ -12,6 +12,7 @@ import { useRef, useState } from 'react';
 import { useCreateModality, useReadModalityRules } from '@/hooks';
 import PropTypes from 'prop-types';
 import { FiPlus } from 'react-icons/fi';
+import { ReactSelect } from '@/components/select';
 
 export const AddModalityForm = ({ fetchData }) => {
 	const contentRef = useRef(null);
@@ -26,6 +27,7 @@ export const AddModalityForm = ({ fetchData }) => {
 		interview_weight: 0,
 		min_grade: 0,
 		rules_ids: [],
+		master_type: null,
 	});
 	const { data: dataModalityRules, isLoading: loadingRules } =
 		useReadModalityRules();
@@ -186,6 +188,44 @@ export const AddModalityForm = ({ fetchData }) => {
 						}
 					/>
 				</Field>
+				<Field label='Tipo de Maestría'>
+					<ReactSelect
+						value={modalityRequest.master_type}
+						variant='flushed'
+						size='xs'
+						isSearchable
+						isClearable
+						name='Tipo de Maestría'
+						options={[
+							{ value: 'investigacion', label: 'Ciencias e investigación' },
+							{ value: 'profesionalizante', label: 'Profesionalizante' },
+						]}
+						onChange={(select) => {
+							setModalityRequest((prev) => {
+								let updated = { ...prev, master_type: select };
+
+								if (select?.value === 'investigacion') {
+									updated = {
+										...updated,
+										requires_essay: true,
+										requires_interview: true,
+										essay_weight: 60,
+										interview_weight: 40,
+									};
+								} else if (select?.value === 'profesionalizante') {
+									updated = {
+										...updated,
+										requires_essay: true,
+										requires_interview: true,
+										essay_weight: 40,
+										interview_weight: 60,
+									};
+								}
+								return updated;
+							});
+						}}
+					/>
+				</Field>
 				<Flex
 					marginBottom='4'
 					alignItems='start'
@@ -248,12 +288,25 @@ export const AddModalityForm = ({ fetchData }) => {
 							value={modalityRequest.requires_essay ? 'true' : 'false'}
 							onChange={(e) => {
 								const requiresEssay = e.target.value === 'true';
-								setModalityRequest({
-									...modalityRequest,
-									requires_essay: requiresEssay,
-									essay_weight: requiresEssay
-										? modalityRequest.essay_weight
-										: 0, // set 0 when "No"
+								setModalityRequest((prev) => {
+									const both = requiresEssay && prev.requires_interview;
+									const onlyInterview =
+										!requiresEssay && prev.requires_interview;
+
+									return {
+										...prev,
+										requires_essay: requiresEssay,
+										essay_weight: requiresEssay
+											? both
+												? prev.essay_weight
+												: 100
+											: 0,
+										interview_weight: onlyInterview
+											? 100
+											: both
+												? prev.interview_weight
+												: 0,
+									};
 								});
 							}}
 							direction='row'
@@ -275,16 +328,29 @@ export const AddModalityForm = ({ fetchData }) => {
 								type='number'
 								name='essay_weight'
 								placeholder='Ej: 50'
-								value={modalityRequest.essay_weight}
-								onChange={(e) =>
+								value={
+									modalityRequest.essay_weight === 0
+										? '0'
+										: modalityRequest.essay_weight || ''
+								}
+								onChange={(e) => {
+									const val = e.target.value;
 									setModalityRequest({
 										...modalityRequest,
-										essay_weight: e.target.value,
-									})
-								}
+										essay_weight: val === '' ? '' : Number(val),
+										interview_weight:
+											modalityRequest.requires_interview && val !== ''
+												? 100 - Number(val)
+												: modalityRequest.interview_weight,
+									});
+								}}
 								min={0}
 								max={100}
 								step={1}
+								disabled={
+									modalityRequest.requires_essay &&
+									!modalityRequest.requires_interview
+								}
 							/>
 						</Field>
 					)}
@@ -301,12 +367,24 @@ export const AddModalityForm = ({ fetchData }) => {
 							value={modalityRequest.requires_interview ? 'true' : 'false'}
 							onChange={(e) => {
 								const requiresInterview = e.target.value === 'true';
-								setModalityRequest({
-									...modalityRequest,
-									requires_interview: requiresInterview,
-									interview_weight: requiresInterview
-										? modalityRequest.interview_weight
-										: 0, // set 0 when "No"
+								setModalityRequest((prev) => {
+									const both = prev.requires_essay && requiresInterview;
+									const onlyEssay = !requiresInterview && prev.requires_essay;
+
+									return {
+										...prev,
+										requires_interview: requiresInterview,
+										interview_weight: requiresInterview
+											? both
+												? prev.interview_weight
+												: 100
+											: 0,
+										essay_weight: onlyEssay
+											? 100
+											: both
+												? prev.essay_weight
+												: 0,
+									};
 								});
 							}}
 							direction='row'
@@ -327,17 +405,30 @@ export const AddModalityForm = ({ fetchData }) => {
 								required
 								type='number'
 								name='interview_weight'
-								value={modalityRequest.interview_weight}
-								onChange={(e) =>
+								placeholder='Ej: 50'
+								value={
+									modalityRequest.interview_weight === 0
+										? '0'
+										: modalityRequest.interview_weight || ''
+								}
+								onChange={(e) => {
+									const val = e.target.value;
 									setModalityRequest({
 										...modalityRequest,
-										interview_weight: e.target.value,
-									})
-								}
-								placeholder='Ej: 0.5'
+										interview_weight: val === '' ? '' : Number(val),
+										essay_weight:
+											modalityRequest.requires_essay && val !== ''
+												? 100 - Number(val)
+												: modalityRequest.essay_weight,
+									});
+								}}
 								min={0}
 								max={100}
 								step={1}
+								disabled={
+									modalityRequest.requires_interview &&
+									!modalityRequest.requires_essay
+								}
 							/>
 						</Field>
 					)}
