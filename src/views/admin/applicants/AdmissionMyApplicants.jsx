@@ -23,8 +23,6 @@ export const AdmissionMyApplicants = () => {
 		date: null,
 	});
 
-	console.log(dataMyApplicants);
-
 	return (
 		<Box spaceY='5'>
 			<Stack

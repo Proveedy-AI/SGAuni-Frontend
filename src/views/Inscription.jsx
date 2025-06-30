@@ -569,7 +569,7 @@ export default function AdmissionForm() {
 													placeholder='Ingrese su número de documento'
 												/>
 											</Field>
-											<Field label='Tipo de Programa de postgrado'>
+											<Field label='Programa académico'>
 												<ReactSelect
 													label='Programa de Postgrado'
 													options={postgraduateProgramTypeOptions}

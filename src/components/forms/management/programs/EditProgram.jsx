@@ -132,7 +132,7 @@ export const EditProgram = ({
 						options={coordinatorsOptions}
 					/>
 				</Field>
-				<Field label='Precio por crédito'>
+				<Field label='Precio por crédito (S/.)'>
 					<Input
 						required
 						type='number'

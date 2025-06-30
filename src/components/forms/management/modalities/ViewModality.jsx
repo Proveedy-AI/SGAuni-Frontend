@@ -95,31 +95,36 @@ export const ViewModality = ({ item }) => {
 						</Flex>
 
 						<Flex gap={6} flexDir={{ base: 'column', sm: 'row' }}>
-							<Field label='Ancho ensayo'>
-								<Text
-									w='full'
-									py={2}
-									px={3}
-									border='1px solid #E2E8F0'
-									borderRadius='md'
-								>
-									{item.essay_weight}
-								</Text>
-							</Field>
-							<Field label='Ancho entrevista'>
-								<Text
-									w='full'
-									py={2}
-									px={3}
-									border='1px solid #E2E8F0'
-									borderRadius='md'
-								>
-									{item.interview_weight}
-								</Text>
-							</Field>
+							{item.interview_weight > 0 && (
+								<Field label='Peso entrevista'>
+									<Text
+										w='full'
+										py={2}
+										px={3}
+										border='1px solid #E2E8F0'
+										borderRadius='md'
+									>
+										{item.interview_weight * 100 || 0}%
+									</Text>
+								</Field>
+							)}
+
+							{item.essay_weight > 0 && (
+								<Field label='Peso ensayo'>
+									<Text
+										w='full'
+										py={2}
+										px={3}
+										border='1px solid #E2E8F0'
+										borderRadius='md'
+									>
+										{item.essay_weight * 100}%
+									</Text>
+								</Field>
+							)}
 						</Flex>
 
-						<Field label='Nota mínima'>
+						<Field label='Nota mínima (0 a 20)'>
 							<Text
 								w='full'
 								py={2}

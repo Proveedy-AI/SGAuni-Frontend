@@ -24,7 +24,7 @@ export const ViewAdmissionProgramExams = ({ item }) => {
 	} = useReadAdmissionEvaluationsByApplication(item.id);
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
-	console.log(dataEvaluationsByApplication);
+
 	return (
 		<Modal
 			title='Ver Tareas'

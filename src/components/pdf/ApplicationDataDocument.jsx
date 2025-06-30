@@ -1,123 +1,409 @@
 import PropTypes from 'prop-types';
 import { Page, Text, View, Document, StyleSheet, PDFViewer, Image } from '@react-pdf/renderer';
+
+// Estilos actualizados
 const styles = StyleSheet.create({
-  page: { padding: 32, fontSize: 11, fontFamily: 'Helvetica' },
-  header: { flexDirection: 'row', alignItems: 'center', marginBottom: 18 },
-  logo: { width: 48, height: 48, marginRight: 16 },
-  headerText: { flexDirection: 'column', flex: 1 },
-  uniTitle: { fontSize: 12, fontWeight: 'bold', marginBottom: 2 },
-  uniSubtitle: { fontSize: 10, marginBottom: 1 },
-  sectionTitle: { fontSize: 11, fontWeight: 'bold', marginVertical: 12, textAlign: 'left' },
-  dataRow: { flexDirection: 'row', marginBottom: 6 },
-  label: { width: 140, fontWeight: 'bold', color: '#333' },
-  value: { flex: 1, color: '#222' },
-  divider: { borderBottom: '1pt solid #ccc', marginVertical: 10 },
+  page: { 
+    padding: 30, 
+    fontSize: 10, 
+    fontFamily: 'Helvetica',
+    lineHeight: 1.4
+  },
+  header: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    marginBottom: 10,
+  },
+  logo: { 
+    width: 50, 
+    height: 50, 
+    marginRight: 15 
+  },
+  headerText: { 
+    flexDirection: 'column', 
+    flex: 1,
+    textAlign: 'center'
+  },
+  uniTitle: { 
+    textAlign: 'left',
+    fontSize: 20,
+    fontWeight: 'black',
+    letterSpacing: -1,
+    marginBottom: 3
+  },
+  uniSubtitle: { 
+    textAlign: 'left',
+    fontSize: 14, 
+    fontWeight: 'black',
+    letterSpacing: -1,
+    marginBottom: 2
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: 'black',
+    textAlign: 'center',
+    marginVertical: 10,
+    textTransform: 'uppercase'
+  },
+  sectionTitle: { 
+    fontSize: 10, 
+    fontWeight: 'bold', 
+    marginVertical: 6,
+    backgroundColor: '#e0e0e0',
+    padding: 3,
+    textAlign: 'center'
+  },
+  table: {
+    display: 'table',
+    width: '100%',
+    borderColor: '#000',
+    marginBottom: 10
+  },
+  tableRow: { 
+    flexDirection: 'row' 
+  },
+  tableColHeader: {
+    width: '25%',
+    padding: 5,
+  },
+  tableCol: {
+    width: '25%',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: '#000',
+    minHeight: 16
+  },
+  tableCellHeader: { 
+    fontSize: 9, 
+    fontWeight: 'bold',
+    textAlign: 'center'
+  },
+  tableCell: { 
+    fontSize: 9,
+    textAlign: 'center',
+  },
+  inlineSection: {
+    flexDirection: 'row',
+    marginBottom: 5,
+    alignItems: 'center'
+  },
+  inlineLabel: {
+    width: 150,
+    fontWeight: 'bold'
+  },
+  inlineValue: {
+    flex: 1
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 15
+  },
+  checkbox: {
+    width: 10,
+    height: 10,
+    border: '1px solid #000',
+    marginRight: 4
+  },
+  checked: {
+    backgroundColor: '#000'
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20
+  },
+  signatureBox: {
+    width: 200,
+    borderTop: '1px solid #000',
+    paddingTop: 5,
+    textAlign: 'center'
+  },
+  divider: { borderBottom: '1pt solid #711610', marginVertical: 10 },
+  photo: {
+    width: 60,
+    height: 80,
+    borderWidth: 1,
+    borderColor: '#000',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fafafa',
+    marginLeft: 'auto',
+    marginRight: 0
+  }
 });
 
 export const ApplicationDataDocument = ({ applicationData }) => {
   const faviconUrl = `${window.location.origin}/favicon.png`;
   const p = applicationData?.person_details || {};
+  
+  // Separar nombre completo
+  const nameParts = p.full_name?.split(' ') || [];
+  const lastName = nameParts[0] || '';
+  const motherLastName = nameParts[1] || '';
+  const firstName = nameParts.slice(2).join(' ') || '';
+  
+  // Formatear fecha de nacimiento
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-PE');
+  };
 
+  const semester = new Date().getMonth() < 6 ? '1' : '2';
+  const academicPeriod = `${new Date().getFullYear()}-${semester}`;
+
+  const modalities = ['Examen', 'Pre-Maestría', '24h. Maestría', 'Seg. Exp. Prof.', 'Convenio', 'Traslado', 'Docente - UNI', 'Quinto Superior UNI'];
+  const languages = ['Inglés', 'Francés', 'Alemán', 'Ruso'];
   return (
     <PDFViewer height="600" width="100%">
       <Document>
         <Page size="A4" style={styles.page}>
-          {/* Header */}
+          {/* Encabezado */}
           <View style={styles.header}>
             <Image src={faviconUrl} style={styles.logo} />
             <View style={styles.headerText}>
               <Text style={styles.uniTitle}>UNIVERSIDAD NACIONAL DE INGENIERÍA</Text>
-              <Text style={styles.uniSubtitle}>ESCUELA DE POSTGRADO</Text>
-              <Text style={styles.uniSubtitle}>UNIDAD DE POSTGRADO</Text>
-              <Text style={styles.uniSubtitle}>Facultad de Ingeniería Económica, Estadística y Ciencias Sociales</Text>
+              <View style={styles.divider} />
+              <Text style={styles.uniSubtitle}>Escuela Central de Posgrado</Text>
             </View>
           </View>
 
-          <View style={[styles.uniTitle, { textAlign: 'center', marginBottom: 5 }]}>
-            <Text>FICHA DE POSTULANTE</Text>
+          {/* Título principal */}
+          <Text style={styles.title}>FICHA DE DATOS PERSONALES</Text>
+
+          <View style={[styles.inlineSection, { alignItems: 'flex-start', gap: 16 }]}>
+            <View style={{ width: '25%'}}>
+              <Text style={{ textAlign: 'center', border: '1px solid #000' }}>{academicPeriod}</Text>
+              <Text style={{ textAlign: 'center', margin: 5 }}>Período Académico</Text>
+              <Text style={{ fontWeight: 'bold' }}>Programas:</Text>
+              <Text>{applicationData.postgrade_name}</Text>
+            </View>
+            <View style={{ width: '50%', paddingBottom: 5 }}>
+              <Text style={{ textAlign: 'center', border: '1px solid #000' }}>FIEECS</Text>
+              <Text style={{ textAlign: 'center', margin: 5,  }}>Unidad de Posgrado</Text>
+            </View>
+            <View style={styles.photo}>
+              <Text style={{ fontSize: 8, color: '#888', textAlign: 'center' }}>Foto</Text>
+              <Text style={{ fontSize: 8, color: '#888', textAlign: 'center' }}>(Tamaño carnet)</Text>
+            </View>
           </View>
 
-          <View style={styles.divider} />
+          <View style={[styles.inlineSection, { marginTop: 10 }]}>
+            <Text style={styles.inlineLabel}>Modalidad de Ingreso:</Text>
+            <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+              {modalities.map((item) => (
+                <View key={item} style={styles.checkboxContainer}>
+                  <View style={[styles.checkbox, item === applicationData.modality_display && styles.checked]} />
+                  <Text>{item}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
 
-          {/* Title */}
-          <Text style={styles.sectionTitle}>Datos Personales</Text>
-
-          {/* Datos personales */}
           <View>
-            <View style={styles.dataRow}>
-              <Text style={styles.label}>Nombre completo:</Text>
-              <Text style={styles.value}>{p.full_name}</Text>
+            <Text style={{ textAlign: 'center', border: '1px solid #000' }}>{applicationData.specialty}</Text>
+            <Text style={{ textAlign: 'center', margin: 5, fontWeight: 'bold' }}>Mención o Especialidad</Text>
+          </View>
+
+          <View style={styles.table}>
+            <View style={styles.tableRow}>
+              <View style={[styles.tableCol, {width: '33%'}]}>
+                <Text style={styles.tableCell}>{lastName}</Text>
+              </View>
+              <View style={[styles.tableCol, {width: '33%'}]}>
+                <Text style={styles.tableCell}>{motherLastName}</Text>
+              </View>
+              <View style={[styles.tableCol, {width: '34%'}]}>
+                <Text style={styles.tableCell}>{firstName}</Text>
+              </View>
             </View>
-            <View style={styles.dataRow}>
-              <Text style={styles.label}>Correo electrónico:</Text>
-              <Text style={styles.value}>{p.email}</Text>
-            </View>
-            <View style={styles.dataRow}>
-              <Text style={styles.label}>Tipo de documento:</Text>
-              <Text style={styles.value}>{p.type_document_name}</Text>
-            </View>
-            <View style={styles.dataRow}>
-              <Text style={styles.label}>Número de documento:</Text>
-              <Text style={styles.value}>{p.document_number}</Text>
-            </View>
-            <View style={styles.dataRow}>
-              <Text style={styles.label}>Teléfono:</Text>
-              <Text style={styles.value}>{p.phone}</Text>
-            </View>
-            <View style={styles.dataRow}>
-              <Text style={styles.label}>Dirección:</Text>
-              <Text style={styles.value}>{p.address}</Text>
-            </View>
-            <View style={styles.dataRow}>
-              <Text style={styles.label}>Fecha de nacimiento:</Text>
-              <Text style={styles.value}>{p.birth_date}</Text>
-            </View>
-            <View style={styles.dataRow}>
-              <Text style={styles.label}>País:</Text>
-              <Text style={styles.value}>{p.country_name}</Text>
-            </View>
-            <View style={styles.dataRow}>
-              <Text style={styles.label}>Nacionalidad:</Text>
-              <Text style={styles.value}>{p.nationality_name}</Text>
-            </View>
-            <View style={styles.dataRow}>
-              <Text style={styles.label}>Departamento:</Text>
-              <Text style={styles.value}>{p.department_name}</Text>
-            </View>
-            <View style={styles.dataRow}>
-              <Text style={styles.label}>Provincia:</Text>
-              <Text style={styles.value}>{p.province_name}</Text>
-            </View>
-            <View style={styles.dataRow}>
-              <Text style={styles.label}>Distrito:</Text>
-              <Text style={styles.value}>{p.district_name}</Text>
+            <View style={styles.tableRow}>
+              <View style={[styles.tableColHeader, {width: '33%'}]}>
+                <Text style={styles.tableCellHeader}>Ap. Paterno</Text>
+              </View>
+              <View style={[styles.tableColHeader, {width: '33%'}]}>
+                <Text style={styles.tableCellHeader}>Ap. Materno</Text>
+              </View>
+              <View style={[styles.tableColHeader, {width: '34%'}]}>
+                <Text style={styles.tableCellHeader}>Nombres</Text>
+              </View>
             </View>
           </View>
 
-          <View style={styles.divider} />
+          {/* Tabla de datos personales */}
+          <View style={styles.table}>
+            <View style={styles.tableRow}>
+              <View style={[styles.tableCol, {width: '20%'}]}>
+                <Text style={styles.tableCell}>{p.nationality_name}</Text>
+              </View>
+              <View style={[styles.tableCol, {width: '20%'}]}>
+                <Text style={styles.tableCell}>{p.document_number}</Text>
+              </View>
+              <View style={[styles.tableCol, {width: '20%'}]}>
+                <Text style={styles.tableCell}>{formatDate(p.birth_date)}</Text>
+              </View>
+              <View style={[styles.tableCol, {width: '20%'}]}>
+                <Text style={styles.tableCell}></Text>
+              </View>
+              <View style={[styles.tableCol, {width: '20%'}]}>
+                <Text style={styles.tableCell}></Text>
+              </View>
+            </View>
+            <View style={styles.tableRow}>
+              <View style={[styles.tableColHeader, {width: '20%'}]}>
+                <Text style={styles.tableCellHeader}>Nacionalidad</Text>
+              </View>
+              <View style={[styles.tableColHeader, {width: '20%'}]}>
+                <Text style={styles.tableCellHeader}>DNI; C.E; Pasaporte</Text>
+              </View>
+              <View style={[styles.tableColHeader, {width: '20%'}]}>
+                <Text style={styles.tableCellHeader}>Fecha de Nacimiento</Text>
+              </View>
+              <View style={[styles.tableColHeader, {width: '20%'}]}>
+                <Text style={styles.tableCellHeader}>Código Docente UNI</Text>
+              </View>
+              <View style={[styles.tableColHeader, {width: '20%'}]}>
+                <Text style={styles.tableCellHeader}>Sexo (M/F)</Text>
+              </View>
+            </View>
+          </View>
 
-          {/* Programa de postgrado */}
-          <Text style={styles.sectionTitle}>Programa Alineado</Text>
-          <View>
-            <View style={styles.dataRow}>
-              <Text style={styles.label}>Programa:</Text>
-              <Text style={styles.value}>{applicationData.postgrade_name}</Text>
+          {/* Tabla de dirección */}
+          <View style={styles.table}>
+            <View style={styles.tableRow}>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{p.address}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{p.district_name}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{p.province_name}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{p.department_name}</Text>
+              </View>
             </View>
-            <View style={styles.dataRow}>
-              <Text style={styles.label}>Proceso de admisión:</Text>
-              <Text style={styles.value}>{applicationData.admission_process_name}</Text>
+            <View style={styles.tableRow}>
+              <View style={styles.tableColHeader}>
+                <Text style={styles.tableCellHeader}>Dirección</Text>
+              </View>
+              <View style={styles.tableColHeader}>
+                <Text style={styles.tableCellHeader}>Distrito</Text>
+              </View>
+              <View style={styles.tableColHeader}>
+                <Text style={styles.tableCellHeader}>Provincia</Text>
+              </View>
+              <View style={styles.tableColHeader}>
+                <Text style={styles.tableCellHeader}>Departamento</Text>
+              </View>
             </View>
-            <View style={styles.dataRow}>
-              <Text style={styles.label}>Modalidad:</Text>
-              <Text style={styles.value}>{applicationData.modality_display}</Text>
+          </View>
+
+          {/* Teléfonos y email */}
+          <View style={styles.table}>
+            <View style={styles.tableRow}>
+              <View style={[styles.tableCol, {width: '33%'}]}>
+                <Text style={styles.tableCell}></Text>
+              </View>
+              <View style={[styles.tableCol, {width: '33%'}]}>
+                <Text style={styles.tableCell}>{p.phone}</Text>
+              </View>
+              <View style={[styles.tableCol, {width: '34%'}]}>
+                <Text style={styles.tableCell}>{p.email}</Text>
+              </View>
             </View>
-            <View style={styles.dataRow}>
-              <Text style={styles.label}>Estado:</Text>
-              <Text style={styles.value}>{applicationData.status_display}</Text>
+            <View style={styles.tableRow}>
+              <View style={[styles.tableColHeader, {width: '33%'}]}>
+                <Text style={styles.tableCellHeader}>Teléfonos: Casa</Text>
+              </View>
+              <View style={[styles.tableColHeader, {width: '33%'}]}>
+                <Text style={styles.tableCellHeader}>Celular</Text>
+              </View>
+              <View style={[styles.tableColHeader, {width: '34%'}]}>
+                <Text style={styles.tableCellHeader}>E-mail</Text>
+              </View>
             </View>
-            <View style={styles.dataRow}>
-              <Text style={styles.label}>Estado de calificación:</Text>
-              <Text style={styles.value}>{applicationData.status_qualification_display}</Text>
+          </View>
+
+          {/* Grados y títulos */}
+          <View style={[styles.table, { display: 'flex', flexDirection: 'column' }]}>
+            <View style={styles.tableRow}>
+              <View style={[styles.tableColHeader, {width: '50%'}]}>
+                <Text style={styles.tableCellHeader}>Grados y Títulos</Text>
+              </View>
+              <View style={[styles.tableColHeader, {width: '50%'}]}>
+                <Text style={styles.tableCellHeader}>Universidad de Precedencia</Text>
+              </View>
+            </View>
+            {[1, 2, 3].map((_, index) => (
+              <View key={index} style={styles.tableRow}>
+                <View style={[styles.tableCol, {width: '50%'}]}>
+                  <Text style={styles.tableCell}></Text>
+                </View>
+                <View style={[styles.tableCol, {width: '50%'}]}>
+                  <Text style={styles.tableCell}></Text>
+                </View>
+              </View>
+            ))}
+          </View>
+
+          <View style={{ display: 'flex', flexDirection: 'row', gap: 16, marginBottom: 8 }}>
+            <Text style={{marginBottom: 5}}>Nº de Colegiatura: </Text>
+            <Text style={{ width:'100%', textAlign: 'center', border: '1px solid #000' }}>{ applicationData?.colegiatura }</Text>
+          </View>
+
+          <Text style={{ fontWeight: 'bold' }}>IDIOMAS:</Text>
+          <View style={{ display: 'flex', flexDirection: 'row', gap: 16, alignItems: 'flex-end' }}>
+            <View style={styles.table}>
+              <View style={styles.tableRow}>
+                <View style={[styles.tableColHeader, {width: '30%'}]}></View>
+                <View style={[styles.tableColHeader, {width: '20%'}]}>
+                  <Text style={styles.tableCellHeader}>Básico</Text>
+                </View>
+                <View style={[styles.tableColHeader, {width: '20%'}]}>
+                  <Text style={styles.tableCellHeader}>Medio</Text>
+                </View>
+                <View style={[styles.tableColHeader, {width: '20%'}]}>
+                  <Text style={styles.tableCellHeader}>Avanzado</Text>
+                </View>
+              </View>
+              {languages.map((lang) => (
+                <View key={lang} style={styles.tableRow}>
+                  <View style={[styles.tableCol, {width: '30%'}]}>
+                    <Text style={styles.tableCell}>{lang}</Text>
+                  </View>
+                  <View style={[styles.tableCol, {width: '20%'}]}>
+                    <View style={{alignItems: 'center'}}>
+                      <View style={styles.checkbox} />
+                    </View>
+                  </View>
+                  <View style={[styles.tableCol, {width: '20%'}]}>
+                    <View style={{alignItems: 'center'}}>
+                      <View style={styles.checkbox} />
+                    </View>
+                  </View>
+                  <View style={[styles.tableCol, {width: '20%'}]}>
+                    <View style={{alignItems: 'center'}}>
+                      <View style={styles.checkbox} />
+                    </View>
+                  </View>
+                </View>
+              ))}
+            </View>
+            <View style={[styles.signatureBox, { width:'60%', marginTop: 24 }]}>
+              <Text>Firma:</Text>
+              <Text>Lima, ............ de .............................. de 2020</Text>
+            </View>
+          </View>
+
+          {/* Pie de página */}
+          <View style={styles.footer}>
+            <View style={{ borderLeft: '2px solid #711610', paddingLeft: 8, fontSize: 8 }}>
+              <Text>Av. Tupac Amaru N○ 210 Rimac, Lima-Perú </Text>
+              <Text>Telefono: (511) 381-3826 - Central telefónica (511) 481-1070 Anexo: 3401</Text> 
+              <Text>Web:postgrado.uni.edu.pe Email:posgrado@uni.edu.pe</Text>
             </View>
           </View>
         </Page>

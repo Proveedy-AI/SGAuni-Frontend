@@ -5,7 +5,7 @@ import { Field, Modal, toaster } from '@/components/ui';
 import { FiPlus } from 'react-icons/fi';
 import { useCreateAdmissions } from '@/hooks/admissions_proccess';
 import { ReactSelect } from '@/components/select';
-import { CustomDatePicker } from '@/components/ui/customDatepicker';
+import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { format } from 'date-fns';
 
 export const AddAdmissionsProccessForm = ({ fetchData }) => {
@@ -15,12 +15,11 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 	const [startDate, setStartDate] = useState('');
 	const [endDate, setEndDate] = useState('');
 	const [selectedLevel, setSelectedLevel] = useState(null);
-	console.log(startDate, endDate);
+
 	const { mutate: createAdmissions, isPending } = useCreateAdmissions();
 
 	const handleDateChange = (field) => (date) => {
 		const formatted = format(date, 'yyyy-MM-dd');
-		console.log(`Fecha ${field} para API:`, formatted);
 		if (field === 'start') {
 			setStartDate(formatted);
 		} else if (field === 'end') {

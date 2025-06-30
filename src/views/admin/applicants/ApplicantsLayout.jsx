@@ -150,7 +150,9 @@ export const ApplicantsLayout = () => {
 				<Flex
 					direction='column'
 					align='center'
-					justify='center'
+					justifyContent={'center'}
+					mx={'auto'}
+					w={{ base: 'full', md: '80%' }}
 					mt={10}
 					mb={10}
 					px={4}

@@ -5,7 +5,7 @@ export * from './UpdateAdmissionsProgramsForm';
 export * from './PreviewAdmissionsProgramsModal';
 export * from './PreviewProgramsPendingModal';
 export * from './AssignEvaluatorModal';
-export * from './ViewAdmissionEvaluatorsProgramExams';
 export * from './GeneratePdfApliccationsModal';
 export * from './GenerateApplicantDataPdfModal';
 export * from './ConfirmDownloadSuneduModal';
+export * from './ViewAdmissionEvaluatorsProgramExams';

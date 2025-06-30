@@ -13,10 +13,11 @@ export const useProvideAuth = () => {
 	const isRefreshing = useRef(false);
 
 	const getRefreshToken = useCallback(() => {
-		const userCookie = Cookies.get(import.meta.env.VITE_US_COOKIE);
+		const cookie = Cookies.get(import.meta.env.VITE_TOKEN_COOKIE);
+		const userCookie = cookie ? JSON.parse(cookie) : null;
 		if (!userCookie) return null;
-		// const getUserCookie = JSON.parse(userCookie);
-		return userCookie /* ?.refresh_token */ || null;
+		const decoded = userCookie?.refresh;
+		return decoded /* ?.refresh_token */ || null;
 	}, []);
 
 	const login = async (username, password) => {
@@ -32,7 +33,7 @@ export const useProvideAuth = () => {
 			const data = response.data;
 
 			const user = jwtDecode(data['access']);
-			setAuth({ accessToken: data['access'], user });
+			setAuth({ accessToken: data['access'], user, refresh: data['refresh'] });
 
 			const isProduction = import.meta.env.VITE_IS_PRODUCTION === 'true';
 			const cookieOptions = {
@@ -45,13 +46,11 @@ export const useProvideAuth = () => {
 			}
 			Cookies.set(
 				import.meta.env.VITE_TOKEN_COOKIE,
-				JSON.stringify({ accessToken: data['access'], user }),
-				cookieOptions
-			);
-			Cookies.set(
-				import.meta.env.VITE_US_COOKIE,
-				/* JSON.stringify(data) */
-				data['refresh'],
+				JSON.stringify({
+					accessToken: data['access'],
+					user,
+					refresh: data['refresh'],
+				}),
 				cookieOptions
 			);
 
@@ -107,7 +106,6 @@ export const useProvideAuth = () => {
 				setError('Error de red o token inválido');
 			}
 		} finally {
-			Cookies.remove(import.meta.env.VITE_US_COOKIE, cookieOptions);
 			Cookies.remove(import.meta.env.VITE_TOKEN_COOKIE, cookieOptions);
 			Cookies.remove('user');
 			setAuth(null);
@@ -129,7 +127,7 @@ export const useProvideAuth = () => {
 
 			const data = response.data;
 			const user = jwtDecode(data['access']);
-			setAuth({ accessToken: data['access'], user });
+			setAuth({ accessToken: data['access'], user, refresh: data['refresh'] });
 
 			const isProduction = import.meta.env.VITE_IS_PRODUCTION === 'true';
 			const cookieOptions = {
@@ -142,13 +140,11 @@ export const useProvideAuth = () => {
 			}
 			Cookies.set(
 				import.meta.env.VITE_TOKEN_COOKIE,
-				JSON.stringify({ accessToken: data['access'], user }),
-				cookieOptions
-			);
-			Cookies.set(
-				import.meta.env.VITE_US_COOKIE,
-				/* JSON.stringify(data) */
-				data['refresh'],
+				JSON.stringify({
+					accessToken: data['access'],
+					user,
+					refresh: data['refresh'],
+				}),
 				cookieOptions
 			);
 
@@ -168,13 +164,13 @@ export const useProvideAuth = () => {
 
 			return response.data['access'];
 		} catch (err) {
+			console.error('[refresh] Error al refrescar el token:', err);
 			const isProduction = import.meta.env.VITE_IS_PRODUCTION === 'true';
 			const cookieOptions = {
 				domain: isProduction
 					? import.meta.env.VITE_DOMAIN_AUTO_LOGIN
 					: undefined,
 			};
-			Cookies.remove(import.meta.env.VITE_US_COOKIE, cookieOptions);
 			Cookies.remove(import.meta.env.VITE_TOKEN_COOKIE, cookieOptions);
 			Cookies.remove('user');
 			setAuth(null);
@@ -205,10 +201,12 @@ export const useProvideAuth = () => {
 
 	const getUserCookie = useCallback(() => {
 		try {
-			const userCookie = Cookies.get(import.meta.env.VITE_US_COOKIE);
+			const cookie = Cookies.get(import.meta.env.VITE_TOKEN_COOKIE);
+			const userCookie = cookie ? JSON.parse(cookie) : null;
 			if (!userCookie) return null;
-			const decoded = jwtDecode(userCookie);
-			return decoded;
+			const decoded = userCookie?.refresh;
+			const parsed = jwtDecode(decoded);
+			return parsed;
 		} catch (error) {
 			console.error('Error al obtener el usuario:', error);
 			return null;

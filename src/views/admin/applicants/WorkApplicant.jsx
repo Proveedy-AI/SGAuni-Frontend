@@ -111,9 +111,7 @@ export const WorkApplicant = ({ onAllCompleted }) => {
 	});
 
 	const handleDownloadGuides = () => {
-		const files = [
-			'/templates/GUIA-DE-ENSAYO.pdf',
-		];
+		const files = ['/templates/GUIA-DE-ENSAYO.pdf'];
 
 		files.forEach((file) => {
 			const link = document.createElement('a');
@@ -277,7 +275,16 @@ export const WorkApplicant = ({ onAllCompleted }) => {
 		groupedWorks.Exam.length === 0;
 
 	return (
-		<Box bg='white' p={6} borderRadius='lg' boxShadow='md' mt={4}>
+		<Box
+			bg='white'
+			p={6}
+			borderRadius='lg'
+			boxShadow='md'
+			mt={4}
+			justifyContent={'center'}
+			mx={'auto'}
+			w={{ base: 'full', md: '80%' }}
+		>
 			<Stack
 				direction={{ base: 'column', sm: 'row' }}
 				align='center'

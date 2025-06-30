@@ -217,14 +217,16 @@ export const ChangeDataStudentProfileForm = ({
 							orientation={{ base: 'vertical', sm: 'horizontal' }}
 							label='Fecha de nacimiento:'
 						>
-							<CustomDatePicker
-								selectedDate={profile.birth_date ? profile.birth_date : null}
-								onDateChange={(date) =>
-									updateProfileField('birth_date', format(date, 'yyyy-MM-dd'))
-								}
-								buttonSize='md'
-								size={{ base: '240px', md: '510px' }}
-							/>
+							<Box w={'full'}>
+								<CustomDatePicker
+									selectedDate={profile.birth_date ? profile.birth_date : null}
+									onDateChange={(date) =>
+										updateProfileField('birth_date', format(date, 'yyyy-MM-dd'))
+									}
+									buttonSize='md'
+									size={{ base: '240px', md: '410px' }}
+								/>
+							</Box>
 						</Field>
 						<Field
 							orientation={{ base: 'vertical', sm: 'horizontal' }}

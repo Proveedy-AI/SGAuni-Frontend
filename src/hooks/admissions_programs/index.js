@@ -6,3 +6,4 @@ export * from './useReadAdmissionProgramsById.jsx';
 export * from './useReadAdmissionsProgramPending.jsx';
 export * from './useAproveeAdmissionsPrograms.jsx';
 export * from './useReadAdmissionsProgramAproved.jsx';
+export * from './useExportSuneduStudentExcel.jsx';

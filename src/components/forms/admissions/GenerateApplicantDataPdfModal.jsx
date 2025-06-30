@@ -13,7 +13,7 @@ export const GenerateApplicantDataPdfModal = ({ applicationPersonalData }) => {
       title="Documento de Datos Personales"
       placement='center'
       trigger={
-        <Button variant='outline'>
+        <Button variant='outline' colorPalette='blue'>
          <FaDownload /> Ficha Inscripción
         </Button>
       }
