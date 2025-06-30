@@ -17,12 +17,12 @@ export const AccountProfile = () => {
 
 	const [profile, setProfile] = useState({
 		id: '',
-		user: {},
-		username: '',
-		first_name: '',
-		password: '',
-		confirmPassword: '',
-		last_name: '',
+		user: {
+      id: '',
+      username: '',
+      first_name: '',
+      last_name: '',
+    },
 		full_name: '',
 		num_doc: '',
 		uni_email: '',
@@ -30,17 +30,10 @@ export const AccountProfile = () => {
 		path_grade: '',
 		category: '',
 		phone: '',
-		created_at: null,
-		updated_at: null,
-		deleted_at: null,
-		// Campos no devueltos por la API
 		roles: [],
-		color: '',
-		status: null,
-		country: {},
-		pathContract: '',
-		contractExpiresAt: null,
-		userId: '',
+    // para el icono
+    first_name: '',
+    last_name: '',
 	});
 
 	const [isChangesMade, setIsChangesMade] = useState(false);
@@ -55,6 +48,7 @@ export const AccountProfile = () => {
 			};
 			setProfile(updatedProfile);
 			setInitialProfile(updatedProfile);
+      refetch();
 		}
 	}, [dataUser, isLoading]);
 
@@ -106,7 +100,7 @@ export const AccountProfile = () => {
 			path_cv: pathCvUrl,
 			path_grade: pathGradeUrl,
 			category: profile.category,
-			phone: profile.phoneNumber,
+			phone: profile.phone,
 		};
 
 		try {
