@@ -49,18 +49,18 @@ export const AddModalityForm = ({ fetchData }) => {
 			modalityRequest.requires_essay &&
 			(modalityRequest.essay_weight === '' ||
 				modalityRequest.essay_weight < 0 ||
-				modalityRequest.essay_weight > 1)
+				modalityRequest.essay_weight > 100)
 		) {
-			newErrors.essay_weight = 'Debe estar entre 0 y 1';
+			newErrors.essay_weight = 'Debe estar entre 0 y 100';
 		}
 
 		if (
 			modalityRequest.requires_interview &&
 			(modalityRequest.interview_weight === '' ||
 				modalityRequest.interview_weight < 0 ||
-				modalityRequest.interview_weight > 1)
+				modalityRequest.interview_weight > 100)
 		) {
-			newErrors.interview_weight = 'Debe estar entre 0 y 1';
+			newErrors.interview_weight = 'Debe estar entre 0 y 100';
 		}
 
 		setErrors(newErrors);
@@ -92,6 +92,12 @@ export const AddModalityForm = ({ fetchData }) => {
 		const payload = {
 			...modalityRequest,
 			rules_ids: selectedRuleIds,
+			essay_weight: modalityRequest.requires_essay
+				? modalityRequest.essay_weight / 100
+				: 0,
+			interview_weight: modalityRequest.requires_interview
+				? modalityRequest.interview_weight / 100
+				: 0,
 		};
 
 		create(payload, {
@@ -206,7 +212,12 @@ export const AddModalityForm = ({ fetchData }) => {
 							</Flex>
 						</RadioGroup>
 					</Field>
-					<Field marginBottom='4' label='Nota mínima (0 a 20)'>
+					<Field
+						marginBottom='4'
+						label='Nota mínima Ponderado(0 a 20)'
+						invalid={!!errors.min_grade}
+						errorText={errors.min_grade}
+					>
 						<Input
 							required
 							type='number'
@@ -254,12 +265,16 @@ export const AddModalityForm = ({ fetchData }) => {
 						</RadioGroup>
 					</Field>
 					{modalityRequest.requires_essay && (
-						<Field label='Peso del ensayo (0 a 100)'>
+						<Field
+							label='Peso del ensayo (0 a 100)%'
+							invalid={!!errors.essay_weight}
+							errorText={errors.essay_weight}
+						>
 							<Input
 								required
 								type='number'
 								name='essay_weight'
-								placeholder='Ej: 0.5'
+								placeholder='Ej: 50'
 								value={modalityRequest.essay_weight}
 								onChange={(e) =>
 									setModalityRequest({
@@ -268,8 +283,8 @@ export const AddModalityForm = ({ fetchData }) => {
 									})
 								}
 								min={0}
-								max={1}
-								step={0.01}
+								max={100}
+								step={1}
 							/>
 						</Field>
 					)}
@@ -303,7 +318,11 @@ export const AddModalityForm = ({ fetchData }) => {
 						</RadioGroup>
 					</Field>
 					{modalityRequest.requires_interview && (
-						<Field label='Peso de la entrevista (0 a 100)'>
+						<Field
+							label='Peso de la entrevista (0 a 100)%'
+							invalid={!!errors.interview_weight}
+							errorText={errors.interview_weight}
+						>
 							<Input
 								required
 								type='number'
@@ -317,8 +336,8 @@ export const AddModalityForm = ({ fetchData }) => {
 								}
 								placeholder='Ej: 0.5'
 								min={0}
-								max={1}
-								step={0.01}
+								max={100}
+								step={1}
 							/>
 						</Field>
 					)}

@@ -23,7 +23,49 @@ export const EditModality = ({ fetchData, item }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 	const { mutateAsync: update, isPending: loadingUpdate } = useUpdateModality();
-	const [modalityEditable, setModalityEditable] = useState(item);
+	const [modalityEditable, setModalityEditable] = useState({
+		...item,
+		essay_weight: item.essay_weight * 100,
+		interview_weight: item.interview_weight * 100,
+	});
+
+	const [errors, setErrors] = useState({});
+
+	const validate = () => {
+		const newErrors = {};
+
+		if (!modalityEditable.name) newErrors.name = 'Falta nombre';
+		if (!modalityEditable.description)
+			newErrors.description = 'Falta descripción';
+		if (
+			!modalityEditable.min_grade ||
+			modalityEditable.min_grade < 0 ||
+			modalityEditable.min_grade > 20
+		) {
+			newErrors.min_grade = 'Debe estar entre 0 y 20';
+		}
+
+		if (
+			modalityEditable.requires_essay &&
+			(modalityEditable.essay_weight === '' ||
+				modalityEditable.essay_weight < 0 ||
+				modalityEditable.essay_weight > 100)
+		) {
+			newErrors.essay_weight = 'Debe estar entre 0 y 100';
+		}
+
+		if (
+			modalityEditable.requires_interview &&
+			(modalityEditable.interview_weight === '' ||
+				modalityEditable.interview_weight < 0 ||
+				modalityEditable.interview_weight > 100)
+		) {
+			newErrors.interview_weight = 'Debe estar entre 0 y 100';
+		}
+
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
 
 	const handleUpdate = async () => {
 		// Compara si no hubo cambios
@@ -33,17 +75,22 @@ export const EditModality = ({ fetchData, item }) => {
 				type: 'info',
 			});
 
+		if (!validate()) return;
+
 		const payload = {
 			name: modalityEditable.name,
 			description: modalityEditable.description,
 			requires_pre_master_exam: modalityEditable.requires_pre_master_exam,
 			min_grade: modalityEditable.min_grade,
 			requires_essay: modalityEditable.requires_essay,
-			essay_weight: modalityEditable.essay_weight,
+			essay_weight: modalityEditable.requires_essay
+				? modalityEditable.essay_weight / 100
+				: 0,
 			requires_interview: modalityEditable.requires_interview,
-			interview_weight: modalityEditable.interview_weight,
+			interview_weight: modalityEditable.requires_interview
+				? modalityEditable.interview_weight / 100
+				: 0,
 		};
-
 		if (
 			!payload.name ||
 			payload.price_credit <= 0 ||
@@ -99,7 +146,11 @@ export const EditModality = ({ fetchData, item }) => {
 			contentRef={contentRef}
 		>
 			<Stack spacing={4}>
-				<Field label='Nombre de la modalidad'>
+				<Field
+					label='Nombre de la modalidad'
+					invalid={!!errors.name}
+					errorText={errors.name}
+				>
 					<Input
 						value={modalityEditable.name}
 						onChange={(e) =>
@@ -111,7 +162,11 @@ export const EditModality = ({ fetchData, item }) => {
 					/>
 				</Field>
 
-				<Field label='Descripción'>
+				<Field
+					label='Descripción'
+					invalid={!!errors.description}
+					errorText={errors.description}
+				>
 					<Textarea
 						value={modalityEditable.description}
 						onChange={(e) =>
@@ -145,7 +200,11 @@ export const EditModality = ({ fetchData, item }) => {
 						</Flex>
 					</Field>
 
-					<Field label='Nota mínima (0 a 20)'>
+					<Field
+						label='Nota mínima (0 a 20)'
+						invalid={!!errors.min_grade}
+						errorText={errors.min_grade}
+					>
 						<Input
 							type='number'
 							value={modalityEditable.min_grade}
@@ -184,7 +243,11 @@ export const EditModality = ({ fetchData, item }) => {
 					</Field>
 
 					{modalityEditable.requires_essay && (
-						<Field label='Peso del ensayo (0 a 1)'>
+						<Field
+							label='Peso del ensayo (0 a 100)%'
+							invalid={!!errors.essay_weight}
+							errorText={errors.essay_weight}
+						>
 							<Input
 								required
 								type='number'
@@ -196,9 +259,9 @@ export const EditModality = ({ fetchData, item }) => {
 									}))
 								}
 								min={0}
-								max={1}
-								step={0.01}
-								placeholder='Ej: 0.5'
+								max={100}
+								step={1}
+								placeholder='Ej: 50'
 							/>
 						</Field>
 					)}
@@ -227,7 +290,11 @@ export const EditModality = ({ fetchData, item }) => {
 					</Field>
 
 					{modalityEditable.requires_interview && (
-						<Field label='Peso de la entrevista (0 a 1)'>
+						<Field
+							label='Peso de la entrevista (0 a 100)%'
+							invalid={!!errors.interview_weight}
+							errorText={errors.interview_weight}
+						>
 							<Input
 								type='number'
 								value={modalityEditable.interview_weight}
@@ -238,9 +305,9 @@ export const EditModality = ({ fetchData, item }) => {
 									}))
 								}
 								min={0}
-								max={1}
-								step={0.01}
-								placeholder='Ej: 0.5'
+								max={100}
+								step={1}
+								placeholder='Ej: 50'
 							/>
 						</Field>
 					)}
