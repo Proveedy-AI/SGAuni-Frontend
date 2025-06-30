@@ -199,7 +199,7 @@ export const PaymentApplicant = () => {
 			boxShadow='md'
 			justifyContent={'center'}	
 			mx={'auto'}
-			w={'80%'}
+			w={{ base: 'full', md: '80%' }}
 			mb={10}
 			mt={1}
 		>
