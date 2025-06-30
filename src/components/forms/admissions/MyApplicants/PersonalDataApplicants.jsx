@@ -160,6 +160,9 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 			p='4'
 			borderRadius='10px'
 			overflow='hidden'
+			justifyContent={'center'}	
+			mx={'auto'}
+			w={'80%'}
 			boxShadow='md'
 		>
 			<Stack
@@ -175,12 +178,12 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 						sm: 'sm',
 						md: 'md',
 					}}
-					color={'gray.500'}
+					 color={'uni.secondary'}
 				>
 					Inscripción: Datos Generales
 				</Heading>
 			</Stack>
-			<Text fontWeight='semibold' color={'uni.secondary'} mb={2}>
+			<Text fontWeight='semibold' mb={2}>
 				1. Subir foto de documento:
 			</Text>
 			<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
@@ -198,7 +201,7 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 
 			<SimpleGrid columns={{ base: 1, md: 2 }} gap={4} mt={4}>
 				<Box>
-					<Text fontWeight='semibold' color={'uni.secondary'} mb={2}>
+					<Text fontWeight='semibold' mb={2}>
 						2. Ubigeo Nacimiento:
 					</Text>
 					<ReactSelect
@@ -213,7 +216,7 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 				</Box>
 				<Box>
 					{' '}
-					<Text fontWeight='semibold' color={'uni.secondary'} mb={2}>
+					<Text fontWeight='semibold' mb={2}>
 						3. Ubigeo Domicilio:
 					</Text>
 					<ReactSelect
@@ -227,7 +230,7 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 					/>
 				</Box>
 			</SimpleGrid>
-			<Text fontWeight='semibold' color={'uni.secondary'} mt={4}>
+			<Text fontWeight='semibold' mt={4}>
 				4. Datos Institucionales:
 			</Text>
 			<SimpleGrid columns={{ base: 1, md: 2 }} gap={4} mt={4}>
@@ -271,7 +274,7 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 					</>
 				)}
 			</SimpleGrid>
-			<Text fontWeight='semibold' color={'uni.secondary'} mt={4}>
+			<Text fontWeight='semibold' mt={4}>
 				5. Otros Datos:
 			</Text>
 			<SimpleGrid columns={{ base: 1, md: 2 }} gap={4} mt={4}>
@@ -319,7 +322,7 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 					</>
 				)}
 			</SimpleGrid>
-			<Text fontWeight='semibold' color={'uni.secondary'} mt={6}>
+			<Text fontWeight='semibold' mt={6}>
 				6. Numero de colegiatura:
 			</Text>
 			<SimpleGrid columns={{ base: 1, md: 2 }} gap={4} mt={4}>
