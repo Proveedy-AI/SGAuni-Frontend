@@ -5,7 +5,7 @@ import { Field, Modal, toaster } from '@/components/ui';
 import { FiPlus } from 'react-icons/fi';
 import { useCreateAdmissions } from '@/hooks/admissions_proccess';
 import { ReactSelect } from '@/components/select';
-import { CustomDatePicker } from '@/components/ui/customDatepicker';
+import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { format } from 'date-fns';
 
 export const AddAdmissionsProccessForm = ({ fetchData }) => {
