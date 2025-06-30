@@ -48,7 +48,6 @@ export const AccountProfile = () => {
 			};
 			setProfile(updatedProfile);
 			setInitialProfile(updatedProfile);
-      refetch();
 		}
 	}, [dataUser, isLoading]);
 
@@ -103,20 +102,22 @@ export const AccountProfile = () => {
 			phone: profile.phone,
 		};
 
-		try {
-			update({ id: profile.id, payload });
-			setInitialProfile(profile);
-			setIsChangesMade(false);
-			toaster.create({
-				title: 'Perfil actualizado correctamente.',
-				type: 'success',
-			});
-			refetch();
-			setDisableUpload(false);
-		} catch (error) {
-			setDisableUpload(false);
-			toaster.create({ title: error.message, type: 'error' });
-		}
+		update({ id: profile.id, payload }, {
+      onSuccess: () => {
+        setInitialProfile(profile);
+        setIsChangesMade(false);
+        toaster.create({
+          title: 'Perfil actualizado correctamente.',
+          type: 'success',
+        });
+        refetch();
+        setDisableUpload(false);
+      }, 
+      onError: (error) => {
+        setDisableUpload(false);
+        toaster.create({ title: error.message, type: 'error' });
+      }
+    });
 	};
 
 	return (
