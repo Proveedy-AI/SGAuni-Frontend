@@ -190,7 +190,7 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 					setIsLoading(false);
 					toaster.create({
 						title: 'Documentos guardados',
-						description: 'Los documentos fueron enviados correctamente.',
+						description: 'Los documentos fueron enviados correctamente. Puede continuar con el proceso.',
 						type: 'success',
 					});
 				},
