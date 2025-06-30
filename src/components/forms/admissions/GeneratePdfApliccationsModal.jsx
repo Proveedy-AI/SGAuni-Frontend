@@ -8,7 +8,7 @@ import { ReactSelect } from '@/components/select';
 import { useState } from 'react';
 
 export const GeneratePdfApliccationsModal = ({ data, open, setOpen }) => {
-  const modalityOptions = data.modalities?.map((modality) => ({
+  const modalityOptions = data?.modalities?.map((modality) => ({
     value: modality.id,
     label: modality.modality_name
   }))
