@@ -162,7 +162,7 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 			overflow='hidden'
 			justifyContent={'center'}	
 			mx={'auto'}
-			w={'80%'}
+			w={{ base: 'full', md: '80%' }}
 			boxShadow='md'
 		>
 			<Stack
