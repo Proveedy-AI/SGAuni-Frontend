@@ -95,7 +95,7 @@ export const ViewModality = ({ item }) => {
 						</Flex>
 
 						<Flex gap={6} flexDir={{ base: 'column', sm: 'row' }}>
-							<Field label='Ancho ensayo'>
+							<Field label='Peso entrevista'>
 								<Text
 									w='full'
 									py={2}
@@ -103,10 +103,10 @@ export const ViewModality = ({ item }) => {
 									border='1px solid #E2E8F0'
 									borderRadius='md'
 								>
-									{item.essay_weight}
+									{item.interview_weight * 100 || 0}%
 								</Text>
 							</Field>
-							<Field label='Ancho entrevista'>
+							<Field label='Peso ensayo'>
 								<Text
 									w='full'
 									py={2}
@@ -114,7 +114,7 @@ export const ViewModality = ({ item }) => {
 									border='1px solid #E2E8F0'
 									borderRadius='md'
 								>
-									{item.interview_weight}
+									{item.essay_weight * 100}%
 								</Text>
 							</Field>
 						</Flex>
