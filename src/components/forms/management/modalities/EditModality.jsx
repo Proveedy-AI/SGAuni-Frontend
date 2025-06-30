@@ -167,16 +167,18 @@ export const EditModality = ({ fetchData, item }) => {
 					<Field label='Requiere ensayo'>
 						<RadioGroup
 							value={modalityEditable.requires_essay ? 'true' : 'false'}
-							onChange={(e) =>
+							onChange={(e) => {
+								const requiresEssay = e.target.value === 'true';
 								setModalityEditable((prev) => ({
 									...prev,
-									requires_essay: e.target.value === 'true',
-								}))
-							}
+									requires_essay: requiresEssay,
+									essay_weight: requiresEssay ? prev.essay_weight : 0,
+								}));
+							}}
 						>
 							<Flex gap={5}>
-								<Radio value={'true'}>Sí</Radio>
-								<Radio value={'false'}>No</Radio>
+								<Radio value='true'>Sí</Radio>
+								<Radio value='false'>No</Radio>
 							</Flex>
 						</RadioGroup>
 					</Field>
@@ -206,16 +208,20 @@ export const EditModality = ({ fetchData, item }) => {
 					<Field label='Requiere entrevista personal'>
 						<RadioGroup
 							value={modalityEditable.requires_interview ? 'true' : 'false'}
-							onChange={(e) =>
+							onChange={(e) => {
+								const requiresInterview = e.target.value === 'true';
 								setModalityEditable((prev) => ({
 									...prev,
-									requires_interview: e.target.value === 'true',
-								}))
-							}
+									requires_interview: requiresInterview,
+									interview_weight: requiresInterview
+										? prev.interview_weight
+										: 0,
+								}));
+							}}
 						>
 							<Flex gap={5}>
-								<Radio value={'true'}>Sí</Radio>
-								<Radio value={'false'}>No</Radio>
+								<Radio value='true'>Sí</Radio>
+								<Radio value='false'>No</Radio>
 							</Flex>
 						</RadioGroup>
 					</Field>
