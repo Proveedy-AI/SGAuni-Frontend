@@ -16,7 +16,6 @@ import { CompactFileUpload } from '@/components/ui/CompactFileInput';
 import { uploadToS3 } from '@/utils/uploadToS3';
 import { useCreateDocuments, useReadDocuments } from '@/hooks/documents';
 import PropTypes from 'prop-types';
-import { FaDownload } from 'react-icons/fa';
 import { GenerateApplicantDataPdfModal } from '@/components/forms/admissions';
 import { useReadAdmissionApplicantById } from '@/hooks/admissions_applicants/useReadAdmissionApplicantById';
 
