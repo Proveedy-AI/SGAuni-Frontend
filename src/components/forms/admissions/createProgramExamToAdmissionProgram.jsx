@@ -30,7 +30,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 	const { mutate: createEvaluation, isPending: isCreateEvaluationPending } =
 		useCreateAdmissionEvaluation();
 	const { data: dataEvaluations, refetch: fetchEvaluations } =
-		useReadAdmissionEvaluationsByApplication(item?.id);
+		useReadAdmissionEvaluationsByApplication(item?.id, open);
 	const { mutate: editEvaluation, isPending: isEditEvaluationPending } =
 		useUpdateAdmissionEvaluation();
 	const { mutate: deleteEvaluation, isPending: isDeleteEvaluationPending } =
@@ -38,6 +38,9 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 	const { data: dataEvaluators, isLoading: evaluatorsLoading } =
 		useReadAdmissionEvaluators({
 			program_id: item?.admission_program,
+      options: {
+        enabled: open,
+      },
 		});
 	const evaluatorOptions = dataEvaluators?.results?.map((evaluator) => {
 		return {

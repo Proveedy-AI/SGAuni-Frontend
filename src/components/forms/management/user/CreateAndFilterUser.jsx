@@ -23,6 +23,7 @@ export const CreateAndFilterUser = ({
 }) => {
 	const { mutateAsync: createUser, isPending } = useCreateUser();
 	const [selectedRoles, setSelectedRoles] = useState([]);
+	const [selectedTypeDoc, setSelectedTypeDoc] = useState(null);
 	const { data: rolesData } = useReadRoles(); // rolesData.results = lista de roles
 
 	const rolesOptions =
@@ -31,6 +32,13 @@ export const CreateAndFilterUser = ({
 			value: role.id,
 		})) || [];
 
+  const documentTypeOptions = [
+		{ value: 1, label: 'DNI' },
+		{ value: 2, label: 'Pasaporte' },
+		{ value: 3, label: 'Carné de Extranjería' },
+		{ value: 4, label: 'Cédula de Identidad' },
+	];
+
 	const handleCreateUser = async (e) => {
 		e.preventDefault();
 		const { elements } = e.currentTarget;
@@ -38,6 +46,23 @@ export const CreateAndFilterUser = ({
 		const username = elements.namedItem('username').value.trim();
 		const first_name = elements.namedItem('first_name').value.trim();
 		const last_name = elements.namedItem('last_name').value.trim();
+    const num_doc = elements.namedItem('num_doc')?.value.trim();
+
+    if (!username || !first_name || !last_name || !num_doc) {
+			toaster.create({
+				title: 'Por favor complete todos los campos requeridos',
+				type: 'warning',
+			});
+			return;
+		}
+
+    if(selectedRoles.length === 0) {
+      toaster.create({
+        title: 'Por favor seleccione al menos un rol',
+        type: 'warning',
+      });
+      return;
+    }
 
 		const payload = {
 			user: {
@@ -45,10 +70,12 @@ export const CreateAndFilterUser = ({
 				first_name,
 				last_name,
 			},
+      num_doc,
+      type_doc: selectedTypeDoc?.value || null,
 			roles_ids: selectedRoles.map((r) => r.value),
 		};
 
-		const optionalFields = ['num_doc', 'uni_email', 'phone'];
+		const optionalFields = ['uni_email', 'phone'];
 		optionalFields.forEach((field) => {
 			const value = elements.namedItem(field)?.value.trim();
 			if (value) {
@@ -148,8 +175,22 @@ export const CreateAndFilterUser = ({
 										<Input required name='last_name' placeholder='Apellidos' />
 									</Field>
 
+                  <Field label='Teléfono'>
+										<Input name='phone' placeholder='Opcional' />
+									</Field>
+
+                  <Field label='Tipo de Documento'>
+                    <ReactSelect
+                    label='Tipo de Documento'
+                    options={documentTypeOptions}
+                    value={selectedTypeDoc}
+                    onChange={(value) => setSelectedTypeDoc(value)}
+                    placeholder='Tipo de documento'
+                  />
+                  </Field>
+
 									<Field label='Documento'>
-										<Input name='num_doc' placeholder='Opcional' />
+										<Input disabled={!selectedTypeDoc} required name='num_doc' placeholder='Documento' />
 									</Field>
 
 									<Field label='Correo UNI'>
@@ -160,9 +201,6 @@ export const CreateAndFilterUser = ({
 										/>
 									</Field>
 
-									<Field label='Teléfono'>
-										<Input name='phone' placeholder='Opcional' />
-									</Field>
 								</Grid>
 								<Field label='Rol' mt={4}>
 									<ReactSelect

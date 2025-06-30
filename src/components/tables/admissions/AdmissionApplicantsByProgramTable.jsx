@@ -1,4 +1,5 @@
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
+import { ViewRegistrationDocumentModal } from '@/components/forms/admissions';
 import { CreateProgramExamToAdmissionProgram } from '@/components/forms/admissions/createProgramExamToAdmissionProgram';
 import { ViewAdmissionProgramExams } from '@/components/forms/admissions/ViewAdmissionProgramExams';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
@@ -156,6 +157,7 @@ const Row = memo(
 								fetchData={fetchData}
 							/>
 						)}
+            <ViewRegistrationDocumentModal data={item} />
 					</HStack>
 				</Table.Cell>
 			</Table.Row>
