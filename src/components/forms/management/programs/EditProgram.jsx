@@ -16,6 +16,7 @@ export const EditProgram = ({
 }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
+	const [errors, setErrors] = useState({});
 	const { mutateAsync: update, isPending: loadingUpdate } = useUpdateProgram();
 	const [programRequest, setProgramRequest] = useState({
 		name: item.name,
@@ -34,7 +35,25 @@ export const EditProgram = ({
 			}));
 		}
 	}, [programTypesOptions, coordinatorsOptions, item]);
+
+	const validateFields = () => {
+		const newErrors = {};
+
+		if (!programRequest.name.trim()) newErrors.name = 'El nombre es requerido';
+		if (!programRequest.type) newErrors.type = 'Seleccione un tipo de programa';
+		if (!programRequest.coordinator)
+			newErrors.coordinator = 'Seleccione un coordinador';
+		if (
+			!programRequest.price_credit ||
+			Number(programRequest.price_credit) <= 0
+		)
+			newErrors.price_credit = 'El precio debe ser mayor a 0';
+
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
 	const handleUpdate = async () => {
+		if (!validateFields()) return;
 		const payload = {
 			coordinator: Number(programRequest.coordinator.value),
 			name: programRequest.name,
@@ -87,7 +106,11 @@ export const EditProgram = ({
 			contentRef={contentRef}
 		>
 			<Stack spacing={4}>
-				<Field label='Nombre del programa'>
+				<Field
+					label='Nombre del programa'
+					invalid={!!errors.name}
+					errorText={errors.name}
+				>
 					<Input
 						value={programRequest.name}
 						onChange={(e) =>
@@ -99,7 +122,11 @@ export const EditProgram = ({
 					/>
 				</Field>
 
-				<Field label='Tipo de programa'>
+				<Field
+					label='Tipo de programa'
+					errorText={errors.type}
+					invalid={!!errors.type}
+				>
 					<ReactSelect
 						value={programRequest.type}
 						onChange={(select) => {
@@ -116,7 +143,11 @@ export const EditProgram = ({
 					/>
 				</Field>
 
-				<Field label='Coordinador'>
+				<Field
+					label='Coordinador'
+					errorText={errors.coordinator}
+					invalid={!!errors.coordinator}
+				>
 					<ReactSelect
 						value={programRequest.coordinator}
 						onChange={(select) => {
@@ -132,7 +163,11 @@ export const EditProgram = ({
 						options={coordinatorsOptions}
 					/>
 				</Field>
-				<Field label='Precio por crédito (S/.)'>
+				<Field
+					label='Precio por crédito (S/.)'
+					errorText={errors.price_credit}
+					invalid={!!errors.price_credit}
+				>
 					<Input
 						required
 						type='number'
