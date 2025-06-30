@@ -30,7 +30,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 	const { mutate: createEvaluation, isPending: isCreateEvaluationPending } =
 		useCreateAdmissionEvaluation();
 	const { data: dataEvaluations, refetch: fetchEvaluations } =
-		useReadAdmissionEvaluationsByApplication(item?.id);
+		useReadAdmissionEvaluationsByApplication(item?.id, open);
 	const { mutate: editEvaluation, isPending: isEditEvaluationPending } =
 		useUpdateAdmissionEvaluation();
 	const { mutate: deleteEvaluation, isPending: isDeleteEvaluationPending } =

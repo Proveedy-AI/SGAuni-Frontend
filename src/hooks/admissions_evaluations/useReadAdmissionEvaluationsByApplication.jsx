@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useReadAdmissionEvaluationsByApplication = (applicantId) => {
+export const useReadAdmissionEvaluationsByApplication = (applicantId, open) => {
   const axiosPrivate = useAxiosPrivate();
 
   return useQuery({
@@ -10,7 +10,7 @@ export const useReadAdmissionEvaluationsByApplication = (applicantId) => {
     queryFn: async () => {
       const res = await axiosPrivate.get(`api/v1/admission-evaluations/by-application/${applicantId}/`,
         {
-          enabled: !!applicantId
+          enabled: !!applicantId && open,
         }
       );
       return res.data;
