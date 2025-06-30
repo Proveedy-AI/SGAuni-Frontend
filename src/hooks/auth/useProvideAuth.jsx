@@ -44,7 +44,6 @@ export const useProvideAuth = () => {
 			if (isProduction) {
 				cookieOptions.domain = import.meta.env.VITE_DOMAIN_AUTO_LOGIN;
 			}
-			console.log(data);
 			Cookies.set(
 				import.meta.env.VITE_TOKEN_COOKIE,
 				JSON.stringify({

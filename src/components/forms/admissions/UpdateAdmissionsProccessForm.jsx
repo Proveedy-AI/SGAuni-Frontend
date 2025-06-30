@@ -18,7 +18,7 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 
 	const handleDateChange = (field) => (date) => {
 		const formatted = format(date, 'yyyy-MM-dd');
-		console.log(`Fecha ${field} para API:`, formatted);
+
 		if (field === 'start') {
 			setStartDate(formatted);
 		} else if (field === 'end') {

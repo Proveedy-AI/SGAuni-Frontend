@@ -140,7 +140,6 @@ export const AdmissionsListTable = ({
 	const sortedData = useSortedData(data, sortConfig);
 	const visibleRows = sortedData?.slice(startIndex, endIndex);
 
-	console.log(data);
 	return (
 		<Box
 			bg={{ base: 'white', _dark: 'its.gray.500' }}

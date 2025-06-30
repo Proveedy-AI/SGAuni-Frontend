@@ -15,7 +15,7 @@ export function CustomDatePicker({
 	size = { base: '330px', md: '470px' },
 }) {
 	const [openPopover, setOpenPopover] = useState(false);
-	console.log(selectedDate);
+
 	return (
 		<Popover.Root
 			open={openPopover}
