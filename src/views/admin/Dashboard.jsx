@@ -1,4 +1,4 @@
-import { Box, Flex, Spinner, VStack, Heading } from '@chakra-ui/react';
+import { Box, Flex, Spinner, Heading } from '@chakra-ui/react';
 
 import { dashboardsByPermission } from './dashboards';
 import { useProvideAuth } from '@/hooks/auth';
@@ -21,22 +21,14 @@ export const Dashboard = () => {
 	const allowedDashboards = dashboardsByPermission
 		.filter(({ permission }) => userPermissions.includes(permission))
 		.map(({ component }, idx) => (
-			<Box
-				key={idx}
-				bg={{ base: 'white', _dark: 'uni.gray.500' }}
-				p='6'
-				borderRadius='10px'
-				w='100%'
-				maxW='md'
-				boxShadow='lg'
-			>
+			<Box key={idx} w='full'>
 				{component}
 			</Box>
 		));
 
 	return (
-		<Flex direction='column' align='center' py='8' px='4'>
-			<VStack spacing='6' w='100%'>
+		<Flex direction='column' px='0' w='full'>
+			<Box py='8' px='0' w='full'>
 				{allowedDashboards.length > 0 ? (
 					allowedDashboards
 				) : (
@@ -44,7 +36,7 @@ export const Dashboard = () => {
 						<Heading size='md'>No tienes dashboards disponibles.</Heading>
 					</Box>
 				)}
-			</VStack>
+			</Box>
 		</Flex>
 	);
 };
