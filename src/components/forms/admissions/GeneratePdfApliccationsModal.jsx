@@ -31,7 +31,7 @@ export const GeneratePdfApliccationsModal = ({ data, open, setOpen }) => {
 
   return (
     <ControlledModal
-      title='Vista previa del Programa de Admisión'
+      title='Vista previa del documento de acta de notas'
       placement='center'
       open={open}
       onOpenChange={(e) => setOpen(e.open)}
