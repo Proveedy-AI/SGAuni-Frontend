@@ -119,7 +119,7 @@ export const ViewModality = ({ item }) => {
 							</Field>
 						</Flex>
 
-						<Field label='Nota mínima'>
+						<Field label='Nota mínima (0 a 20)'>
 							<Text
 								w='full'
 								py={2}

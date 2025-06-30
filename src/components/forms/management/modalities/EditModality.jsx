@@ -145,11 +145,11 @@ export const EditModality = ({ fetchData, item }) => {
 						</Flex>
 					</Field>
 
-					<Field label='Grado mínimo'>
+					<Field label='Nota mínima (0 a 20)'>
 						<Input
 							type='number'
 							value={modalityEditable.min_grade}
-							placeholder='Ingrese el grado mínimo'
+							placeholder='Ingrese la nota mínima (0 a 20)'
 							onChange={(e) =>
 								setModalityEditable((prev) => ({
 									...prev,
