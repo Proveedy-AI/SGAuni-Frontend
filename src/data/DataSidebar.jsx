@@ -9,6 +9,7 @@ import {
 	FiList,
   FiDollarSign,
   FiFileText,
+  FiBookOpen,
 } from 'react-icons/fi';
 import { FaFileContract } from 'react-icons/fa';
 import { HiOutlineClipboardList } from 'react-icons/hi';
@@ -90,6 +91,12 @@ export const useDataSidebar = () => {
 				},
 			],
 		},
+    {
+      href: '/courses-schedules',
+      icon: FiBookOpen,
+      label: 'Cursos y Horarios',
+      permission: 'courses.schedules.view',
+    },
     {
       href: '/debts',
       icon: FiDollarSign,

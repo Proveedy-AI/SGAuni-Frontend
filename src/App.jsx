@@ -29,6 +29,7 @@ import AdmissionForm from './views/Inscription';
 import { AdmissionMyApplicants } from './views/admin/applicants/AdmissionMyApplicants';
 import { ApplicantsLayout } from './views/admin/applicants/ApplicantsLayout';
 import { Debts } from './views/admin/debts';
+import { CoursesAndSchedules } from './views/admin/courses_and_schedules';
 
 function App() {
 	return (
@@ -138,6 +139,16 @@ function App() {
 									<Route path='list' element={<Contracts />} />
 								</Route>
 							</Route>
+              
+              <Route path='courses-schedules'>
+                <Route
+                  element={
+                    <ProtectedRoute requiredPermission='courses.schedules.view' />
+                  }
+                >
+                  <Route index element={<CoursesAndSchedules />} />
+                </Route>
+              </Route>
 
 							<Route path='debts'>
 								<Route
