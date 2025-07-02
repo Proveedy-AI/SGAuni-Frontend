@@ -6,6 +6,7 @@ import { ConfirmModal, Pagination, toaster } from '@/components/ui';
 import { formatDateString } from '@/components/ui/dateHelpers';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
+import { UrlActionsPopover } from '@/components/ui/UrlActionsPopover';
 import { useDeleteAdmissions } from '@/hooks/admissions_proccess';
 import useSortedData from '@/utils/useSortedData';
 import { Box, HStack, IconButton, Span, Table, Text } from '@chakra-ui/react';
@@ -72,13 +73,9 @@ const Row = memo(
 				<Table.Cell>{formatDateString(item.start_date)}</Table.Cell>
 				<Table.Cell>{formatDateString(item.end_date)}</Table.Cell>
 				<Table.Cell>
-					<a
-						href={`${import.meta.env.VITE_DOMAIN_MAIN}${item.uri_url}`}
-						target='_blank'
-						rel='noopener noreferrer'
-					>
-						{`${import.meta.env.VITE_DOMAIN_MAIN}${item.uri_url}`}
-					</a>
+					<UrlActionsPopover approved_programs_count={item.approved_programs_count}
+						url={`${import.meta.env.VITE_DOMAIN_MAIN}${item.uri_url}`}
+					/>
 				</Table.Cell>
 				<Table.Cell onClick={(e) => e.stopPropagation()}>
 					<HStack>
@@ -140,6 +137,7 @@ export const AdmissionsListTable = ({
 	const sortedData = useSortedData(data, sortConfig);
 	const visibleRows = sortedData?.slice(startIndex, endIndex);
 
+	console.log(visibleRows);
 	return (
 		<Box
 			bg={{ base: 'white', _dark: 'its.gray.500' }}
