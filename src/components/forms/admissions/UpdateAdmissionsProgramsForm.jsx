@@ -31,6 +31,7 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 	const [selectedType, setSelectedType] = useState(null);
 	const [selectedProgram, setSelectedProgram] = useState(null);
 	const [selectedUser, setSelectedUser] = useState(null);
+	const [errors, setErrors] = useState({});
 	const { mutate: updateAdmissionsPrograms, isPending } =
 		useUpdateAdmissionsPrograms();
 	const { data: dataPrograms } = useReadPrograms(
@@ -39,18 +40,40 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 		},
 		{ enabled: open }
 	);
+
+	const validateFields = () => {
+		const newErrors = {};
+		if (!name.trim()) newErrors.name = 'El ciclo es requerido';
+		if (!selectedType)
+			newErrors.selectedType = 'Seleccione un tipo de postgrado';
+		if (!selectedMode) newErrors.selectedMode = 'Seleccione un modo de estudio';
+		if (!selectedProgram) newErrors.selectedProgram = 'Seleccione un programa';
+		if (!selectedUser) newErrors.selectedUser = 'Seleccione un director';
+		if (!registrationStart)
+			newErrors.registrationStart =
+				'Fecha de inicio de inscripción es requerida';
+		if (!registrationEnd)
+			newErrors.registrationEnd = 'Fecha de fin de inscripción es requerida';
+		if (!examStart)
+			newErrors.examStart = 'Fecha de inicio de examen es requerida';
+		if (!examEnd) newErrors.examEnd = 'Fecha de fin de examen es requerida';
+		if (!semesterStart)
+			newErrors.semesterStart = 'Fecha de inicio de semestre es requerida';
+		if (!preMasterStart)
+			newErrors.preMasterStart = 'Fecha de inicio de pre-maestría es requerida';
+		if (!preMasterEnd)
+			newErrors.preMasterEnd = 'Fecha de fin de pre-maestría es requerida';
+
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
+
 	const { data: dataUsers, isLoading } = useReadUsers({}, { enabled: open });
 
 	const handleSubmitData = (e) => {
 		e.preventDefault();
 
-		if (!selectedType || !selectedMode || !registrationStart) {
-			toaster.create({
-				title: 'Por favor completa todos los campos obligatorios',
-				type: 'warning',
-			});
-			return;
-		}
+		if (!validateFields()) return;
 
 		const payload = {
 			postgrad_type: selectedType.value,
@@ -188,7 +211,12 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 			contentRef={contentRef}
 		>
 			<Stack css={{ '--field-label-width': '140px' }}>
-				<Field label='Programa:'>
+				<Field
+					label='Programa:'
+					invalid={!!errors.selectedProgram}
+					errorText={errors.selectedProgram}
+					required
+				>
 					<ReactSelect
 						value={selectedProgram}
 						onChange={setSelectedProgram}
@@ -199,7 +227,12 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 						options={ProgramsOptions}
 					/>
 				</Field>
-				<Field label='Tipo de Postgrado:'>
+				<Field
+					label='Tipo de Postgrado:'
+					invalid={!!errors.selectedType}
+					errorText={errors.selectedType}
+					required
+				>
 					<ReactSelect
 						value={selectedType}
 						onChange={setSelectedType}
@@ -211,7 +244,12 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 					/>
 				</Field>
 
-				<Field label='Modo de estudio:'>
+				<Field
+					label='Modo de estudio:'
+					invalid={!!errors.selectedMode}
+					errorText={errors.selectedMode}
+					required
+				>
 					<ReactSelect
 						value={selectedMode}
 						onChange={setSelectedMode}
@@ -222,7 +260,12 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 						options={dataMode}
 					/>
 				</Field>
-				<Field label='Director:'>
+				<Field
+					label='Director:'
+					invalid={!!errors.selectedUser}
+					errorText={errors.selectedUser}
+					required
+				>
 					<ReactSelect
 						value={selectedUser}
 						onChange={(select) => setSelectedUser(select)}
@@ -236,20 +279,14 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 						options={UserstOptions}
 					/>
 				</Field>
-				<Field label='Inicio de semestre:'>
-					<CustomDatePicker
-						selectedDate={semesterStart}
-						onDateChange={(date) => {
-							const formatted = format(date, 'yyyy-MM-dd');
-							setSemesterStart(formatted);
-						}}
-						buttonSize='xs'
-						size={{ base: '330px', md: '850px' }}
-					/>
-				</Field>
 
 				<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-					<Field label='Inicio de inscripción:'>
+					<Field
+						label='Inicio de inscripción:'
+						invalid={!!errors.registrationStart}
+						errorText={errors.registrationStart}
+						required
+					>
 						<CustomDatePicker
 							selectedDate={registrationStart}
 							onDateChange={(date) =>
@@ -260,7 +297,12 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 						/>
 					</Field>
 
-					<Field label='Fin de inscripción:'>
+					<Field
+						label='Fin de inscripción:'
+						invalid={!!errors.registrationEnd}
+						errorText={errors.registrationEnd}
+						required
+					>
 						<CustomDatePicker
 							selectedDate={registrationEnd}
 							onDateChange={(date) =>
@@ -271,7 +313,12 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 						/>
 					</Field>
 
-					<Field label='Inicio de examen:'>
+					<Field
+						label='Inicio de examen:'
+						invalid={!!errors.examStart}
+						errorText={errors.examStart}
+						required
+					>
 						<CustomDatePicker
 							selectedDate={examStart}
 							onDateChange={(date) => setExamStart(format(date, 'yyyy-MM-dd'))}
@@ -280,7 +327,12 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 						/>
 					</Field>
 
-					<Field label='Fin de examen:'>
+					<Field
+						label='Fin de examen:'
+						invalid={!!errors.examEnd}
+						errorText={errors.examEnd}
+						required
+					>
 						<CustomDatePicker
 							selectedDate={examEnd}
 							onDateChange={(date) => setExamEnd(format(date, 'yyyy-MM-dd'))}
@@ -289,7 +341,12 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 						/>
 					</Field>
 
-					<Field label='Inicio Pre-Maestría:'>
+					<Field
+						label='Inicio Pre-Maestría:'
+						invalid={!!errors.preMasterStart}
+						errorText={errors.preMasterStart}
+						required
+					>
 						<CustomDatePicker
 							selectedDate={preMasterStart}
 							onDateChange={(date) =>
@@ -300,7 +357,12 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 						/>
 					</Field>
 
-					<Field label='Fin Pre-Maestría:'>
+					<Field
+						label='Fin Pre-Maestría:'
+						invalid={!!errors.preMasterEnd}
+						errorText={errors.preMasterEnd}
+						required
+					>
 						<CustomDatePicker
 							selectedDate={preMasterEnd}
 							onDateChange={(date) =>
@@ -311,6 +373,22 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 						/>
 					</Field>
 				</SimpleGrid>
+				<Field
+					label='Inicio de semestre:'
+					invalid={!!errors.semesterStart}
+					errorText={errors.semesterStart}
+					required
+				>
+					<CustomDatePicker
+						selectedDate={semesterStart}
+						onDateChange={(date) => {
+							const formatted = format(date, 'yyyy-MM-dd');
+							setSemesterStart(formatted);
+						}}
+						buttonSize='xs'
+						size={{ base: '330px', md: '850px' }}
+					/>
+				</Field>
 			</Stack>
 		</Modal>
 	);
