@@ -51,11 +51,11 @@ const STEPS = [
 		icon: FiUser,
 		description: 'Datos básicos del postulante',
 		fields: [
-			'firstName',
-			'lastName',
-			'fatherLastName',
-			'motherLastName',
-			'birthDate',
+			'first_name',
+			'last_name',
+			'father_last_name',
+			'mother_last_name',
+			'birth_date',
 			'gender',
 		],
 	},
@@ -66,7 +66,7 @@ const STEPS = [
 		description: 'Información de contacto',
 		fields: [
 			'email',
-			'phone',
+			'phone_number',
 			'alternativePhone',
 			'emergencyContact',
 			'emergencyPhone',
@@ -78,8 +78,8 @@ const STEPS = [
 		icon: FaFileAlt,
 		description: 'Documentación de identidad',
 		fields: [
-			'documentType',
-			'documentNumber',
+			'document_type',
+			'document_number',
 			'nationality',
 			'birthCountry',
 			'residenceCountry',
@@ -98,8 +98,8 @@ const STEPS = [
 		icon: FaGraduationCap,
 		description: 'Información académica',
 		fields: [
-			'program',
-			'modality',
+			'postgraduate_program_type',
+			'modality_type',
 			'previousEducation',
 			'university',
 			'graduationYear',
@@ -188,25 +188,25 @@ export default function ChakraInscriptionForm() {
 	const [currentStep, setCurrentStep] = useState(1);
 	const [formData, setFormData] = useState({
 		// Personal Info
-		firstName: '',
-		lastName: '',
-		fatherLastName: '',
-		motherLastName: '',
-		birthDate: '',
+		first_name: '',
+		last_name: '',
+		father_last_name: '',
+		mother_last_name: '',
+		birth_date: '',
 		hasOneLastName: false,
 		gender: '',
 
 		// Contact Info
 		email: '',
-		phone: '',
-		dialCode: '+51',
+		phone_number: '',
+		dial_code: '+51',
 		alternativePhone: '',
 		emergencyContact: '',
 		emergencyPhone: '',
 
 		// Document Info
-		documentType: '',
-		documentNumber: '',
+		document_type: '',
+		document_number: '',
 		nationality: '',
 		birthCountry: '',
 		residenceCountry: '',
@@ -220,8 +220,8 @@ export default function ChakraInscriptionForm() {
 		referenceAddress: '',
 
 		// Academic Info
-		program: '',
-		modality: '',
+		postgraduate_program_type: '',
+		modality_type: '',
 		previousEducation: '',
 		university: '',
 		graduationYear: '',
@@ -259,16 +259,16 @@ export default function ChakraInscriptionForm() {
 	}, [formData.province]);
 
 	useEffect(() => {
-		if (formData.program) {
-			setFormData((prev) => ({ ...prev, modality: '' }));
+		if (formData.postgraduate_program_type) {
+			setFormData((prev) => ({ ...prev, modality_type: '' }));
 		}
-	}, [formData.program]);
+	}, [formData.postgraduate_program_type]);
 
 	// Validation functions
-	const validateField = (fieldName, value, documentType = '') => {
+	const validateField = (fieldName, value, document_type = '') => {
 		if (typeof value === 'string') {
 			switch (fieldName) {
-				case 'firstName':
+				case 'first_name':
 					return value.length < 2
 						? 'El nombre debe tener al menos 2 caracteres'
 						: '';
@@ -276,22 +276,22 @@ export default function ChakraInscriptionForm() {
 					const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 					return !emailRegex.test(value) ? 'Ingrese un email válido' : '';
 				}
-				case 'phone':
+				case 'phone_number':
 					return value.length < 9
 						? 'El teléfono debe tener al menos 9 dígitos'
 						: '';
-				case 'documentNumber':
-					if (documentType === 'dni' && value.length !== 8) {
+				case 'document_number':
+					if (document_type === 'dni' && value.length !== 8) {
 						return 'El DNI debe tener 8 dígitos';
 					}
 					return value.length < 8
 						? 'El número de documento debe tener al menos 8 caracteres'
 						: '';
-				case 'birthDate':
+				case 'birth_date':
 					if (value) {
-						const birthDate = new Date(value);
+						const birth_date = new Date(value);
 						const today = new Date();
-						const age = today.getFullYear() - birthDate.getFullYear();
+						const age = today.getFullYear() - birth_date.getFullYear();
 						if (age < 18) {
 							return 'Debe ser mayor de 18 años';
 						}
@@ -323,12 +323,12 @@ export default function ChakraInscriptionForm() {
 		currentStepFields.forEach((field) => {
 			// Skip validation for optional fields based on conditions
 			if (formData.hasOneLastName) {
-				if (field === 'fatherLastName' || field === 'motherLastName') {
+				if (field === 'father_last_name' || field === 'mother_last_name') {
 					// omitir estos campos si tiene un solo apellido
 					return;
 				}
 			} else {
-				if (field === 'lastName') {
+				if (field === 'last_name') {
 					// omitir este campo si tiene dos apellidos
 					return;
 				}
@@ -358,7 +358,7 @@ export default function ChakraInscriptionForm() {
 					isValid = false;
 				}
 			} else {
-				const error = validateField(field, value, formData.documentType);
+				const error = validateField(field, value, formData.document_type);
 				if (error) {
 					newErrors[field] = error;
 					isValid = false;
@@ -387,7 +387,7 @@ export default function ChakraInscriptionForm() {
 
 	const handleFieldBlur = (fieldName) => {
 		const fieldValue = formData[fieldName];
-		const error = validateField(fieldName, fieldValue, formData.documentType);
+		const error = validateField(fieldName, fieldValue, formData.document_type);
 		setErrors((prev) => ({ ...prev, [fieldName]: error }));
 	};
 
@@ -455,8 +455,8 @@ export default function ChakraInscriptionForm() {
 		? DISTRICTS[formData.province] || []
 		: [];
 
-	const availableModalities = formData.program
-		? MODALITIES[formData.program] || []
+	const availableModalities = formData.postgraduate_program_type
+		? MODALITIES[formData.postgraduate_program_type] || []
 		: [];
 
 	const dialCodeOptions = [
@@ -638,15 +638,15 @@ export default function ChakraInscriptionForm() {
 												</>
 											}
 											required
-											errorText={errors.firstName}
-											invalid={!!errors.firstName}
+											errorText={errors.first_name}
+											invalid={!!errors.first_name}
 										>
 											<Input
-												value={formData.firstName}
+												value={formData.first_name}
 												onChange={(e) =>
-													handleFieldChange('firstName', e.target.value)
+													handleFieldChange('first_name', e.target.value)
 												}
-												onBlur={() => handleFieldBlur('firstName')}
+												onBlur={() => handleFieldBlur('first_name')}
 												placeholder='Ingrese sus nombres completos'
 											/>
 										</Field>
@@ -695,15 +695,15 @@ export default function ChakraInscriptionForm() {
 										{formData.hasOneLastName ? (
 											<Field
 												label='Apellido'
-												errorText={errors.lastName}
-												invalid={!!errors.lastName}
+												errorText={errors.last_name}
+												invalid={!!errors.last_name}
 											>
 												<Input
-													value={formData.lastName}
+													value={formData.last_name}
 													onChange={(e) =>
-														handleFieldChange('lastName', e.target.value)
+														handleFieldChange('last_name', e.target.value)
 													}
-													onBlur={() => handleFieldBlur('lastName')}
+													onBlur={() => handleFieldBlur('last_name')}
 													placeholder='Ingrese su apellido'
 												/>
 											</Field>
@@ -712,18 +712,18 @@ export default function ChakraInscriptionForm() {
 												<Field
 													label='Apellido Paterno'
 													required
-													errorText={errors.fatherLastName}
-													invalid={!!errors.fatherLastName}
+													errorText={errors.father_last_name}
+													invalid={!!errors.father_last_name}
 												>
 													<Input
-														value={formData.fatherLastName}
+														value={formData.father_last_name}
 														onChange={(e) =>
 															handleFieldChange(
-																'fatherLastName',
+																'father_last_name',
 																e.target.value
 															)
 														}
-														onBlur={() => handleFieldBlur('fatherLastName')}
+														onBlur={() => handleFieldBlur('father_last_name')}
 														placeholder='Ingrese su apellido paterno'
 													/>
 												</Field>
@@ -731,18 +731,18 @@ export default function ChakraInscriptionForm() {
 												<Field
 													label='Apellido Materno'
 													required
-													errorText={errors.motherLastName}
-													invalid={!!errors.motherLastName}
+													errorText={errors.mother_last_name}
+													invalid={!!errors.mother_last_name}
 												>
 													<Input
-														value={formData.motherLastName}
+														value={formData.mother_last_name}
 														onChange={(e) =>
 															handleFieldChange(
-																'motherLastName',
+																'mother_last_name',
 																e.target.value
 															)
 														}
-														onBlur={() => handleFieldBlur('motherLastName')}
+														onBlur={() => handleFieldBlur('mother_last_name')}
 														placeholder='Ingrese su apellido materno'
 													/>
 												</Field>
@@ -757,16 +757,16 @@ export default function ChakraInscriptionForm() {
 												</Flex>
 											}
 											required
-											errorText={errors.birthDate}
-											invalid={!!errors.birthDate}
+											errorText={errors.birth_date}
+											invalid={!!errors.birth_date}
 										>
 											<Input
 												type='date'
-												value={formData.birthDate}
+												value={formData.birth_date}
 												onChange={(e) =>
-													handleFieldChange('birthDate', e.target.value)
+													handleFieldChange('birth_date', e.target.value)
 												}
-												onBlur={() => handleFieldBlur('birthDate')}
+												onBlur={() => handleFieldBlur('birth_date')}
 												max={new Date().toISOString().split('T')[0]}
 											/>
 										</Field>
@@ -811,14 +811,16 @@ export default function ChakraInscriptionForm() {
 												</Flex>
 											}
 											required
-											errorText={errors.phone}
-											invalid={!!errors.phone}
+											errorText={errors.phone_number}
+											invalid={!!errors.phone_number}
 										>
 											<HStack w={'full'} gap={2} align='center'>
 												<CustomSelect
 													placeholder='Seleccione'
-													value={formData.dialCode}
-													onChange={(val) => handleFieldChange('dialCode', val)}
+													value={formData.dial_code}
+													onChange={(val) =>
+														handleFieldChange('dial_code', val)
+													}
 													items={dialCodeOptions}
 													w={'120px'}
 													renderLeft={(item) => (
@@ -840,11 +842,11 @@ export default function ChakraInscriptionForm() {
 													)}
 												/>
 												<Input
-													value={formData.phone}
+													value={formData.phone_number}
 													onChange={(e) =>
-														handleFieldChange('phone', e.target.value)
+														handleFieldChange('phone_number', e.target.value)
 													}
-													onBlur={() => handleFieldBlur('phone')}
+													onBlur={() => handleFieldBlur('phone_number')}
 													placeholder='999 999 999'
 													flex={1}
 													w={'full'}
@@ -921,15 +923,15 @@ export default function ChakraInscriptionForm() {
 													Tipo de Documento
 												</Flex>
 											}
-											errorText={errors.documentType}
+											errorText={errors.document_type}
 											required
-											invalid={!!errors.documentType}
+											invalid={!!errors.document_type}
 										>
 											<CustomSelect
 												placeholder='Seleccione tipo de documento'
-												value={formData.documentType}
+												value={formData.document_type}
 												onChange={(val) =>
-													handleFieldChange('documentType', val)
+													handleFieldChange('document_type', val)
 												}
 												items={[
 													{
@@ -955,15 +957,15 @@ export default function ChakraInscriptionForm() {
 										<Field
 											label='Número de Documento'
 											required
-											errorText={errors.documentNumber}
-											invalid={!!errors.documentNumber}
+											errorText={errors.document_number}
+											invalid={!!errors.document_number}
 										>
 											<Input
-												value={formData.documentNumber}
+												value={formData.document_number}
 												onChange={(e) =>
-													handleFieldChange('documentNumber', e.target.value)
+													handleFieldChange('document_number', e.target.value)
 												}
-												onBlur={() => handleFieldBlur('documentNumber')}
+												onBlur={() => handleFieldBlur('document_number')}
 												placeholder='Ingrese número de documento'
 											/>
 										</Field>
@@ -1151,7 +1153,7 @@ export default function ChakraInscriptionForm() {
 							</VStack>
 						)}
 
-						{/* Step 5: Academic Program */}
+						{/* Step 5: Academic postgraduate_program_type */}
 						{currentStep === 5 && (
 							<VStack gap={8}>
 								<SimpleGrid columns={{ base: 1, md: 2 }} gap={8} w='full'>
@@ -1163,8 +1165,10 @@ export default function ChakraInscriptionForm() {
 										>
 											<CustomSelect
 												placeholder='Seleccione programa académico'
-												value={formData.program}
-												onChange={(val) => handleFieldChange('program', val)}
+												value={formData.postgraduate_program_type}
+												onChange={(val) =>
+													handleFieldChange('postgraduate_program_type', val)
+												}
 												items={PROGRAMS}
 											/>
 										</Field>
@@ -1173,9 +1177,11 @@ export default function ChakraInscriptionForm() {
 											<CustomSelect
 												placeholder='Seleccione modalidad'
 												items={availableModalities}
-												value={formData.modality}
-												onChange={(val) => handleFieldChange('modality', val)}
-												disabled={!formData.program}
+												value={formData.modality_type}
+												onChange={(val) =>
+													handleFieldChange('modality_type', val)
+												}
+												disabled={!formData.postgraduate_program_type}
 											/>
 										</Field>
 
@@ -1375,21 +1381,21 @@ export default function ChakraInscriptionForm() {
 												<Text as='span' fontWeight='bold'>
 													Nombre:
 												</Text>{' '}
-												{formData.firstName}
+												{formData.first_name}
 											</Text>
 											<Text>
 												<Text as='span' fontWeight='bold'>
 													Apellidos:
 												</Text>{' '}
 												{formData.hasOneLastName
-													? formData.lastName
-													: `${formData.fatherLastName} ${formData.motherLastName}`}
+													? formData.last_name
+													: `${formData.father_last_name} ${formData.mother_last_name}`}
 											</Text>
 											<Text>
 												<Text as='span' fontWeight='bold'>
 													Fecha de Nacimiento:
 												</Text>{' '}
-												{formData.birthDate}
+												{formData.birth_date}
 											</Text>
 											<Text>
 												<Text as='span' fontWeight='bold'>
@@ -1412,7 +1418,7 @@ export default function ChakraInscriptionForm() {
 												<Text as='span' fontWeight='bold'>
 													Teléfono:
 												</Text>{' '}
-												{formData.dialCode} {formData.phone}
+												{formData.dial_code} {formData.phone_number}
 											</Text>
 											<Text>
 												<Text as='span' fontWeight='bold'>
@@ -1429,13 +1435,13 @@ export default function ChakraInscriptionForm() {
 												<Text as='span' fontWeight='bold'>
 													Tipo:
 												</Text>{' '}
-												{formData.documentType}
+												{formData.document_type}
 											</Text>
 											<Text>
 												<Text as='span' fontWeight='bold'>
 													Número:
 												</Text>{' '}
-												{formData.documentNumber}
+												{formData.document_number}
 											</Text>
 											<Text>
 												<Text as='span' fontWeight='bold'>
@@ -1453,8 +1459,10 @@ export default function ChakraInscriptionForm() {
 													Programa:
 												</Text>{' '}
 												{
-													PROGRAMS.find((p) => p.value === formData.program)
-														?.label
+													PROGRAMS.find(
+														(p) =>
+															p.value === formData.postgraduate_program_type
+													)?.label
 												}
 											</Text>
 											<Text>
@@ -1463,7 +1471,7 @@ export default function ChakraInscriptionForm() {
 												</Text>{' '}
 												{
 													availableModalities.find(
-														(m) => m.value === formData.modality
+														(m) => m.value === formData.modality_type
 													)?.label
 												}
 											</Text>
