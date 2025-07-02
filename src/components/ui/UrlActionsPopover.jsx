@@ -8,10 +8,11 @@ import {
 	PopoverCloseTrigger,
 	toaster,
 	Button,
+	Tooltip,
 } from '.';
 import PropTypes from 'prop-types';
 
-export const UrlActionsPopover = ({ url }) => {
+export const UrlActionsPopover = ({ url, approved_programs_count }) => {
 	const handleCopy = async () => {
 		try {
 			await navigator.clipboard.writeText(url);
@@ -45,11 +46,21 @@ export const UrlActionsPopover = ({ url }) => {
 	return (
 		<PopoverRoot>
 			<PopoverTrigger>
-				<Button size='xs' variant='link' colorPalette='blue'>
-					<Badge bg='green' color='white'>
-						Ver url
-					</Badge>
-				</Button>
+				<Tooltip
+					content={approved_programs_count > 0 ? 'disponble' : 'No cuenta con programas aprobados'}
+					positioning={{ placement: 'top-center' }}
+					showArrow
+					openDelay={0}
+				>
+					<Button  disabled={approved_programs_count > 0 ? false : true}  size='xs' variant='link' colorPalette='blue'>
+						<Badge
+							bg={approved_programs_count > 0 ? 'green' : 'uni.secondary'}
+							color='white'
+						>
+							Ver url
+						</Badge>
+					</Button>
+				</Tooltip>
 			</PopoverTrigger>
 			<PopoverContent w='260px' boxShadow='lg'>
 				<PopoverCloseTrigger />
@@ -96,4 +107,5 @@ export const UrlActionsPopover = ({ url }) => {
 
 UrlActionsPopover.propTypes = {
 	url: PropTypes.string,
+	approved_programs_count: PropTypes.number,
 };

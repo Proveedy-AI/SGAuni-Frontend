@@ -73,7 +73,7 @@ const Row = memo(
 				<Table.Cell>{formatDateString(item.start_date)}</Table.Cell>
 				<Table.Cell>{formatDateString(item.end_date)}</Table.Cell>
 				<Table.Cell>
-					<UrlActionsPopover
+					<UrlActionsPopover approved_programs_count={item.approved_programs_count}
 						url={`${import.meta.env.VITE_DOMAIN_MAIN}${item.uri_url}`}
 					/>
 				</Table.Cell>
