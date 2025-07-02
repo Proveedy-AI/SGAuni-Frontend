@@ -22,7 +22,6 @@ import {
 	Text,
 	VStack,
 	Textarea,
-	Select,
 	Flex,
 	Button,
 	Separator,
@@ -130,14 +129,6 @@ const COUNTRIES = [
 	{ value: 'bolivia', label: 'Bolivia', code: 'bo' },
 	{ value: 'chile', label: 'Chile', code: 'cl' },
 	{ value: 'argentina', label: 'Argentina', code: 'ar' },
-];
-
-const DEPARTMENTS = [
-	{ value: 'lima', label: 'Lima' },
-	{ value: 'arequipa', label: 'Arequipa' },
-	{ value: 'cusco', label: 'Cusco' },
-	{ value: 'piura', label: 'Piura' },
-	{ value: 'la-libertad', label: 'La Libertad' },
 ];
 
 const PROVINCES = {
