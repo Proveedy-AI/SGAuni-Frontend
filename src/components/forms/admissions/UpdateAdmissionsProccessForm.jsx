@@ -79,7 +79,7 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 	const dataLevel = [
 		{ label: 'Maestría', value: 2 },
 		{ label: 'Doctorado', value: 3 },
-		{ label: 'Diplomado', value: 3 },
+		{ label: 'Diplomado', value: 4 },
 	];
 
 	const LevelOptions = dataLevel.map((level) => ({
@@ -175,7 +175,7 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 							selectedDate={startDate}
 							onDateChange={handleDateChange('start')}
 							placeholder='Selecciona una fecha'
-							size={{ base: '330px', md: '470px' }}
+							size={{ base: '330px', md: '625px' }}
 						/>
 					</Box>
 				</Field>
@@ -190,7 +190,7 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 							selectedDate={endDate}
 							onDateChange={handleDateChange('end')}
 							placeholder='Selecciona una fecha'
-							size={{ base: '330px', md: '470px' }}
+							size={{ base: '330px', md: '625px' }}
 						/>
 					</Box>
 				</Field>

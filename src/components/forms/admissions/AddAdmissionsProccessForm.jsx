@@ -78,7 +78,7 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 	const dataLevel = [
 		{ label: 'Maestría', value: 2 },
 		{ label: 'Doctorado', value: 3 },
-		{ label: 'Diplomado', value: 3 },
+		{ label: 'Diplomado', value: 4 },
 	];
 
 	const LevelOptions = dataLevel.map((level) => ({
