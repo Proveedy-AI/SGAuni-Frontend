@@ -15,7 +15,7 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 	const [startDate, setStartDate] = useState('');
 	const [endDate, setEndDate] = useState('');
 	const [selectedLevel, setSelectedLevel] = useState(null);
-
+	const [errors, setErrors] = useState({});
 	const { mutate: createAdmissions, isPending } = useCreateAdmissions();
 
 	const handleDateChange = (field) => (date) => {
@@ -27,17 +27,22 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 		}
 	};
 
+	const validateFields = () => {
+		const newErrors = {};
+		if (!name.trim()) newErrors.name = 'El ciclo es requerido';
+		if (!selectedLevel) newErrors.selectedLevel = 'Seleccione un nivel';
+		if (!startDate) newErrors.startDate = 'La fecha de inicio es requerida';
+		if (!endDate) newErrors.endDate = 'La fecha de fin es requerida';
+
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
+
 	const handleSubmitData = (e) => {
 		e.preventDefault();
 
 		// Validación de campos vacíos
-		if (!name.trim() || !startDate.trim()) {
-			toaster.create({
-				title: 'Por favor completa todos los campos',
-				type: 'warning',
-			});
-			return;
-		}
+		if (!validateFields()) return;
 
 		const payload = {
 			admission_process_name: name.trim(),
@@ -71,7 +76,6 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 	};
 
 	const dataLevel = [
-		{ label: 'Pre Maestría', value: 1 },
 		{ label: 'Maestría', value: 2 },
 		{ label: 'Doctorado', value: 3 },
 		{ label: 'Diplomado', value: 3 },
@@ -104,23 +108,21 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 			contentRef={contentRef}
 		>
 			<Stack css={{ '--field-label-width': '150px' }}>
-				<Field
-					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Título:'
-				>
+				<Field label='Ciclo:' invalid={!!errors.name} errorText={errors.name}>
 					<Input
 						value={name}
 						onChange={(e) => {
 							const newName = e.target.value;
 							setName(newName);
 						}}
-						placeholder='Proceso 2025-II'
+						placeholder='2025-I'
 						size='xs'
 					/>
 				</Field>
 				<Field
-					orientation={{ base: 'vertical', sm: 'horizontal' }}
 					label='Nivel:'
+					invalid={!!errors.selectedLevel}
+					errorText={errors.selectedLevel}
 				>
 					<ReactSelect
 						value={selectedLevel}
@@ -136,26 +138,30 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 					/>
 				</Field>
 				<Field
-					orientation={{ base: 'vertical', sm: 'horizontal' }}
 					label='Fecha Inicio'
+					invalid={!!errors.startDate}
+					errorText={errors.startDate}
 				>
 					<CustomDatePicker
 						selectedDate={startDate}
 						onDateChange={handleDateChange('start')}
 						placeholder='Selecciona una fecha'
-						size={{ base: '330px', md: '470px' }}
+						size={{ base: '330px', md: '625px' }}
+						buttonSize='sm'
 					/>
 				</Field>
 
 				<Field
-					orientation={{ base: 'vertical', sm: 'horizontal' }}
 					label='Fecha Fin:'
+					invalid={!!errors.endDate}
+					errorText={errors.endDate}
 				>
 					<CustomDatePicker
 						selectedDate={endDate}
 						onDateChange={handleDateChange('end')}
 						placeholder='Selecciona una fecha'
-						size={{ base: '330px', md: '470px' }}
+						size={{ base: '330px', md: '625px' }}
+						buttonSize='sm'
 					/>
 				</Field>
 			</Stack>

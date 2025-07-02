@@ -15,6 +15,17 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 	const [startDate, setStartDate] = useState(data?.start_date);
 	const [endDate, setEndDate] = useState(data?.end_date);
 	const [selectedLevel, setSelectedLevel] = useState(null);
+	const [errors, setErrors] = useState({});
+	const validateFields = () => {
+		const newErrors = {};
+		if (!name.trim()) newErrors.name = 'El ciclo es requerido';
+		if (!selectedLevel) newErrors.selectedLevel = 'Seleccione un nivel';
+		if (!startDate) newErrors.startDate = 'La fecha de inicio es requerida';
+		if (!endDate) newErrors.endDate = 'La fecha de fin es requerida';
+
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
 
 	const handleDateChange = (field) => (date) => {
 		const formatted = format(date, 'yyyy-MM-dd');
@@ -32,13 +43,7 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 		e.preventDefault();
 
 		// Validación de campos vacíos
-		if (!name.trim() || !startDate.trim()) {
-			toaster.create({
-				title: 'Por favor completa todos los campos',
-				type: 'warning',
-			});
-			return;
-		}
+		if (!validateFields()) return;
 
 		const payload = {
 			admission_process_name: name.trim(),
@@ -72,7 +77,6 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 	};
 
 	const dataLevel = [
-		{ label: 'Pre Maestría', value: 1 },
 		{ label: 'Maestría', value: 2 },
 		{ label: 'Doctorado', value: 3 },
 		{ label: 'Diplomado', value: 3 },
@@ -132,22 +136,20 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 			contentRef={contentRef}
 		>
 			<Stack css={{ '--field-label-width': '150px' }}>
-				<Field
-					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Título:'
-				>
+				<Field invalid={!!errors.name} errorText={errors.name} label='Ciclo:'>
 					<Input
 						value={name}
 						onChange={(e) => {
 							const newName = e.target.value;
 							setName(newName);
 						}}
-						placeholder='Proceso 2025-II'
+						placeholder='2025-I'
 						size='xs'
 					/>
 				</Field>
 				<Field
-					orientation={{ base: 'vertical', sm: 'horizontal' }}
+					invalid={!!errors.selectedLevel}
+					errorText={errors.selectedLevel}
 					label='Nivel:'
 				>
 					<ReactSelect
@@ -164,7 +166,8 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 					/>
 				</Field>
 				<Field
-					orientation={{ base: 'vertical', sm: 'horizontal' }}
+					invalid={!!errors.startDate}
+					errorText={errors.startDate}
 					label='Fecha Inicio'
 				>
 					<Box w={'full'}>
@@ -178,7 +181,8 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 				</Field>
 
 				<Field
-					orientation={{ base: 'vertical', sm: 'horizontal' }}
+					invalid={!!errors.endDate}
+					errorText={errors.endDate}
 					label='Fecha Fin:'
 				>
 					<Box w={'full'}>
