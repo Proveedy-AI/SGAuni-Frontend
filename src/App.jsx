@@ -28,7 +28,7 @@ import { Contracts, MyContracts } from './views/admin/contracts';
 import AdmissionForm from './views/Inscription';
 import { AdmissionMyApplicants } from './views/admin/applicants/AdmissionMyApplicants';
 import { ApplicantsLayout } from './views/admin/applicants/ApplicantsLayout';
-import { Debts } from './views/admin/debts';
+import { Debts, PaymentOrdersByRequest } from './views/admin/debts';
 import { CoursesAndSchedules } from './views/admin/courses_and_schedules';
 
 function App() {
@@ -157,6 +157,7 @@ function App() {
 									}
 								>
 									<Route index element={<Debts />} />
+                  <Route path='payment-request/:id' element={<PaymentOrdersByRequest />} />
 								</Route>
 							</Route>
 							{/* SETTINGS */}

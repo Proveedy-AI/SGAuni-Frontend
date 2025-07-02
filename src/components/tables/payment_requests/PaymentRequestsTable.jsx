@@ -13,8 +13,17 @@ import { usePaginationSettings } from '@/components/navigation/usePaginationSett
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import { GeneratePaymentOrderModal, UpdatePaymentRequestModal, ValidatePaymentRequestModal, ViewPaymentRequestModal } from '@/components/forms/payment_requests';
 import { ReactSelect } from '@/components/select';
+import { useNavigate } from 'react-router';
+import { Encryptor } from '@/components/CrytoJS/Encryptor';
 
 const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests, fetchPaymentOrders, permissions, sortConfig, data }) => {
+  const navigate = useNavigate();
+  const encrypted = Encryptor.encrypt(item.id);
+  const encoded = encodeURIComponent(encrypted);
+  const handleRowClick = () => {
+    navigate(`/debts/payment-request/${encoded}`);
+  };
+  
   const filteredPaymentOrders = paymentOrders?.filter(order => order.request === item.id);
 
   const statusDisplay = [
@@ -22,10 +31,20 @@ const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests
     { id: 2, label: 'Disponible', value: 'Available', bg:'#FDD9C6', color:'#F86A1E' },
     { id: 3, label: 'Verificado', value: 'Verified', bg:'#D0EDD0', color:'#2D9F2D' },
     { id: 4, label: 'Expirado', value: 'Expired', bg:'#F7CDCE', color:'#E0383B' }
-  ]
+  ]  
 
   return (
-    <Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
+    <Table.Row 
+      onClick={(e) => {
+				if (e.target.closest('button') || e.target.closest('a')) return;
+				handleRowClick();
+			}}
+      key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}
+			_hover={{
+				bg: 'blue.100',
+				cursor: 'pointer',
+			}}
+    >
       <Table.Cell>
 				{sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
 					? data.length - (startIndex + index)
@@ -43,7 +62,7 @@ const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests
           {statusDisplay.find(status => status.id === item.status)?.label || 'N/A'}
         </Badge>
       </Table.Cell>
-      <Table.Cell>
+      {/* <Table.Cell>
         <HStack justify='space-between'>
           <Group>
             {permissions?.includes('dashboard.debt.view') &&
@@ -69,7 +88,7 @@ const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests
             }
           </Group>
         </HStack>
-      </Table.Cell>
+      </Table.Cell> */}
     </Table.Row>
   );
 });
@@ -154,7 +173,7 @@ export const PaymentRequestsTable = ({ data, paymentOrders, fetchPaymentRequests
               </Table.ColumnHeader>
               <Table.ColumnHeader alignContent={'start'}>
                 <SortableHeader
-                  label='Nombre de la orden de pago'
+                  label='Propósito de pago'
                   columnKey='payment_order_name'
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
@@ -199,7 +218,7 @@ export const PaymentRequestsTable = ({ data, paymentOrders, fetchPaymentRequests
                   onChange={(option) => setSearchValue({ ...searchValue, status: option })}
                 />
               </Table.ColumnHeader>
-              <Table.ColumnHeader alignContent={'start'}>Acciones</Table.ColumnHeader>
+              {/* <Table.ColumnHeader alignContent={'start'}>Acciones</Table.ColumnHeader> */}
             </Table.Row>
           </Table.Header>
           <Table.Body>
