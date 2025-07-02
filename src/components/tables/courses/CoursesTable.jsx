@@ -11,7 +11,7 @@ import { usePaginationSettings } from '@/components/navigation/usePaginationSett
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
-import { EditCourseModal, ViewCourseModal } from '@/components/forms/courses';
+import { AssingProfessorModal, EditCourseModal, ViewCourseModal } from '@/components/forms/courses';
 
 const Row = memo(
   ({
@@ -21,6 +21,7 @@ const Row = memo(
     index,
     sortConfig,
     data,
+    professorsOptions
   }) => {
 
     return (
@@ -40,6 +41,7 @@ const Row = memo(
             <Group>
               <ViewCourseModal item={item} />
               <EditCourseModal data={data} item={item} fetchData={fetchData} />
+              <AssingProfessorModal data={data} item={item} fetchData={fetchData} professorsOptions={professorsOptions} />
             </Group>
           </HStack>
         </Table.Cell>
@@ -57,12 +59,14 @@ Row.propTypes = {
   index: PropTypes.number,
   sortConfig: PropTypes.object,
   data: PropTypes.array,
+  professorsOptions: PropTypes.array,
 };
 
 export const CoursesTable = ({
   data,
   fetchData,
   isLoading,
+  professorsOptions
 }) => {
   const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
   const [currentPage, setCurrentPage] = useState(1);
@@ -148,6 +152,7 @@ export const CoursesTable = ({
                   fetchData={fetchData}
                   startIndex={startIndex}
                   index={index}
+                  professorsOptions={professorsOptions}
                 />
               ))
             ) : (
@@ -180,4 +185,5 @@ CoursesTable.propTypes = {
   data: PropTypes.array,
   fetchData: PropTypes.func,
   isLoading: PropTypes.bool,
+  professorsOptions: PropTypes.array,
 };

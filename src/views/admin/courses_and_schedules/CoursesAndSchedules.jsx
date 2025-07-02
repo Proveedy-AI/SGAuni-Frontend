@@ -4,7 +4,8 @@ import { CoursesTable } from "@/components/tables/courses";
 import { InputGroup } from "@/components/ui";
 import { useReadCourses } from "@/hooks/courses";
 import { useReadSchedules } from "@/hooks/schedules";
-import { Box, Heading, HStack, Input, Stack, Tabs } from "@chakra-ui/react";
+import { useReadUsers } from "@/hooks/users";
+import { Box, Heading, HStack, Input, Spinner, Stack, Tabs } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 
@@ -12,6 +13,21 @@ export const CoursesAndSchedules = () => {
   const [tab, setTab] = useState(1);
 
   const [searchCourseName, setSearchCourseName] = useState('');
+
+  const {
+    data: dataUsers,
+    isLoading: isLoadingUsers,
+  } = useReadUsers();
+
+  const filteredProfessors = dataUsers?.results?.filter(
+    user => user.is_active && user.roles?.find(role => role.name === 'Docente')
+  ) || [];
+  
+  const professorsOptions = filteredProfessors.map(user => ({
+    value: user.id,
+    label: user.full_name
+  }));
+
 
   useEffect(() => {
     setSearchCourseName('');
@@ -102,11 +118,17 @@ export const CoursesAndSchedules = () => {
               </HStack>
             </Stack>
             
-            <CoursesTable
-              data={filteredCourses}
-              fetchData={fetchCourses}
-              isLoading={isLoadingCourses}
-            />
+            { isLoadingUsers 
+            ? (
+                <Spinner />
+            ) : (
+              <CoursesTable
+                data={filteredCourses}
+                fetchData={fetchCourses}
+                isLoading={isLoadingCourses}
+                professorsOptions={professorsOptions}
+              />
+            )}
 
           </Stack>
         </Tabs.Content>
