@@ -11,7 +11,7 @@ import { usePaginationSettings } from '@/components/navigation/usePaginationSett
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
-import { ViewCourseModal } from '@/components/forms/courses';
+import { EditCourseModal, ViewCourseModal } from '@/components/forms/courses';
 
 const Row = memo(
   ({
@@ -39,6 +39,7 @@ const Row = memo(
           <HStack justify='space-between'>
             <Group>
               <ViewCourseModal item={item} />
+              <EditCourseModal data={data} item={item} fetchData={fetchData} />
             </Group>
           </HStack>
         </Table.Cell>
