@@ -64,6 +64,7 @@ export const UpdateQualificationEvaluatorsModal = ({ data, isLoading, isOpen, on
       loading={isSaving}
       open={isOpen}
       onOpenChange={onClose}
+	  positionerProps={{ style: { padding: '0 40px' } }}
     >
       {isLoading ? (
         <Flex justify='center' align='center' minH='200px'>

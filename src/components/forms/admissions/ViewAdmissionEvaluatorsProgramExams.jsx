@@ -8,7 +8,6 @@ export const ViewAdmissionEvaluatorsProgramExams = ({ item, isLoading, isOpen, o
     const contentRef = useRef();
     return (
         <Modal
-            scrollBehavior='outside'
             title='Ver exámenes'
             placement='center'
             size='4xl'
