@@ -1,5 +1,6 @@
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
-import { AdmissionApplicantsByProgramTable } from '@/components/tables/admissions';
+import { GeneratePaymentOrderModal } from '@/components/forms/payment_requests';
+import { PaymentOrdersByRequestTable } from '@/components/tables/payment_orders';
 import { InputGroup } from '@/components/ui';
 import { useProvideAuth } from '@/hooks/auth';
 import { useReadPaymentOrders } from '@/hooks/payment_orders';
@@ -11,9 +12,11 @@ import {
   HStack,
   Input,
   Span,
+  Spinner,
   Stack,
   Text,
 } from '@chakra-ui/react';
+import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { LiaSlashSolid } from 'react-icons/lia';
 import { useParams } from 'react-router';
@@ -32,7 +35,8 @@ export const PaymentOrdersByRequest = () => {
 
   const {
     data: dataRequestPayment,
-    loading: loadingRequestPayment
+    loading: loadingRequestPayment,
+    refetch: fetchRequestPayment
   } = useReadPaymentRequestById(decrypted);
 
   const {
@@ -42,7 +46,11 @@ export const PaymentOrdersByRequest = () => {
   } = useReadPaymentOrders();
 
   const filteredPaymentOrdersByRequest = dataPaymentOrders?.results
-    ?.find((order) => order.request === decrypted);
+    ?.filter((order) => order.request === decrypted);
+
+  const sortedPaymentOrders = filteredPaymentOrdersByRequest?.sort((a, b) => a.status - b.status);
+
+  const [searchIdOrden, setSearchIdOrden] = useState('');
 
   return (
     <Box spaceY='5'>
@@ -105,18 +113,39 @@ export const PaymentOrdersByRequest = () => {
         align={{ base: 'center', sm: 'center' }}
         justify='space-between'
       >
-        {/* <InputGroup flex='1' startElement={<FiSearch />}>
+        <InputGroup flex='1' startElement={<FiSearch />}>
           <Input
             ml='1'
             size='sm'
             bg={'white'}
             maxWidth={'550px'}
-            placeholder='Buscar por nombre del postulante ...'
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
+            placeholder='Buscar por número de orden'
+            value={searchIdOrden}
+            onChange={(e) => setSearchIdOrden(e.target.value)}
           />
-        </InputGroup> */}
+        </InputGroup>
+
+        <GeneratePaymentOrderModal
+          item={dataRequestPayment}
+          paymentOrders={filteredPaymentOrdersByRequest}
+          fetchPaymentRequests={fetchRequestPayment}
+          fetchPaymentOrders={fetchPaymentOrders}
+        />
       </Stack>
+      
+      {
+        loadingPaymentOrders 
+        ? (
+          <Spinner />
+        ) : (
+          <PaymentOrdersByRequestTable
+            data={sortedPaymentOrders}
+            refetch={fetchPaymentOrders}
+            permissions={permissions}
+          />
+        )
+      }
+
     </Box>
   );
 };
