@@ -13,15 +13,22 @@ export function CustomDatePicker({
 	onDateChange,
 	buttonSize = 'xs',
 	size = { base: '330px', md: '470px' },
+	disableFutureDates = false,
+	minDate,
+	maxDate,
+	asChild = false,
 }) {
 	const [openPopover, setOpenPopover] = useState(false);
+	const effectiveMaxDate = disableFutureDates
+		? new Date()
+		: (maxDate ?? undefined);
 
 	return (
 		<Popover.Root
 			open={openPopover}
 			onOpenChange={(details) => setOpenPopover(details.open)}
 		>
-			<Popover.Trigger>
+			<Popover.Trigger asChild={asChild}>
 				<Button
 					as='div'
 					role='textbox'
@@ -60,6 +67,8 @@ export function CustomDatePicker({
 									onChange={(date) => {
 										onDateChange(date);
 									}}
+									minDate={minDate}
+									maxDate={effectiveMaxDate}
 									locale={es}
 									color='#711610'
 								/>
@@ -78,4 +87,8 @@ CustomDatePicker.propTypes = {
 	onDateChange: PropTypes.fuc,
 	buttonSize: PropTypes.string,
 	size: PropTypes.string,
+	disableFutureDates: PropTypes.bool,
+	minDate: PropTypes.instanceOf(Date),
+	maxDate: PropTypes.instanceOf(Date),
+	asChild: PropTypes.bool,
 };

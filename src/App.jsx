@@ -25,11 +25,11 @@ import {
 	AdmissionEvaluatorsByProgram,
 } from './views/admin/admissions';
 import { Contracts, MyContracts } from './views/admin/contracts';
-import AdmissionForm from './views/Inscription';
 import { AdmissionMyApplicants } from './views/admin/applicants/AdmissionMyApplicants';
 import { ApplicantsLayout } from './views/admin/applicants/ApplicantsLayout';
 import { Debts, PaymentOrdersByRequest } from './views/admin/debts';
 import { CoursesAndSchedules } from './views/admin/courses_and_schedules';
+import ChakraInscriptionForm from './views/inscription-form';
 
 function App() {
 	return (
@@ -211,7 +211,10 @@ function App() {
 					</Route>
 
 					{/* Ruta para ir a formulario de inscripción */}
-					<Route path='admission-process/:uuid' element={<AdmissionForm />} />
+					<Route
+						path='admission-process/:uuid'
+						element={<ChakraInscriptionForm />}
+					/>
 				</Routes>
 			</BrowserRouter>
 		</>
