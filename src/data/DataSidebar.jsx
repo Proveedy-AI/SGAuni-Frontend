@@ -98,7 +98,7 @@ export const useDataSidebar = () => {
       permission: 'courses.schedules.view',
     },
     {
-      href: '/debts',
+      href: '/debts/payment-requests',
       icon: FiDollarSign,
       label: 'Cobranzas',
       permission: 'dashboard.debt.view',

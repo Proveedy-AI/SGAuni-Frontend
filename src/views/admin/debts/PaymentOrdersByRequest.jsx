@@ -63,8 +63,8 @@ export const PaymentOrdersByRequest = () => {
         <Breadcrumb.Root size='lg'>
           <Breadcrumb.List>
             <Breadcrumb.Item>
-              <Breadcrumb.Link as={RouterLink} to='/debts'>
-                Cobranzas
+              <Breadcrumb.Link as={RouterLink} to='/debts/payment-requests'>
+                Solicitudes de Pago
               </Breadcrumb.Link>
             </Breadcrumb.Item>
             <Breadcrumb.Separator>

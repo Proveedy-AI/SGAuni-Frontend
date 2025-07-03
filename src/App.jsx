@@ -27,9 +27,10 @@ import {
 import { Contracts, MyContracts } from './views/admin/contracts';
 import { AdmissionMyApplicants } from './views/admin/applicants/AdmissionMyApplicants';
 import { ApplicantsLayout } from './views/admin/applicants/ApplicantsLayout';
-import { Debts, PaymentOrdersByRequest } from './views/admin/debts';
+import { DebtsLayout, PaymentOrdersByRequest, PaymentRequestsView } from './views/admin/debts';
 import { CoursesAndSchedules } from './views/admin/courses_and_schedules';
 import ChakraInscriptionForm from './views/inscription-form';
+import { PaymentOrdersView } from './views/admin/debts/PaymentOrdersView';
 
 function App() {
 	return (
@@ -150,14 +151,18 @@ function App() {
                 </Route>
               </Route>
 
-							<Route path='debts'>
+							<Route path='debts' element={<DebtsLayout />}>
 								<Route
 									element={
 										<ProtectedRoute requiredPermission='dashboard.debt.view' />
 									}
 								>
-									<Route index element={<Debts />} />
-                  <Route path='payment-request/:id' element={<PaymentOrdersByRequest />} />
+									<Route path='payment-requests'>
+                    <Route index element={<PaymentRequestsView />} />
+                    <Route path=':id' element={<PaymentOrdersByRequest />} />
+                  </Route>
+                  
+                  <Route path='payment-orders' element={<PaymentOrdersView />} />
 								</Route>
 							</Route>
 							{/* SETTINGS */}

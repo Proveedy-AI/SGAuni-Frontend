@@ -7,7 +7,7 @@ import { Box, Heading, InputGroup, Input, Stack, Spinner } from '@chakra-ui/reac
 import { useEffect, useState } from 'react';
 import { FiSearch } from "react-icons/fi";
 
-export const Debts = () => {
+export const PaymentRequestsView = () => {
   const { data: dataPaymentRequests, loading: isPaymentRequestsLoading, refetch: fetchPaymentRequets } = useReadPaymentRequest();
   const { data: dataPaymentOrders, loading: isPaymentOrdersLoading, refetch: fetchPaymentOrders } = useReadPaymentOrders();
 
@@ -79,7 +79,7 @@ export const Debts = () => {
             md: 'md',
           }}
         >
-          Cobranza
+          Solicitudes de Pago
         </Heading>
       </Stack>
 
