@@ -1,14 +1,15 @@
-import { Button, Field, ModalSimple, toaster, Tooltip } from "@/components/ui";
-import { Box, Flex, IconButton, Input, Stack, Table, Text } from "@chakra-ui/react";
+import { Button, Field, ModalSimple, toaster } from "@/components/ui";
+import { Flex, IconButton, Input, SimpleGrid, Stack } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import { HiArrowUp } from "react-icons/hi2";
 import PropTypes from "prop-types";
 import { FaSave, FaTimes } from "react-icons/fa";
 import { useCreatePaymentOrder } from "@/hooks/payment_orders";
-import { ValidatePaymentOrderModal, ViewPaymentOrderVoucherModal } from "../payment_orders";
 import { FiPlus } from "react-icons/fi";
+import { ReactSelect } from "@/components/select";
+import { CustomDatePicker } from "@/components/ui/CustomDatePicker";
+import { format } from "date-fns";
 
-export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchPaymentRequests, fetchPaymentOrders }) => {
+export const GeneratePaymentOrderModal = ({ requests, fetchData }) => {
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
   const { mutateAsync: generatePaymentOrder, isSaving } = useCreatePaymentOrder();
@@ -16,6 +17,22 @@ export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchPaymentReq
   const [orderIdInput, setOrderIdInput] = useState("");
   const [discountInput, setDiscountInput] = useState("");
   const [dueDateInput, setDueDateInput] = useState("");
+  const [receipt, setReceipt] = useState(null);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+
+  const requestOptions = requests.map((request) => ({
+    value: request.id,
+    label: `${request.purpose_display} - ${request.payment_method_display} - ${request.num_document}`,
+  }));
+
+
+  const isUniPaymentMethod = 
+    requests.find(request => request.id === selectedRequest?.value)?.payment_method === 2;
+
+  const receiptOptions = [
+    { value: 1, label: 'Boleta' },
+    { value: 2, label: 'Factura' },
+  ]
 
   const handleReset = () => {
     setOrderIdInput("");
@@ -29,18 +46,42 @@ export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchPaymentReq
     }
   }, [open]);
 
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const newErrors = {};
+
+    if (!selectedRequest) newErrors.selectedRequest = 'Selecciona una solicitud de pago';
+    if (!discountInput || isNaN(discountInput) || discountInput < 0 || discountInput > 100) {
+      newErrors.discountInput = 'El descuento debe estar entre 0 y 100';
+    }
+    if (!dueDateInput) newErrors.dueDateInput = 'Selecciona una fecha de vencimiento';
+    if (!receipt) newErrors.receipt = 'Selecciona un tipo de recibo';
+    if (!isUniPaymentMethod && !orderIdInput) {
+      newErrors.orderIdInput = 'Ingresa el id de orden';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async () => {
-    if (!orderIdInput || !discountInput || !dueDateInput) {
+    if (!validate()) return;
+
+    if (!selectedRequest || !discountInput || !dueDateInput) {
       toaster.create({
         title: 'Completar los campos necesarios',
         type: 'warning'
       })
+      return
     }
 
     const payload = {
-      request: item.id,
-      id_orden: orderIdInput,
+      request: selectedRequest.value,
+      id_orden: orderIdInput || null,
       discount_value: (Number(discountInput)/100).toString(),
+      status: 1, // 1 = Pendiente
+      payment_method: requests.find(request => request.id === selectedRequest.value)?.payment_method,
       due_date: dueDateInput
     }
     
@@ -50,8 +91,7 @@ export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchPaymentReq
           title: 'Orden generada con éxito',
           type: 'success',
         });
-        fetchPaymentRequests();
-        fetchPaymentOrders();
+        fetchData();
         handleReset();
       },
       onError: (error) => {
@@ -86,22 +126,46 @@ export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchPaymentReq
           onOpenChange={(e) => setOpen(e.open)}
           contentRef={contentRef}
         >
-          <Stack spacing={4} css={{ '--field-label-width': '150px' }}>
+          <Stack spacing={6} css={{ '--field-label-width': '150px' }}>
             <Flex
-              direction={{ base: 'column', md: 'row' }}
-              justify='flex-start'
-              align={'end'}
-              gap={2}
+              direction="column"
+              gap={4}
               mt={2}
             >
-              <Field label='Id de Orden'>
-                  <Input
-                    placeholder="Ingresar id de Orden"
-                    value={orderIdInput}
-                    onChange={(e) => setOrderIdInput(e.target.value)}
+              <Field 
+                label='Seleccionar Solicitud de Pago'
+                invalid={!!errors.selectedRequest}
+					      errorText={errors.selectedRequest}
+              >
+                <ReactSelect
+                  options={requestOptions}
+                  placeholder="Seleccionar solicitud de pago"
+                  isClearable={true}
+                  onChange={(option) => setSelectedRequest(option)}/>
+              </Field>
+              { !isUniPaymentMethod && (
+                  <Field
+                    label='Id de Orden'
+                    invalid={!!errors.orderIdInput}
+					          errorText={errors.orderIdInput}
+                  >
+                    <Input
+                      placeholder="Ingresar id de Orden"
+                      value={orderIdInput}
+                      onChange={(e) => setOrderIdInput(e.target.value)}
                     />
-                </Field>
-                <Field label='Descuento'>
+                  </Field>
+                )}
+              <SimpleGrid
+                columns={{ base: 1, sm: 2 }}
+                gap={4}
+                w="100%"
+              >
+                <Field
+                  label='Descuento'
+                  invalid={!!errors.discountInput}
+                  errorText={errors.discountInput}
+                >
                   <Input
                     type='number'
                     min={0}
@@ -109,82 +173,62 @@ export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchPaymentReq
                     placeholder="Ingresar descuento"
                     value={discountInput}
                     onChange={(e) => setDiscountInput(e.target.value)}
-                    />
+                  />
                 </Field>
-                <Field label='Fecha de Vencimiento'>
-                  <Input
-                    type="date"
-                    placeholder="Ingresar fecha de vencimiento"
-                    value={dueDateInput}
-                    onChange={(e) => setDueDateInput(e.target.value)}
-                    />
+                <Field
+                  label='Fecha de Vencimiento'
+                  invalid={!!errors.dueDateInput}
+                  errorText={errors.dueDateInput}
+                >
+                  <CustomDatePicker
+                    selectedDate={dueDateInput}
+                    onDateChange={(date) =>
+                      setDueDateInput(format(date, 'yyyy-MM-dd'))
+                    }
+                    buttonSize='xs'
+                    size={{ base: '330px', md: '420px' }}
+                  />
                 </Field>
-                <Flex gap={2}>
-                  <IconButton
-                    size='sm'
-                    bg='green'
-                    loading={isSaving}
-                    disabled={!orderIdInput || !discountInput || !dueDateInput}
-                    onClick={handleSubmit}
-                    css={{ _icon: { width: '5', height: '5' } }}
-                    >
-                    <FaSave />
-                  </IconButton>
-                  <IconButton
-                    size='sm'
-                    bg='red'
-                    onClick={handleReset}
-                    disabled={!orderIdInput && !discountInput && !dueDateInput}
-                    css={{ _icon: { width: '5', height: '5' } }}
-                    >
-                    <FaTimes />
-                  </IconButton>
-                  </Flex>
+                <Field
+                  label='Tipo de Recibo'
+                  invalid={!!errors.receipt}
+                  errorText={errors.receipt}
+                >
+                  <ReactSelect
+                    options={receiptOptions}
+                    value={receipt}
+                    onChange={(option) => setReceipt(option)}
+                    placeholder="Seleccionar tipo de recibo"
+                  />
+                </Field>
+              </SimpleGrid>
+              <Flex
+                gap={2}
+                mt={4}
+                justify={{ base: "center", sm: "flex-end" }}
+                flexWrap="wrap"
+              >
+                <IconButton
+                  size='sm'
+                  bg='green'
+                  loading={isSaving}
+                  disabled={!selectedRequest || !discountInput || !dueDateInput || !receipt}
+                  onClick={handleSubmit}
+                  css={{ _icon: { width: '5', height: '5' } }}
+                >
+                  <FaSave />
+                </IconButton>
+                <IconButton
+                  size='sm'
+                  bg='red'
+                  onClick={handleReset}
+                  disabled={!orderIdInput && !discountInput && !dueDateInput}
+                  css={{ _icon: { width: '5', height: '5' } }}
+                >
+                  <FaTimes />
+                </IconButton>
+              </Flex>
             </Flex>
-            {/* <Box>
-              <Text fontWeight='semibold' mb={2}>
-                Órdenes de pago generadas:
-              </Text>
-              <Table.Root size='sm' striped>
-                <Table.Header>
-                  <Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
-                    <Table.ColumnHeader>N°</Table.ColumnHeader>
-                    <Table.ColumnHeader>Id de la Orden</Table.ColumnHeader>
-                    <Table.ColumnHeader>Monto inicial</Table.ColumnHeader>
-                    <Table.ColumnHeader>Descuento</Table.ColumnHeader>
-                    <Table.ColumnHeader>Monto total</Table.ColumnHeader>
-                    <Table.ColumnHeader>Acciones</Table.ColumnHeader>
-                  </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                  {
-                    paymentOrders?.length > 0 ? (
-                      paymentOrders.map((payOrd, index) => (
-                        <Table.Row key={payOrd.id}>
-                          <Table.Cell>{index + 1}</Table.Cell>
-                          <Table.Cell>{payOrd.id_orden}</Table.Cell>
-                          <Table.Cell>{payOrd.sub_amount}</Table.Cell>
-                          <Table.Cell>{payOrd.discount_value}</Table.Cell>
-                          <Table.Cell>{payOrd.total_amount}</Table.Cell>
-                          <Table.Cell>
-                            <Flex gap={2}>
-                              <ViewPaymentOrderVoucherModal item={payOrd} fetchPaymentOrders={fetchPaymentOrders} />
-                              <ValidatePaymentOrderModal item={payOrd} />
-                            </Flex>
-                          </Table.Cell>
-                        </Table.Row>
-                      ))
-                    ) : (
-                      <Table.Row>
-                        <Table.Cell colSpan={6} textAlign='center'>
-                          Sin datos disponibles
-                        </Table.Cell>
-                      </Table.Row>
-                    )
-                  }
-                </Table.Body>
-              </Table.Root>
-            </Box> */}
           </Stack>
         </ModalSimple>
       </Field>
@@ -193,8 +237,6 @@ export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchPaymentReq
 }
 
 GeneratePaymentOrderModal.propTypes = {
-  item: PropTypes.object,
-  paymentOrders: PropTypes.array,
-  fetchPaymentRequests: PropTypes.func,
-  fetchPaymentOrders: PropTypes.func
+  requests: PropTypes.arrayOf(PropTypes.object),
+  fetchData: PropTypes.func,
 };

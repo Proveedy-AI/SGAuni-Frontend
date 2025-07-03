@@ -56,8 +56,6 @@ export const PaymentRequestsView = () => {
     (!searchValue.date || item?.date === searchValue.date)
   );
 
-  console.log(filteredPaymentRequests)
-
   useEffect(() => {
     if (loading && filteredPaymentRequests) {
       setInitialLoading(false);

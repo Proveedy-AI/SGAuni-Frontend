@@ -1,2 +1,2 @@
 export * from './PaymentOrdersByApplicationTable';
-export * from './PaymentOrdersByRequestTable';
+export * from './PaymentOrdersTable';
