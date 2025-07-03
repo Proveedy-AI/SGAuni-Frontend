@@ -63,6 +63,7 @@ export const CustomSelect = ({
 			selectedItems={selectedItem ? [selectedItem] : []}
 			onChange={(e) => {
 				const selected = e.target.value;
+				console.log('✅ Cambiando selección a:', selected);
 				if (selected) {
 					onChange(selected);
 				} else {
