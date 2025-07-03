@@ -27,7 +27,8 @@ import {
 import { Contracts, MyContracts } from './views/admin/contracts';
 import { AdmissionMyApplicants } from './views/admin/applicants/AdmissionMyApplicants';
 import { ApplicantsLayout } from './views/admin/applicants/ApplicantsLayout';
-import { Debts } from './views/admin/debts';
+import { Debts, PaymentOrdersByRequest } from './views/admin/debts';
+import { CoursesAndSchedules } from './views/admin/courses_and_schedules';
 import ChakraInscriptionForm from './views/inscription-form';
 import { Tuition } from './views/admin/tuitions';
 
@@ -149,6 +150,16 @@ function App() {
 								</Route>
 							</Route>
 
+							<Route path='courses-schedules'>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='courses.schedules.view' />
+									}
+								>
+									<Route index element={<CoursesAndSchedules />} />
+								</Route>
+							</Route>
+
 							<Route path='debts'>
 								<Route
 									element={
@@ -156,6 +167,10 @@ function App() {
 									}
 								>
 									<Route index element={<Debts />} />
+									<Route
+										path='payment-request/:id'
+										element={<PaymentOrdersByRequest />}
+									/>
 								</Route>
 							</Route>
 							{/* SETTINGS */}

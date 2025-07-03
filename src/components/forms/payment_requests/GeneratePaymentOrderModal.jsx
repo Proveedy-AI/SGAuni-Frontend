@@ -1,4 +1,4 @@
-import { Field, ModalSimple, toaster, Tooltip } from "@/components/ui";
+import { Button, Field, ModalSimple, toaster, Tooltip } from "@/components/ui";
 import { Box, Flex, IconButton, Input, Stack, Table, Text } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { HiArrowUp } from "react-icons/hi2";
@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import { FaSave, FaTimes } from "react-icons/fa";
 import { useCreatePaymentOrder } from "@/hooks/payment_orders";
 import { ValidatePaymentOrderModal, ViewPaymentOrderVoucherModal } from "../payment_orders";
+import { FiPlus } from "react-icons/fi";
 
 export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchPaymentRequests, fetchPaymentOrders }) => {
   const contentRef = useRef();
@@ -70,18 +71,14 @@ export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchPaymentReq
           title="Generar Orden de Pago"
           placement="center"
           trigger={
-            <Box>
-              <Tooltip
-                content='Generar Orden de Pago'
-                positioning={{ placement: 'bottom-center' }}
-                showArrow
-                openDelay={0}
-              >
-                <IconButton colorPalette='purple' size='xs'>
-                  <HiArrowUp />
-                </IconButton>
-              </Tooltip>
-            </Box>
+            <Button
+              bg='uni.secondary'
+              color='white'
+              size='xs'
+              w={{ base: 'full', sm: 'auto' }}
+            >
+              <FiPlus /> Generar orden de pago
+            </Button>
           }
           size='4xl'
           open={open}
@@ -144,7 +141,7 @@ export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchPaymentReq
                   </IconButton>
                   </Flex>
             </Flex>
-            <Box>
+            {/* <Box>
               <Text fontWeight='semibold' mb={2}>
                 Órdenes de pago generadas:
               </Text>
@@ -187,7 +184,7 @@ export const GeneratePaymentOrderModal = ({ item, paymentOrders, fetchPaymentReq
                   }
                 </Table.Body>
               </Table.Root>
-            </Box>
+            </Box> */}
           </Stack>
         </ModalSimple>
       </Field>

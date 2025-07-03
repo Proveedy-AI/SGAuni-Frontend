@@ -6,7 +6,6 @@ import PropTypes from "prop-types";
 import { FaCheck } from "react-icons/fa";
 
 export const ValidatePaymentRequestModal = ({ item }) => {
-  console.log(item)
   const [open, setOpen] = useState(false);
 
   //const { mutateAsync: validatePaymentRequest, isSaving } = useValidatePaymentRequest();

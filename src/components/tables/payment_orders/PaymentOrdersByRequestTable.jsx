@@ -5,27 +5,14 @@ import {
   Box,
   Group,
   HStack,
-  Input,
   Table
 } from '@chakra-ui/react';
 import { Pagination } from '@/components/ui'
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { SortableHeader } from '@/components/ui/SortableHeader';
-import { GeneratePaymentOrderModal, UpdatePaymentRequestModal, ValidatePaymentRequestModal, ViewPaymentRequestModal } from '@/components/forms/payment_requests';
-import { ReactSelect } from '@/components/select';
-import { useNavigate } from 'react-router';
-import { Encryptor } from '@/components/CrytoJS/Encryptor';
+import { ViewPaymentOrderVoucherModal } from '@/components/forms/payment_orders';
 
-const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests, fetchPaymentOrders, permissions, sortConfig, data }) => {
-  const navigate = useNavigate();
-  const encrypted = Encryptor.encrypt(item.id);
-  const encoded = encodeURIComponent(encrypted);
-  const handleRowClick = () => {
-    navigate(`/debts/payment-request/${encoded}`);
-  };
-  
-  const filteredPaymentOrders = paymentOrders?.filter(order => order.request === item.id);
-
+const Row = memo(({ item, startIndex, index, refetch, permissions, sortConfig, data }) => {
   const statusDisplay = [
     { id: 1, label: 'Pendiente', value: 'Pending', bg:'#AEAEAE', color:'#F5F5F5' },
     { id: 2, label: 'Disponible', value: 'Available', bg:'#FDD9C6', color:'#F86A1E' },
@@ -34,26 +21,16 @@ const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests
   ]  
 
   return (
-    <Table.Row 
-      onClick={(e) => {
-				if (e.target.closest('button') || e.target.closest('a')) return;
-				handleRowClick();
-			}}
-      key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}
-			_hover={{
-				bg: 'blue.100',
-				cursor: 'pointer',
-			}}
-    >
+    <Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
       <Table.Cell>
-				{sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
-					? data.length - (startIndex + index)
-					: startIndex + index + 1}
-			</Table.Cell>
-      <Table.Cell>{item.requested_at || 'Campo por agregar'}</Table.Cell>
-      <Table.Cell>{item.purpose_display}</Table.Cell>
-      <Table.Cell>{item.num_document}</Table.Cell>
-      <Table.Cell>{item.payment_method_display || item.payment_method}</Table.Cell>
+        {sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
+          ? data.length - (startIndex + index)
+          : startIndex + index + 1}
+      </Table.Cell>
+      <Table.Cell>{item.id_orden}</Table.Cell>
+      <Table.Cell>{item.sub_amount}</Table.Cell>
+      <Table.Cell>{item.discount_value}</Table.Cell>
+      <Table.Cell>{item.total_amount}</Table.Cell>
       <Table.Cell>
         <Badge
           bg={statusDisplay.find(status => status.id === item.status)?.bg}
@@ -62,33 +39,15 @@ const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests
           {statusDisplay.find(status => status.id === item.status)?.label || 'N/A'}
         </Badge>
       </Table.Cell>
-      {/* <Table.Cell>
+      <Table.Cell>
         <HStack justify='space-between'>
           <Group>
-            {permissions?.includes('dashboard.debt.view') &&
-              <ViewPaymentRequestModal item={item} />
-            }
-            {permissions?.includes('dashboard.debt.view') &&
-              <GeneratePaymentOrderModal 
-                item={item} 
-                paymentOrders={filteredPaymentOrders}
-                fetchPaymentRequests={fetchPaymentRequests}
-                fetchPaymentOrders={fetchPaymentOrders}
-              />
-            }
-            {permissions?.includes('dashboard.debt.view') &&
-              <ValidatePaymentRequestModal item={item} fetchData={fetchPaymentOrders} />
-            }
-            {permissions?.includes('dashboard.debt.view') &&
-              <UpdatePaymentRequestModal 
-                item={item} 
-                fetchPaymentRequests={fetchPaymentRequests}
-                statusOptions={statusDisplay}
-              />
+            {
+              permissions.includes('dashboard.debt.view') && <ViewPaymentOrderVoucherModal item={item} />
             }
           </Group>
         </HStack>
-      </Table.Cell> */}
+      </Table.Cell>
     </Table.Row>
   );
 });
@@ -97,17 +56,15 @@ Row.displayName = 'Row';
 
 Row.propTypes = {
   item: PropTypes.object,
+  refetch: PropTypes.func,
   permissions: PropTypes.array,
   startIndex: PropTypes.number,
   index: PropTypes.number,
-  paymentOrders: PropTypes.array,
-  fetchPaymentRequests: PropTypes.func,
-  fetchPaymentOrders: PropTypes.func,
   sortConfig: PropTypes.object,
   data: PropTypes.array,
 };
 
-export const PaymentRequestsTable = ({ data, paymentOrders, fetchPaymentRequests, fetchPaymentOrders, permissions, paymentMethodOptions, documentTypeOptions, searchValue, setSearchValue, statusOptions }) => {
+export const PaymentOrdersByRequestTable = ({ data, refetch, permissions }) => {
 
   const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
     const [currentPage, setCurrentPage] = useState(1);
@@ -157,52 +114,34 @@ export const PaymentRequestsTable = ({ data, paymentOrders, fetchPaymentRequests
               </Table.ColumnHeader>
               <Table.ColumnHeader alignContent={'start'}>
                 <SortableHeader
-                  label='Fecha de vencimiento'
-                  columnKey='due_date'
-                  sortConfig={sortConfig}
-                  onSort={setSortConfig}
-                />
-                <Input
-                  type='date'
-                  value={searchValue.due_date || ''}
-                  onChange={(e) => setSearchValue({ ...searchValue, due_date: e.target.value })}
-                  placeholder='Buscar por fecha de vencimiento'
-                  size='sm'
-                  maxWidth='150px'
-                />
-              </Table.ColumnHeader>
-              <Table.ColumnHeader alignContent={'start'}>
-                <SortableHeader
-                  label='Propósito de pago'
-                  columnKey='payment_order_name'
+                  label='Id de Orden'
+                  columnKey='id_orden'
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
                 />
               </Table.ColumnHeader>
               <Table.ColumnHeader alignContent={'start'}>
                 <SortableHeader
-                  label='Documento'
-                  columnKey='document_num'
+                  label='Sub Total'
+                  columnKey='sub_amount'
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
-                />
-                <ReactSelect
-                  options={documentTypeOptions}
-                  value={searchValue.document_type}
-                  onChange={(option) => setSearchValue({ ...searchValue, document_type: option })}
                 />
               </Table.ColumnHeader>
               <Table.ColumnHeader alignContent={'start'}>
                 <SortableHeader
-                  label='Tipo de pago'
-                  columnKey='payment_method_display'
+                  label='Descuento'
+                  columnKey='discount_value'
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
                 />
-                <ReactSelect
-                  options={paymentMethodOptions}
-                  value={searchValue.payment_method}
-                  onChange={(option) => setSearchValue({ ...searchValue, payment_method: option })}
+              </Table.ColumnHeader>
+              <Table.ColumnHeader alignContent={'start'}>
+                <SortableHeader
+                  label='Monto Total'
+                  columnKey='total_amount'
+                  sortConfig={sortConfig}
+                  onSort={setSortConfig}
                 />
               </Table.ColumnHeader>
               <Table.ColumnHeader alignContent={'start'}>
@@ -212,13 +151,8 @@ export const PaymentRequestsTable = ({ data, paymentOrders, fetchPaymentRequests
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
                 />
-                <ReactSelect
-                  options={statusOptions}
-                  value={searchValue.status}
-                  onChange={(option) => setSearchValue({ ...searchValue, status: option })}
-                />
               </Table.ColumnHeader>
-              {/* <Table.ColumnHeader alignContent={'start'}>Acciones</Table.ColumnHeader> */}
+              <Table.ColumnHeader alignContent={'start'}>Acciones</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
           <Table.Body>
@@ -226,12 +160,10 @@ export const PaymentRequestsTable = ({ data, paymentOrders, fetchPaymentRequests
               <Row
                 key={item.id}
                 item={item}
+                refetch={refetch}
                 startIndex={startIndex}
                 index={index}
                 permissions={permissions}
-                paymentOrders={paymentOrders}
-                fetchPaymentRequests={fetchPaymentRequests}
-                fetchPaymentOrders={fetchPaymentOrders}
                 sortConfig={sortConfig}
                 data={data}
               />
@@ -256,15 +188,8 @@ export const PaymentRequestsTable = ({ data, paymentOrders, fetchPaymentRequests
   )
 }
 
-PaymentRequestsTable.propTypes = {
+PaymentOrdersByRequestTable.propTypes = {
   data: PropTypes.array,
-  paymentOrders: PropTypes.array,
-  fetchPaymentRequests: PropTypes.func,
-  fetchPaymentOrders: PropTypes.func,
+  refetch: PropTypes.func,
   permissions: PropTypes.array,
-  paymentMethodOptions: PropTypes.array,
-  documentTypeOptions: PropTypes.array,
-  searchValue: PropTypes.object,
-  setSearchValue: PropTypes.func,
-  statusOptions: PropTypes.array,
 };
