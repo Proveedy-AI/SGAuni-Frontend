@@ -1,6 +1,5 @@
 import { AdmissionEvaluatorsTable } from '@/components/tables/admissions';
 import { useReadProgramsForEvaluator } from '@/hooks/admissions_evaluators';
-import { useProvideAuth } from '@/hooks/auth';
 import { Box, Heading, Input, InputGroup, Stack } from '@chakra-ui/react';
 import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
@@ -11,12 +10,6 @@ export const AdmissionEvaluators = () => {
         refetch: fetchProgramsForEvaluator,
         isLoading,
     } = useReadProgramsForEvaluator();
-    const { getProfile } = useProvideAuth();
-    const profile = getProfile();
-    const roles = profile?.roles || [];
-    const permissions = roles
-        .flatMap((r) => r.permissions || [])
-        .map((p) => p.guard_name);
 
     const [searchValue, setSearchValue] = useState('');
 
@@ -55,7 +48,6 @@ export const AdmissionEvaluators = () => {
             >
                 <InputGroup flex='1' startElement={<FiSearch />}>
                     <Input
-                        ml='1'
                         size='sm'
                         bg={'white'}
                         maxWidth={'550px'}
@@ -69,7 +61,6 @@ export const AdmissionEvaluators = () => {
             <AdmissionEvaluatorsTable
                 data={filteredProgramsForEvaluator}
                 fetchData={fetchProgramsForEvaluator}
-                permissions={permissions}
                 isLoading={isLoading}
             />
         </Box>

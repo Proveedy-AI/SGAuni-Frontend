@@ -10,7 +10,7 @@ import {
   FiDollarSign,
   FiFileText,
 } from 'react-icons/fi';
-import { FaFileContract } from 'react-icons/fa';
+import { FaFileContract, FaRegFile } from 'react-icons/fa';
 import { HiOutlineClipboardList } from 'react-icons/hi';
 import { useProvideAuth } from '@/hooks/auth';
 
@@ -90,12 +90,18 @@ export const useDataSidebar = () => {
 				},
 			],
 		},
-    {
-      href: '/debts',
-      icon: FiDollarSign,
-      label: 'Cobranzas',
-      permission: 'dashboard.debt.view',
-    },
+		{
+			href: '/tuition',
+			icon: FaRegFile,
+			label: 'Matricula',
+			permission: 'tuition.processes.view',
+		},
+		{
+			href: '/debts',
+			icon: FiDollarSign,
+			label: 'Cobranzas',
+			permission: 'dashboard.debt.view',
+		},
 		{
 			href: '/users',
 			icon: FiUsers,

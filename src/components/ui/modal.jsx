@@ -30,16 +30,13 @@ export const Modal = ({
 	size,
 	sizeH,
 	disabledSave,
+	positionerProps,
 	...props
 }) => {
 	return (
 		<DialogRoot {...props}>
 			{/* <DialogTrigger asChild>{trigger}</DialogTrigger> */}
-			{trigger && (
-				<DialogTrigger asChild>
-					{trigger}
-				</DialogTrigger>
-			)}
+			{trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
 			<DialogContent
 				bg={{ base: 'white', _dark: 'uni.gray.500' }}
 				ref={contentRef}
@@ -48,6 +45,7 @@ export const Modal = ({
 				maxH={sizeH}
 				overflow='hidden'
 				pb='8px'
+				positionerProps={positionerProps} // Estilos personalizados
 			>
 				<DialogHeader>
 					{title && <DialogTitle color='uni.secondary'>{title}</DialogTitle>}

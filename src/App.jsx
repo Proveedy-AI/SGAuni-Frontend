@@ -29,6 +29,7 @@ import { AdmissionMyApplicants } from './views/admin/applicants/AdmissionMyAppli
 import { ApplicantsLayout } from './views/admin/applicants/ApplicantsLayout';
 import { Debts } from './views/admin/debts';
 import ChakraInscriptionForm from './views/inscription-form';
+import { Tuition } from './views/admin/tuitions';
 
 function App() {
 	return (
@@ -136,6 +137,15 @@ function App() {
 									}
 								>
 									<Route path='list' element={<Contracts />} />
+								</Route>
+							</Route>
+							<Route path='tuition'>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='tuition.processes.view' />
+									}
+								>
+									<Route index element={<Tuition />} />
 								</Route>
 							</Route>
 

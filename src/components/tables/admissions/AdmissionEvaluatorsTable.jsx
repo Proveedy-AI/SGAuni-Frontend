@@ -1,14 +1,15 @@
 import { usePaginationSettings } from "@/components/navigation/usePaginationSettings"
 import { SortableHeader } from "@/components/ui/SortableHeader"
 import useSortedData from "@/utils/useSortedData"
-import { Box, Pagination, Table } from "@chakra-ui/react"
+import { Box, Table } from "@chakra-ui/react"
 import { memo, useState } from 'react'
 import PropTypes from 'prop-types';
 import SkeletonTable from "@/components/ui/SkeletonTable"
 import { useNavigate } from "react-router"
 import { Encryptor } from "@/components/CrytoJS/Encryptor"
+import { Pagination } from "@/components/ui"
 
-const Row = memo(({ item, startIndex, index, permissions, sortConfig, data }) => {
+const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
     const navigate = useNavigate();
 	const encrypted = Encryptor.encrypt(item.id);
 	const encodedId = encodeURIComponent(encrypted);
@@ -37,7 +38,6 @@ const Row = memo(({ item, startIndex, index, permissions, sortConfig, data }) =>
             </Table.Cell>
             <Table.Cell>{item.admission_process_name}</Table.Cell>
             <Table.Cell>{item.role_display}</Table.Cell>
-			<Table.Cell onClick={(e) => e.stopPropagation()}></Table.Cell>
         </Table.Row>
     )
 })
@@ -46,20 +46,13 @@ Row.displayName = 'Row'
 
 Row.propTypes = {
     item: PropTypes.object,
-    fetchData: PropTypes.func,
     startIndex: PropTypes.number,
     index: PropTypes.number,
-    permissions: PropTypes.array,
     sortConfig: PropTypes.object,
     data: PropTypes.array,
 }
 
-export const AdmissionEvaluatorsTable = ({ 
-    data,
-    fetchData,
-    permissions, 
-    isLoading 
-}) => {
+export const AdmissionEvaluatorsTable = ({ data, fetchData, isLoading }) => {
     const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
     const [currentPage, setCurrentPage] = useState(1);
 	const startIndex = (currentPage - 1) * pageSize;
@@ -94,7 +87,7 @@ export const AdmissionEvaluatorsTable = ({
                     </Table.Header>
                     <Table.Body>
                         {isLoading ? (
-                            <SkeletonTable columns={4} />
+                            <SkeletonTable columns={3} />
                         ) : visibleRows?.length > 0 ? (
                             visibleRows.map((item, index) => (
                                 <Row
@@ -102,7 +95,6 @@ export const AdmissionEvaluatorsTable = ({
                                     item={item}
                                     data={data}
                                     sortConfig={sortConfig}
-                                    permissions={permissions}
 									fetchData={fetchData}
                                     startIndex={startIndex}
                                     index={index}
@@ -110,7 +102,7 @@ export const AdmissionEvaluatorsTable = ({
                             ))
                         ) : (
                             <Table.Row>
-                                <Table.Cell colSpan={7} textAlign='center' py={2}>
+                                <Table.Cell colSpan={3} textAlign='center' py={2}>
                                     No hay datos disponibles.
                                 </Table.Cell>
                             </Table.Row>
@@ -119,7 +111,7 @@ export const AdmissionEvaluatorsTable = ({
                 </Table.Root>
             </Table.ScrollArea>
 
-           {/* <Pagination
+            <Pagination
                 count={data?.length}
                 pageSize={Number(pageSize)}
                 currentPage={currentPage}
@@ -129,7 +121,7 @@ export const AdmissionEvaluatorsTable = ({
                     setPageSize(size);
                     setCurrentPage(1);
                 }}
-            /> */}
+            />
         </Box>
     )
 }
@@ -138,5 +130,4 @@ AdmissionEvaluatorsTable.propTypes = {
     data: PropTypes.array,
     fetchData: PropTypes.func,
     isLoading: PropTypes.bool,
-    permissions: PropTypes.array,
 }

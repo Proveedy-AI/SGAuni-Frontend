@@ -1,0 +1,7 @@
+export * from "./ViewTuitionProcessModal"
+export * from "./EditTuitionProcessModal"
+export * from "./ObservationTuitionProcessModal"
+export * from "./ApproveTuitionProcessModal"
+export * from "./AddTuitionProcessModal"
+export * from "./ApproveDirectorTuitionProcessModal"
+export * from "./ManageTuitionProgramsModal"
