@@ -22,9 +22,39 @@ export const CreateAndFilterUser = ({
 	fetchUsers,
 }) => {
 	const { mutateAsync: createUser, isPending } = useCreateUser();
+  const [username, setUsername] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [numDoc, setNumDoc] = useState('');
 	const [selectedRoles, setSelectedRoles] = useState([]);
 	const [selectedTypeDoc, setSelectedTypeDoc] = useState(null);
 	const { data: rolesData } = useReadRoles(); // rolesData.results = lista de roles
+
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const newErrors = {};
+    if (username.trim() === '') newErrors.username = 'El correo es requerido';
+    if (firstName.trim() === '') newErrors.first_name = 'El nombre es requerido';
+    if (lastName.trim() === '') newErrors.last_name = 'El apellido es requerido';
+    if (numDoc.trim() === '') newErrors.num_doc = 'El número de documento es requerido';
+    if (numDoc.trim() && Number(numDoc) < 0) newErrors.num_doc = 'El número de documento no puede ser negativo';
+
+    if (!selectedTypeDoc) newErrors.document_type = 'El tipo de documento es requerido';
+    if (selectedRoles.length === 0)  newErrors.roles_ids = 'Debe seleccionar al menos un rol';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }
+
+  const reset = () => {
+    setUsername('');
+    setFirstName('');
+    setLastName('');
+    setNumDoc('');
+    setSelectedRoles([]);
+    setSelectedTypeDoc(null);
+    setErrors({});
+  }
 
 	const rolesOptions =
 		rolesData?.results?.map((role) => ({
@@ -43,12 +73,9 @@ export const CreateAndFilterUser = ({
 		e.preventDefault();
 		const { elements } = e.currentTarget;
 
-		const username = elements.namedItem('username').value.trim();
-		const first_name = elements.namedItem('first_name').value.trim();
-		const last_name = elements.namedItem('last_name').value.trim();
-    const num_doc = elements.namedItem('num_doc')?.value.trim();
+    if (!validate()) return;
 
-    if (!username || !first_name || !last_name || !num_doc) {
+    if (!username || !firstName || !lastName || !numDoc) {
 			toaster.create({
 				title: 'Por favor complete todos los campos requeridos',
 				type: 'warning',
@@ -66,12 +93,12 @@ export const CreateAndFilterUser = ({
 
 		const payload = {
 			user: {
-				username,
-				first_name,
-				last_name,
+				username: username,
+				first_name: firstName,
+				last_name: lastName,
 			},
-      num_doc,
-      type_doc: selectedTypeDoc?.value || null,
+      num_doc: numDoc,
+      document_type: selectedTypeDoc?.value || null,
 			roles_ids: selectedRoles.map((r) => r.value),
 		};
 
@@ -83,41 +110,63 @@ export const CreateAndFilterUser = ({
 			}
 		});
 
-		try {
-			await createUser(payload);
-			toaster.create({
-				title: 'Usuario creado correctamente',
-				type: 'success',
-			});
-			fetchUsers();
-			setSelectedRoles([]);
-			setIsModalOpen((s) => ({ ...s, create: false }));
-		} catch (error) {
-			const errorData = error.response?.data;
+    createUser(payload, {
+      onSuccess: () => {
+        toaster.create({
+          title: 'Usuario creado correctamente',
+          type: 'success',
+        });
+        fetchUsers();
+        reset();
+        setSelectedRoles([]);
+        setSelectedTypeDoc(null);
+        setIsModalOpen((s) => ({ ...s, create: false }));
+      },
+      onError: (error) => {
+        console.log(error)
+        toaster.create({
+          title: error.message || 'Error al crear el usuario',
+          type: 'error',
+        })
+      }
+    })
 
-			if (errorData && typeof errorData === 'object') {
-				Object.entries(errorData).forEach(([field, messages]) => {
-					if (Array.isArray(messages)) {
-						messages.forEach((message) => {
-							const readableField =
-								field === 'non_field_errors'
-									? 'Error general'
-									: field.replaceAll('_', ' ');
+		// try {
+		// 	await createUser(payload);
+		// 	toaster.create({
+		// 		title: 'Usuario creado correctamente',
+		// 		type: 'success',
+		// 	});
+		// 	fetchUsers();
+		// 	setSelectedRoles([]);
+    //   setSelectedTypeDoc(null);
+		// 	setIsModalOpen((s) => ({ ...s, create: false }));
+		// } catch (error) {
+		// 	const errorData = error.response?.data;
 
-							toaster.create({
-								title: `${readableField}: ${message}`,
-								type: 'error',
-							});
-						});
-					}
-				});
-			} else {
-				toaster.create({
-					title: 'Error al registrar el Programa',
-					type: 'error',
-				});
-			}
-		}
+		// 	if (errorData && typeof errorData === 'object') {
+		// 		Object.entries(errorData).forEach(([field, messages]) => {
+		// 			if (Array.isArray(messages)) {
+		// 				messages.forEach((message) => {
+		// 					const readableField =
+		// 						field === 'non_field_errors'
+		// 							? 'Error general'
+		// 							: field.replaceAll('_', ' ');
+
+		// 					toaster.create({
+		// 						title: `${readableField}: ${message}`,
+		// 						type: 'error',
+		// 					});
+		// 				});
+		// 			}
+		// 		});
+		// 	} else {
+		// 		toaster.create({
+		// 			title: 'Error al registrar el Programa',
+		// 			type: 'error',
+		// 		});
+		// 	}
+		// }
 	};
 
 	return (
@@ -163,23 +212,55 @@ export const CreateAndFilterUser = ({
 						<Stack>
 							<form onSubmit={handleCreateUser}>
 								<Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} gap={4}>
-									<Field label='Correo/Usuario'>
-										<Input required name='username' placeholder='Correo' />
+									<Field 
+                    label='Correo del usuario'
+                    invalid={!!errors.username}
+					          errorText={errors.username}
+                  >
+										<Input 
+                      type='email'
+                      name='username'
+                      placeholder='Correo'
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      />
 									</Field>
 
-									<Field label='Nombres'>
-										<Input required name='first_name' placeholder='Nombres' />
+									<Field
+                    label='Nombres'
+                    invalid={!!errors.first_name}
+					          errorText={errors.first_name}
+                  >
+										<Input 
+                      name='first_name'
+                      placeholder='Nombres' 
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      />
 									</Field>
 
-									<Field label='Apellidos'>
-										<Input required name='last_name' placeholder='Apellidos' />
+									<Field
+                    label='Apellidos'
+                    invalid={!!errors.last_name}
+					          errorText={errors.last_name}
+                  >
+										<Input
+                      name='last_name'
+                      placeholder='Apellidos'
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      />
 									</Field>
 
                   <Field label='Teléfono'>
 										<Input name='phone' placeholder='Opcional' />
 									</Field>
 
-                  <Field label='Tipo de Documento'>
+                  <Field
+                    label='Tipo de Documento'
+                    invalid={!!errors.document_type}
+                    errorText={errors.document_type}
+                  >
                     <ReactSelect
                     label='Tipo de Documento'
                     options={documentTypeOptions}
@@ -189,20 +270,31 @@ export const CreateAndFilterUser = ({
                   />
                   </Field>
 
-									<Field label='Documento'>
-										<Input disabled={!selectedTypeDoc} required name='num_doc' placeholder='Documento' />
+									<Field
+                    label='Documento'
+                    invalid={!!errors.num_doc}
+					          errorText={errors.num_doc}
+                  >
+										<Input 
+                      disabled={!selectedTypeDoc}
+                      name='num_doc'
+                      placeholder='Documento'
+                      value={numDoc}
+                      onChange={(e) => setNumDoc(e.target.value)}
+                    />
 									</Field>
 
 									<Field label='Correo UNI'>
-										<Input
-											name='uni_email'
-											type='email'
-											placeholder='Opcional'
-										/>
+										<Input name='uni_email' type='email' placeholder='Opcional' />
 									</Field>
 
 								</Grid>
-								<Field label='Rol' mt={4}>
+								<Field
+                  label='Rol'
+                  mt={4}
+                  invalid={!!errors.roles_ids}
+					        errorText={errors.roles_ids}
+                >
 									<ReactSelect
 										value={selectedRoles}
 										onChange={(select) => {
@@ -210,7 +302,6 @@ export const CreateAndFilterUser = ({
 										}}
 										variant='flushed'
 										size='xs'
-										isClea
 										isClearable={true}
 										isSearchable={true}
 										isMulti

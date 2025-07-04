@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { ReactSelect } from '@/components/select';
 import { CompactFileUpload } from '@/components/ui/CompactFileInput';
 
-const FieldWithInputText = ({ label, field, value, updateProfileField }) => {
+const FieldWithInputText = ({ label, field, errors, value, updateProfileField }) => {
 	return (
 		<Field
 			orientation={{
@@ -12,6 +12,8 @@ const FieldWithInputText = ({ label, field, value, updateProfileField }) => {
 				sm: 'horizontal',
 			}}
 			label={label}
+      invalid={errors[field]}
+      errorText={errors[field]}
 		>
 			<Input
 				value={value}
@@ -27,11 +29,12 @@ const FieldWithInputText = ({ label, field, value, updateProfileField }) => {
 FieldWithInputText.propTypes = {
 	label: PropTypes.string,
 	field: PropTypes.string,
+  errors: PropTypes.object,
 	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	updateProfileField: PropTypes.func,
 };
 
-export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
+export const ChangeDataProfileForm = ({ errors, profile, updateProfileField }) => {
 	return (
 		<Grid
 			w='full'
@@ -43,6 +46,7 @@ export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
 					<FieldWithInputText
 						label='Nombres:'
 						field='first_name'
+						errors={errors}
 						value={profile.first_name}
 						updateProfileField={updateProfileField}
 					/>
@@ -50,6 +54,7 @@ export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
 					<FieldWithInputText
 						label='Apellidos:'
 						field='last_name'
+            errors={errors}
 						value={profile.last_name}
 						updateProfileField={updateProfileField}
 					/>
@@ -59,6 +64,7 @@ export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
 					<FieldWithInputText
 						label='Num Identidad:'
 						field='num_doc'
+            errors={errors}
 						value={profile.num_doc}
 						updateProfileField={updateProfileField}
 					/>
@@ -68,6 +74,7 @@ export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
 					<FieldWithInputText
 						label='Correo institucional:'
 						field='uni_email'
+            errors={errors}
 						value={profile.uni_email}
 						updateProfileField={updateProfileField}
 					/>
@@ -105,6 +112,7 @@ export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
 					<FieldWithInputText
 						label='Teléfono:'
 						field='phone'
+            errors={errors}
 						value={profile.phone}
 						updateProfileField={updateProfileField}
 					/>
@@ -211,6 +219,7 @@ export const ChangeDataProfileForm = ({ profile, updateProfileField }) => {
 };
 
 ChangeDataProfileForm.propTypes = {
+  errors: PropTypes.object,
 	profile: PropTypes.object,
 	updateProfileField: PropTypes.func,
 };

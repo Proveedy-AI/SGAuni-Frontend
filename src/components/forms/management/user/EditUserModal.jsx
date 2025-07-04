@@ -1,9 +1,10 @@
 import { ControlledModal, Field, toaster } from '@/components/ui';
 import { useUpdateUser, useReadUserById } from '@/hooks/users';
 import { Stack, Input, Grid, InputGroup } from '@chakra-ui/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FiHash, FiMail, FiPhone, FiUser, FiUserCheck } from 'react-icons/fi';
+import { ReactSelect } from '@/components/select';
 
 export const EditUserModal = ({
 	selectedUser,
@@ -23,11 +24,44 @@ export const EditUserModal = ({
 		if (userDetail && isEditModalOpen) {
 			setSelectedUser((prev) => ({ ...prev, ...userDetail }));
 		}
-	}, [userDetail, isEditModalOpen]);
+	}, [userDetail, isEditModalOpen, setSelectedUser]);
+
+  const documentTypeOptions = [
+		{ value: 1, label: 'DNI' },
+		{ value: 2, label: 'Pasaporte' },
+		{ value: 3, label: 'Carné de Extranjería' },
+		{ value: 4, label: 'Cédula de Identidad' },
+	];
+
+  const [errors, setErrors] = useState({});
+
+  const reset = () => {
+    setSelectedUser({
+      first_name: '',
+      last_name: '',
+      num_doc: '',
+      uni_email: '',
+      phone: '',
+      document_type: null,
+      user: { username: '' },
+    });
+    setErrors({});
+  }
+  
+  const validate = () => {
+    const newErrors = {};
+    if (!selectedUser.first_name?.trim()) newErrors.first_name = 'El nombre es requerido';
+    if (!selectedUser.last_name?.trim()) newErrors.last_name = 'El apellido es requerido';
+    if (!selectedUser.document_type) newErrors.document_type = 'Seleccione un tipo de documento';
+    if (!selectedUser.num_doc?.trim()) newErrors.num_doc = 'El número de documento es requerido';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
 	const handleEditUser = async () => {
-		const { id, first_name, last_name, num_doc, uni_email, phone } =
-			selectedUser;
+    if (!validate()) return;
+
+		const { id, first_name, last_name, num_doc, uni_email, phone } = selectedUser;
 
 		if (!first_name || !last_name) return;
 
@@ -39,24 +73,26 @@ export const EditUserModal = ({
 			num_doc,
 			uni_email,
 			phone,
+      document_type: selectedUser.document_type?.value,
 		};
 
-		try {
-			await updateUser({ id, payload });
-
-			toaster.create({
-				title: 'Usuario actualizado correctamente',
-				type: 'success',
-			});
-
-			fetchUsers();
-			handleCloseModal('edit');
-		} catch (error) {
-			toaster.create({
-				title: error?.response?.data?.message || 'Error al editar usuario',
-				type: 'error',
-			});
-		}
+    await updateUser({ id, payload }, {
+      onSuccess: () => {
+        toaster.create({
+          title: 'Usuario actualizado correctamente',
+          type: 'success',
+        });
+        fetchUsers();
+        reset();
+        handleCloseModal('edit');
+      },
+      onError: (error) => {
+        toaster.create({
+          title: error?.response?.data?.message || 'Error al editar usuario',
+          type: 'error',
+        });
+      },
+    });
 	};
 
 	return (
@@ -85,7 +121,11 @@ export const EditUserModal = ({
 								</InputGroup>
 							</Field>
 
-							<Field label='Nombres'>
+							<Field
+                label='Nombres'
+                invalid={!!errors.first_name}
+					      errorText={errors.first_name}
+              >
 								<InputGroup startElement={<FiUser />}>
 									<Input
 										value={selectedUser?.first_name || ''}
@@ -100,7 +140,11 @@ export const EditUserModal = ({
 								</InputGroup>
 							</Field>
 
-							<Field label='Apellidos'>
+							<Field
+                label='Apellidos'
+                invalid={!!errors.last_name}
+                errorText={errors.last_name}
+              >
 								<InputGroup startElement={<FiUser />}>
 									<Input
 										value={selectedUser?.last_name || ''}
@@ -119,7 +163,7 @@ export const EditUserModal = ({
 								<InputGroup startElement={<FiMail />}>
 									<Input
 										value={selectedUser?.uni_email || ''}
-										placeholder='Ingrese correo institucional'
+										placeholder='Opcional'
 										type='email'
 										onChange={(e) =>
 											setSelectedUser((prev) => ({
@@ -131,7 +175,33 @@ export const EditUserModal = ({
 								</InputGroup>
 							</Field>
 
-							<Field label='Número de documento'>
+              <Field
+                label='Tipo de documento'
+                invalid={!!errors?.document_type}
+                errorText={errors?.document_type}
+              >
+                 <ReactSelect
+                    options={documentTypeOptions}
+                    value={documentTypeOptions.find(
+                      (option) => option.value === selectedUser?.document_type
+                    )}
+                    onChange={(option) =>
+                      setSelectedUser((prev) => ({
+                        ...prev,
+                        document_type: option,
+                      }))
+                    }
+                    placeholder='Seleccione tipo de documento'
+                    isClearable
+                    isSearchable
+                  />
+              </Field>
+
+							<Field
+                label='Número de documento'
+                invalid={!!errors.num_doc}
+                errorText={errors.num_doc}
+              >
 								<InputGroup startElement={<FiHash />}>
 									<Input
 										value={selectedUser?.num_doc || ''}
@@ -150,7 +220,7 @@ export const EditUserModal = ({
 								<InputGroup startElement={<FiPhone />}>
 									<Input
 										value={selectedUser?.phone || ''}
-										placeholder='Ingrese número de teléfono'
+										placeholder='Opcional'
 										type='tel'
 										onChange={(e) =>
 											setSelectedUser((prev) => ({

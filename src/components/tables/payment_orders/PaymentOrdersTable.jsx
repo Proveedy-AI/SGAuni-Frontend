@@ -5,20 +5,24 @@ import {
   Box,
   Group,
   HStack,
+  Input,
   Table
 } from '@chakra-ui/react';
 import { Pagination } from '@/components/ui'
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { SortableHeader } from '@/components/ui/SortableHeader';
-import { ViewPaymentOrderVoucherModal } from '@/components/forms/payment_orders';
+import { CancelPaymentOrderModal, ValidatePaymentOrderModal, ViewPaymentOrderVoucherModal } from '@/components/forms/payment_orders';
+import { format, parseISO } from 'date-fns';
 
 const Row = memo(({ item, startIndex, index, refetch, permissions, sortConfig, data }) => {
   const statusDisplay = [
     { id: 1, label: 'Pendiente', value: 'Pending', bg:'#AEAEAE', color:'#F5F5F5' },
     { id: 2, label: 'Disponible', value: 'Available', bg:'#FDD9C6', color:'#F86A1E' },
     { id: 3, label: 'Verificado', value: 'Verified', bg:'#D0EDD0', color:'#2D9F2D' },
-    { id: 4, label: 'Expirado', value: 'Expired', bg:'#F7CDCE', color:'#E0383B' }
-  ]  
+    { id: 4, label: 'Expirado', value: 'Expired', bg:'#F7CDCE', color:'#E0383B' },
+    { id: 5, label: 'Cancelado', value: 'Cancelled', bg:'#B0B0B0', color:'#333333' },
+    { id: 6, label: 'Devolución', value: 'Refunded', bg:'#C6E6FD', color:'#1E5CF8' }
+  ]
 
   return (
     <Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
@@ -27,9 +31,10 @@ const Row = memo(({ item, startIndex, index, refetch, permissions, sortConfig, d
           ? data.length - (startIndex + index)
           : startIndex + index + 1}
       </Table.Cell>
+      <Table.Cell>{format(parseISO(item.due_date), 'dd/MM/yyyy')}</Table.Cell>
       <Table.Cell>{item.id_orden}</Table.Cell>
-      <Table.Cell>{item.sub_amount}</Table.Cell>
-      <Table.Cell>{item.discount_value}</Table.Cell>
+      <Table.Cell>{item.document_num}</Table.Cell>
+      <Table.Cell>{item.email}</Table.Cell>
       <Table.Cell>{item.total_amount}</Table.Cell>
       <Table.Cell>
         <Badge
@@ -41,10 +46,16 @@ const Row = memo(({ item, startIndex, index, refetch, permissions, sortConfig, d
       </Table.Cell>
       <Table.Cell>
         <HStack justify='space-between'>
-          <Group>
-            {
-              permissions.includes('dashboard.debt.view') && <ViewPaymentOrderVoucherModal item={item} />
-            }
+          <Group gap={1}>
+            {permissions.includes('payment.vouchers.view') && (
+              <ViewPaymentOrderVoucherModal item={item} fetchPaymentOrders={refetch} />
+            )}
+            {permissions.includes('payment.orders.validate') && ( 
+              <ValidatePaymentOrderModal item={item} fetchPaymentOrders={refetch}  />
+            )}
+            {permissions.includes('payment.orders.validate') && ( 
+              <CancelPaymentOrderModal item={item} fetchPaymentOrders={refetch}  />
+            )}
           </Group>
         </HStack>
       </Table.Cell>
@@ -64,7 +75,7 @@ Row.propTypes = {
   data: PropTypes.array,
 };
 
-export const PaymentOrdersByRequestTable = ({ data, refetch, permissions }) => {
+export const PaymentOrdersTable = ({ data, filteredValues, filter, refetch, permissions }) => {
 
   const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
     const [currentPage, setCurrentPage] = useState(1);
@@ -114,6 +125,23 @@ export const PaymentOrdersByRequestTable = ({ data, refetch, permissions }) => {
               </Table.ColumnHeader>
               <Table.ColumnHeader alignContent={'start'}>
                 <SortableHeader
+                  label='Fecha de vencimiento'
+                  columnKey='due_date'
+                  sortConfig={sortConfig}
+                  onSort={setSortConfig}
+                />
+                <Input
+                  type='date'
+                  value={filteredValues?.due_date}
+                  onChange={(e) => filter('due_date', e.target.value)}
+                  buttonSize='xs'
+                  placeholder='Buscar por fecha de vencimiento'
+                  size='sm'
+                  maxWidth='150px'
+                />
+              </Table.ColumnHeader>
+              <Table.ColumnHeader alignContent={'start'}>
+                <SortableHeader
                   label='Id de Orden'
                   columnKey='id_orden'
                   sortConfig={sortConfig}
@@ -122,18 +150,32 @@ export const PaymentOrdersByRequestTable = ({ data, refetch, permissions }) => {
               </Table.ColumnHeader>
               <Table.ColumnHeader alignContent={'start'}>
                 <SortableHeader
-                  label='Sub Total'
-                  columnKey='sub_amount'
+                  label='N° Documento'
+                  columnKey='document_num'
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
+                />
+                <Input
+                  value={filteredValues?.document_num}
+                  onChange={(e) => filter('document_num', e.target.value )}
+                  placeholder='Buscar por N° Documento'
+                  size='sm'
+                  maxWidth='150px'
                 />
               </Table.ColumnHeader>
               <Table.ColumnHeader alignContent={'start'}>
                 <SortableHeader
-                  label='Descuento'
-                  columnKey='discount_value'
+                  label='Correo'
+                  columnKey='email'
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
+                />
+                <Input
+                  value={filteredValues?.email}
+                  onChange={(e) => filter('email', e.target.value )}
+                  placeholder='Buscar por correo'
+                  size='sm'
+                  maxWidth='150px'
                 />
               </Table.ColumnHeader>
               <Table.ColumnHeader alignContent={'start'}>
@@ -188,8 +230,10 @@ export const PaymentOrdersByRequestTable = ({ data, refetch, permissions }) => {
   )
 }
 
-PaymentOrdersByRequestTable.propTypes = {
+PaymentOrdersTable.propTypes = {
   data: PropTypes.array,
+  filteredValues: PropTypes.object,
+  filter: PropTypes.func,
   refetch: PropTypes.func,
   permissions: PropTypes.array,
 };

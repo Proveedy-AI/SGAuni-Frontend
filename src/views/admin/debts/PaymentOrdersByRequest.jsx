@@ -1,6 +1,6 @@
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
-import { GeneratePaymentOrderModal } from '@/components/forms/payment_requests';
-import { PaymentOrdersByRequestTable } from '@/components/tables/payment_orders';
+import { GeneratePaymentOrderModalByRequest } from '@/components/forms/payment_requests';
+import { PaymentOrdersTable } from '@/components/tables/payment_orders';
 import { InputGroup } from '@/components/ui';
 import { useProvideAuth } from '@/hooks/auth';
 import { useReadPaymentOrders } from '@/hooks/payment_orders';
@@ -63,8 +63,8 @@ export const PaymentOrdersByRequest = () => {
         <Breadcrumb.Root size='lg'>
           <Breadcrumb.List>
             <Breadcrumb.Item>
-              <Breadcrumb.Link as={RouterLink} to='/debts'>
-                Cobranzas
+              <Breadcrumb.Link as={RouterLink} to='/debts/payment-requests'>
+                Solicitudes de Pago
               </Breadcrumb.Link>
             </Breadcrumb.Item>
             <Breadcrumb.Separator>
@@ -125,7 +125,7 @@ export const PaymentOrdersByRequest = () => {
           />
         </InputGroup>
 
-        <GeneratePaymentOrderModal
+        <GeneratePaymentOrderModalByRequest
           item={dataRequestPayment}
           paymentOrders={filteredPaymentOrdersByRequest}
           fetchPaymentRequests={fetchRequestPayment}
@@ -138,7 +138,7 @@ export const PaymentOrdersByRequest = () => {
         ? (
           <Spinner />
         ) : (
-          <PaymentOrdersByRequestTable
+          <PaymentOrdersTable
             data={sortedPaymentOrders}
             refetch={fetchPaymentOrders}
             permissions={permissions}

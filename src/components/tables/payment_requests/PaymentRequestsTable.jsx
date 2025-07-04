@@ -11,21 +11,19 @@ import {
 import { Pagination } from '@/components/ui'
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { SortableHeader } from '@/components/ui/SortableHeader';
-import { GeneratePaymentOrderModal, UpdatePaymentRequestModal, ValidatePaymentRequestModal, ViewPaymentRequestModal } from '@/components/forms/payment_requests';
 import { ReactSelect } from '@/components/select';
 import { useNavigate } from 'react-router';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
+import { format, parseISO } from 'date-fns';
 
 const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests, fetchPaymentOrders, permissions, sortConfig, data }) => {
   const navigate = useNavigate();
   const encrypted = Encryptor.encrypt(item.id);
   const encoded = encodeURIComponent(encrypted);
   const handleRowClick = () => {
-    navigate(`/debts/payment-request/${encoded}`);
+    navigate(`/debts/payment-requests/${encoded}`);
   };
   
-  const filteredPaymentOrders = paymentOrders?.filter(order => order.request === item.id);
-
   const statusDisplay = [
     { id: 1, label: 'Pendiente', value: 'Pending', bg:'#AEAEAE', color:'#F5F5F5' },
     { id: 2, label: 'Disponible', value: 'Available', bg:'#FDD9C6', color:'#F86A1E' },
@@ -50,7 +48,9 @@ const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests
 					? data.length - (startIndex + index)
 					: startIndex + index + 1}
 			</Table.Cell>
-      <Table.Cell>{item.requested_at || 'Campo por agregar'}</Table.Cell>
+      <Table.Cell>
+        {format(parseISO(item.requested_at), 'dd/MM/yyyy')}
+      </Table.Cell>
       <Table.Cell>{item.purpose_display}</Table.Cell>
       <Table.Cell>{item.num_document}</Table.Cell>
       <Table.Cell>{item.payment_method_display || item.payment_method}</Table.Cell>
@@ -62,33 +62,12 @@ const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests
           {statusDisplay.find(status => status.id === item.status)?.label || 'N/A'}
         </Badge>
       </Table.Cell>
-      {/* <Table.Cell>
+      <Table.Cell>
         <HStack justify='space-between'>
           <Group>
-            {permissions?.includes('dashboard.debt.view') &&
-              <ViewPaymentRequestModal item={item} />
-            }
-            {permissions?.includes('dashboard.debt.view') &&
-              <GeneratePaymentOrderModal 
-                item={item} 
-                paymentOrders={filteredPaymentOrders}
-                fetchPaymentRequests={fetchPaymentRequests}
-                fetchPaymentOrders={fetchPaymentOrders}
-              />
-            }
-            {permissions?.includes('dashboard.debt.view') &&
-              <ValidatePaymentRequestModal item={item} fetchData={fetchPaymentOrders} />
-            }
-            {permissions?.includes('dashboard.debt.view') &&
-              <UpdatePaymentRequestModal 
-                item={item} 
-                fetchPaymentRequests={fetchPaymentRequests}
-                statusOptions={statusDisplay}
-              />
-            }
           </Group>
         </HStack>
-      </Table.Cell> */}
+      </Table.Cell>
     </Table.Row>
   );
 });
@@ -164,8 +143,8 @@ export const PaymentRequestsTable = ({ data, paymentOrders, fetchPaymentRequests
                 />
                 <Input
                   type='date'
-                  value={searchValue.due_date || ''}
-                  onChange={(e) => setSearchValue({ ...searchValue, due_date: e.target.value })}
+                  value={searchValue.requested_at}
+                  onChange={(e) => setSearchValue({ ...searchValue, requested_at: e.target.value })}
                   placeholder='Buscar por fecha de vencimiento'
                   size='sm'
                   maxWidth='150px'
@@ -218,7 +197,7 @@ export const PaymentRequestsTable = ({ data, paymentOrders, fetchPaymentRequests
                   onChange={(option) => setSearchValue({ ...searchValue, status: option })}
                 />
               </Table.ColumnHeader>
-              {/* <Table.ColumnHeader alignContent={'start'}>Acciones</Table.ColumnHeader> */}
+              <Table.ColumnHeader alignContent={'start'}>Acciones</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
           <Table.Body>

@@ -71,7 +71,7 @@ export const CoursesAndSchedules = () => {
             md: 'md',
           }}
         >
-          Roles y permisos
+          Gestión de Cursos
         </Heading>
 
         {tab === 1 ? (

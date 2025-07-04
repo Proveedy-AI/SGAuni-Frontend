@@ -27,9 +27,10 @@ import {
 import { Contracts, MyContracts } from './views/admin/contracts';
 import { AdmissionMyApplicants } from './views/admin/applicants/AdmissionMyApplicants';
 import { ApplicantsLayout } from './views/admin/applicants/ApplicantsLayout';
-import { Debts, PaymentOrdersByRequest } from './views/admin/debts';
+import { DebtsLayout, PaymentOrdersByRequest, PaymentRequestsView } from './views/admin/debts';
 import { CoursesAndSchedules } from './views/admin/courses_and_schedules';
 import ChakraInscriptionForm from './views/inscription-form';
+import { PaymentOrdersView } from './views/admin/debts/PaymentOrdersView';
 import { Tuition } from './views/admin/tuitions';
 
 function App() {
@@ -160,17 +161,19 @@ function App() {
 								</Route>
 							</Route>
 
-							<Route path='debts'>
+							<Route path='debts' element={<DebtsLayout />}>
 								<Route
-									element={
-										<ProtectedRoute requiredPermission='dashboard.debt.view' />
-									}
+									element={<ProtectedRoute requiredPermission='payment.requests.view' />}
 								>
-									<Route index element={<Debts />} />
-									<Route
-										path='payment-request/:id'
-										element={<PaymentOrdersByRequest />}
-									/>
+									<Route path='payment-requests'>
+                    <Route index element={<PaymentRequestsView />} />
+                    <Route path=':id' element={<PaymentOrdersByRequest />} />
+                  </Route>
+                  <Route
+									  element={<ProtectedRoute requiredPermission='payment.orders.view' />}
+								  >
+                    <Route path='payment-orders' element={<PaymentOrdersView />} />
+                  </Route>
 								</Route>
 							</Route>
 							{/* SETTINGS */}
