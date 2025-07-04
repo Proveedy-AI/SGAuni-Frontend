@@ -98,22 +98,16 @@ export const useDataSidebar = () => {
 			permission: 'tuition.processes.view',
 		},
 		{
-			href: '/debts',
+			href: '/debts/payment-requests',
 			icon: FiDollarSign,
 			label: 'Cobranzas',
-			permission: 'dashboard.debt.view',
+			permission: 'payment.requests.view',
 		},
 		{
       href: '/courses-schedules',
       icon: FiBookOpen,
       label: 'Cursos y Horarios',
       permission: 'courses.schedules.view',
-    },
-    {
-      href: '/debts/payment-requests',
-      icon: FiDollarSign,
-      label: 'Cobranzas',
-      permission: 'dashboard.debt.view',
     },
 		{
 			href: '/users',

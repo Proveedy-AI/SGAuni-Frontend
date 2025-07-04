@@ -1,24 +1,23 @@
 import { Field, ModalSimple, toaster, Tooltip } from "@/components/ui";
 import { Box, Button, Flex, IconButton, Stack, Text } from "@chakra-ui/react";
 import { useState } from "react";
-import { HiCheck } from "react-icons/hi2";
 import PropTypes from "prop-types";
-import { FaCheck } from "react-icons/fa";
+import { FaCheck, FaTimes } from "react-icons/fa";
 import { useUpdatePaymentOrder } from "@/hooks/payment_orders";
 
-export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
+export const CancelPaymentOrderModal = ({ item, fetchPaymentOrders }) => {
   const [open, setOpen] = useState(false);
 
   const { mutateAsync: updatePaymentOrder, isSaving } = useUpdatePaymentOrder();
 
   const handleValidate = async () => {
     const payload = {
-      status: 3
+      status: 4
     }
     updatePaymentOrder({ id: item.id, payload }, {
       onSuccess: () => {
         toaster.create({
-          title: "Orden de pago validada correctamente",
+          title: "Orden de pago cancelada correctamente",
           type: 'success',
         });
         setOpen(false);
@@ -33,6 +32,8 @@ export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
     })
   }
 
+  console.log(item)
+
   return (
     <Stack css={{ "--field-label-width": "180px" }}>
       <Field orientation={{ base: "vertical", sm: "horizontal" }}>
@@ -40,18 +41,18 @@ export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
           trigger={
             <Box>
               <Tooltip
-                content='Validar Voucher de Pago'
+                content='Rechazar Orden de Pago'
                 positioning={{ placement: 'bottom-center' }}
                 showArrow
                 openDelay={0}
               >
-                <IconButton colorPalette='green' size='xs'>
-                  <HiCheck />
+                <IconButton colorPalette='red' size='xs'>
+                  <FaTimes />
                 </IconButton>
               </Tooltip>
             </Box>
           }
-          title="Validar Voucher de Pago"
+          title="Rechazar Orden de Pago"
           placement="center"
           size="xl"
           open={open}
@@ -62,45 +63,8 @@ export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
           <Stack spacing={4}>
             <Stack spacing={4} w="full"
             >
-              {/* <Flex justify='space-between' gap={2} mt={2}>
-                <Box w='100%'>
-                  <Field label='Id de la ordern:'>
-                    <Text fontSize='xl' color={'uni.secondary'}>
-                      {item?.id_orden}
-                    </Text>
-                  </Field>
-                  <Field label='Núm. de Documento - Nombre del postulante:'>
-                    <Text fontSize='xl' color={'uni.secondary'}>
-                      {item?.document_num} - {item?.name}
-                    </Text>
-                  </Field>
-                  <Field label='Pago total:'>
-                    <Text fontSize='xl' color={'uni.secondary'}>
-                      S/ {item?.sub_amount}
-                    </Text>
-                  </Field>
-                </Box>
-                <Box w='100%'>
-                  <Field label='Método de pago:'>
-                    <Text fontSize='xl' color={'uni.secondary'}>
-                      {item?.payment_method_slug}
-                    </Text>
-                  </Field>
-                  <Field label='Modalidad:'>
-                    <Text fontSize='xl' color={'uni.secondary'}>
-                      {item?.modality_name}
-                    </Text>
-                  </Field>
-                  <Field label='Fecha de vencimiento:'>
-                    <Text fontSize='xl' color={'uni.secondary'}>
-                      S/ {item?.due_date}
-                    </Text>
-                  </Field>
-                </Box>
-              </Flex> */}
-
               <Text fontSize='md'>
-                ¿Estás seguro de que deseas cancelar esta orden de pago <strong>{item?.id_orden}</strong> de postulante <strong>{item?.name?.toUpperCase()}</strong>? 
+                ¿Estás seguro de que deseas rechazar esta orden de pago <strong>{item?.id_orden}</strong> de postulante <strong>{item?.name?.toUpperCase()}</strong>? 
               </Text>
 
               <Flex justify='flex-end' gap={2} mt={2}>
@@ -112,7 +76,7 @@ export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
                   onClick={handleValidate}
                 >
                   <FaCheck />
-                  Validar
+                  Si, rechazar
                 </Button>
                 <Button
                   colorPalette={'red'}
@@ -131,7 +95,7 @@ export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
   );
 }
 
-ValidatePaymentOrderModal.propTypes = {
+CancelPaymentOrderModal.propTypes = {
   item: PropTypes.object,
   fetchPaymentOrders: PropTypes.func
 };

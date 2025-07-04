@@ -11,7 +11,7 @@ import {
 import { Pagination } from '@/components/ui'
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { SortableHeader } from '@/components/ui/SortableHeader';
-import { ValidatePaymentOrderModal, ViewPaymentOrderVoucherModal } from '@/components/forms/payment_orders';
+import { CancelPaymentOrderModal, ValidatePaymentOrderModal, ViewPaymentOrderVoucherModal } from '@/components/forms/payment_orders';
 import { format, parseISO } from 'date-fns';
 
 const Row = memo(({ item, startIndex, index, refetch, permissions, sortConfig, data }) => {
@@ -47,11 +47,14 @@ const Row = memo(({ item, startIndex, index, refetch, permissions, sortConfig, d
       <Table.Cell>
         <HStack justify='space-between'>
           <Group gap={1}>
-            {permissions.includes('dashboard.debt.view') && (
-              <ViewPaymentOrderVoucherModal item={item} />
+            {permissions.includes('payment.vouchers.view') && (
+              <ViewPaymentOrderVoucherModal item={item} fetchPaymentOrders={refetch} />
             )}
-            {permissions.includes('dashboard.debt.view') && ( 
+            {permissions.includes('payment.orders.validate') && ( 
               <ValidatePaymentOrderModal item={item} fetchPaymentOrders={refetch}  />
+            )}
+            {permissions.includes('payment.orders.validate') && ( 
+              <CancelPaymentOrderModal item={item} fetchPaymentOrders={refetch}  />
             )}
           </Group>
         </HStack>

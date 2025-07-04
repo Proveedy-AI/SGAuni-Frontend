@@ -22,8 +22,10 @@ export const DebtsLayout = () => {
     if (!permission) return true;
     const roles = profile?.roles || [];
     const permissions = roles.flatMap((r) => r.permissions || []);
+    console.log(permissions)
     return permissions.some((p) => p.guard_name === permission);
   };
+
 
   const activeBg = colorMode === 'dark' ? 'uni.gray.400' : 'gray.200';
 
@@ -31,12 +33,12 @@ export const DebtsLayout = () => {
     {
       href: '/debts/payment-requests',
       label: 'Solicitudes de Pago',
-      permission: 'dashboard.debt.view',
+      permission: 'payment.requests.view',
     },
     {
       href: '/debts/payment-orders',
       label: 'Ordenes de Pago',
-      permission: 'dashboard.debt.view',
+      permission: 'payment.orders.view',
     }
   ];
 

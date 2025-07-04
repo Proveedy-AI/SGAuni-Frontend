@@ -163,16 +163,17 @@ function App() {
 
 							<Route path='debts' element={<DebtsLayout />}>
 								<Route
-									element={
-										<ProtectedRoute requiredPermission='dashboard.debt.view' />
-									}
+									element={<ProtectedRoute requiredPermission='payment.requests.view' />}
 								>
 									<Route path='payment-requests'>
                     <Route index element={<PaymentRequestsView />} />
                     <Route path=':id' element={<PaymentOrdersByRequest />} />
                   </Route>
-                  
-                  <Route path='payment-orders' element={<PaymentOrdersView />} />
+                  <Route
+									  element={<ProtectedRoute requiredPermission='payment.orders.view' />}
+								  >
+                    <Route path='payment-orders' element={<PaymentOrdersView />} />
+                  </Route>
 								</Route>
 							</Route>
 							{/* SETTINGS */}
