@@ -54,7 +54,7 @@ export const PaymentOrdersView = () => {
 
   const sortedPaymentOrders = 
     filteredPaymentOrdersByRequest?.sort((a, b) => 
-      b.status - a.status
+      a.status - b.status
   );
 
   return (
