@@ -13,7 +13,7 @@ export const DeleteProgramType = ({ item, fetchData }) => {
     try {
       await remove(id);
       toaster.create({
-        title: 'Tipo de Programa eliminado correctamente',
+        title: 'Dato eliminado correctamente',
         type: 'success',
       });
       setOpen(false);
@@ -28,7 +28,7 @@ export const DeleteProgramType = ({ item, fetchData }) => {
 
   return (
     <ConfirmModal
-      title='Eliminar Tipo de Programa'
+      title='Eliminar datos'
       placement='center'
       trigger={
         <IconButton colorPalette='red' size='xs'>
@@ -45,7 +45,7 @@ export const DeleteProgramType = ({ item, fetchData }) => {
         <Span fontWeight='semibold' px='1'>
           {item.name}
         </Span>
-        de la lista de tipos de programas?
+        de la lista?
       </Text>
     </ConfirmModal>
   )

@@ -1,9 +1,12 @@
 import { AddProgram } from '@/components/forms/management/programs/CreateProgram';
+import { AddProgramFocus } from '@/components/forms/management/programs/programsFocus/AddProgramFocus';
 import { AddProgramType } from '@/components/forms/management/programTypes';
 import { ProgramTable } from '@/components/tables/ProgramTable';
 import { ProgramTypesTable } from '@/components/tables/ProgramTypesTable';
+import { ProgramFocusTable } from '@/components/tables/settings/programs/ProgramFocusTable';
 import { InputGroup } from '@/components/ui';
 import { useReadPrograms, useReadProgramTypes } from '@/hooks';
+import { useReadProgramsFocus } from '@/hooks/programs/programsFocus/useReadProgramsFocus';
 import { useReadUsers } from '@/hooks/users';
 import { Box, Heading, HStack, Input, Stack, Tabs } from '@chakra-ui/react';
 import { useState } from 'react';
@@ -25,10 +28,19 @@ export const SettingsPrograms = () => {
 		refetch: fetchProgramTypes,
 		isLoading: loadingProgramTypes,
 	} = useReadProgramTypes();
+
+	const { data: dataProgramFocus, refetch: fetchProgramFocus } =
+		useReadProgramsFocus();
+
 	const { data: dataCoordinators, isLoading: loadingCoordinators } =
 		useReadUsers();
 
 	const programTypesOptions = dataProgramTypes?.results?.map((item) => ({
+		value: item.id.toString(),
+		label: item.name,
+	}));
+
+	const ProgramFocusOptions = dataProgramFocus?.results?.map((item) => ({
 		value: item.id.toString(),
 		label: item.name,
 	}));
@@ -45,11 +57,27 @@ export const SettingsPrograms = () => {
 			label: item.full_name,
 		}));
 
+	const DirectorOptions = dataCoordinators?.results
+		?.filter(
+			(item) =>
+				item?.is_active === true &&
+				Array.isArray(item?.roles) &&
+				item.roles.some((role) => role?.name === 'Director')
+		)
+		?.map((item) => ({
+			value: item.id.toString(),
+			label: item.full_name,
+		}));
+
 	const filteredPrograms = dataPrograms?.results?.filter((item) =>
 		item?.name?.toLowerCase().includes(searchProgramValue.toLowerCase())
 	);
 
 	const filteredProgramTypes = dataProgramTypes?.results?.filter((item) =>
+		item?.name?.toLowerCase().includes(searchProgramTypesValue.toLowerCase())
+	);
+
+	const filteredProgramFocus = dataProgramFocus?.results?.filter((item) =>
 		item?.name?.toLowerCase().includes(searchProgramTypesValue.toLowerCase())
 	);
 
@@ -67,6 +95,8 @@ export const SettingsPrograms = () => {
 				{tab === 1 && (
 					<AddProgram
 						fetchData={fetchPrograms}
+						ProgramFocusOptions={ProgramFocusOptions}
+						DirectorOptions={DirectorOptions}
 						programTypesOptions={programTypesOptions}
 						coordinatorsOptions={coordinatorsOptions}
 						loadingProgramTypes={loadingProgramTypes}
@@ -74,6 +104,7 @@ export const SettingsPrograms = () => {
 					/>
 				)}
 				{tab === 2 && <AddProgramType fetchData={fetchProgramTypes} />}
+				{tab === 3 && <AddProgramFocus fetchData={fetchProgramFocus} />}
 			</Stack>
 			<Tabs.Root
 				value={tab}
@@ -99,6 +130,9 @@ export const SettingsPrograms = () => {
 
 							<Tabs.Trigger value={2} color={tab === 2 ? 'uni.secondary' : ''}>
 								Tipos de Programas
+							</Tabs.Trigger>
+							<Tabs.Trigger value={3} color={tab === 3 ? 'uni.secondary' : ''}>
+								Enfoques de Programas
 							</Tabs.Trigger>
 						</Tabs.List>
 					</Box>
@@ -129,6 +163,7 @@ export const SettingsPrograms = () => {
 							isLoading={isLoading}
 							data={filteredPrograms}
 							fetchData={fetchPrograms}
+							DirectorOptions={DirectorOptions}
 							programTypesOptions={programTypesOptions}
 							coordinatorsOptions={coordinatorsOptions}
 							loadingProgramTypes={loadingProgramTypes}
@@ -164,6 +199,36 @@ export const SettingsPrograms = () => {
 							isLoading={loadingProgramTypes}
 							data={filteredProgramTypes}
 							fetchData={fetchProgramTypes}
+						/>
+					</Stack>
+				</Tabs.Content>
+				<Tabs.Content value={3}>
+					<Stack>
+						<Stack
+							direction={{ base: 'column', sm: 'row' }}
+							align={{ base: 'start', sm: 'center' }}
+							justify='space-between'
+						>
+							<Heading size='md'>Gestión de Enfoques de Programas</Heading>
+
+							<HStack>
+								<InputGroup flex='1' startElement={<FiSearch />}>
+									<Input
+										ml='1'
+										size='sm'
+										placeholder='Buscar por nombre'
+										value={searchProgramTypesValue}
+										onChange={(e) => setSearchProgramTypesValue(e.target.value)}
+									/>
+								</InputGroup>
+							</HStack>
+						</Stack>
+
+						{/* Cargar la tabla de Enfoques de Programas */}
+						<ProgramFocusTable
+							isLoading={loadingProgramTypes}
+							data={filteredProgramFocus}
+							fetchData={fetchProgramFocus}
 						/>
 					</Stack>
 				</Tabs.Content>
