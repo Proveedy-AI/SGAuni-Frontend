@@ -38,6 +38,8 @@ export const GeneratePaymentOrderModal = ({ requests, fetchData }) => {
     setOrderIdInput("");
     setDiscountInput("");
     setDueDateInput("");
+    setReceipt(null);
+    setSelectedRequest(null);
   }
 
   useEffect(() => {

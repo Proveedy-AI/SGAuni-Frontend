@@ -25,7 +25,6 @@ export const PaymentOrdersView = () => {
   const { 
     data: dataPaymentRequests,
     loading: isPaymentRequestsLoading, 
-    refetch: fetchPaymentRequests
   } = useReadPaymentRequest();
 
   const {
@@ -37,22 +36,26 @@ export const PaymentOrdersView = () => {
   const [searchValue, setSearchValue] = useState({
     id_orden: '',
     document_num: '',
-    email: ''
+    email: '',
+    due_date: null,
   });
 
   const handleFilterBy = (field, value) => {
     setSearchValue((prev) => ({ ...prev, [field]: value }));
   }
-  console.log(dataPaymentOrders)
 
   const filteredPaymentOrdersByRequest = dataPaymentOrders?.results
     ?.filter((order) =>
-    (!searchValue.id_orden || order.id_orden.includes(searchValue.id_orden)) &&
-    (!searchValue.document_num || order.document_num.includes(searchValue.document_num)) &&
-    (!searchValue.email || order.email.includes(searchValue.email))
+    (!searchValue.id_orden || order.id_orden?.includes(searchValue.id_orden)) &&
+    (!searchValue.document_num || order.document_num?.includes(searchValue.document_num)) &&
+    (!searchValue.email || order.email?.includes(searchValue.email)) &&
+    (!searchValue.due_date || order.due_date === searchValue.due_date)
   );
 
-  const sortedPaymentOrders = filteredPaymentOrdersByRequest?.sort((a, b) => a.status - b.status);
+  const sortedPaymentOrders = 
+    filteredPaymentOrdersByRequest?.sort((a, b) => 
+      b.status - a.status
+  );
 
   return (
     <Box spaceY='5'>
@@ -86,15 +89,21 @@ export const PaymentOrdersView = () => {
             bg={'white'}
             maxWidth={'550px'}
             placeholder='Buscar por id de orden'
-            value={searchValue.id_orden}
+            value={searchValue?.id_orden}
             onChange={(e) => handleFilterBy('id_orden', e.target.value)}
           />
         </InputGroup>
-
-        <GeneratePaymentOrderModal
-          requests={dataPaymentRequests?.results || []}
-          fetchData={fetchPaymentOrders}
-        />
+        
+        {
+          isPaymentRequestsLoading ? (
+            <Spinner />
+          ) : (
+            <GeneratePaymentOrderModal
+              requests={dataPaymentRequests?.results || []}
+              fetchData={fetchPaymentOrders}
+            />
+          )
+        }
       </Stack>
       
       {

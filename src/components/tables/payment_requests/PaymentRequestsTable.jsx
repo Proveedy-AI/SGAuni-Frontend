@@ -143,8 +143,8 @@ export const PaymentRequestsTable = ({ data, paymentOrders, fetchPaymentRequests
                 />
                 <Input
                   type='date'
-                  value={searchValue.due_date || ''}
-                  onChange={(e) => setSearchValue({ ...searchValue, due_date: e.target.value })}
+                  value={searchValue.requested_at}
+                  onChange={(e) => setSearchValue({ ...searchValue, requested_at: e.target.value })}
                   placeholder='Buscar por fecha de vencimiento'
                   size='sm'
                   maxWidth='150px'

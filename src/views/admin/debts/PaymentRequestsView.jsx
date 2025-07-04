@@ -6,6 +6,7 @@ import { useReadPaymentRequest } from "@/hooks/payment_requests/useReadPaymentRe
 import { Box, Heading, InputGroup, Input, Stack, Spinner } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { FiSearch } from "react-icons/fi";
+import { format, parseISO } from 'date-fns';
 
 export const PaymentRequestsView = () => {
   const { data: dataPaymentRequests, loading: isPaymentRequestsLoading, refetch: fetchPaymentRequets } = useReadPaymentRequest();
@@ -43,7 +44,7 @@ export const PaymentRequestsView = () => {
   const [loading, setInitialLoading] = useState(true);
   const [searchValue, setSearchValue] = useState({
     purpose_display: '',
-    date: '',
+    requested_at: '',
     document_type: documentTypeOptions[0],
     payment_method: paymentMethodOptions[0],
     status: statusOptions[0],
@@ -53,8 +54,12 @@ export const PaymentRequestsView = () => {
     (searchValue.document_type.value === 0 || item?.document_type === searchValue.document_type.value) &&
     (searchValue.payment_method.value === 0 || item?.payment_method === searchValue.payment_method.value) &&
     (searchValue.status.id === 0 || item?.status === searchValue.status.value) &&
-    (!searchValue.date || item?.date === searchValue.date)
+    (!searchValue.requested_at || 
+      format(parseISO(item?.requested_at), 'yyyy-MM-dd') === format(parseISO(searchValue.requested_at), 'yyyy-MM-dd')
+    )
   );
+
+  console.log(dataPaymentRequests?.results);
 
   useEffect(() => {
     if (loading && filteredPaymentRequests) {

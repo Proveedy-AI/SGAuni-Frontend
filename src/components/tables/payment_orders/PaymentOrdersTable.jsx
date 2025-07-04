@@ -12,6 +12,7 @@ import { Pagination } from '@/components/ui'
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import { ViewPaymentOrderVoucherModal } from '@/components/forms/payment_orders';
+import { format, parseISO } from 'date-fns';
 
 const Row = memo(({ item, startIndex, index, refetch, permissions, sortConfig, data }) => {
   const statusDisplay = [
@@ -30,6 +31,7 @@ const Row = memo(({ item, startIndex, index, refetch, permissions, sortConfig, d
           ? data.length - (startIndex + index)
           : startIndex + index + 1}
       </Table.Cell>
+      <Table.Cell>{format(parseISO(item.due_date), 'dd/MM/yyyy')}</Table.Cell>
       <Table.Cell>{item.id_orden}</Table.Cell>
       <Table.Cell>{item.document_num}</Table.Cell>
       <Table.Cell>{item.email}</Table.Cell>
@@ -113,6 +115,23 @@ export const PaymentOrdersTable = ({ data, filteredValues, filter, refetch, perm
                   columnKey='index'
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
+                />
+              </Table.ColumnHeader>
+              <Table.ColumnHeader alignContent={'start'}>
+                <SortableHeader
+                  label='Fecha de vencimiento'
+                  columnKey='due_date'
+                  sortConfig={sortConfig}
+                  onSort={setSortConfig}
+                />
+                <Input
+                  type='date'
+                  value={filteredValues?.due_date}
+                  onChange={(e) => filter('due_date', e.target.value)}
+                  buttonSize='xs'
+                  placeholder='Buscar por fecha de vencimiento'
+                  size='sm'
+                  maxWidth='150px'
                 />
               </Table.ColumnHeader>
               <Table.ColumnHeader alignContent={'start'}>
