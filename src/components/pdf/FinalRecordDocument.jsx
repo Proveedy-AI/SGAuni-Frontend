@@ -40,8 +40,7 @@ export const FinalRecordDocument = ({ modality, dataProgram, headers }) => {
       size="4xl"
       hiddenFooter={true}
     >
-      {isLoadingGrades && <Spinner />}
-      {!isLoadingGrades && dataGrades && (
+      {isLoadingGrades && !dataGrades ? <Spinner /> : dataGrades ? (
         <PDFViewer height="600" width="100%">
           <Document>
             <Page size="A4" style={styles.page}>
@@ -115,6 +114,8 @@ export const FinalRecordDocument = ({ modality, dataProgram, headers }) => {
             </Page>
           </Document>
         </PDFViewer>
+      ) : (
+        <Text>No se encontraron datos para mostrar</Text>
       )}
     </Modal>
   );

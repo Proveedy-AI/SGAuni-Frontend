@@ -1,5 +1,5 @@
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
-import { ConfirmDownloadApplicantsDataModal, ConfirmDownloadSuneduModal, GeneratePdfApliccationsModal } from '@/components/forms/admissions';
+import { ConfirmDownloadSuneduModal, GeneratePdfApliccationsModal } from '@/components/forms/admissions';
 import { AdmissionApplicantsByProgramTable } from '@/components/tables/admissions';
 import { Button, InputGroup, MenuContent, MenuItem, MenuRoot, MenuTrigger } from '@/components/ui';
 import { useReadAdmissionApplicants } from '@/hooks/admissions_applicants';
@@ -27,7 +27,6 @@ import { Link as RouterLink } from 'react-router';
 export const AdmissionApplicantsMenu = ({ applicants, data }) => {
   const [openGeneratePdfModal, setOpenGeneratePdfModal] = useState(false);
   const [openGenerateSuneduExcelModal, setOpenGenerateSuneduExcelModal] = useState(false);
-  const [openGenerateFichaPostulantesModal, setOpenGenerateFichaPostulantesModal] = useState(false);
   const admissionProcessId = data?.admission_process || null;
   const { data: dataAdmissionProcess, loading: isAdmissionProcessLoading } = useReadAdmissionById(admissionProcessId);
   
@@ -60,23 +59,13 @@ export const AdmissionApplicantsMenu = ({ applicants, data }) => {
             >
               Descargar estudiantes (SUNEDU)
 		      </MenuItem>
-          <MenuItem
-            _hover={{ bg: 'gray.100', color: 'uni.secondary' }}
-            onClick={() => {
-              setOpenGenerateFichaPostulantesModal(applicants.length > 0);
-            }}
-            >
-              Descargar ficha de postulantes
-          </MenuItem>
         </MenuContent>
       </MenuRoot>
 
       <GeneratePdfApliccationsModal data={data} open={openGeneratePdfModal} setOpen={setOpenGeneratePdfModal} />
-      {isAdmissionProcessLoading && <Spinner /> }
-      {!isAdmissionProcessLoading && dataAdmissionProcess && (
-          <ConfirmDownloadSuneduModal admissionProcess={dataAdmissionProcess} open={openGenerateSuneduExcelModal} setOpen={setOpenGenerateSuneduExcelModal} />
+      {isAdmissionProcessLoading ? <Spinner /> : (
+          dataAdmissionProcess && <ConfirmDownloadSuneduModal admissionProcess={dataAdmissionProcess} open={openGenerateSuneduExcelModal} setOpen={setOpenGenerateSuneduExcelModal} />
       )}
-      <ConfirmDownloadApplicantsDataModal dataProgram={data} open={openGenerateFichaPostulantesModal} setOpen={setOpenGenerateFichaPostulantesModal} />
       </Box>
   )
 }

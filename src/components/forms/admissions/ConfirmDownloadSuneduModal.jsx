@@ -40,7 +40,7 @@ export const ConfirmDownloadSuneduModal = ({ admissionProcess, open, setOpen }) 
       placement='center'
       open={open}
       onOpenChange={(e) => setOpen(e.open)}
-      size='4xl'
+      size='xl'
       onSave={handleDownload}
       loading={isSaving}
     >
