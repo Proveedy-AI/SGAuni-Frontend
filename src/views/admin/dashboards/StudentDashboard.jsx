@@ -23,7 +23,6 @@ export const StudentDashboard = () => {
 		if (profile && profile.admission_notification_uuid) {
 			updateNotifications({
 				id: profile.admission_notification_uuid,
-				payload: { seen: true },
 			});
 		}
 	};

@@ -6,10 +6,9 @@ export const useUpdateNotifications = () => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useMutation({
-		mutationFn: async ({ id, payload }) => {
+		mutationFn: async ({ id }) => {
 			const res = await axiosPrivate.patch(
-				`/api/v1/admission-applications/notification/${id}/`,
-				payload
+				`/api/v1/admission-applications/notification/${id}/`
 			);
 			return res.data;
 		},
