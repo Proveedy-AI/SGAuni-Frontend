@@ -2,16 +2,30 @@ import PropTypes from 'prop-types';
 import {
 	Badge,
 	Box,
+	Card,
+	Flex,
+	Heading,
+	Icon,
 	IconButton,
+	Separator,
 	SimpleGrid,
 	Stack,
 	Table,
 	Text,
+	VStack,
 } from '@chakra-ui/react';
-import { Field, Modal, Tooltip } from '@/components/ui';
+import { Modal, Tooltip } from '@/components/ui';
 import { FiEye } from 'react-icons/fi';
 import { useState } from 'react';
 import { formatDateString } from '@/components/ui/dateHelpers';
+import {
+	FaBookOpen,
+	FaCalendarAlt,
+	FaClock,
+	FaGraduationCap,
+	FaMapPin,
+	FaUsers,
+} from 'react-icons/fa';
 
 export const PreviewProgramsPendingModal = ({ data }) => {
 	const [open, setOpen] = useState(false);
@@ -21,14 +35,10 @@ export const PreviewProgramsPendingModal = ({ data }) => {
 		Approved: { label: 'Aprobado', color: 'green' },
 		Rejected: { label: 'Rechazado', color: 'red' },
 	};
-	const typeMap = {
-		1: 'Investigación',
-		2: 'Profesionalizante',
-	};
 
 	return (
 		<Modal
-			title='Vista previa del Programa de Admisión'
+			colortitle='#000000'
 			placement='center'
 			trigger={
 				<Box>
@@ -58,134 +68,185 @@ export const PreviewProgramsPendingModal = ({ data }) => {
 			onOpenChange={(e) => setOpen(e.open)}
 			size='4xl'
 		>
-			<Stack css={{ '--field-label-width': '140px' }}>
-				<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-					<Field color={'uni.secondary'} label='Programa:'>
-						<Text color={'black'} fontWeight='medium'>
-							{data.program_name}
-						</Text>
-					</Field>
-
-					<Field color={'uni.secondary'} label='Tipo de Postgrado:'>
-						<Text color='black' fontWeight='medium'>
-							{typeMap[data.postgrad_type] || 'No definido'}
-						</Text>
-					</Field>
-
-					<Field color={'uni.secondary'} label='Modo de estudio:'>
-						<Text color={'black'} fontWeight='medium'>
-							{data.study_mode_display}
-						</Text>
-					</Field>
-					<Field label='Estado:' color={'uni.secondary'}>
-						{(() => {
-							const status = statusMap[data.status_display] || {
-								label: data.status_display,
-								color: 'default',
-							};
-							return (
-								<Badge variant='solid' bg={status.color}>
-									{status.label}
-								</Badge>
-							);
-						})()}
-					</Field>
-				</SimpleGrid>
-				<Stack spacing={4}>
-					{/* Inicio de semestre */}
-					<Field color={'uni.secondary'} label='Inicio de semestre:'>
-						<Text color='black' fontWeight='medium'>
-							{formatDateString(data.semester_start_date)}
-						</Text>
-					</Field>
-
-					{/* Fechas de inscripción */}
-					<Box>
-						<Text fontWeight='semibold' color={'uni.secondary'} mb={2}>
-							Periodo de Inscripción:
-						</Text>
-						<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-							<Field label='Inicio:'>
-								<Text>
-									{formatDateString(data.registration_start_date) || '—'}
+			<Stack gap={2} px={6}>
+				<Box
+					top='0'
+					bg='white'
+					borderBottom='1px solid'
+					borderColor='gray.200'
+					px={6}
+					py={4}
+					zIndex={1}
+				>
+					<Flex justify='space-between' align='flex-start'>
+						<Box>
+							<Text fontSize='2xl' fontWeight='bold'>
+								{data.program_name}
+							</Text>
+							<Flex align='center' gap={2} mt={2}>
+								<Icon as={FaGraduationCap} color='blue.600' boxSize={4} />
+								<Text fontSize='md' color='gray.600'>
+									{data.study_mode_display}
 								</Text>
-							</Field>
-							<Field label='Fin:'>
-								<Text>
-									{formatDateString(data.registration_end_date) || '—'}
-								</Text>
-							</Field>
-						</SimpleGrid>
-					</Box>
+							</Flex>
+						</Box>
 
-					{/* Fechas de examen */}
-					<Box>
-						<Text color={'uni.secondary'} fontWeight='semibold' mb={2}>
-							Fechas de Examen:
-						</Text>
-						<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-							<Field label='Inicio:'>
-								<Text>{formatDateString(data.exam_date_start) || '—'}</Text>
-							</Field>
-							<Field label='Fin:'>
-								<Text>{formatDateString(data.exam_date_end) || '—'}</Text>
-							</Field>
-						</SimpleGrid>
-					</Box>
-
-					{/* Pre-maestría */}
-					<Box>
-						<Text color={'uni.secondary'} fontWeight='semibold' mb={2}>
-							Pre-Maestría:
-						</Text>
-						<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-							<Field label='Inicio:'>
-								<Text>
-									{data.pre_master_start_date
-										? formatDateString(data.pre_master_start_date)
-										: '—'}
-								</Text>
-							</Field>
-							<Field label='Fin:'>
-								<Text>{formatDateString(data.pre_master_end_date) || '—'}</Text>
-							</Field>
-						</SimpleGrid>
-					</Box>
-				</Stack>
-				<Box mt={6}>
-					<Text color={'uni.secondary'} fontWeight='semibold' mb={2}>
-						Modalidades Asignadas:
-					</Text>
-					<Table.Root size='sm' striped>
-						<Table.Header>
-							<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
-								<Table.ColumnHeader>N°</Table.ColumnHeader>
-								<Table.ColumnHeader>Modalidad</Table.ColumnHeader>
-								<Table.ColumnHeader>Vacantes</Table.ColumnHeader>
-							</Table.Row>
-						</Table.Header>
-
-						<Table.Body>
-							{data?.modalities?.map((item, index) => (
-								<Table.Row
-									key={item.id}
-									bg={{ base: 'white', _dark: 'its.gray.500' }}
-								>
-									<Table.Cell>{index + 1}</Table.Cell>
-									<Table.Cell>{item.modality_name}</Table.Cell>
-									<Table.Cell>{item.vacancies}</Table.Cell>
-								</Table.Row>
-							))}
-							{data?.modalities?.length === 0 && (
-								<Table.Row>
-									<Table.Cell colSpan={7} textAlign='center'>
-										Sin datos disponibles
-									</Table.Cell>
-								</Table.Row>
-							)}
-						</Table.Body>
-					</Table.Root>
+						<Flex align='center' gap={3}>
+							{(() => {
+								const status = statusMap[data.status_display] || {
+									label: data.status_display,
+									color: 'default',
+								};
+								return (
+									<Badge variant='solid' bg={status.color}>
+										{status.label}
+									</Badge>
+								);
+							})()}
+						</Flex>
+					</Flex>
 				</Box>
+
+				<Card.Root borderLeft='4px solid' borderLeftColor='blue.500'>
+					<Card.Header>
+						<Flex align='center' gap={2}>
+							<Icon as={FaBookOpen} boxSize={5} color='blue.600' />
+							<Heading fontSize='24px'>Información General</Heading>
+						</Flex>
+					</Card.Header>
+					<Card.Body>
+						<SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
+							<Box>
+								<Flex align='center' gap={2} mb={1}>
+									<Icon as={FaCalendarAlt} boxSize={4} color='green.600' />
+									<Text fontSize='sm' fontWeight='medium' color='gray.700'>
+										Inicio de Semestre
+									</Text>
+								</Flex>
+								<Text
+									ml={6}
+									fontSize='lg'
+									fontWeight='semibold'
+									color='gray.900'
+								>
+									{formatDateString(data.semester_start_date)}
+								</Text>
+							</Box>
+						</SimpleGrid>
+					</Card.Body>
+				</Card.Root>
+				<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+					{/* Periodo de Inscripción */}
+					<Card.Root borderLeft='4px solid' borderLeftColor='orange.500'>
+						<Card.Header pb={1}>
+							<Flex align='center' gap={1}>
+								<Icon as={FaClock} boxSize={5} color='orange.600' />
+								<Heading fontSize='24px'>Periodo de Inscripción</Heading>
+							</Flex>
+						</Card.Header>
+						<Card.Body>
+							<VStack align='start' gap={1}>
+								<Box>
+									<Text fontSize='sm' fontWeight='medium' color='gray.600'>
+										Fecha de Inicio
+									</Text>
+									<Text fontSize='lg' fontWeight='semibold' color='gray.900'>
+										{formatDateString(data.registration_start_date)}
+									</Text>
+								</Box>
+
+								<Box>
+									<Text fontSize='sm' fontWeight='medium' color='gray.600'>
+										Fecha de Cierre
+									</Text>
+									<Text fontSize='lg' fontWeight='semibold' color='gray.900'>
+										{formatDateString(data.registration_end_date)}
+									</Text>
+								</Box>
+							</VStack>
+						</Card.Body>
+					</Card.Root>
+
+					{/* Fechas de Examen */}
+					<Card.Root borderLeft='4px solid' borderLeftColor='red.500'>
+						<Card.Header pb={1}>
+							<Flex align='center' gap={2}>
+								<Icon as={FaMapPin} boxSize={5} color='red.600' />
+								<Heading fontSize='24px'>Fechas de Examen</Heading>
+							</Flex>
+						</Card.Header>
+						<Card.Body>
+							<VStack align='start' gap={1}>
+								<Box>
+									<Text fontSize='sm' fontWeight='medium' color='gray.600'>
+										Fecha de Inicio
+									</Text>
+									<Text fontSize='lg' fontWeight='semibold' color='gray.900'>
+										{formatDateString(data.exam_date_start)}
+									</Text>
+								</Box>
+								<Separator />
+								<Box>
+									<Text fontSize='sm' fontWeight='medium' color='gray.600'>
+										Fecha de Finalización
+									</Text>
+									<Text fontSize='lg' fontWeight='semibold' color='gray.900'>
+										{formatDateString(data.exam_date_end)}
+									</Text>
+								</Box>
+							</VStack>
+						</Card.Body>
+					</Card.Root>
+				</SimpleGrid>
+				<Card.Root borderLeft='4px solid' borderLeftColor='purple.500'>
+					<Card.Header pb={3}>
+						<Flex align='center' gap={2}>
+							<Icon as={FaUsers} boxSize={5} color='purple.600' />
+							<Heading fontSize='lg'>Modalidades Asignadas</Heading>
+							<Badge
+								variant='outline'
+								bg='purple.50'
+								color='purple.700'
+								borderColor='purple.200'
+								ml={2}
+							>
+								{data.modalities?.length || 0} modalidades
+							</Badge>
+						</Flex>
+					</Card.Header>
+
+					<Card.Body>
+						<Table.Root size='sm' striped>
+							<Table.Header>
+								<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
+									<Table.ColumnHeader>N°</Table.ColumnHeader>
+									<Table.ColumnHeader>Modalidad</Table.ColumnHeader>
+									<Table.ColumnHeader>Vacantes</Table.ColumnHeader>
+								</Table.Row>
+							</Table.Header>
+
+							<Table.Body>
+								{data?.modalities?.map((item, index) => (
+									<Table.Row
+										key={item.id}
+										bg={{ base: 'white', _dark: 'its.gray.500' }}
+									>
+										<Table.Cell>{index + 1}</Table.Cell>
+										<Table.Cell>{item.modality_name}</Table.Cell>
+										<Table.Cell>{item.vacancies}</Table.Cell>
+									</Table.Row>
+								))}
+								{data?.modalities?.length === 0 && (
+									<Table.Row>
+										<Table.Cell colSpan={7} textAlign='center'>
+											Sin datos disponibles
+										</Table.Cell>
+									</Table.Row>
+								)}
+							</Table.Body>
+						</Table.Root>
+					</Card.Body>
+				</Card.Root>
 			</Stack>
 		</Modal>
 	);
