@@ -16,8 +16,13 @@ export const ViewAdmissionEvaluatorsProgramExams = ({ item, isLoading, isOpen, o
             contentRef={contentRef}
             open={isOpen}
             onOpenChange={onClose}
+            positionerProps={{
+                style: {
+                    padding: '40px',
+                }
+            }}
         >
-            <Stack spacing={4} css={{ '--field-label-width': '150px' }}>
+            <Stack>
                 <Table.Root size='sm' striped>
                     <Table.Header>
                         <Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>

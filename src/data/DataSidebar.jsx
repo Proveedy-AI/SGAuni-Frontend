@@ -7,11 +7,11 @@ import {
 	FiCheck,
 	FiUserCheck,
 	FiList,
-  FiDollarSign,
-  FiFileText,
-  FiBookOpen,
+	FiDollarSign,
+	FiFileText,
+	FiBookOpen,
 } from 'react-icons/fi';
-import { FaFileContract } from 'react-icons/fa';
+import { FaFileContract, FaRegFile } from 'react-icons/fa';
 import { HiOutlineClipboardList } from 'react-icons/hi';
 import { useProvideAuth } from '@/hooks/auth';
 
@@ -63,7 +63,7 @@ export const useDataSidebar = () => {
 					icon: FiFileText,
 					label: 'Mis Asignaciones',
 					permission: 'admissions.evaluators.view',
-				}
+				},
 			],
 		},
 		{
@@ -91,7 +91,19 @@ export const useDataSidebar = () => {
 				},
 			],
 		},
-    {
+		{
+			href: '/tuition',
+			icon: FaRegFile,
+			label: 'Matricula',
+			permission: 'tuition.processes.view',
+		},
+		{
+			href: '/debts',
+			icon: FiDollarSign,
+			label: 'Cobranzas',
+			permission: 'dashboard.debt.view',
+		},
+		{
       href: '/courses-schedules',
       icon: FiBookOpen,
       label: 'Cursos y Horarios',

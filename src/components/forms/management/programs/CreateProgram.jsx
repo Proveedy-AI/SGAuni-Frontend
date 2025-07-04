@@ -8,6 +8,8 @@ import { ReactSelect } from '@/components/select';
 
 export const AddProgram = ({
 	fetchData,
+	DirectorOptions,
+	ProgramFocusOptions,
 	programTypesOptions,
 	coordinatorsOptions,
 	loadingProgramTypes,
@@ -23,6 +25,8 @@ export const AddProgram = ({
 		type: null,
 		coordinator: null,
 		price_credit: '',
+		director: null,
+		postgraduate_focus: null,
 	});
 
 	const validateFields = () => {
@@ -37,7 +41,8 @@ export const AddProgram = ({
 			Number(programRequest.price_credit) <= 0
 		)
 			newErrors.price_credit = 'El precio debe ser mayor a 0';
-
+		if (!programRequest.director)
+			newErrors.director = 'Seleccione un director';
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
 	};
@@ -51,6 +56,12 @@ export const AddProgram = ({
 			name: programRequest.name,
 			type: Number(programRequest.type.value),
 			coordinator: Number(programRequest.coordinator.value),
+			director: programRequest.director
+				? Number(programRequest.director.value)
+				: null,
+			postgraduate_focus: programRequest.postgraduate_focus
+				? Number(programRequest.postgraduate_focus.value)
+				: null,
 			price_credit: programRequest.price_credit,
 		};
 
@@ -103,6 +114,7 @@ export const AddProgram = ({
 					label='Nombre del Programa'
 					invalid={!!errors.name}
 					errorText={errors.name}
+					required
 				>
 					<Input
 						required
@@ -119,6 +131,7 @@ export const AddProgram = ({
 					label='Tipo de Programa'
 					errorText={errors.type}
 					invalid={!!errors.type}
+					required
 				>
 					<ReactSelect
 						value={programRequest.type}
@@ -136,9 +149,53 @@ export const AddProgram = ({
 					/>
 				</Field>
 				<Field
+					label='Enfoque de Programa'
+					errorText={errors.postgraduate_focus}
+					invalid={!!errors.postgraduate_focus}
+				>
+					<ReactSelect
+						value={programRequest.postgraduate_focus}
+						onChange={(select) => {
+							setProgramRequest({
+								...programRequest,
+								postgraduate_focus: select,
+							});
+						}}
+						variant='flushed'
+						size='xs'
+						isSearchable={true}
+						isClearable
+						name='Enfoques de Programa'
+						options={ProgramFocusOptions}
+					/>
+				</Field>
+				<Field
+					label='Director'
+					errorText={errors.director}
+					invalid={!!errors.director}
+					required
+				>
+					<ReactSelect
+						value={programRequest.director}
+						onChange={(select) => {
+							setProgramRequest({ ...programRequest, director: select });
+						}}
+						variant='flushed'
+						size='xs'
+						isDisabled={loadingCoordinators}
+						isLoading={loadingCoordinators}
+						isSearchable={true}
+						isClearable
+						name='Directores'
+						options={DirectorOptions}
+					/>
+				</Field>
+
+				<Field
 					label='Coordinador'
 					errorText={errors.coordinator}
 					invalid={!!errors.coordinator}
+					required
 				>
 					<ReactSelect
 						value={programRequest.coordinator}
@@ -159,6 +216,7 @@ export const AddProgram = ({
 					label='Precio por crédito (S/.)'
 					errorText={errors.price_credit}
 					invalid={!!errors.price_credit}
+					required
 				>
 					<Input
 						required
@@ -185,4 +243,6 @@ AddProgram.propTypes = {
 	coordinatorsOptions: PropTypes.array,
 	loadingProgramTypes: PropTypes.bool,
 	loadingCoordinators: PropTypes.bool,
+	ProgramFocusOptions: PropTypes.array,
+	DirectorOptions: PropTypes.array,
 };

@@ -6,7 +6,6 @@ import { FiPlus } from 'react-icons/fi';
 import { ReactSelect } from '@/components/select';
 import { useReadPrograms } from '@/hooks';
 import { useCreateAdmissionsPrograms } from '@/hooks/admissions_programs';
-import { useReadUsers } from '@/hooks/users';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { format } from 'date-fns';
 
@@ -23,9 +22,7 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 	const [preMasterEnd, setPreMasterEnd] = useState('');
 
 	const [selectedMode, setSelectedMode] = useState(null);
-	const [selectedType, setSelectedType] = useState(null);
 	const [selectedProgram, setSelectedProgram] = useState(null);
-	const [selectedUser, setSelectedUser] = useState(null);
 	const [errors, setErrors] = useState({});
 	const { mutate: createAdmissionsPrograms, isPending } =
 		useCreateAdmissionsPrograms();
@@ -33,16 +30,11 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 		{ coordinator_id: profileId },
 		{ enabled: open }
 	);
-	const { data: dataUsers, isLoading } = useReadUsers({}, { enabled: open });
 
 	const validateFields = () => {
 		const newErrors = {};
-		if (!name.trim()) newErrors.name = 'El ciclo es requerido';
-		if (!selectedType)
-			newErrors.selectedType = 'Seleccione un tipo de postgrado';
 		if (!selectedMode) newErrors.selectedMode = 'Seleccione un modo de estudio';
 		if (!selectedProgram) newErrors.selectedProgram = 'Seleccione un programa';
-		if (!selectedUser) newErrors.selectedUser = 'Seleccione un director';
 		if (!registrationStart)
 			newErrors.registrationStart =
 				'Fecha de inicio de inscripción es requerida';
@@ -68,11 +60,9 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 		if (!validateFields()) return;
 
 		const payload = {
-			postgrad_type: selectedType.value,
 			study_mode: selectedMode.value,
 			admission_process: id,
 			program: selectedProgram.value,
-			director: selectedUser.value,
 			registration_start_date: registrationStart,
 			registration_end_date: registrationEnd,
 			exam_date_start: examStart,
@@ -94,7 +84,6 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 				setOpen(false);
 				fetchData();
 				setSelectedMode(null);
-				setSelectedType(null);
 				setSelectedProgram(null);
 				setRegistrationStart('');
 				setRegistrationEnd('');
@@ -134,22 +123,10 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 		{ label: 'Presencial', value: 3 },
 	];
 
-	const dataType = [
-		{ label: 'Investigación', value: 1 },
-		{ label: 'Profesionalizante', value: 2 },
-	];
-
 	const ProgramsOptions = dataPrograms?.results?.map((department) => ({
 		label: department.name,
 		value: department.id,
 	}));
-
-	const UserstOptions = dataUsers?.results
-		.filter((user) => user.roles?.some((role) => role.name === 'Director'))
-		.map((user) => ({
-			label: user.full_name,
-			value: user.id,
-		}));
 
 	return (
 		<Modal
@@ -189,22 +166,6 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 						options={ProgramsOptions}
 					/>
 				</Field>
-				<Field
-					label='Tipo de Postgrado:'
-					invalid={!!errors.selectedType}
-					errorText={errors.selectedType}
-					required
-				>
-					<ReactSelect
-						value={selectedType}
-						onChange={setSelectedType}
-						variant='flushed'
-						size='xs'
-						isClearable
-						isSearchable
-						options={dataType}
-					/>
-				</Field>
 
 				<Field
 					label='Modo de estudio:'
@@ -222,25 +183,6 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 						options={dataMode}
 					/>
 				</Field>
-				<Field
-					label='Director:'
-					invalid={!!errors.selectedUser}
-					errorText={errors.selectedUser}
-					required
-				>
-					<ReactSelect
-						value={selectedUser}
-						onChange={(select) => setSelectedUser(select)}
-						variant='flushed'
-						size='xs'
-						isDisabled={isLoading}
-						isLoading={isLoading}
-						isClearable
-						isSearchable={true}
-						name='paises'
-						options={UserstOptions}
-					/>
-				</Field>
 
 				<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
 					<Field
@@ -256,6 +198,7 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 							}
 							buttonSize='xs'
 							size={{ base: '330px', md: '420px' }}
+							minDate={new Date() }
 						/>
 					</Field>
 
@@ -272,6 +215,7 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 							}
 							buttonSize='xs'
 							size={{ base: '330px', md: '420px' }}
+							minDate={new Date()}
 						/>
 					</Field>
 
@@ -286,6 +230,7 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 							onDateChange={(date) => setExamStart(format(date, 'yyyy-MM-dd'))}
 							buttonSize='xs'
 							size={{ base: '330px', md: '420px' }}
+							minDate={new Date() }
 						/>
 					</Field>
 
@@ -300,6 +245,7 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 							onDateChange={(date) => setExamEnd(format(date, 'yyyy-MM-dd'))}
 							buttonSize='xs'
 							size={{ base: '330px', md: '420px' }}
+							minDate={new Date() }
 						/>
 					</Field>
 
@@ -316,6 +262,7 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 							}
 							buttonSize='xs'
 							size={{ base: '330px', md: '420px' }}
+							minDate={new Date() }
 						/>
 					</Field>
 
@@ -332,6 +279,7 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 							}
 							buttonSize='xs'
 							size={{ base: '330px', md: '420px' }}
+							minDate={new Date() }
 						/>
 					</Field>
 				</SimpleGrid>
@@ -349,6 +297,7 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 						}}
 						buttonSize='xs'
 						size={{ base: '330px', md: '850px' }}
+						minDate={new Date() }
 					/>
 				</Field>
 			</Stack>

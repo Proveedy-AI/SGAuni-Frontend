@@ -84,7 +84,7 @@ export function CustomDatePicker({
 
 CustomDatePicker.propTypes = {
 	selectedDate: PropTypes.string,
-	onDateChange: PropTypes.fuc,
+	onDateChange: PropTypes.func,
 	buttonSize: PropTypes.string,
 	size: PropTypes.string,
 	disableFutureDates: PropTypes.bool,

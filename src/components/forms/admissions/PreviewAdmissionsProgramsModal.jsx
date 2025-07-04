@@ -17,11 +17,6 @@ export const PreviewAdmissionsProgramsModal = ({ data }) => {
 		{ label: 'Presencial', value: 3 },
 	];
 
-	const dataType = [
-		{ label: 'Investigación', value: 1 },
-		{ label: 'Profesionalizante', value: 2 },
-	];
-
 	const ProgramsOptions = dataPrograms?.results?.map((department) => ({
 		label: department.name,
 		value: department.id,
@@ -72,15 +67,6 @@ export const PreviewAdmissionsProgramsModal = ({ data }) => {
 					/>
 				</Field>
 
-				<Field label='Tipo de Postgrado:'>
-					<ReactSelect
-						value={getLabel(dataType, data.postgrad_type)}
-						isDisabled
-						variant='flushed'
-						size='xs'
-					/>
-				</Field>
-
 				<Field label='Modo de estudio:'>
 					<ReactSelect
 						value={getLabel(dataMode, data.study_mode)}
@@ -88,10 +74,6 @@ export const PreviewAdmissionsProgramsModal = ({ data }) => {
 						variant='flushed'
 						size='xs'
 					/>
-				</Field>
-
-				<Field label='Director:'>
-					<Input value={data.director_name} isReadOnly></Input>
 				</Field>
 
 				<Field label='Inicio de semestre:'>

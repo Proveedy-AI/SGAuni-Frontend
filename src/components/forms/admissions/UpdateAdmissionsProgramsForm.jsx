@@ -6,7 +6,6 @@ import { FiEdit2 } from 'react-icons/fi';
 import { ReactSelect } from '@/components/select';
 import { useReadPrograms } from '@/hooks';
 import { useUpdateAdmissionsPrograms } from '@/hooks/admissions_programs';
-import { useReadUsers } from '@/hooks/users';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { format } from 'date-fns';
 
@@ -28,9 +27,7 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 	);
 	const [preMasterEnd, setPreMasterEnd] = useState(data?.pre_master_end_date);
 	const [selectedMode, setSelectedMode] = useState(null);
-	const [selectedType, setSelectedType] = useState(null);
 	const [selectedProgram, setSelectedProgram] = useState(null);
-	const [selectedUser, setSelectedUser] = useState(null);
 	const [errors, setErrors] = useState({});
 	const { mutate: updateAdmissionsPrograms, isPending } =
 		useUpdateAdmissionsPrograms();
@@ -43,12 +40,9 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 
 	const validateFields = () => {
 		const newErrors = {};
-		if (!name.trim()) newErrors.name = 'El ciclo es requerido';
-		if (!selectedType)
-			newErrors.selectedType = 'Seleccione un tipo de postgrado';
+
 		if (!selectedMode) newErrors.selectedMode = 'Seleccione un modo de estudio';
 		if (!selectedProgram) newErrors.selectedProgram = 'Seleccione un programa';
-		if (!selectedUser) newErrors.selectedUser = 'Seleccione un director';
 		if (!registrationStart)
 			newErrors.registrationStart =
 				'Fecha de inicio de inscripción es requerida';
@@ -68,22 +62,18 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 		return Object.keys(newErrors).length === 0;
 	};
 
-	const { data: dataUsers, isLoading } = useReadUsers({}, { enabled: open });
-
 	const handleSubmitData = (e) => {
 		e.preventDefault();
 
 		if (!validateFields()) return;
 
 		const payload = {
-			postgrad_type: selectedType.value,
 			study_mode: selectedMode.value,
 			admission_process: data.admission_process,
 			program: selectedProgram.value,
 			registration_start_date: registrationStart,
 			registration_end_date: registrationEnd,
 			exam_date_start: examStart,
-			director: selectedUser.value,
 			exam_date_end: examEnd,
 			semester_start_date: semesterStart,
 			pre_master_start_date: preMasterStart,
@@ -120,32 +110,14 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 		{ label: 'Presencial', value: 3 },
 	];
 
-	const dataType = [
-		{ label: 'Investigación', value: 1 },
-		{ label: 'Profesionalizante', value: 2 },
-	];
-
 	const ProgramsOptions = dataPrograms?.results?.map((department) => ({
 		label: department.name,
 		value: department.id,
 	}));
 
-	const UserstOptions = dataUsers?.results
-		.filter((user) => user.roles?.some((role) => role.name === 'Director'))
-		.map((user) => ({
-			label: user.full_name,
-			value: user.id,
-		}));
-
 	useEffect(() => {
 		if (data) {
 			// Tipo de postgrado
-			const matchedType = dataType.find(
-				(type) => type.value === data.postgrad_type
-			);
-			if (matchedType) {
-				setSelectedType(matchedType);
-			}
 
 			// Modo de estudio
 			const matchedMode = dataMode.find(
@@ -162,14 +134,6 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 				);
 				if (matchedProgram) {
 					setSelectedProgram(matchedProgram);
-				}
-			}
-			if (data.director && UserstOptions) {
-				const matchedDirector = UserstOptions.find(
-					(director) => director.value === data.director
-				);
-				if (matchedDirector) {
-					setSelectedUser(matchedDirector);
 				}
 			}
 		}
@@ -227,22 +191,6 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 						options={ProgramsOptions}
 					/>
 				</Field>
-				<Field
-					label='Tipo de Postgrado:'
-					invalid={!!errors.selectedType}
-					errorText={errors.selectedType}
-					required
-				>
-					<ReactSelect
-						value={selectedType}
-						onChange={setSelectedType}
-						variant='flushed'
-						size='xs'
-						isSearchable
-						isClearable
-						options={dataType}
-					/>
-				</Field>
 
 				<Field
 					label='Modo de estudio:'
@@ -258,25 +206,6 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 						isSearchable
 						isClearable
 						options={dataMode}
-					/>
-				</Field>
-				<Field
-					label='Director:'
-					invalid={!!errors.selectedUser}
-					errorText={errors.selectedUser}
-					required
-				>
-					<ReactSelect
-						value={selectedUser}
-						onChange={(select) => setSelectedUser(select)}
-						variant='flushed'
-						size='xs'
-						isDisabled={isLoading}
-						isLoading={isLoading}
-						isSearchable
-						isClearable
-						name='paises'
-						options={UserstOptions}
 					/>
 				</Field>
 

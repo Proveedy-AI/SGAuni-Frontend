@@ -1,13 +1,12 @@
 import { ViewAdmissionEvaluatorsProgramExams } from '@/components/forms/admissions';
 import { UpdateQualificationEvaluatorsModal } from '@/components/forms/admissions/evaluations';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
-import { NotificationToast } from '@/components/notifications';
-import { Modal, Pagination, Tooltip } from '@/components/ui';
+import { Pagination, toaster, Tooltip } from '@/components/ui';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import { useUpdateAdmissionEvaluationGrade } from '@/hooks/admissions_evaluations';
 import useSortedData from '@/utils/useSortedData';
-import { Badge, Box, Button, DialogCloseTrigger, HStack, IconButton, Table } from '@chakra-ui/react';
+import { Badge, Box, HStack, IconButton, Table } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
 import { FiCheckCircle } from 'react-icons/fi';
@@ -17,11 +16,10 @@ const Row = memo(({ item, fetchData, isLoading, startIndex, index, data, sortCon
     const isEvaluated = hasEvaluations && item.evaluations.every((e) => e.status_qualification_display === 'Completed');
     const averageScore = hasEvaluations ? (item.evaluations.reduce((sum, evalItem) => sum + parseFloat(evalItem.qualification || 0), 0) / item.evaluations.length).toFixed(2) : null;
 
-    const [toastVisible, setToastVisible] = useState(false);
     const [openModal, setOpenModal] = useState(null);
     const [selectedEvaluations, setSelectedEvaluations] = useState({});
     
-    const { mutate: dataEvaluationGrade } = useUpdateAdmissionEvaluationGrade();
+    const { mutate: updateExamGrade } = useUpdateAdmissionEvaluationGrade();
     
     const onOpenQualification = (data) => {
         setSelectedEvaluations(data);
@@ -31,14 +29,11 @@ const Row = memo(({ item, fetchData, isLoading, startIndex, index, data, sortCon
     const onSubmitQualification = ({ qualification, feedback, setError, setIsSaving }) => {
         const validNote = /^(\d{1,2})(\.\d{1,2})?$/.test(qualification) && parseFloat(qualification) >= 0 && parseFloat(qualification) <= 20;
  
-        if (!validNote) {
-            setError(true);
-            return;
-        }
+        if (!validNote) return setError(true)
         
         setIsSaving(true)
         
-        dataEvaluationGrade(
+        updateExamGrade(
             { uuid: selectedEvaluations.uuid, payload: { qualification, feedback } },
             { 
                 onSuccess: () => {
@@ -46,10 +41,17 @@ const Row = memo(({ item, fetchData, isLoading, startIndex, index, data, sortCon
                     setError(false);
                     setIsSaving(false);
                     setOpenModal('calificar')
-                    setToastVisible(true);
+                    toaster.create({
+                        title: 'Calificación actualizada correctamente',
+                        type: 'success',
+                    });
                 },
-                onError: () => {
+                onError: (error) => {
                     setIsSaving(false);
+                    toaster.create({
+                        title: error?.message || 'Error al actualizar la calificación',
+                        type: 'error',
+                    });
                 }
             }
         );
@@ -99,7 +101,6 @@ const Row = memo(({ item, fetchData, isLoading, startIndex, index, data, sortCon
                             </Box>
                             <ViewAdmissionEvaluatorsProgramExams 
                                 item={item} 
-                                fetchData={fetchData} 
                                 isLoading={isLoading} 
                                 isOpen={openModal === 'calificar'} 
                                 onClose={() => setOpenModal(null)} 
@@ -107,15 +108,10 @@ const Row = memo(({ item, fetchData, isLoading, startIndex, index, data, sortCon
                             />
                             <UpdateQualificationEvaluatorsModal
                                 data={selectedEvaluations}
+                                isLoading={isLoading}
                                 isOpen={openModal === 'ver'}
                                 onClose={() => setOpenModal('calificar')} 
                                 onSubmit={onSubmitQualification}
-                            />
-                            <NotificationToast
-                                open={toastVisible}
-                                onClose={() => setToastVisible(false)}
-                                title="Nota calificada"
-                                message="La calificación fue registrada correctamente."
                             />
                         </>
                     ) : (

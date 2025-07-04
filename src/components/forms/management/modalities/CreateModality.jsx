@@ -9,7 +9,11 @@ import {
 } from '@/components/ui';
 import { Flex, Input, SimpleGrid, Stack } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
-import { useCreateModality, useReadModalityRules } from '@/hooks';
+import {
+	useCreateModality,
+	useReadModalityRules,
+	useReadProgramTypes,
+} from '@/hooks';
 import PropTypes from 'prop-types';
 import { FiPlus } from 'react-icons/fi';
 import { ReactSelect } from '@/components/select';
@@ -17,21 +21,28 @@ import { ReactSelect } from '@/components/select';
 export const AddModalityForm = ({ fetchData }) => {
 	const contentRef = useRef(null);
 	const [open, setOpen] = useState(false);
+	const [selectedRuleIds, setSelectedRuleIds] = useState([]);
 	const [modalityRequest, setModalityRequest] = useState({
 		name: '',
 		requires_pre_master_exam: false,
 		requires_interview: false,
 		requires_essay: false,
 		description: '',
-		essay_weight: 0,
-		interview_weight: 0,
-		min_grade: 0,
+		pre_master_min_grade: '',
 		rules_ids: [],
-		master_type: null,
+		postgraduate_type: '',
 	});
 	const { data: dataModalityRules, isLoading: loadingRules } =
 		useReadModalityRules();
 	const [errors, setErrors] = useState({});
+
+	const { data: dataProgramTypes, isLoading: loadingProgramTypes } =
+		useReadProgramTypes({}, { enabled: open });
+
+	const programTypesOptions = dataProgramTypes?.results?.map((item) => ({
+		value: item.id.toString(),
+		label: item.name,
+	}));
 
 	const validate = () => {
 		const newErrors = {};
@@ -40,35 +51,21 @@ export const AddModalityForm = ({ fetchData }) => {
 		if (!modalityRequest.description)
 			newErrors.description = 'Falta descripción';
 		if (
-			!modalityRequest.min_grade ||
-			modalityRequest.min_grade < 0 ||
-			modalityRequest.min_grade > 20
+			(modalityRequest.requires_pre_master_exam &&
+				!modalityRequest.pre_master_min_grade) ||
+			modalityRequest.pre_master_min_grade < 0 ||
+			modalityRequest.pre_master_min_grade > 20
 		) {
-			newErrors.min_grade = 'Debe estar entre 0 y 20';
+			newErrors.pre_master_min_grade = 'Debe estar entre 0 y 20';
 		}
-
-		if (
-			modalityRequest.requires_essay &&
-			(modalityRequest.essay_weight === '' ||
-				modalityRequest.essay_weight < 0 ||
-				modalityRequest.essay_weight > 100)
-		) {
-			newErrors.essay_weight = 'Debe estar entre 0 y 100';
-		}
-
-		if (
-			modalityRequest.requires_interview &&
-			(modalityRequest.interview_weight === '' ||
-				modalityRequest.interview_weight < 0 ||
-				modalityRequest.interview_weight > 100)
-		) {
-			newErrors.interview_weight = 'Debe estar entre 0 y 100';
-		}
+		if (!modalityRequest.postgraduate_type)
+			newErrors.postgraduate_type = 'Seleccione un tipo de programa';
+		if (!selectedRuleIds || selectedRuleIds.length === 0)
+			newErrors.rules_ids = 'Seleccione al menos una regla';
 
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
 	};
-	const [selectedRuleIds, setSelectedRuleIds] = useState([]);
 
 	const handleCheckboxChange = (ruleId, isChecked) => {
 		setSelectedRuleIds((prev) =>
@@ -78,28 +75,37 @@ export const AddModalityForm = ({ fetchData }) => {
 
 	const { mutate: create, isPending: loading } = useCreateModality();
 
+	const handleChange = (field, value) => {
+		const boolValue = value === 'true';
+
+		let updatedRequest = { ...modalityRequest, [field]: boolValue };
+
+		if (field === 'requires_pre_master_exam' && boolValue) {
+			// Desactiva ensayo e entrevista
+			updatedRequest.requires_essay = false;
+			updatedRequest.requires_interview = false;
+		}
+		if (
+			(field === 'requires_essay' || field === 'requires_interview') &&
+			boolValue
+		) {
+			// Desactiva pre-maestría
+			updatedRequest.requires_pre_master_exam = false;
+			updatedRequest.pre_master_min_grade = '';
+		}
+
+		setModalityRequest(updatedRequest);
+	};
+
 	const handleSubmitData = (e) => {
 		e.preventDefault();
 
 		if (!validate()) return;
 
-		if (selectedRuleIds.length === 0) {
-			toaster.create({
-				title: 'Debe seleccionar al menos una regla.',
-				type: 'warning',
-			});
-			return;
-		}
-
 		const payload = {
 			...modalityRequest,
 			rules_ids: selectedRuleIds,
-			essay_weight: modalityRequest.requires_essay
-				? modalityRequest.essay_weight / 100
-				: 0,
-			interview_weight: modalityRequest.requires_interview
-				? modalityRequest.interview_weight / 100
-				: 0,
+			postgraduate_type: Number(modalityRequest.postgraduate_type.value),
 		};
 
 		create(payload, {
@@ -116,9 +122,8 @@ export const AddModalityForm = ({ fetchData }) => {
 					requires_interview: false,
 					requires_essay: false,
 					description: '',
-					essay_weight: 0,
-					interview_weight: 0,
-					min_grade: 0,
+					postgraduate_type: null,
+					pre_master_min_grade: 0,
 				});
 				setSelectedRuleIds([]);
 			},
@@ -188,42 +193,28 @@ export const AddModalityForm = ({ fetchData }) => {
 						}
 					/>
 				</Field>
-				<Field label='Tipo de Maestría'>
+				<Field
+					label='¿Para qué tipo de programa es?'
+					errorText={errors.postgraduate_type}
+					invalid={!!errors.postgraduate_type}
+					required
+				>
 					<ReactSelect
-						value={modalityRequest.master_type}
+						value={modalityRequest.postgraduate_type}
 						variant='flushed'
 						size='xs'
 						isSearchable
+						options={programTypesOptions}
+						isDisabled={loadingProgramTypes}
+						isLoading={loadingProgramTypes}
 						isClearable
-						name='Tipo de Maestría'
-						options={[
-							{ value: 'investigacion', label: 'Ciencias e investigación' },
-							{ value: 'profesionalizante', label: 'Profesionalizante' },
-						]}
-						onChange={(select) => {
-							setModalityRequest((prev) => {
-								let updated = { ...prev, master_type: select };
-
-								if (select?.value === 'investigacion') {
-									updated = {
-										...updated,
-										requires_essay: true,
-										requires_interview: true,
-										essay_weight: 60,
-										interview_weight: 40,
-									};
-								} else if (select?.value === 'profesionalizante') {
-									updated = {
-										...updated,
-										requires_essay: true,
-										requires_interview: true,
-										essay_weight: 40,
-										interview_weight: 60,
-									};
-								}
-								return updated;
-							});
-						}}
+						name='Tipo de Programa'
+						onChange={(select) =>
+							setModalityRequest({
+								...modalityRequest,
+								postgraduate_type: select,
+							})
+						}
 					/>
 				</Field>
 				<Flex
@@ -239,10 +230,7 @@ export const AddModalityForm = ({ fetchData }) => {
 								modalityRequest.requires_pre_master_exam ? 'true' : 'false'
 							}
 							onChange={(e) =>
-								setModalityRequest({
-									...modalityRequest,
-									requires_pre_master_exam: e.target.value === 'true',
-								})
+								handleChange('requires_pre_master_exam', e.target.value)
 							}
 							direction='row'
 						>
@@ -252,29 +240,31 @@ export const AddModalityForm = ({ fetchData }) => {
 							</Flex>
 						</RadioGroup>
 					</Field>
-					<Field
-						marginBottom='4'
-						label='Nota mínima Ponderado(0 a 20)'
-						invalid={!!errors.min_grade}
-						errorText={errors.min_grade}
-					>
-						<Input
-							required
-							type='number'
-							name='min_grade'
-							placeholder='Ingrese la nota mínima (0 a 20)'
-							value={modalityRequest.min_grade}
-							onChange={(e) =>
-								setModalityRequest({
-									...modalityRequest,
-									min_grade: e.target.value,
-								})
-							}
-							min={0}
-							max={20}
-							step={0.5}
-						/>
-					</Field>
+					{modalityRequest.requires_pre_master_exam && (
+						<Field
+							marginBottom='4'
+							label='Nota mínima aprobatoria pre-maestría (0 a 20)'
+							invalid={!!errors.pre_master_min_grade}
+							errorText={errors.pre_master_min_grade}
+						>
+							<Input
+								required
+								type='number'
+								name='pre_master_min_grade'
+								placeholder='Ingrese la nota mínima (0 a 20)'
+								value={modalityRequest.pre_master_min_grade}
+								onChange={(e) =>
+									setModalityRequest({
+										...modalityRequest,
+										pre_master_min_grade: e.target.value,
+									})
+								}
+								min={0}
+								max={20}
+								step={0.5}
+							/>
+						</Field>
+					)}
 				</Flex>
 				<Flex
 					marginBottom='4'
@@ -286,29 +276,7 @@ export const AddModalityForm = ({ fetchData }) => {
 						<RadioGroup
 							name='requiresEssay'
 							value={modalityRequest.requires_essay ? 'true' : 'false'}
-							onChange={(e) => {
-								const requiresEssay = e.target.value === 'true';
-								setModalityRequest((prev) => {
-									const both = requiresEssay && prev.requires_interview;
-									const onlyInterview =
-										!requiresEssay && prev.requires_interview;
-
-									return {
-										...prev,
-										requires_essay: requiresEssay,
-										essay_weight: requiresEssay
-											? both
-												? prev.essay_weight
-												: 100
-											: 0,
-										interview_weight: onlyInterview
-											? 100
-											: both
-												? prev.interview_weight
-												: 0,
-									};
-								});
-							}}
+							onChange={(e) => handleChange('requires_essay', e.target.value)}
 							direction='row'
 						>
 							<Flex gap='5'>
@@ -317,76 +285,13 @@ export const AddModalityForm = ({ fetchData }) => {
 							</Flex>
 						</RadioGroup>
 					</Field>
-					{modalityRequest.requires_essay && (
-						<Field
-							label='Peso del ensayo (0 a 100)%'
-							invalid={!!errors.essay_weight}
-							errorText={errors.essay_weight}
-						>
-							<Input
-								required
-								type='number'
-								name='essay_weight'
-								placeholder='Ej: 50'
-								value={
-									modalityRequest.essay_weight === 0
-										? '0'
-										: modalityRequest.essay_weight || ''
-								}
-								onChange={(e) => {
-									const val = e.target.value;
-									setModalityRequest({
-										...modalityRequest,
-										essay_weight: val === '' ? '' : Number(val),
-										interview_weight:
-											modalityRequest.requires_interview && val !== ''
-												? 100 - Number(val)
-												: modalityRequest.interview_weight,
-									});
-								}}
-								min={0}
-								max={100}
-								step={1}
-								disabled={
-									modalityRequest.requires_essay &&
-									!modalityRequest.requires_interview
-								}
-							/>
-						</Field>
-					)}
-				</Flex>
-				<Flex
-					marginBottom='4'
-					alignItems='start'
-					direction={{ base: 'column', sm: 'row' }}
-					gap={4}
-				>
 					<Field label='Requiere entrevista personal'>
 						<RadioGroup
 							name='requiresInterview'
 							value={modalityRequest.requires_interview ? 'true' : 'false'}
-							onChange={(e) => {
-								const requiresInterview = e.target.value === 'true';
-								setModalityRequest((prev) => {
-									const both = prev.requires_essay && requiresInterview;
-									const onlyEssay = !requiresInterview && prev.requires_essay;
-
-									return {
-										...prev,
-										requires_interview: requiresInterview,
-										interview_weight: requiresInterview
-											? both
-												? prev.interview_weight
-												: 100
-											: 0,
-										essay_weight: onlyEssay
-											? 100
-											: both
-												? prev.essay_weight
-												: 0,
-									};
-								});
-							}}
+							onChange={(e) =>
+								handleChange('requires_interview', e.target.value)
+							}
 							direction='row'
 						>
 							<Flex gap='5'>
@@ -395,45 +300,14 @@ export const AddModalityForm = ({ fetchData }) => {
 							</Flex>
 						</RadioGroup>
 					</Field>
-					{modalityRequest.requires_interview && (
-						<Field
-							label='Peso de la entrevista (0 a 100)%'
-							invalid={!!errors.interview_weight}
-							errorText={errors.interview_weight}
-						>
-							<Input
-								required
-								type='number'
-								name='interview_weight'
-								placeholder='Ej: 50'
-								value={
-									modalityRequest.interview_weight === 0
-										? '0'
-										: modalityRequest.interview_weight || ''
-								}
-								onChange={(e) => {
-									const val = e.target.value;
-									setModalityRequest({
-										...modalityRequest,
-										interview_weight: val === '' ? '' : Number(val),
-										essay_weight:
-											modalityRequest.requires_essay && val !== ''
-												? 100 - Number(val)
-												: modalityRequest.essay_weight,
-									});
-								}}
-								min={0}
-								max={100}
-								step={1}
-								disabled={
-									modalityRequest.requires_interview &&
-									!modalityRequest.requires_essay
-								}
-							/>
-						</Field>
-					)}
 				</Flex>
-				<Field label='Reglas'>
+
+				<Field
+					label='Reglas'
+					errorText={errors.rules_ids}
+					invalid={!!errors.rules_ids}
+					required
+				>
 					<SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} columnGap={8}>
 						{!loadingRules &&
 							dataModalityRules?.results?.map((rule) => (

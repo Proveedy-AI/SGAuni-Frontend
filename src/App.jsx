@@ -31,6 +31,7 @@ import { DebtsLayout, PaymentOrdersByRequest, PaymentRequestsView } from './view
 import { CoursesAndSchedules } from './views/admin/courses_and_schedules';
 import ChakraInscriptionForm from './views/inscription-form';
 import { PaymentOrdersView } from './views/admin/debts/PaymentOrdersView';
+import { Tuition } from './views/admin/tuitions';
 
 function App() {
 	return (
@@ -140,16 +141,25 @@ function App() {
 									<Route path='list' element={<Contracts />} />
 								</Route>
 							</Route>
-              
-              <Route path='courses-schedules'>
-                <Route
-                  element={
-                    <ProtectedRoute requiredPermission='courses.schedules.view' />
-                  }
-                >
-                  <Route index element={<CoursesAndSchedules />} />
-                </Route>
-              </Route>
+							<Route path='tuition'>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='tuition.processes.view' />
+									}
+								>
+									<Route index element={<Tuition />} />
+								</Route>
+							</Route>
+
+							<Route path='courses-schedules'>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='courses.schedules.view' />
+									}
+								>
+									<Route index element={<CoursesAndSchedules />} />
+								</Route>
+							</Route>
 
 							<Route path='debts' element={<DebtsLayout />}>
 								<Route

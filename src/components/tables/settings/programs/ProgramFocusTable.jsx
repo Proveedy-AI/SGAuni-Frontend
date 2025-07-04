@@ -2,15 +2,16 @@ import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
 import { Box, Group, HStack, Table } from '@chakra-ui/react';
 import { Pagination } from '@/components/ui';
-import {
-	DeleteProgramType,
-	EditProgramType,
-	ViewProgramType,
-} from '../forms/management/programTypes';
-import { usePaginationSettings } from '../navigation/usePaginationSettings';
-import { SortableHeader } from '../ui/SortableHeader';
+
+
 import useSortedData from '@/utils/useSortedData';
-import SkeletonTable from '../ui/SkeletonTable';
+
+import { DeleteProgramType } from '@/components/forms/management/programTypes';
+import { EditProgramFocus } from '@/components/forms/management/programs/programsFocus/EditProgramFocus';
+import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
+import { SortableHeader } from '@/components/ui/SortableHeader';
+import SkeletonTable from '@/components/ui/SkeletonTable';
+import { AssignWeigthProgramFocus } from '@/components/forms/management/programs/programsFocus/AssignWeigthProgramFocus';
 
 const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 	return (
@@ -21,14 +22,14 @@ const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 					: startIndex + index + 1}
 			</Table.Cell>
 			<Table.Cell>{item.name}</Table.Cell>
-			<Table.Cell>{item.code}</Table.Cell>
-			<Table.Cell>{item.min_grade}</Table.Cell>
+
 			<Table.Cell>
 				<HStack justify='space-between'>
 					<Group>
-						<ViewProgramType item={item} />
-						<EditProgramType item={item} fetchData={fetchData} />
+						<EditProgramFocus item={item} fetchData={fetchData} />
+						<AssignWeigthProgramFocus item={item} fetchData={fetchData} />
 						<DeleteProgramType item={item} fetchData={fetchData} />
+						
 					</Group>
 				</HStack>
 			</Table.Cell>
@@ -47,7 +48,7 @@ Row.propTypes = {
 	data: PropTypes.array,
 };
 
-export const ProgramTypesTable = ({ data, fetchData, isLoading }) => {
+export const ProgramFocusTable = ({ data, fetchData, isLoading }) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [currentPage, setCurrentPage] = useState(1);
 	const startIndex = (currentPage - 1) * pageSize;
@@ -76,30 +77,15 @@ export const ProgramTypesTable = ({ data, fetchData, isLoading }) => {
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='30%'>
+							<Table.ColumnHeader w='40%'>
 								<SortableHeader
-									label='Tipo de programa'
+									label='Enfoque de programa'
 									columnKey='name'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='20%'>
-								<SortableHeader
-									label='Código'
-									columnKey='code'
-									sortConfig={sortConfig}
-									onSort={setSortConfig}
-								/>
-							</Table.ColumnHeader>
-							<Table.ColumnHeader w='20%'>
-								<SortableHeader
-									label='Nota mínima aprobatoria'
-									columnKey='min_grade'
-									sortConfig={sortConfig}
-									onSort={setSortConfig}
-								/>
-							</Table.ColumnHeader>
+
 							<Table.ColumnHeader w='10%'>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
@@ -143,7 +129,7 @@ export const ProgramTypesTable = ({ data, fetchData, isLoading }) => {
 	);
 };
 
-ProgramTypesTable.propTypes = {
+ProgramFocusTable.propTypes = {
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
 	isLoading: PropTypes.bool,

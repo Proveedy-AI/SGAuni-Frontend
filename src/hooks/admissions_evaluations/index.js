@@ -3,6 +3,5 @@ export * from './useReadAdmissionEvaluations';
 export * from './useUpdateAdmissionEvaluation';
 export * from './useDeleteAdmissionEvaluation';
 export * from './useReadAdmissionEvaluationsByApplication';
-export * from './useUploadAdmissionEvaluation';
-
 export * from './useUpdateAdmissionEvaluationGrade';
+export * from './useUploadAdmissionEvaluation';
