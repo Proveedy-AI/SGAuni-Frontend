@@ -144,7 +144,6 @@ export const EditModality = ({ fetchData, item }) => {
 		setModalityEditable(updatedRequest);
 	};
 
-	console.log('Modality Editable', item.postgraduate_type);
 	return (
 		<Modal
 			title='Editar Modalidad'

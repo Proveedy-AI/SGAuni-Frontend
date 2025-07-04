@@ -40,7 +40,7 @@ export const EditProgram = ({
 				director: DirectorOptions.find(
 					(d) => String(d.value) === String(item.director)
 				),
-				postgraduate_focus: ProgramFocusOptions.find(
+				postgraduate_focus: ProgramFocusOptions?.find(
 					(p) => String(p.value) === String(item.postgraduate_focus)
 				),
 			}));
