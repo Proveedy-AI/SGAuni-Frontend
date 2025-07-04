@@ -163,6 +163,7 @@ export const SettingsPrograms = () => {
 							isLoading={isLoading}
 							data={filteredPrograms}
 							fetchData={fetchPrograms}
+							ProgramFocusOptions={ProgramFocusOptions}
 							DirectorOptions={DirectorOptions}
 							programTypesOptions={programTypesOptions}
 							coordinatorsOptions={coordinatorsOptions}

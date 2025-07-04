@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useReadProgramTypes = (params = {}) => {
+export const useReadProgramTypes = (params = {}, options = {}) => {
   const axiosPrivate = useAxiosPrivate();
 
   return useQuery({
@@ -10,5 +10,6 @@ export const useReadProgramTypes = (params = {}) => {
       const res = await axiosPrivate.get('/api/v1/postgraduate-program-types/', { params });
       return res.data;
     },
+    ...options,
   });
 };
