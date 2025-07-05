@@ -140,7 +140,7 @@ const Row = memo(
 								</Text>
 							</SendModal>
 						)}
-						<PreviewAdmissionsProgramsModal data={item} />
+						<PreviewAdmissionsProgramsModal statusMap={statusMap} data={item} />
 						{permissions?.includes('admissions.myprograms.assignmodality') && (
 							<AssignModalityToProgramForm data={item} fetchData={fetchData} />
 						)}
