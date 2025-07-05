@@ -12,6 +12,7 @@ import { useReadUbigeos } from '@/hooks/ubigeos';
 import { CompactFileUpload } from '@/components/ui/CompactFileInput';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { format } from 'date-fns';
+import { useReadDisabilities } from '@/hooks/disabilities';
 
 const FieldWithInputText = ({
 	placeholder,
@@ -81,6 +82,14 @@ export const ChangeDataStudentProfileForm = ({
 			label: ubigeo.code,
 		})) || [];
 
+	const { data: dataDisabilites, isLoading: loadingDisabilites } =
+		useReadDisabilities();
+	const DisabilitesOptions =
+		dataDisabilites?.results?.map((disability) => ({
+			value: disability.id,
+			label: disability.name,
+		})) || [];
+
 	const { data: dataDistrict, isLoading: loadingDisctrict } = useReadDistrict();
 
 	const DistrictOptions =
@@ -124,12 +133,12 @@ export const ChangeDataStudentProfileForm = ({
 
 	useEffect(() => {
 		preloadSelectValue(
-			dataUbigeo,
-			profile.address_ubigeo,
-			UbigeosOptions,
-			'address_ubigeo'
+			dataDisabilites,
+			profile.type_disability,
+			DisabilitesOptions,
+			'type_disability'
 		);
-	}, [dataUbigeo, profile]);
+	}, [dataDisabilites, profile]);
 
 	useEffect(() => {
 		preloadSelectValue(
@@ -139,6 +148,7 @@ export const ChangeDataStudentProfileForm = ({
 			'district'
 		);
 	}, [dataDistrict, profile]);
+
 	return (
 		<>
 			<Grid
@@ -432,12 +442,12 @@ export const ChangeDataStudentProfileForm = ({
 							>
 								<ReactSelect
 									label='Discapacidad'
-									options={UbigeosOptions}
+									options={DisabilitesOptions}
 									value={profile.type_disability}
 									onChange={(value) =>
 										updateProfileField('type_disability', value)
 									}
-									isLoading={loadingUbigeo}
+									isLoading={loadingDisabilites}
 									placeholder='Seleccione Discapacidad'
 								/>
 							</Field>
