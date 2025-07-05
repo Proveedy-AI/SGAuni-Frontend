@@ -41,28 +41,28 @@ const Row = memo(
 		const applicationStatusEnum = [
 			{
 				id: 1,
-				value: 'Incomplete',
+				value: 'Incompleto',
 				label: 'En revisión',
 				bg: '#FDD9C6',
 				color: '#F86A1E',
 			},
 			{
 				id: 2,
-				value: 'Approved',
+				value: 'Aprobado',
 				label: 'Aprobado',
 				bg: '#D0EDD0',
 				color: '#2D9F2D',
 			},
 			{
 				id: 3,
-				value: 'rejected',
+				value: 'Rechazado',
 				label: 'Rechazado',
 				bg: '#F7CDCE',
 				color: '#E0383B',
 			},
 			{
 				id: 4,
-				value: 'Observed',
+				value: 'Observado',
 				label: 'Observado',
 				bg: '#E3D1F6',
 				color: '#9049DB',
@@ -72,15 +72,15 @@ const Row = memo(
 		const calificationStatusEnum = [
 			{
 				id: 1,
-				value: 'Pending',
+				value: 'Pendiente',
 				label: 'Pendiente',
 				bg: '#AEAEAE',
 				color: '#F5F5F5',
 			},
 			{
 				id: 2,
-				value: 'Completed',
-				label: 'Calificado',
+				value: 'Completado',
+				label: 'Completado',
 				bg: '#D0EDD0',
 				color: '#2D9F2D',
 			},
