@@ -172,7 +172,7 @@ export const PreviewProgramsPendingModal = ({ data }) => {
 						<Card.Header pb={1}>
 							<Flex align='center' gap={2}>
 								<Icon as={FaMapPin} boxSize={5} color='red.600' />
-								<Heading fontSize='24px'>Fechas de Examen</Heading>
+								<Heading fontSize='24px'>Fechas de evaluaciones</Heading>
 							</Flex>
 						</Card.Header>
 						<Card.Body>
