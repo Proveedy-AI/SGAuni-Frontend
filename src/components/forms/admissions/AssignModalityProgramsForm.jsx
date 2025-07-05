@@ -8,10 +8,15 @@ import {
 	Flex,
 	Text,
 	Input,
+	Card,
+	Icon,
+	Heading,
+	Badge,
+	SimpleGrid,
 } from '@chakra-ui/react';
-import { Field, Modal, Tooltip, toaster } from '@/components/ui';
+import { Button, Field, Modal, Tooltip, toaster } from '@/components/ui';
 import { ReactSelect } from '@/components/select';
-import { FiTrash2, FiSettings } from 'react-icons/fi';
+import { FiTrash2, FiSettings, FiPlus, FiTag } from 'react-icons/fi';
 import {
 	useCreateModalityAssignment,
 	useDeleteModalityAssignment,
@@ -19,7 +24,6 @@ import {
 	useReadModalities,
 	useUpdateModalityAssignment,
 } from '@/hooks';
-import { FaSave } from 'react-icons/fa';
 
 export const AssignModalityToProgramForm = ({ data }) => {
 	const contentRef = useRef();
@@ -114,6 +118,13 @@ export const AssignModalityToProgramForm = ({ data }) => {
 		});
 	};
 
+	const totalVacancies =
+		filteredModality?.reduce((sum, item) => sum + item.vacancies, 0) || 0;
+	const average =
+		filteredModality?.length > 0
+			? Math.round(totalVacancies / filteredModality.length)
+			: 0;
+
 	return (
 		<Modal
 			title='Asignar Modalidad a Programa'
@@ -142,94 +153,192 @@ export const AssignModalityToProgramForm = ({ data }) => {
 			onOpenChange={(e) => setOpen(e.open)}
 			contentRef={contentRef}
 		>
-			<Stack spacing={4} css={{ '--field-label-width': '150px' }}>
-				<Flex
-					direction={{ base: 'column', md: 'row' }}
-					justify='flex-start'
-					align={'end'}
-					gap={2}
-					mt={2}
-				>
-					<Field label='Modalidad:'>
-						<ReactSelect
-							value={selectedModality}
-							onChange={setSelectedModality}
-							options={modalityOptions}
-							variant='flushed'
-							size='xs'
-							isClearable
-							isSearchable
-						/>
-					</Field>
+			<Stack
+				gap={2}
+				pb={6}
+				maxH={{ base: 'full', md: '75vh' }}
+				overflowY='auto'
+				sx={{
+					'&::-webkit-scrollbar': { width: '6px' },
+					'&::-webkit-scrollbar-thumb': {
+						background: 'gray.300',
+						borderRadius: 'full',
+					},
+				}}
+			>
+				<Card.Root>
+					<Card.Header pb={0}>
+						<Flex align='center' gap={2}>
+							<Icon as={FiPlus} w={5} h={5} color='purple.600' />
+							<Heading size='sm'>Agregar Nueva Modalidad</Heading>
+						</Flex>
+					</Card.Header>
 
-					<Field label='Vacantes:'>
-						<Input
-							value={vacancies}
-							onChange={(e) => setVacancies(e.target.value)}
-							size='sm'
-							min={1}
-						></Input>
-					</Field>
-					<IconButton
-						size='sm'
-						bg='uni.secondary'
-						loading={isPending}
-						disabled={!vacancies || !selectedModality || data.status === 4}
-						onClick={handleSubmit}
-						css={{ _icon: { width: '5', height: '5' } }}
-					>
-						<FaSave />
-					</IconButton>
-				</Flex>
-				<Box mt={6}>
-					<Text fontWeight='semibold' mb={2}>
-						Modalidades Asignadas:
-					</Text>
-					<Table.Root size='sm' striped>
-						<Table.Header>
-							<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
-								<Table.ColumnHeader>N°</Table.ColumnHeader>
-								<Table.ColumnHeader>Modalidad</Table.ColumnHeader>
-								<Table.ColumnHeader>Vacantes</Table.ColumnHeader>
-								<Table.ColumnHeader>Acciones</Table.ColumnHeader>
-							</Table.Row>
-						</Table.Header>
+					<Card.Body pt={4}>
+						<Flex direction={{ base: 'column', md: 'row' }} gap={4} align='end'>
+							<Field label='Modalidad:'>
+								<ReactSelect
+									value={selectedModality}
+									onChange={setSelectedModality}
+									options={modalityOptions}
+									variant='flushed'
+									size='xs'
+									isClearable
+									isSearchable
+								/>
+							</Field>
 
-						<Table.Body>
-							{filteredModality?.map((item, index) => (
-								<Table.Row
-									key={item.id}
-									bg={{ base: 'white', _dark: 'its.gray.500' }}
+							<Field label='Numero de vacantes:'>
+								<Input
+									value={vacancies}
+									onChange={(e) => setVacancies(e.target.value)}
+									size='sm'
+									min={1}
+								></Input>
+							</Field>
+
+							<Button
+								onClick={handleSubmit}
+								disabled={
+									!selectedModality ||
+									!vacancies ||
+									isPending ||
+									data.status === 4
+								}
+								loading={isPending}
+								colorPalette='purple'
+								minW='150px'
+							>
+								<>
+									<Icon as={FiPlus} boxSize={4} mr={2} />
+									Asignar
+								</>
+							</Button>
+						</Flex>
+					</Card.Body>
+				</Card.Root>
+
+				<Card.Root>
+					<Card.Header pb={0}>
+						<Flex justify='space-between' align='center'>
+							<Flex align='center' gap={2}>
+								<Icon as={FiTag} w={5} h={5} color='blue.600' />
+								<Heading size='sm'>Modalidades Asignadas</Heading>
+								<Badge
+									variant='subtle'
+									colorScheme='blue'
+									bg='blue.50'
+									color='blue.700'
+									border='1px solid'
+									borderColor='blue.200'
 								>
-									<Table.Cell>{index + 1}</Table.Cell>
-									<Table.Cell>{item.modality_name}</Table.Cell>
-									<Table.Cell>{item.vacancies}</Table.Cell>
+									{filteredModality?.length} modalidades
+								</Badge>
+							</Flex>
 
-									<Table.Cell>
-										<Flex gap={2}>
-											<IconButton
-												size='xs'
-												disabled={data.status === 4}
-												colorPalette='red'
-												onClick={() => handleDelete(item.id)}
-												aria-label='Eliminar'
-											>
-												<FiTrash2 />
-											</IconButton>
-										</Flex>
-									</Table.Cell>
-								</Table.Row>
-							))}
-							{filteredModality?.length === 0 && (
-								<Table.Row>
-									<Table.Cell colSpan={7} textAlign='center'>
-										Sin datos disponibles
-									</Table.Cell>
-								</Table.Row>
+							{totalVacancies > 0 && (
+								<Box textAlign='right'>
+									<Text fontSize='2xl' fontWeight='bold' color='blue.600'>
+										{totalVacancies}
+									</Text>
+									<Text fontSize='sm' color='gray.600'>
+										Total de Vacantes
+									</Text>
+								</Box>
 							)}
-						</Table.Body>
-					</Table.Root>
-				</Box>
+						</Flex>
+					</Card.Header>
+
+					<Card.Body pt={4}>
+						<Table.Root size='sm' striped>
+							<Table.Header>
+								<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
+									<Table.ColumnHeader>N°</Table.ColumnHeader>
+									<Table.ColumnHeader>Modalidad</Table.ColumnHeader>
+									<Table.ColumnHeader>Vacantes</Table.ColumnHeader>
+									<Table.ColumnHeader>Acciones</Table.ColumnHeader>
+								</Table.Row>
+							</Table.Header>
+
+							<Table.Body>
+								{filteredModality?.map((item, index) => (
+									<Table.Row
+										key={item.id}
+										bg={{ base: 'white', _dark: 'its.gray.500' }}
+									>
+										<Table.Cell>{index + 1}</Table.Cell>
+										<Table.Cell>{item.modality_name}</Table.Cell>
+										<Table.Cell>{item.vacancies}</Table.Cell>
+
+										<Table.Cell>
+											<Flex gap={2}>
+												<IconButton
+													size='xs'
+													disabled={data.status === 4}
+													colorPalette='red'
+													onClick={() => handleDelete(item.id)}
+													aria-label='Eliminar'
+												>
+													<FiTrash2 />
+												</IconButton>
+											</Flex>
+										</Table.Cell>
+									</Table.Row>
+								))}
+								{filteredModality?.length === 0 && (
+									<Table.Row>
+										<Table.Cell colSpan={7} textAlign='center'>
+											Sin datos disponibles
+										</Table.Cell>
+									</Table.Row>
+								)}
+							</Table.Body>
+						</Table.Root>
+					</Card.Body>
+				</Card.Root>
+
+				{filteredModality && filteredModality.length > 0 && (
+					<Card.Root
+						bgGradient='linear(to-r, purple.50, blue.50)'
+						border='1px solid'
+						borderColor='purple.200'
+					>
+						<Card.Body pt={6}>
+							<SimpleGrid
+								columns={{ base: 1, md: 3 }}
+								spacing={4}
+								textAlign='center'
+							>
+								<Box>
+									<Text fontSize='2xl' fontWeight='bold' color='purple.600'>
+										{filteredModality.length}
+									</Text>
+									<Text fontSize='sm' color='gray.600'>
+										Modalidades
+									</Text>
+								</Box>
+
+								<Box>
+									<Text fontSize='2xl' fontWeight='bold' color='blue.600'>
+										{totalVacancies}
+									</Text>
+									<Text fontSize='sm' color='gray.600'>
+										Total Vacantes
+									</Text>
+								</Box>
+
+								<Box>
+									<Text fontSize='2xl' fontWeight='bold' color='green.600'>
+										{average}
+									</Text>
+									<Text fontSize='sm' color='gray.600'>
+										Promedio por Modalidad
+									</Text>
+								</Box>
+							</SimpleGrid>
+						</Card.Body>
+					</Card.Root>
+				)}
 			</Stack>
 		</Modal>
 	);
