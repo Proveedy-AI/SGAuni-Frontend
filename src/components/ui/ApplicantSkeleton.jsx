@@ -11,7 +11,7 @@ import React from 'react';
 
 export default function ApplicantSkeleton() {
 	return (
-		<Box mx='auto'>
+		<Box  maxW={'80%'} spaceY='5' mx={'auto'} >
 			{/* Header */}
 			<Flex
 				bg='white'
