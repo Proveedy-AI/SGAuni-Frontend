@@ -1,17 +1,24 @@
-// src/hooks/countries/useReadCountries.jsx
-import { useQuery } from '@tanstack/react-query';
+// src/hooks/admission/useReadAdmissionApplicants.jsx
+import { useInfiniteQuery } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useReadAdmissionApplicants = (params = {}) => {
+export const useReadAdmissionApplicants = (initialParams = {}) => {
 	const axiosPrivate = useAxiosPrivate();
 
-	return useQuery({
-		queryKey: ['admission_applications', params],
-		queryFn: async () => {
+	return useInfiniteQuery({
+		queryKey: ['admission_applications', initialParams],
+		queryFn: async ({ pageParam = 1 }) => {
 			const res = await axiosPrivate.get('/api/v1/admission-applications/', {
-				params,
+				params: { ...initialParams, page: pageParam },
 			});
 			return res.data;
+		},
+		getNextPageParam: (lastPage) => {
+			if (lastPage.next) {
+				const url = new URL(lastPage.next);
+				return url.searchParams.get('page');
+			}
+			return undefined;
 		},
 	});
 };
