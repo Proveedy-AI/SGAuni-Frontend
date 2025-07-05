@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import { FiChevronDown, FiChevronUp, FiEye, FiMessageSquare } from 'react-icons/fi';
 import { Modal } from '@/components/ui';
 
-export const ObservationCell = ({ comments, index }) => {
+export const ObservationCell = ({ comments }) => {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const maxLength = 100;
