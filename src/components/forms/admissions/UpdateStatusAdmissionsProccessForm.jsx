@@ -91,7 +91,6 @@ export const UpdateStatusAdmissionsProccessForm = ({ data, fetchData }) => {
 			setComments('');
 		}
 	};
-	console.log(data);
 	return (
 		<Modal
 			placement='center'

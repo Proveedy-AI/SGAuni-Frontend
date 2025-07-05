@@ -48,7 +48,6 @@ export const HistoryStatusProgramsView = ({ data, statusMap }) => {
 				return <FiAlertCircle className='h-4 w-4' />;
 		}
 	};
-	console.log(admissionReviews);
 	const approvedCount =
 		admissionReviews?.results?.filter((r) => r.status_display === 'Approved')
 			.length || 0;

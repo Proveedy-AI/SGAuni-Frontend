@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import {
 	Box,
 	Card,
@@ -41,8 +41,14 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 	const [examStart, setExamStart] = useState(data?.exam_date_start);
 	const [examEnd, setExamEnd] = useState(data?.exam_date_end);
 	const [semesterStart, setSemesterStart] = useState(data?.semester_start_date);
-	const [selectedMode, setSelectedMode] = useState(null);
-	const [selectedProgram, setSelectedProgram] = useState(null);
+	const [selectedMode, setSelectedMode] = useState({
+		value: data?.study_mode,
+		label: data?.study_mode_display,
+	});
+	const [selectedProgram, setSelectedProgram] = useState({
+		value: data?.program,
+		label: data?.program_name,
+	});
 	const [errors, setErrors] = useState({});
 	const { mutate: updateAdmissionsPrograms, isPending } =
 		useUpdateAdmissionsPrograms();
@@ -122,30 +128,6 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 		label: department.name,
 		value: department.id,
 	}));
-
-	useEffect(() => {
-		if (data) {
-			// Tipo de postgrado
-
-			// Modo de estudio
-			const matchedMode = dataMode.find(
-				(mode) => mode.value === data.study_mode
-			);
-			if (matchedMode) {
-				setSelectedMode(matchedMode);
-			}
-
-			// Programa (espera a que se carguen los programas)
-			if (data.program && ProgramsOptions) {
-				const matchedProgram = ProgramsOptions.find(
-					(program) => program.value === data.program
-				);
-				if (matchedProgram) {
-					setSelectedProgram(matchedProgram);
-				}
-			}
-		}
-	}, [data]);
 
 	return (
 		<Modal
@@ -437,7 +419,6 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 					</Flex>
 				</Box>
 			</Stack>
-		
 		</Modal>
 	);
 };

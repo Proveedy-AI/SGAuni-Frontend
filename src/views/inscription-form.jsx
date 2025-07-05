@@ -286,7 +286,7 @@ export default function ChakraInscriptionForm() {
 
 		return '';
 	};
-	console.log('formData', formData);
+
 	const validateCurrentStep = () => {
 		const currentStepFields = STEPS[currentStep - 1].fields;
 		const newErrors = {};

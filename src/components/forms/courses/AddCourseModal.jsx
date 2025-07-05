@@ -60,8 +60,6 @@ export const AddCourseModal = ({ data, fetchData }) => {
       ids_preRequisite: preRequisite,
     };
 
-    console.log(payload)
-
     register(payload, {
       onSuccess: () => {
         toaster.create({

@@ -27,7 +27,6 @@ export const AssignWeigthProgramFocus = ({ item, fetchData }) => {
 		evaluation_type: null,
 		evaluation_weight: '',
 	});
-	console.log(item);
 	const {
 		data: dataProgramsWeight,
 		isLoading: loadingProgramsWeight,
