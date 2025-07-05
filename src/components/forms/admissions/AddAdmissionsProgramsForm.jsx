@@ -1,13 +1,32 @@
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
-import { Button, SimpleGrid, Stack } from '@chakra-ui/react';
-import { Field, Modal, toaster } from '@/components/ui';
-import { FiPlus } from 'react-icons/fi';
+import {
+	Box,
+	Button,
+	Card,
+	Flex,
+	Heading,
+	Icon,
+	SimpleGrid,
+	Stack,
+	Text,
+	List,
+} from '@chakra-ui/react';
+import { Alert, Field, Modal, toaster } from '@/components/ui';
+import {
+	FiBookOpen,
+	FiCalendar,
+	FiCheckCircle,
+	FiClock,
+	FiPlus,
+	FiUsers,
+} from 'react-icons/fi';
 import { ReactSelect } from '@/components/select';
 import { useReadPrograms } from '@/hooks';
 import { useCreateAdmissionsPrograms } from '@/hooks/admissions_programs';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { format } from 'date-fns';
+import { LuGraduationCap } from 'react-icons/lu';
 
 export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 	const contentRef = useRef();
@@ -18,8 +37,6 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 	const [examStart, setExamStart] = useState('');
 	const [examEnd, setExamEnd] = useState('');
 	const [semesterStart, setSemesterStart] = useState('');
-	const [preMasterStart, setPreMasterStart] = useState('');
-	const [preMasterEnd, setPreMasterEnd] = useState('');
 
 	const [selectedMode, setSelectedMode] = useState(null);
 	const [selectedProgram, setSelectedProgram] = useState(null);
@@ -45,10 +62,6 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 		if (!examEnd) newErrors.examEnd = 'Fecha de fin de examen es requerida';
 		if (!semesterStart)
 			newErrors.semesterStart = 'Fecha de inicio de semestre es requerida';
-		if (!preMasterStart)
-			newErrors.preMasterStart = 'Fecha de inicio de pre-maestría es requerida';
-		if (!preMasterEnd)
-			newErrors.preMasterEnd = 'Fecha de fin de pre-maestría es requerida';
 
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
@@ -68,8 +81,6 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 			exam_date_start: examStart,
 			exam_date_end: examEnd,
 			semester_start_date: semesterStart,
-			pre_master_start_date: preMasterStart,
-			pre_master_end_date: preMasterEnd,
 			editable: true,
 		};
 
@@ -90,8 +101,6 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 				setExamStart('');
 				setExamEnd('');
 				setSemesterStart('');
-				setPreMasterStart('');
-				setPreMasterEnd('');
 			},
 			onError: (error) => {
 				const errorData = error.response?.data;
@@ -149,157 +158,274 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 			onOpenChange={(e) => setOpen(e.open)}
 			contentRef={contentRef}
 		>
-			<Stack css={{ '--field-label-width': '140px' }}>
-				<Field
-					label='Programa:'
-					invalid={!!errors.selectedProgram}
-					errorText={errors.selectedProgram}
-					required
+			<Stack
+				gap={2}
+				pb={6}
+				maxH={{ base: 'full', md: '65vh' }}
+				overflowY='auto'
+				sx={{
+					'&::-webkit-scrollbar': { width: '6px' },
+					'&::-webkit-scrollbar-thumb': {
+						background: 'gray.300',
+						borderRadius: 'full',
+					},
+				}}
+			>
+				<Card.Root>
+					<Card.Header>
+						<Card.Title
+							display='flex'
+							alignItems='center'
+							gap={2}
+							fontSize='lg'
+						>
+							<Icon as={FiBookOpen} boxSize={5} color='blue.600' />
+							Información Básica del Programa
+						</Card.Title>
+					</Card.Header>
+
+					<Card.Body>
+						<SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
+							<Field
+								label='Programa Académico:'
+								invalid={!!errors.selectedProgram}
+								errorText={errors.selectedProgram}
+								required
+							>
+								<ReactSelect
+									value={selectedProgram}
+									onChange={setSelectedProgram}
+									variant='flushed'
+									size='xs'
+									isSearchable
+									isClearable
+									options={ProgramsOptions}
+								/>
+							</Field>
+							<Field
+								label='Modo de estudio:'
+								invalid={!!errors.selectedMode}
+								errorText={errors.selectedMode}
+								required
+							>
+								<ReactSelect
+									value={selectedMode}
+									onChange={setSelectedMode}
+									variant='flushed'
+									isClearable
+									size='xs'
+									isSearchable
+									options={dataMode}
+								/>
+							</Field>
+						</SimpleGrid>
+
+						{selectedProgram && selectedMode && (
+							<Alert
+								mt={6}
+								status='success'
+								variant='subtle'
+								bg='green.50'
+								borderLeft='4px solid'
+								borderColor='green.200'
+							>
+								Programa seleccionado: <strong>{selectedProgram.label}</strong>{' '}
+								- Modalidad: <strong>{selectedMode.label}</strong>
+							</Alert>
+						)}
+					</Card.Body>
+				</Card.Root>
+				<Card.Root>
+					<Card.Header>
+						<Card.Title
+							display='flex'
+							alignItems='center'
+							gap={2}
+							fontSize='lg'
+						>
+							<Icon as={FiCalendar} boxSize={5} color='blue.600' />
+							Fechas del Proceso de Admisión
+						</Card.Title>
+					</Card.Header>
+
+					<Card.Body gap={6}>
+						{/* Periodo de Inscripciones */}
+						<Box>
+							<Flex align='center' gap={2} mb={4}>
+								<Icon as={FiUsers} boxSize={4} color='orange.600' />
+								<Text fontWeight='semibold' color='gray.900'>
+									Periodo de Inscripciones
+								</Text>
+							</Flex>
+							<SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
+								<Field
+									label='Fecha de Inicio:'
+									invalid={!!errors.registrationStart}
+									errorText={errors.registrationStart}
+									required
+								>
+									<CustomDatePicker
+										selectedDate={registrationStart}
+										onDateChange={(date) =>
+											setRegistrationStart(format(date, 'yyyy-MM-dd'))
+										}
+										buttonSize='xs'
+										size={{ base: '280px', md: '350px' }}
+										minDate={new Date()}
+									/>
+								</Field>
+
+								<Field
+									label='Fecha de Cierre:'
+									invalid={!!errors.registrationEnd}
+									errorText={errors.registrationEnd}
+									required
+								>
+									<CustomDatePicker
+										selectedDate={registrationEnd}
+										onDateChange={(date) =>
+											setRegistrationEnd(format(date, 'yyyy-MM-dd'))
+										}
+										buttonSize='xs'
+										size={{ base: '280px', md: '350px' }}
+										minDate={new Date()}
+									/>
+								</Field>
+							</SimpleGrid>
+						</Box>
+
+						{/* Periodo de Exámenes */}
+						<Box>
+							<Flex align='center' gap={2} mb={4}>
+								<Icon as={FiClock} boxSize={4} color='red.600' />
+								<Text fontWeight='semibold' color='gray.900'>
+									Periodo de Evaluaciones
+								</Text>
+							</Flex>
+							<SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
+								<Field
+									label='Fecha de inicio:'
+									invalid={!!errors.examStart}
+									errorText={errors.examStart}
+									required
+								>
+									<CustomDatePicker
+										selectedDate={examStart}
+										onDateChange={(date) =>
+											setExamStart(format(date, 'yyyy-MM-dd'))
+										}
+										buttonSize='xs'
+										size={{ base: '280px', md: '350px' }}
+										minDate={new Date()}
+									/>
+								</Field>
+
+								<Field
+									label='Fecha de finalización:'
+									invalid={!!errors.examEnd}
+									errorText={errors.examEnd}
+									required
+								>
+									<CustomDatePicker
+										selectedDate={examEnd}
+										onDateChange={(date) =>
+											setExamEnd(format(date, 'yyyy-MM-dd'))
+										}
+										buttonSize='sm'
+										size={{ base: '280px', md: '350px' }}
+										minDate={new Date()}
+									/>
+								</Field>
+							</SimpleGrid>
+						</Box>
+					</Card.Body>
+				</Card.Root>
+
+				<Card.Root>
+					<Card.Header>
+						<Card.Title
+							display='flex'
+							alignItems='center'
+							gap={2}
+							fontSize='lg'
+						>
+							<Icon as={LuGraduationCap} boxSize={5} color='blue.600' />
+							Fechas Académicas
+						</Card.Title>
+					</Card.Header>
+
+					<Card.Body className='space-y-6'>
+						<Box>
+							<Field
+								label='Inicio de semestre:'
+								invalid={!!errors.semesterStart}
+								errorText={errors.semesterStart}
+								required
+							>
+								<CustomDatePicker
+									selectedDate={semesterStart}
+									onDateChange={(date) => {
+										const formatted = format(date, 'yyyy-MM-dd');
+										setSemesterStart(formatted);
+									}}
+									buttonSize='xs'
+									size={{ base: '280px', md: '750px' }}
+									minDate={new Date()}
+								/>
+							</Field>
+						</Box>
+					</Card.Body>
+				</Card.Root>
+				<Box
+					bg='blue.50'
+					p={4}
+					borderRadius='lg'
+					border='1px solid'
+					borderColor='blue.200'
 				>
-					<ReactSelect
-						value={selectedProgram}
-						onChange={setSelectedProgram}
-						variant='flushed'
-						size='xs'
-						isSearchable
-						isClearable
-						options={ProgramsOptions}
-					/>
-				</Field>
+					<Flex align='flex-start' gap={3}>
+						<Box bg='blue.100' mb={4} borderRadius='full'>
+							<Icon as={FiCheckCircle} boxSize={4} color='blue.600' />
+						</Box>
+						<Box>
+							<Heading
+								as='h4'
+								size='sm'
+								fontWeight='semibold'
+								color='blue.900'
+								mb={2}
+							>
+								Pasos a seguir despues de la creación:
+							</Heading>
+							<List.Root
+								spacing={1}
+								color='blue.800'
+								fontSize='sm'
+								styleType='none'
+							>
+								<List.Item>
+									Envía el programa al director académico para que pueda ser
+									evaluado y aprobado. Este paso es obligatorio para continuar
+									con el proceso de admisión.
+								</List.Item>
 
-				<Field
-					label='Modo de estudio:'
-					invalid={!!errors.selectedMode}
-					errorText={errors.selectedMode}
-					required
-				>
-					<ReactSelect
-						value={selectedMode}
-						onChange={setSelectedMode}
-						variant='flushed'
-						isClearable
-						size='xs'
-						isSearchable
-						options={dataMode}
-					/>
-				</Field>
+								<List.Item>
+									El Director académico revisará el cronograma, las modalidades
+									asignadas y la consistencia general del programa.
+								</List.Item>
 
-				<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-					<Field
-						label='Inicio de inscripción:'
-						invalid={!!errors.registrationStart}
-						errorText={errors.registrationStart}
-						required
-					>
-						<CustomDatePicker
-							selectedDate={registrationStart}
-							onDateChange={(date) =>
-								setRegistrationStart(format(date, 'yyyy-MM-dd'))
-							}
-							buttonSize='xs'
-							size={{ base: '330px', md: '420px' }}
-							minDate={new Date() }
-						/>
-					</Field>
-
-					<Field
-						label='Fin de inscripción:'
-						invalid={!!errors.registrationEnd}
-						errorText={errors.registrationEnd}
-						required
-					>
-						<CustomDatePicker
-							selectedDate={registrationEnd}
-							onDateChange={(date) =>
-								setRegistrationEnd(format(date, 'yyyy-MM-dd'))
-							}
-							buttonSize='xs'
-							size={{ base: '330px', md: '420px' }}
-							minDate={new Date()}
-						/>
-					</Field>
-
-					<Field
-						label='Inicio de examen:'
-						invalid={!!errors.examStart}
-						errorText={errors.examStart}
-						required
-					>
-						<CustomDatePicker
-							selectedDate={examStart}
-							onDateChange={(date) => setExamStart(format(date, 'yyyy-MM-dd'))}
-							buttonSize='xs'
-							size={{ base: '330px', md: '420px' }}
-							minDate={new Date() }
-						/>
-					</Field>
-
-					<Field
-						label='Fin de examen:'
-						invalid={!!errors.examEnd}
-						errorText={errors.examEnd}
-						required
-					>
-						<CustomDatePicker
-							selectedDate={examEnd}
-							onDateChange={(date) => setExamEnd(format(date, 'yyyy-MM-dd'))}
-							buttonSize='xs'
-							size={{ base: '330px', md: '420px' }}
-							minDate={new Date() }
-						/>
-					</Field>
-
-					<Field
-						label='Inicio Pre-Maestría:'
-						invalid={!!errors.preMasterStart}
-						errorText={errors.preMasterStart}
-						required
-					>
-						<CustomDatePicker
-							selectedDate={preMasterStart}
-							onDateChange={(date) =>
-								setPreMasterStart(format(date, 'yyyy-MM-dd'))
-							}
-							buttonSize='xs'
-							size={{ base: '330px', md: '420px' }}
-							minDate={new Date() }
-						/>
-					</Field>
-
-					<Field
-						label='Fin Pre-Maestría:'
-						invalid={!!errors.preMasterEnd}
-						errorText={errors.preMasterEnd}
-						required
-					>
-						<CustomDatePicker
-							selectedDate={preMasterEnd}
-							onDateChange={(date) =>
-								setPreMasterEnd(format(date, 'yyyy-MM-dd'))
-							}
-							buttonSize='xs'
-							size={{ base: '330px', md: '420px' }}
-							minDate={new Date() }
-						/>
-					</Field>
-				</SimpleGrid>
-				<Field
-					label='Inicio de semestre:'
-					invalid={!!errors.semesterStart}
-					errorText={errors.semesterStart}
-					required
-				>
-					<CustomDatePicker
-						selectedDate={semesterStart}
-						onDateChange={(date) => {
-							const formatted = format(date, 'yyyy-MM-dd');
-							setSemesterStart(formatted);
-						}}
-						buttonSize='xs'
-						size={{ base: '330px', md: '850px' }}
-						minDate={new Date() }
-					/>
-				</Field>
+								<List.Item>
+									El cronograma será evaluado y aprobado o rechazado
+								</List.Item>
+							</List.Root>
+							<Text fontSize='sm' color='blue.800' mt={2}>
+								Importante: No se podrá activar el proceso de admisión si el
+								programa no ha sido enviado y aprobado por el director
+								académico.
+							</Text>
+						</Box>
+					</Flex>
+				</Box>
 			</Stack>
 		</Modal>
 	);
