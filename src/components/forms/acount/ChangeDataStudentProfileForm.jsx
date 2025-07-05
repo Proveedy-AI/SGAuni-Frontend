@@ -363,7 +363,7 @@ export const ChangeDataStudentProfileForm = ({
 						Datos Institucionales:
 					</Text>
 					<Stack css={{ '--field-label-width': '140px' }}>
-						<Field label='¿Eres graduado de la UNI?'>
+						<Field label='¿Eres egresado de la UNI?'>
 							<Switch.Root
 								checked={profile.is_uni_graduate}
 								onCheckedChange={(checked) =>
