@@ -24,7 +24,7 @@ export const ViewRegistrationDocumentModal = ({ data }) => {
       trigger={
         <Box>
           <Tooltip
-            content='Programar tareas'
+            content='Ver ficha'
             positioning={{ placement: 'bottom-center' }}
             showArrow
             openDelay={0}
