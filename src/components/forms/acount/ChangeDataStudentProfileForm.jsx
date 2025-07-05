@@ -218,7 +218,7 @@ export const ChangeDataStudentProfileForm = ({
 							/>
 						</Field>
 						<FieldWithInputText
-							label='Num Identidad:'
+							label='N° Identidad:'
 							field='document_number'
 							value={profile.document_number}
 							updateProfileField={updateProfileField}
