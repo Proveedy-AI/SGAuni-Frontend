@@ -17,6 +17,7 @@ import {
 } from '@/hooks';
 import { useCreatePersonWithAdmission } from '@/hooks/admissions_applicants';
 import { useReadAdmissionByUUID } from '@/hooks/admissions_proccess';
+import { useReadDisabilities } from '@/hooks/disabilities';
 import {
 	Badge,
 	Box,
@@ -181,8 +182,9 @@ export default function ChakraInscriptionForm() {
 		workExperience: '',
 
 		// Additional Info
-		hasDisability: false,
-		disabilityDescription: '',
+		has_disability: false,
+		type_disability: '',
+		other_disability: '',
 		scholarshipInterest: false,
 		howDidYouKnow: '',
 		additionalComments: '',
@@ -207,6 +209,7 @@ export default function ChakraInscriptionForm() {
 	const { data: dataDistrict } = useReadDistrict();
 	const { data: dataCountries } = useReadCountries();
 	const { mutate: create } = useCreatePersonWithAdmission();
+	const { data: dataDisabilites } = useReadDisabilities();
 
 	// Reset dependent fields when parent changes
 	useEffect(() => {
@@ -305,7 +308,7 @@ export default function ChakraInscriptionForm() {
 					return;
 				}
 			}
-			if (field === 'disabilityDescription' && !formData.hasDisability) return;
+			if (field === 'other_disability' && !formData.has_disability) return;
 			if (field === 'workExperience' && !formData.hasWorkExperience) return;
 			if (
 				field === 'alternativePhone' ||
@@ -318,7 +321,11 @@ export default function ChakraInscriptionForm() {
 
 			const value = formData[field];
 
-			if (typeof value === 'string' && value.trim() === '' && value !== undefined) {
+			if (
+				typeof value === 'string' &&
+				value.trim() === '' &&
+				value !== undefined
+			) {
 				newErrors[field] = 'Este campo es requerido';
 				isValid = false;
 			} else if (
@@ -413,6 +420,9 @@ export default function ChakraInscriptionForm() {
 				country: Number(formData.country),
 				address: formData.address,
 				has_one_surname: formData.hasOneLastName,
+				type_disability: Number(formData.type_disability),
+				other_disability: formData.other_disability,
+				has_disability: formData.has_disability,
 			},
 			admission_program: dataAdmissionProgram?.id,
 			modality_id: Number(formData.modality_type),
@@ -498,11 +508,19 @@ export default function ChakraInscriptionForm() {
 					label: dep.name,
 				})) || []
 		: [];
+
+	const DisabilitesOptions =
+		dataDisabilites?.results?.map((disability) => ({
+			value: disability.id,
+			label: disability.name,
+		})) || [];
 	// Get available options based on selections
 	const availableProvinces =
 		dataProvince?.results
 			?.filter((prov) =>
-				formData.department ? prov.department === Number(formData.department) : true
+				formData.department
+					? prov.department === Number(formData.department)
+					: true
 			)
 			.map((prov) => ({
 				value: prov.id.toString(),
@@ -525,7 +543,8 @@ export default function ChakraInscriptionForm() {
 		formData.postgraduate_program_type && dataAdmissionProgram?.programs?.length
 			? dataAdmissionProgram.programs
 					.filter(
-						(program) => program.program === Number(formData.postgraduate_program_type)
+						(program) =>
+							program.program === Number(formData.postgraduate_program_type)
 					)
 					.flatMap(
 						(program) =>
@@ -1338,7 +1357,9 @@ export default function ChakraInscriptionForm() {
 														>
 															<CustomSelect
 																placeholder='Seleccione programa académico'
-																defaultValue={formData.postgraduate_program_type}
+																defaultValue={
+																	formData.postgraduate_program_type
+																}
 																onChange={(val) =>
 																	handleFieldChange(
 																		'postgraduate_program_type',
@@ -1478,31 +1499,47 @@ export default function ChakraInscriptionForm() {
 													<VStack gap={6} align='stretch'>
 														<VStack gap={4} align='stretch'>
 															<Checkbox
-																checked={formData.hasDisability}
+																checked={formData.has_disability}
 																onChange={(e) =>
 																	handleFieldChange(
-																		'hasDisability',
+																		'has_disability',
 																		e.target.checked
 																	)
 																}
 															>
 																Tengo alguna discapacidad o necesidad especial
 															</Checkbox>
+															{formData.has_disability && (
+																<>
+																	<Field label='Tipo de Discapacidad:'>
+																		<CustomSelect
+																			placeholder='Seleccione modalidad'
+																			items={DisabilitesOptions}
+																			defaultValue={formData.type_disability}
+																			onChange={(val) =>
+																				handleFieldChange(
+																					'type_disability',
+																					val
+																				)
+																			}
+																			
+																		/>
+																	</Field>
 
-															{formData.hasDisability && (
-																<Field label='Descripción de la Discapacidad o Necesidad Especial'>
-																	<Textarea
-																		value={formData.disabilityDescription}
-																		onChange={(e) =>
-																			handleFieldChange(
-																				'disabilityDescription',
-																				e.target.value
-																			)
-																		}
-																		placeholder='Describa su discapacidad o necesidad especial para brindarle el apoyo adecuado'
-																		rows={3}
-																	/>
-																</Field>
+																	<Field label='Otra discapacidad o necesidad especial'>
+																		<Textarea
+																			value={formData.other_disability}
+																			onChange={(e) =>
+																				handleFieldChange(
+																					'other_disability',
+																					e.target.value
+																				)
+																			}
+																			placeholder='Describa su discapacidad o necesidad especial para brindarle el apoyo adecuado'
+																			rows={3}
+																		/>
+																	</Field>
+																</>
 															)}
 														</VStack>
 
