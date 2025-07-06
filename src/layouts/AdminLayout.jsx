@@ -10,6 +10,7 @@ export const AdminLayout = () => {
 
 	const isSettingsPage = location.pathname.startsWith('/settings');
 	const isMyPaymentsPage = location.pathname.startsWith('/mypayments');
+	const isDebtsPage = location.pathname.startsWith('/debts');
 
 	return (
 		<Flex h='100svh' w='100vw' position='fixed' direction='column'>
@@ -25,7 +26,7 @@ export const AdminLayout = () => {
 					<TopBar />
 
 					<Box
-						p={!isSettingsPage && !isMyPaymentsPage ? { base: '3', md: '6' } : '0'}
+						p={!isSettingsPage && !isMyPaymentsPage && !isDebtsPage ? { base: '3', md: '6' } : '0'}
 						overflowY='auto'
 					>
 						<Outlet />

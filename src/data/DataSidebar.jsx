@@ -74,7 +74,7 @@ export const useDataSidebar = () => {
 			permission: 'applicants.myapplicants.view',
 		},
 		{
-			href: '/mypaymentsdebts/requests',
+			href: '/mypaymentsdebts/debts',
 			icon: FiCreditCard,
 			label: 'Mis Pagos',
 			permission: 'payment.mypaymentsdebts.view',

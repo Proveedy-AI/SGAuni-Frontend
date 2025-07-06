@@ -173,7 +173,7 @@ function App() {
 											<ProtectedRoute requiredPermission='payment.mypaymentsdebts.view' />
 										}
 									>
-										<Route path='requests'>
+										<Route path='debts'>
 											<Route index element={<MyPaymentDebt />} />
 										</Route>
 									</Route>

@@ -10,7 +10,7 @@ import {
 	Icon,
 	Heading,
 } from '@chakra-ui/react';
-import { FiAlertCircle } from 'react-icons/fi';
+import { FiAlertCircle, FiEye, FiFileText, FiPlus, FiUpload } from 'react-icons/fi';
 import { Link, Outlet, useLocation } from 'react-router';
 
 export const MyPaymentsLayout = () => {
@@ -30,9 +30,33 @@ export const MyPaymentsLayout = () => {
 
 	const settingsItems = [
 		{
-			href: '/mypaymentsdebts/requests',
+			href: '/mypaymentsdebts/debts',
 			label: 'Estado de deudas',
 			icon: FiAlertCircle,
+			permission: null,
+		},
+		{
+			href: '/mypaymentsdebts/requests',
+			label: 'Solicitudes y ordenes',
+			icon: FiFileText,
+			permission: null,
+		},
+		{
+			href: '/mypaymentsdebts/addrequests',
+			label: 'Solicitar orden',
+			icon: FiPlus,
+			permission: null,
+		},
+		{
+			href: '/mypaymentsdebts/vouchers',
+			label: 'Comprobantes',
+			icon: FiUpload,
+			permission: null,
+		},
+    {
+			href: '/mypaymentsdebts/history',
+			label: 'Historial',
+			icon: FiEye,
 			permission: null,
 		},
 	];
