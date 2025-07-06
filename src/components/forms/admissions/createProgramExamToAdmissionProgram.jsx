@@ -1,5 +1,5 @@
 import { ReactSelect } from '@/components/select';
-import { Field, Modal, toaster, Tooltip } from '@/components/ui';
+import { Alert, Field, Modal, toaster, Tooltip } from '@/components/ui';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import {
 	useCreateAdmissionEvaluation,
@@ -7,10 +7,15 @@ import {
 	useReadAdmissionEvaluationsByApplication,
 	useUpdateAdmissionEvaluation,
 } from '@/hooks/admissions_evaluations';
-import { useReadAdmissionEvaluators } from '@/hooks/admissions_evaluators';
+import { useReadUsers } from '@/hooks/users';
 import {
+	Badge,
 	Box,
+	Card,
 	Flex,
+	Grid,
+	GridItem,
+	Icon,
 	IconButton,
 	Input,
 	Stack,
@@ -21,7 +26,14 @@ import { format } from 'date-fns';
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
 import { FaSave, FaTimes } from 'react-icons/fa';
-import { FiCalendar } from 'react-icons/fi';
+import {
+	FiAlertTriangle,
+	FiCalendar,
+	FiCheckCircle,
+	FiEdit,
+	FiPlus,
+	FiUser,
+} from 'react-icons/fi';
 
 export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 	const contentRef = useRef();
@@ -35,19 +47,24 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 		useUpdateAdmissionEvaluation();
 	const { mutate: deleteEvaluation, isPending: isDeleteEvaluationPending } =
 		useDeleteAdmissionEvaluation();
-	const { data: dataEvaluators, isLoading: evaluatorsLoading } =
-		useReadAdmissionEvaluators({
-			program_id: item?.admission_program,
-      options: {
-        enabled: open,
-      },
-		});
-	const evaluatorOptions = dataEvaluators?.results?.map((evaluator) => {
-		return {
-			value: evaluator.evaluator,
-			label: evaluator.evaluator_display,
-		};
-	});
+
+	const { data: dataUsers, isLoading: evaluatorsLoading } = useReadUsers(
+		{},
+		{
+			enabled: open,
+		}
+	);
+	const evaluatorOptions = dataUsers?.results
+		?.filter(
+			(c) =>
+				c?.is_active === true &&
+				Array.isArray(c?.roles) &&
+				c.roles.some((role) => role?.name === 'Docente')
+		)
+		?.map((c) => ({
+			value: c.id.toString(),
+			label: c.full_name,
+		}));
 
 	const applicationTypeOptions = [
 		{ value: 1, label: 'Ensayo' },
@@ -58,6 +75,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 	const filteredEvaluationsByStudent = dataEvaluations?.results?.filter(
 		(evaluation) => evaluation.application === item?.id
 	);
+
 	const [startDateExamInput, setStartDateExamInput] = useState('');
 	const [endDateExamInput, setEndDateExamInput] = useState('');
 	const [timeExamInput, setTimeExamInput] = useState('');
@@ -150,7 +168,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 			trigger={
 				<Box>
 					<Tooltip
-						content='Programar tareas'
+						content='Programar Evaluaciones'
 						positioning={{ placement: 'bottom-center' }}
 						showArrow
 						openDelay={0}
@@ -171,83 +189,174 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 			onOpenChange={(e) => setOpen(e.open)}
 			contentRef={contentRef}
 		>
-			<Stack spacing={4} css={{ '--field-label-width': '150px' }}>
-				{/* Formulario para Examen */}
-				<Flex direction='column' gap={4} mt={2}>
-					<Flex
-						direction={{ base: 'column', md: 'row' }}
-						w='full'
-						gap={4}
-						align={{ base: 'start', md: 'end' }}
-					>
-						<Field label='Fecha de inicio:' w='full'>
-							<CustomDatePicker
-								selectedDate={startDateExamInput}
-								onDateChange={(date) => setStartDateExamInput(format(date, 'yyyy-MM-dd'))}
-								placeholder='Selecciona una fecha de inicio'
-								buttonSize='md'
-								size={{ base: '330px', md: '250px' }}
-							/>
-						</Field>
+			<Stack
+				gap={2}
+				pb={6}
+				maxH={{ base: 'full', md: '85vh' }}
+				overflowY='auto'
+				sx={{
+					'&::-webkit-scrollbar': { width: '6px' },
+					'&::-webkit-scrollbar-thumb': {
+						background: 'gray.300',
+						borderRadius: 'full',
+					},
+				}}
+			>
+				<Card.Root
+					borderLeft='4px solid'
+					borderLeftColor='green.500'
+					bg='white'
+				>
+					<Card.Header>
+						<Flex align='center' gap={2}>
+							<Icon as={FiUser} boxSize={5} color='green.600' />
+							<Text fontSize='16px' fontWeight='bold'>
+								Información del Postulante
+							</Text>
+						</Flex>
+					</Card.Header>
 
-						<Field label='Fecha de fin:' w='full'>
-							<CustomDatePicker
-								selectedDate={endDateExamInput}
-								onDateChange={(date) => setEndDateExamInput(format(date, 'yyyy-MM-dd'))}
-								placeholder='Selecciona una fecha de fin'
-								buttonSize='md'
-								size={{ base: '330px', md: '250px' }}
-							/>
-						</Field>
-
-						<Field label='Hora:' w='full'>
-							<Input
-								type='time'
-								value={timeExamInput}
-								onChange={(e) => setTimeExamInput(e.target.value)}
-								size='sm'
-							/>
-						</Field>
-					</Flex>
-
-					<Flex
-						direction={{ base: 'column', md: 'row' }}
-						w='full'
-						gap={6}
-						align={{ base: 'start', md: 'end' }}
-					>
-						<Field label='Tipo de Examen' w='full'>
-							<ReactSelect
-								value={applicationTypeInput}
-								options={applicationTypeOptions}
-								onChange={(value) => setApplicationTypeInput(value)}
-							/>
-						</Field>
-
-						<Field label='Evaluador:' w='full'>
-							<ReactSelect
-								value={evaluatorInput}
-								options={evaluatorOptions}
-								isLoading={evaluatorsLoading}
-								onChange={(value) => setEvaluatorInput(value)}
-							/>
-						</Field>
-
-						<Flex
+					<Card.Body>
+						<Grid
 							gap={2}
-							mt={{ base: 2, md: 0 }}
-							alignSelf={{ base: 'flex-end', md: 'auto' }}
+							templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
 						>
+							<GridItem>
+								<Text fontSize='sm' color='gray.600' fontWeight='medium'>
+									Postulante
+								</Text>
+								<Text fontSize='20px' fontWeight='semibold' color='gray.900'>
+									{item.person_full_name}
+								</Text>
+							</GridItem>
+
+							<GridItem>
+								<Text fontSize='sm' color='gray.600' fontWeight='medium'>
+									Programa
+								</Text>
+								<Text
+									fontSize='20px'
+									fontWeight='medium'
+									color='gray.900'
+									mt={1}
+								>
+									{item.postgrade_name}
+								</Text>
+							</GridItem>
+
+							<GridItem>
+								<Text fontSize='sm' color='gray.600' fontWeight='medium'>
+									Modalidad
+								</Text>
+								<Text
+									fontSize='20px'
+									fontWeight='medium'
+									color='gray.900'
+									mt={1}
+								>
+									{item.modality_display}
+								</Text>
+							</GridItem>
+						</Grid>
+					</Card.Body>
+				</Card.Root>
+				<Card.Root>
+					<Card.Header>
+						<Flex align='center' gap={2}>
+							<Icon as={FiPlus} boxSize={5} color='green.600' />
+							<Text fontSize='16px' fontWeight='bold'>
+								{editingId ? 'Editar Evaluación' : 'Programar Nueva Evaluación'}
+							</Text>
+						</Flex>
+					</Card.Header>
+
+					<Card.Body>
+						<Grid
+							templateColumns={{
+								base: '1fr',
+								md: 'repeat(2, 1fr)',
+								lg: 'repeat(3, 1fr)',
+							}}
+							gap={4}
+							mb={4}
+						>
+							<Field label='Fecha de inicio:' w='full'>
+								<CustomDatePicker
+									selectedDate={startDateExamInput}
+									onDateChange={(date) =>
+										setStartDateExamInput(format(date, 'yyyy-MM-dd'))
+									}
+									placeholder='Selecciona una fecha de inicio'
+									buttonSize='md'
+									minDate={new Date()}
+									size={{ base: '280px', md: '250px' }}
+								/>
+							</Field>
+
+							<Field label='Fecha de fin:' w='full'>
+								<CustomDatePicker
+									selectedDate={endDateExamInput}
+									onDateChange={(date) =>
+										setEndDateExamInput(format(date, 'yyyy-MM-dd'))
+									}
+									placeholder='Selecciona una fecha de fin'
+									buttonSize='md'
+									size={{ base: '280px', md: '250px' }}
+									minDate={new Date()}
+								/>
+							</Field>
+
+							<Field label='Hora:' w='full'>
+								<Input
+									type='time'
+									value={timeExamInput}
+									onChange={(e) => setTimeExamInput(e.target.value)}
+									size='sm'
+								/>
+							</Field>
+						</Grid>
+
+						<Grid
+							templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
+							mb={6}
+							gap={4}
+						>
+							<Field label='Tipo de Examen' w='full'>
+								<ReactSelect
+									value={applicationTypeInput}
+									options={applicationTypeOptions}
+									onChange={(value) => setApplicationTypeInput(value)}
+								/>
+							</Field>
+
+							<Field label='Evaluador:' w='full'>
+								<ReactSelect
+									value={evaluatorInput}
+									options={evaluatorOptions}
+									isLoading={evaluatorsLoading}
+									onChange={(value) => setEvaluatorInput(value)}
+								/>
+							</Field>
+						</Grid>
+
+						<Flex gap={3}>
 							<IconButton
 								size='sm'
 								bg='green'
-								disabled={!startDateExamInput || !timeExamInput}
+								p={4}
+								disabled={
+									!startDateExamInput ||
+									!timeExamInput ||
+									!evaluatorInput ||
+									!applicationTypeInput
+								}
 								onClick={handleSubmit}
-								isLoading={isCreateEvaluationPending || isEditEvaluationPending}
+								loading={isCreateEvaluationPending || isEditEvaluationPending}
+								loadingText={editingId ? 'Actualizando...' : 'Guardando...'}
 								css={{ _icon: { width: '5', height: '5' } }}
 								aria-label={editingId ? 'Actualizar' : 'Guardar'}
 							>
-								<FaSave />
+								<FaSave /> {editingId ? 'Actualizar' : 'Guardar'}
 							</IconButton>
 							<IconButton
 								size='sm'
@@ -260,85 +369,118 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 								<FaTimes />
 							</IconButton>
 						</Flex>
-					</Flex>
-				</Flex>
 
-				{/* Tabla de Exámenes */}
-				<Box mt={6}>
-					<Text fontWeight='semibold' mb={2}>
-						Exámenes Asignados:
-					</Text>
-					<Table.Root size='sm' striped>
-						<Table.Header>
-							<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
-								<Table.ColumnHeader>N°</Table.ColumnHeader>
-								<Table.ColumnHeader>Nombre</Table.ColumnHeader>
-								<Table.ColumnHeader>Fecha de Inicio</Table.ColumnHeader>
-								<Table.ColumnHeader>Fecha de Fin</Table.ColumnHeader>
-								<Table.ColumnHeader>Hora</Table.ColumnHeader>
-								<Table.ColumnHeader>Acciones</Table.ColumnHeader>
-							</Table.Row>
-						</Table.Header>
-						<Table.Body>
-							{filteredEvaluationsByStudent?.length > 0 ? (
-								filteredEvaluationsByStudent.map((exam, index) => (
-									<Table.Row key={exam.id}>
-										<Table.Cell>{index + 1}</Table.Cell>
-										<Table.Cell>{exam.type_application_display}</Table.Cell>
-										<Table.Cell>{exam.start_date}</Table.Cell>
-										<Table.Cell>{exam.end_date}</Table.Cell>
-										<Table.Cell>{exam.evaluation_time}</Table.Cell>
-										<Table.Cell>
-											<Flex gap={2}>
-												<IconButton
-													size='xs'
-													colorPalette='blue'
-													onClick={() => {
-														setEditingId(exam?.id);
-														setStartDateExamInput(exam?.start_date);
-														setEndDateExamInput(exam?.end_date);
-														setTimeExamInput(exam?.evaluation_time);
-														setEvaluatorInput({
-															value: exam?.evaluator,
-															label: exam?.evaluator_full_name,
-														});
-														setApplicationTypeInput({
-															value: exam?.type_application,
-															label: applicationTypeOptions.find(
-																(option) =>
-																	option.value === exam?.type_application
-															)?.label,
-														});
-													}}
-													aria-label='Editar'
-												>
-													<FaSave />
-												</IconButton>
-												<IconButton
-													size='xs'
-													colorPalette='red'
-													isLoading={isDeleteEvaluationPending}
-													onClick={() => {
-														handleDelete(exam.id);
-													}}
-													aria-label='Eliminar'
-												>
-													<FaTimes />
-												</IconButton>
-											</Flex>
+						{editingId && (
+							<Alert
+								status='info'
+								mt={6}
+								bg='blue.50'
+								border='1px solid'
+								borderColor='blue.200'
+								icon={<FiAlertTriangle></FiAlertTriangle>}
+							>
+								Estás editando una evaluación existente. Los cambios se
+								aplicarán al guardar.
+							</Alert>
+						)}
+					</Card.Body>
+				</Card.Root>
+
+				<Card.Root>
+					<Card.Header>
+						<Flex align='center' justify='space-between'>
+							<Flex align='center' gap={2}>
+								<Icon as={FiCheckCircle} boxSize={5} color='blue.600' />
+								<Text fontSize='16px' fontWeight='bold'>
+									Evaluaciones Programadas
+								</Text>
+								<Badge
+									variant='outline'
+									bg='blue.50'
+									color='blue.700'
+									borderColor='blue.200'
+								>
+									{filteredEvaluationsByStudent.length} evaluaciones
+								</Badge>
+							</Flex>
+						</Flex>
+					</Card.Header>
+
+					<Card.Body>
+						<Table.Root size='sm' striped>
+							<Table.Header>
+								<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
+									<Table.ColumnHeader>N°</Table.ColumnHeader>
+									<Table.ColumnHeader>Evaluador</Table.ColumnHeader>
+									<Table.ColumnHeader>Evaluación</Table.ColumnHeader>
+									<Table.ColumnHeader>Fecha de Inicio</Table.ColumnHeader>
+									<Table.ColumnHeader>Fecha de Fin</Table.ColumnHeader>
+									<Table.ColumnHeader>Hora</Table.ColumnHeader>
+									<Table.ColumnHeader>Acciones</Table.ColumnHeader>
+								</Table.Row>
+							</Table.Header>
+							<Table.Body>
+								{filteredEvaluationsByStudent?.length > 0 ? (
+									filteredEvaluationsByStudent.map((exam, index) => (
+										<Table.Row key={exam.id}>
+											<Table.Cell>{index + 1}</Table.Cell>
+											<Table.Cell>{exam.evaluator_full_name}</Table.Cell>
+											<Table.Cell>{exam.type_application_display}</Table.Cell>
+											<Table.Cell>{exam.start_date}</Table.Cell>
+											<Table.Cell>{exam.end_date}</Table.Cell>
+											<Table.Cell>{exam.evaluation_time}</Table.Cell>
+											<Table.Cell>
+												<Flex gap={2}>
+													<IconButton
+														size='xs'
+														colorPalette='blue'
+														onClick={() => {
+															setEditingId(exam?.id);
+															setStartDateExamInput(exam?.start_date);
+															setEndDateExamInput(exam?.end_date);
+															setTimeExamInput(exam?.evaluation_time);
+															setEvaluatorInput({
+																value: exam?.evaluator,
+																label: exam?.evaluator_full_name,
+															});
+															setApplicationTypeInput({
+																value: exam?.type_application,
+																label: applicationTypeOptions.find(
+																	(option) =>
+																		option.value === exam?.type_application
+																)?.label,
+															});
+														}}
+														aria-label='Editar'
+													>
+														<FiEdit />
+													</IconButton>
+													<IconButton
+														size='xs'
+														colorPalette='red'
+														isLoading={isDeleteEvaluationPending}
+														onClick={() => {
+															handleDelete(exam.id);
+														}}
+														aria-label='Eliminar'
+													>
+														<FaTimes />
+													</IconButton>
+												</Flex>
+											</Table.Cell>
+										</Table.Row>
+									))
+								) : (
+									<Table.Row>
+										<Table.Cell colSpan={6} textAlign='center'>
+											Sin datos disponibles
 										</Table.Cell>
 									</Table.Row>
-								))
-							) : (
-								<Table.Row>
-									<Table.Cell colSpan={5} textAlign='center'>
-										Sin datos disponibles
-									</Table.Cell>
-								</Table.Row>
-							)}
-						</Table.Body>
-					</Table.Root>
-				</Box>
+								)}
+							</Table.Body>
+						</Table.Root>
+					</Card.Body>
+				</Card.Root>
 			</Stack>
 		</Modal>
 	);
