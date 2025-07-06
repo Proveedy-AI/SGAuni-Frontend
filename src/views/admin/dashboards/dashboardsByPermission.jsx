@@ -24,6 +24,6 @@ export const dashboardsByPermission = [
 	},
 	{
 		permission: 'dashboard.debt.view',
-		component: <DebtDashboard />,
+		component: () => <DebtDashboard />,
 	},
 ];
