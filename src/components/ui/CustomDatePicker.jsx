@@ -86,7 +86,7 @@ CustomDatePicker.propTypes = {
 	selectedDate: PropTypes.string,
 	onDateChange: PropTypes.func,
 	buttonSize: PropTypes.string,
-	size: PropTypes.string,
+	size: PropTypes.object,
 	disableFutureDates: PropTypes.bool,
 	minDate: PropTypes.instanceOf(Date),
 	maxDate: PropTypes.instanceOf(Date),

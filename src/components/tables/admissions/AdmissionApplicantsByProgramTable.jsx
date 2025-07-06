@@ -323,5 +323,5 @@ AdmissionApplicantsByProgramTable.propTypes = {
 	fetchNextPage: PropTypes.func,
 	hasNextPage: PropTypes.bool,
 	isFetchingNextPage: PropTypes.bool,
-	resetPageTrigger: PropTypes.func,
+	resetPageTrigger: PropTypes.string,
 };
