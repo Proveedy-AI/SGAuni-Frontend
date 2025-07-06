@@ -47,7 +47,7 @@ export const ViewAdmissionProgramExams = ({ item }) => {
 					</Tooltip>
 				</Box>
 			}
-			size='4xl'
+			size='6xl'
 			open={open}
 			hiddenFooter={true}
 			onOpenChange={(e) => setOpen(e.open)}
@@ -58,6 +58,7 @@ export const ViewAdmissionProgramExams = ({ item }) => {
 					<Table.Header>
 						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
 							<Table.ColumnHeader>N°</Table.ColumnHeader>
+							<Table.ColumnHeader>Evaluador</Table.ColumnHeader>
 							<Table.ColumnHeader>Fecha</Table.ColumnHeader>
 							<Table.ColumnHeader>Tareas realizadas</Table.ColumnHeader>
 							<Table.ColumnHeader>Calificación</Table.ColumnHeader>
@@ -71,6 +72,7 @@ export const ViewAdmissionProgramExams = ({ item }) => {
 								(evaluation, index) => (
 									<Table.Row key={evaluation.id}>
 										<Table.Cell>{index + 1}</Table.Cell>
+										<Table.Cell>{evaluation.evaluator_full_name}</Table.Cell>
 										<Table.Cell>{evaluation.start_date}</Table.Cell>
 										<Table.Cell>
 											{evaluation.type_application_display}
