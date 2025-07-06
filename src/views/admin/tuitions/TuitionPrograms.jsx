@@ -1,0 +1,155 @@
+import {
+	Box,
+	Heading,
+	InputGroup,
+	Input,
+	Stack,
+	Breadcrumb,
+	Tabs,
+	Button,
+} from '@chakra-ui/react';
+import { useState } from 'react';
+import { FiPlus, FiSearch } from 'react-icons/fi';
+import { useParams } from 'react-router';
+import { Link as RouterLink } from 'react-router';
+import { useReadEnrollmentsPrograms } from '@/hooks/enrollments_programs';
+import { useReadEnrollmentById } from '@/hooks/enrollments_proccess';
+import { AdmissionsProgramsTable } from '@/components/tables/admissions';
+import { useProvideAuth } from '@/hooks/auth';
+import { LiaSlashSolid } from 'react-icons/lia';
+import { useReadAdmissionsPrograms } from '@/hooks/admissions_programs';
+import { Encryptor } from '@/components/CrytoJS/Encryptor';
+import { EnrollmentsMyProgramsTable } from '@/components/tables/tuition';
+import { UpdateTuitionProgramsModal } from '@/components/modals/tuition';
+
+export const TuitionPrograms = () => {
+	const { id } = useParams();
+	const decoded = decodeURIComponent(id);
+	const decrypted = Encryptor.decrypt(decoded);
+	const { data } = useReadEnrollmentById(decrypted);
+	const {
+		data: dataEnrollmentsPrograms,
+		refetch: fetchEnrollmentsPrograms,
+		isLoading,
+	} = useReadEnrollmentsPrograms();
+
+	const { getProfile } = useProvideAuth();
+	const profile = getProfile();
+	const roles = profile?.roles || [];
+	const permissions = roles
+		.flatMap((r) => r.permissions || [])
+		.map((p) => p.guard_name);
+
+	const [searchValue, setSearchValue] = useState('');
+	const [actionType, setActionType] = useState('create');
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [modalData, setModalData] = useState(null);
+
+	const filteredEnrollmentsPrograms = dataEnrollmentsPrograms?.results?.filter(
+		(item) =>
+			item.academic_period_name === data?.academic_period_name &&
+			item.director === profile.id &&
+			item.name.toLowerCase().includes(searchValue.toLowerCase())
+	);
+
+	return (
+		<Box spaceY='5'>
+			<Stack
+				Stack
+				direction={{ base: 'column', sm: 'row' }}
+				align={{ base: 'start', sm: 'center' }}
+				justify='space-between'
+			>
+				<Breadcrumb.Root size='lg'>
+					<Breadcrumb.List>
+						<Breadcrumb.Item>
+							<Breadcrumb.Link as={RouterLink} to='/enrollments/proccess'>
+								Matriculas
+							</Breadcrumb.Link>
+						</Breadcrumb.Item>
+						<Breadcrumb.Separator>
+							<LiaSlashSolid />
+						</Breadcrumb.Separator>
+						<Breadcrumb.Item>
+							<Breadcrumb.CurrentLink>Programas</Breadcrumb.CurrentLink>
+						</Breadcrumb.Item>
+					</Breadcrumb.List>
+				</Breadcrumb.Root>
+			</Stack>
+
+			<Stack
+				Stack
+				direction={{ base: 'column', sm: 'row' }}
+				align={{ base: 'start', sm: 'center' }}
+				justify='space-between'
+			>
+				<Heading
+					size={{
+						xs: 'xs',
+						sm: 'md',
+						md: 'xl',
+					}}
+					color={'uni.secondary'}
+				>
+					{data?.academic_period_name}
+				</Heading>
+			</Stack>
+
+			<Stack
+				Stack
+				direction={{ base: 'column', sm: 'row' }}
+				align={{ base: 'center', sm: 'center' }}
+				justify='space-between'
+			>
+				<InputGroup flex='1' startElement={<FiSearch />}>
+					<Input
+						ml='1'
+						size='sm'
+						bg={'white'}
+						maxWidth={'550px'}
+						placeholder='Buscar por programa ...'
+						value={searchValue}
+						onChange={(e) => setSearchValue(e.target.value)}
+					/>
+				</InputGroup>
+				{permissions?.includes('enrollments.proccess.create') && (
+					<Button
+						bg='uni.secondary'
+						size='xs'
+						borderRadius='md'
+						onClick={() => {
+							setModalData(null);
+							setIsModalOpen(true);
+							setActionType('create');
+						}}
+					>
+						<FiPlus color='white' />
+						<div style={{ marginRight: 3, marginBottom: 2 }}>Añadir Programas</div>
+					</Button>
+				)}
+			</Stack>
+
+			<EnrollmentsMyProgramsTable
+				isLoading={isLoading}
+				data={filteredEnrollmentsPrograms}
+				fetchData={fetchEnrollmentsPrograms}
+				permissions={permissions}
+				setIsModalOpen={setIsModalOpen}
+				setModalData={setModalData}
+				setActionType={setActionType}
+			/>
+
+			<UpdateTuitionProgramsModal
+				open={isModalOpen}
+				onClose={() => {
+					setIsModalOpen(false);
+					setModalData(null);
+				}}
+				data={modalData}
+				fetchData={fetchEnrollmentsPrograms}
+				actionType={actionType}
+				existingNames={filteredEnrollmentsPrograms?.map(item => item?.academic_period_name?.toLowerCase())}
+			/>
+		</Box>
+	);
+};

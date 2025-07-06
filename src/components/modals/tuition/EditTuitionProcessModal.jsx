@@ -13,16 +13,16 @@ import { FiEdit2 } from 'react-icons/fi';
 import PropTypes from 'prop-types';
 import { format } from 'date-fns';
 
-export const EditTuitionProcessModal = ({ data }) => {
+export const EditTuitionProcessModal = ({ data, permissions, fetchData }) => {
 	const [open, setOpen] = useState(false);
 
 	const [formData, setFormData] = useState({
 		academicPeriod: '',
 		startDate: '',
 		endDate: '',
-		evalStart: '',
-		evalEnd: '',
-		semesterStart: '',
+		// evalStart: '',
+		// evalEnd: '',
+		// semesterStart: '',
 	});
 
 	useEffect(() => {
@@ -31,9 +31,9 @@ export const EditTuitionProcessModal = ({ data }) => {
 				academicPeriod: data.academicPeriod || '',
 				startDate: '2026-08-13',
 				endDate: '2026-12-20',
-				evalStart: '2026-09-03',
-				evalEnd: '2026-12-20',
-				semesterStart: '2026-12-25',
+				// evalStart: '2026-09-03',
+				// evalEnd: '2026-12-20',
+				// semesterStart: '2026-12-25',
 			});
 		}
 	}, [open, data]);
@@ -63,6 +63,7 @@ export const EditTuitionProcessModal = ({ data }) => {
 					type: 'success',
 				});
 				setOpen(false);
+				fetchData();
 			}}
 			disabledSave={!isValid}
 			trigger={
@@ -76,7 +77,7 @@ export const EditTuitionProcessModal = ({ data }) => {
 						<IconButton 
 							size='xs' 
 							colorPalette='green'
-							disabled={data?.status?.toLowerCase() !== 'configuration'}
+							disabled={!permissions?.includes('enrollments.proccess.edit')}
 						>
 							<FiEdit2 />
 						</IconButton>
@@ -122,7 +123,7 @@ export const EditTuitionProcessModal = ({ data }) => {
 					</SimpleGrid>
 				</Stack>
 
-				<Stack>
+				{/* <Stack>
 					<Heading size='md' color='uni.secondary'>
 						Cronograma de evaluaciones
 					</Heading>
@@ -156,7 +157,7 @@ export const EditTuitionProcessModal = ({ data }) => {
                         buttonSize='md'
                         size="150px"
 					/>
-				</Stack>
+				</Stack> */}
 			</Stack>
 		</Modal>
 	);
@@ -164,4 +165,6 @@ export const EditTuitionProcessModal = ({ data }) => {
 
 EditTuitionProcessModal.propTypes = {
 	data: PropTypes.object,
+	permissions: PropTypes.array,
+	fetchData: PropTypes.func,
 };

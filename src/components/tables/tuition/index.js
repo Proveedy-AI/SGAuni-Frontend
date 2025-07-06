@@ -1,1 +1,2 @@
-export * from "./TuitionProcessesTable"
+export * from "./TuitionListTable"
+export * from "./EnrollmentsMyProgramsTable"

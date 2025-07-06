@@ -145,20 +145,20 @@ export const ConfirmModal = ({
 	loadingText,
 	cancelLabel,
 	confirmLabel,
+	positionerProps,
 	...props
 }) => {
 	return (
 		<DialogRoot {...props}>
-			<DialogTrigger asChild>{trigger}</DialogTrigger>
+			{trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
 			<DialogContent
 				bg={{ base: 'white', _dark: 'uni.gray.500' }}
 				ref={contentRef}
+				positionerProps={positionerProps} // Estilos personalizados
 			>
 				<DialogBody pt='4'>
 					<VStack>
-						<Icon fontSize='5xl' color={{ base: 'red.500', _dark: 'red.600' }}>
-							<FiAlertCircle />
-						</Icon>
+						<Icon as={FiAlertCircle} fontSize='5xl' color={{ base: 'red.500', _dark: 'red.600' }} />
 						{children}
 					</VStack>
 				</DialogBody>

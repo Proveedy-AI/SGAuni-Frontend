@@ -29,7 +29,10 @@ import AdmissionForm from './views/Inscription';
 import { AdmissionMyApplicants } from './views/admin/applicants/AdmissionMyApplicants';
 import { ApplicantsLayout } from './views/admin/applicants/ApplicantsLayout';
 import { Debts } from './views/admin/debts';
-import { Tuition } from './views/admin/tuitions';
+import { 
+	TuitionProcess,
+	TuitionPrograms
+} from './views/admin/tuitions';
 
 function App() {
 	return (
@@ -95,11 +98,7 @@ function App() {
 										/>
 									</Route>
 								</Route>
-								<Route
-									element={
-										<ProtectedRoute requiredPermission='admissions.myapplicants.view' />
-									}
-								>
+								<Route >
 									<Route path='myapplicants'>
 										<Route index element={<AdmissionMyApplicants />} />
 										<Route
@@ -139,13 +138,20 @@ function App() {
 									<Route path='list' element={<Contracts />} />
 								</Route>
 							</Route>
-							<Route path='tuition'>
+							<Route path='enrollments'>
 								<Route
 									element={
-										<ProtectedRoute requiredPermission='tuition.processes.view' />
+										<ProtectedRoute requiredPermission='enrollments.proccess.view' />
 									}
 								>
-									<Route index element={<Tuition />} />
+									<Route path='proccess' element={<TuitionProcess />} />
+								</Route>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='enrollments.programs.view' />
+									}
+								>
+									<Route path='programs/:id' element={<TuitionPrograms />} />
 								</Route>
 							</Route>
 

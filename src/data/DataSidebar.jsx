@@ -13,6 +13,7 @@ import {
 import { FaFileContract, FaRegFile } from 'react-icons/fa';
 import { HiOutlineClipboardList } from 'react-icons/hi';
 import { useProvideAuth } from '@/hooks/auth';
+import { href } from 'react-router';
 
 export const useDataSidebar = () => {
 	const { getProfile } = useProvideAuth();
@@ -91,10 +92,17 @@ export const useDataSidebar = () => {
 			],
 		},
 		{
-			href: '/tuition',
+			href: '/enrollments',
 			icon: FaRegFile,
-			label: 'Matricula',
-			permission: 'tuition.processes.view',
+			label: 'Matriculas',
+			subItems: [
+				{
+					href: '/enrollments/proccess',
+					icon: FiCheck,
+					label: 'Procesos Matricula',
+					permission: 'enrollments.proccess.view',
+				}
+			]
 		},
 		{
 			href: '/debts',
