@@ -38,6 +38,10 @@ import { PaymentOrdersView } from './views/admin/debts/PaymentOrdersView';
 import { Tuition } from './views/admin/tuitions';
 import { MyPaymentDebt } from './views/admin/mypayments/MyPaymentDebt';
 import { MyPaymentsLayout } from './views/admin/mypayments/MyPaymentsLayout';
+import { MyPaymentRequests } from './views/admin/mypayments/MyPaymentRequests';
+import { MyPaymentAddRequests } from './views/admin/mypayments/MyPaymentAddRequests';
+import { MyPaymentUpload } from './views/admin/mypayments/MyPaymentUpload';
+import { MyPaymentHistories } from './views/admin/mypayments/MyPaymentHistories';
 
 function App() {
 	return (
@@ -175,6 +179,18 @@ function App() {
 									>
 										<Route path='debts'>
 											<Route index element={<MyPaymentDebt />} />
+										</Route>
+										<Route path='requests'>
+											<Route index element={<MyPaymentRequests />} />
+										</Route>
+										<Route path='addrequests'>
+											<Route index element={<MyPaymentAddRequests />} />
+										</Route>
+										<Route path='uploadsvouchers'>
+											<Route index element={<MyPaymentUpload />} />
+										</Route>
+										<Route path='history-requests'>
+											<Route index element={<MyPaymentHistories />} />
 										</Route>
 									</Route>
 								</Route>

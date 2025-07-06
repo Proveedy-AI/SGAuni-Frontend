@@ -48,13 +48,13 @@ export const MyPaymentsLayout = () => {
 			permission: null,
 		},
 		{
-			href: '/mypaymentsdebts/vouchers',
+			href: '/mypaymentsdebts/uploadsvouchers',
 			label: 'Comprobantes',
 			icon: FiUpload,
 			permission: null,
 		},
     {
-			href: '/mypaymentsdebts/history',
+			href: '/mypaymentsdebts/history-requests',
 			label: 'Historial',
 			icon: FiEye,
 			permission: null,
