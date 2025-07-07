@@ -44,27 +44,18 @@ export const DebtsLayout = () => {
   return (
     <Box>
       <Grid
-        templateColumns={{
-          base: '1fr',
-          md: '200px 1fr',
-        }}
-        templateRows={{
-          base: 'auto',
-          md: '1fr',
-        }}
-        h={{ base: 'auto', md: 'calc(100vh - 64px)' }}
-      >
+				templateColumns={{ base: '1fr', md: '240px 1fr' }}
+				templateRows={{ base: 'auto', md: '1fr' }}
+				h={{ base: 'auto', md: 'calc(100vh - 64px)' }}
+			>
         <GridItem
-          bg={{ base: 'white', _dark: 'uni.gray.500' }}
-          py='6'
-          px={{ base: '2', md: '5' }}
-          overflowY='auto'
-          boxShadow='md'
-          css={{
-            msOverflowStyle: 'none',
-            scrollbarWidth: 'none',
-          }}
-        >
+					bg={{ base: 'white', _dark: 'uni.gray.500' }}
+					py='6'
+					px={{ base: 2, md: 4 }}
+					overflowY='auto'
+					boxShadow='md'
+					borderRightWidth='1px'
+				>
           <Stack spaceY={5}>
             <Heading
               display={{ base: 'none', md: 'block' }}
@@ -111,9 +102,13 @@ export const DebtsLayout = () => {
           </Stack>
         </GridItem>
 
-        <GridItem p={{ base: '3', md: '6' }} overflowY='auto'>
-          <Outlet />
-        </GridItem>
+        <GridItem
+					p={{ base: 3, md: 6 }}
+					overflowY='auto'
+					bg={{ base: 'gray.50', _dark: 'uni.gray.600' }}
+				>
+					<Outlet />
+				</GridItem>
       </Grid>
     </Box>
   );

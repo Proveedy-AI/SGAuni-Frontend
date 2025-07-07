@@ -1,14 +1,26 @@
 import { PaymentRequestsTable } from "@/components/tables/payment_requests";
 import { useProvideAuth } from "@/hooks/auth";
 import { useReadPaymentRequest } from "@/hooks/payment_requests/useReadPaymentRequest";
-import { Box, Heading, InputGroup, Input, Stack, Spinner } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
-import { FiSearch } from "react-icons/fi";
-import { format, parseISO } from 'date-fns';
+import { Heading, InputGroup, Input, Stack, Spinner, Card, Flex, Icon, SimpleGrid } from '@chakra-ui/react';
+import { useState } from 'react';
+import { FiFileText, FiSearch } from "react-icons/fi";
+//import { format, parseISO } from 'date-fns';
 import { GenerateMasivePaymentOrders } from "@/components/forms/payment_requests";
+import { Field } from "@/components/ui";
+import { ReactSelect } from "@/components";
+import { useReadMethodPayment } from "@/hooks/method_payments";
+import { useReadPurposes } from "@/hooks/purposes";
+import { useReadPrograms } from "@/hooks";
 
 export const PaymentRequestsView = () => {
-  const { data: dataPaymentRequests, loading: isPaymentRequestsLoading } = useReadPaymentRequest();
+  const [selectedProgram, setSelectedProgram] = useState(null);
+	const [selectedStatus, setSelectedStatus] = useState(null);
+	const [selectedMethod, setSelectedMethod] = useState(null);
+	const [selectedPurpose, setSelectedPurpose] = useState(null);
+	const [selectedDocumentType, setSelectedDocumentType] = useState(null);
+  //const [selectedRequestedAt, setSelectedRequestedAt] = useState(null);
+
+  const { data: dataPaymentRequests, isLoading: isPaymentRequestsLoading } = useReadPaymentRequest();
 
   const { getProfile } = useProvideAuth();
   const profile = getProfile();
@@ -17,72 +29,168 @@ export const PaymentRequestsView = () => {
     .flatMap((r) => r.permissions || [])
     .map((p) => p.guard_name);
 
-  const documentTypeOptions = [
-    { value: 0, label: 'Todos los tipos' },
-		{ value: 1, label: 'DNI' },
-		{ value: 2, label: 'Pasaporte' },
-		{ value: 3, label: 'Carné de Extranjería' },
-		{ value: 4, label: 'Cédula de Identidad' },
+  const { data: dataPurposes, isLoading: isLoadingPurposes } = useReadPurposes();
+  const { data: dataMethodsPayment, isLoading: isLoadingMethodsPayment } = useReadMethodPayment();
+  const { data: dataPrograms, isLoading: isLoadingPrograms } = useReadPrograms();
+
+  const PurposeOptions = dataPurposes?.results?.map((item) => ({
+    label: item.name,
+    value: item.id,
+  })) || [];
+
+  const MethodsPaymentOptions = dataMethodsPayment?.results?.map((method) => ({
+    value: method.id,
+    label: method.name,
+  })) || [];
+
+  const ProgramsOptions = dataPrograms?.results?.map((program) => ({
+    label: program.name,
+    value: program.id,
+  })) || [];
+
+  const TypeOptions = [
+		{ value: 1, label: 'Boleta' },
+		{ value: 2, label: 'Factura' },
 	];
-  const paymentMethodOptions = [
-    { value: 0, label: 'Todos los métodos' },
-    { value: 1, label: 'BCP' },
-    { value: 2, label: 'Caja UNI' },
-    { value: 3, label: 'Niubiz' },
-    { value: 4, label: 'Scotiabank' },
-  ]
+
   const statusOptions = [
-    { id: 0, label: 'Todos', value: 0},
     { id: 1, label: 'Pendiente', value: 1},
     { id: 2, label: 'Disponible', value: 2},
     { id: 3, label: 'Verificado', value: 3},
     { id: 4, label: 'Expirado', value: 4}
   ];
 
-  const [loading, setInitialLoading] = useState(true);
   const [searchValue, setSearchValue] = useState({
     purpose_display: '',
     requested_at: '',
-    document_type: documentTypeOptions[0],
-    payment_method: paymentMethodOptions[0],
+    purpose: null,
+    document_type: null,
+    payment_method: null,
     admission_program: '',
     status: statusOptions[0],
   });
-  const filteredPaymentRequests = dataPaymentRequests?.results?.filter((item) =>
-    (!searchValue.purpose_display || item?.purpose_display.toLowerCase().includes(searchValue.purpose_display.toLowerCase())) &&
-    (searchValue.document_type.value === 0 || item?.document_type === searchValue.document_type.value) &&
-    (searchValue.payment_method.value === 0 || item?.payment_method === searchValue.payment_method.value) &&
-    (!searchValue.admission_program || item?.admission_process_program_name.toLowerCase().includes(searchValue.admission_program.toLowerCase())) &&
-    (searchValue.status.id === 0 || item?.status === searchValue.status.value) &&
-    (!searchValue.requested_at || 
-      format(parseISO(item?.requested_at), 'yyyy-MM-dd') === format(parseISO(searchValue.requested_at), 'yyyy-MM-dd')
-    )
-  );
 
-  useEffect(() => {
-    if (loading && filteredPaymentRequests) {
-      setInitialLoading(false);
-    }
-  }, [loading, filteredPaymentRequests]);
+  
+  const filteredPaymentRequests = dataPaymentRequests?.results?.filter((item) => {
+    const matchProgram = selectedProgram
+      ? item.admission_process_program === selectedProgram.value
+      : true;
+    
+    const matchStatus = selectedStatus
+      ? item.status === selectedStatus.value
+    : true;
+
+    const matchMethod = selectedMethod
+      ? item.payment_method === selectedMethod.value
+      : true;
+
+    const matchPurpose = selectedPurpose
+      ? item.purpose === selectedPurpose.value
+      : true;
+
+    const matchDocumentType = selectedDocumentType
+      ? item.document_type === selectedDocumentType.value
+      : true;
+
+    // const matchRequestedAt = selectedRequestedAt
+    //   ? format(parseISO(item.requested_at), 'yyyy-MM-dd') === format(selectedRequestedAt, 'yyyy-MM-dd')
+    //   : true;
+
+    return (
+      matchProgram && matchStatus && matchMethod && matchPurpose && matchDocumentType /*&& matchRequestedAt*/
+    )
+  })
 
   return (
-    <Box spaceY='5'>
-      <Stack
-        Stack
-        direction={{ base: 'column', sm: 'row' }}
-        align={{ base: 'start', sm: 'center' }}
-        justify='space-between'
-      >
-        <Heading
-          size={{
-            xs: 'xs',
-            sm: 'sm',
-            md: 'md',
-          }}
-        >
-          Solicitudes de Pago
-        </Heading>
-      </Stack>
+    <Stack gap={4}>
+      <Card.Root>
+        <Card.Header>
+          <Flex align='center' gap={2}>
+            <Icon as={FiFileText} boxSize={5} color='blue.600' />
+            <Heading fontSize='24px'>Solicitudes de Pago</Heading>
+          </Flex>
+        </Card.Header>
+        <Card.Body>
+          <Stack gap={4} mb={4}>
+            <SimpleGrid columns={{ base: 1, sm: 2, md: 3, xl: 3 }} gap={6}>
+              <Field label='Programa Académico:'>
+                <ReactSelect
+                  placeholder='Seleccionar'
+                  value={selectedProgram}
+                  onChange={setSelectedProgram}
+                  isLoading={isLoadingPrograms}
+                  variant='flushed'
+                  size='xs'
+                  isSearchable
+                  isClearable
+                  options={ProgramsOptions}
+                />
+              </Field>
+              <Field label='Estado:'>
+                <ReactSelect
+                  placeholder='Seleccionar'
+                  value={selectedStatus}
+                  onChange={setSelectedStatus}
+                  variant='flushed'
+                  size='xs'
+                  isSearchable
+                  isClearable
+                  options={statusOptions}
+                />
+              </Field>
+              <Field label='Métodos de Pago:'>
+                <ReactSelect
+                  placeholder='Seleccionar'
+                  
+                  value={selectedMethod}
+                  onChange={setSelectedMethod}
+                  isLoading={isLoadingMethodsPayment}
+                  variant='flushed'
+                  size='xs'
+                  isSearchable
+                  isClearable
+                  options={MethodsPaymentOptions}
+                />
+              </Field>
+            </SimpleGrid>
+            <SimpleGrid columns={{ base: 1, sm: 2, md: 3, xl: 3 }} gap={6}>
+              <Field label='Propósito:'>
+                <ReactSelect
+                  placeholder='Seleccionar'
+                  value={selectedPurpose}
+                  onChange={setSelectedPurpose}
+                  isLoading={isLoadingPurposes}
+                  variant='flushed'
+                  size='xs'
+                  isSearchable
+                  isClearable
+                  options={PurposeOptions}
+                />
+              </Field>
+              <Field label='Tipo de Recibo:'>
+                <ReactSelect
+                  placeholder='Seleccionar'
+                  value={selectedDocumentType}
+                  onChange={setSelectedDocumentType}
+                  variant='flushed'
+                  size='xs'
+                  isSearchable
+                  isClearable
+                  options={TypeOptions}
+                />
+              </Field>
+              {/* <Field label='Fecha de Solicitud:'>
+                <CustomDatePicker
+                  selectedDate={selectedRequestedAt}
+                  onDateChange={setSelectedRequestedAt}
+                  buttonSize='xs'
+                  size={{ base: '330px', md: '470px' }}
+                />
+              </Field> */}
+            </SimpleGrid>
+          </Stack>
+        </Card.Body>
+      </Card.Root>
 
       <Stack
         Stack
@@ -96,7 +204,7 @@ export const PaymentRequestsView = () => {
             size='sm'
             bg={'white'}
             maxWidth={'550px'}
-            placeholder='Buscar por nombre...'
+            placeholder='Buscar por DNI de postulante...'
             value={searchValue.purpose_display}
             onChange={(e) => setSearchValue({ purpose_display: e.target.value })}
           />
@@ -104,27 +212,23 @@ export const PaymentRequestsView = () => {
         <GenerateMasivePaymentOrders data={dataPaymentRequests?.results} />
       </Stack>
 
-      { isPaymentRequestsLoading && <Spinner /> }
-      { (
+      {isPaymentRequestsLoading ? (
+        <Spinner />
+      ) : (
         <>
-        { !loading && dataPaymentRequests?.results?.length > 0 ? (
+          { filteredPaymentRequests?.length > 0 ? (
             <PaymentRequestsTable
               data={filteredPaymentRequests}
               permissions={permissions}
-              documentTypeOptions={documentTypeOptions}
-              paymentMethodOptions={paymentMethodOptions}
-              searchValue={searchValue}
-              setSearchValue={setSearchValue}
-              statusOptions={statusOptions}
             />
           ) : (
-            <Heading size='sm' color='gray.500'>
-              No se encontraron Ordenes de Pago
+            <Heading size='sm' color='gray.500' textAlign={'center'}>
+              No se encontraron Solicitudes de Pago
             </Heading>
           )}
         </>
       )}
 
-    </Box>
+    </Stack>
   );
 }

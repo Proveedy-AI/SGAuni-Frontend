@@ -5,15 +5,13 @@ import {
   Box,
   Group,
   HStack,
-  Input,
   Table
 } from '@chakra-ui/react';
 import { Pagination } from '@/components/ui'
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { SortableHeader } from '@/components/ui/SortableHeader';
-import { ReactSelect } from '@/components/select';
-import { useNavigate } from 'react-router';
-import { Encryptor } from '@/components/CrytoJS/Encryptor';
+//import { useNavigate } from 'react-router';
+//import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { format, parseISO } from 'date-fns';
 import { 
   GeneratePaymentOrderModalByRequest, 
@@ -21,12 +19,12 @@ import {
 } from '@/components/forms/payment_requests';
 
 const Row = memo(({ item, startIndex, index, permissions, sortConfig, data }) => {
-  const navigate = useNavigate();
-  const encrypted = Encryptor.encrypt(item.id);
-  const encoded = encodeURIComponent(encrypted);
-  const handleRowClick = () => {
-    //navigate(`/debts/payment-requests/${encoded}`);
-  };
+  // const navigate = useNavigate();
+  // const encrypted = Encryptor.encrypt(item.id);
+  // const encoded = encodeURIComponent(encrypted);
+  // const handleRowClick = () => {
+  //   //navigate(`/debts/payment-requests/${encoded}`);
+  // };
 
   const statusDisplay = [
     { id: 1, label: 'Pendiente', value: 'Pending', bg:'#AEAEAE', color:'#F5F5F5' },
@@ -37,10 +35,7 @@ const Row = memo(({ item, startIndex, index, permissions, sortConfig, data }) =>
 
   return (
     <Table.Row 
-      onClick={(e) => {
-				if (e.target.closest('button') || e.target.closest('a')) return;
-				handleRowClick();
-			}}
+
       key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}
 			_hover={{
 				bg: 'blue.100',
@@ -90,7 +85,7 @@ Row.propTypes = {
   data: PropTypes.array,
 };
 
-export const PaymentRequestsTable = ({ data, permissions, paymentMethodOptions, documentTypeOptions, searchValue, setSearchValue, statusOptions }) => {
+export const PaymentRequestsTable = ({ data, permissions }) => {
   const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
     const [currentPage, setCurrentPage] = useState(1);
     const startIndex = (currentPage - 1) * pageSize;
@@ -144,14 +139,6 @@ export const PaymentRequestsTable = ({ data, permissions, paymentMethodOptions, 
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
                 />
-                <Input
-                  type='date'
-                  value={searchValue.requested_at}
-                  onChange={(e) => setSearchValue({ ...searchValue, requested_at: e.target.value })}
-                  placeholder='Buscar por fecha de vencimiento'
-                  size='sm'
-                  maxWidth='150px'
-                />
               </Table.ColumnHeader>
               <Table.ColumnHeader alignContent={'start'}>
                 <SortableHeader
@@ -168,11 +155,6 @@ export const PaymentRequestsTable = ({ data, permissions, paymentMethodOptions, 
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
                 />
-                <ReactSelect
-                  options={documentTypeOptions}
-                  value={searchValue.document_type}
-                  onChange={(option) => setSearchValue({ ...searchValue, document_type: option })}
-                />
               </Table.ColumnHeader>
               <Table.ColumnHeader alignContent={'start'}>
                 <SortableHeader
@@ -180,11 +162,6 @@ export const PaymentRequestsTable = ({ data, permissions, paymentMethodOptions, 
                   columnKey='payment_method_display'
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
-                />
-                <ReactSelect
-                  options={paymentMethodOptions}
-                  value={searchValue.payment_method}
-                  onChange={(option) => setSearchValue({ ...searchValue, payment_method: option })}
                 />
               </Table.ColumnHeader>
               <Table.ColumnHeader alignContent={'start'}>
@@ -194,14 +171,6 @@ export const PaymentRequestsTable = ({ data, permissions, paymentMethodOptions, 
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
                 />
-                <Input
-                  type='text'
-                  value={searchValue.admission_program}
-                  onChange={(e) => setSearchValue({ ...searchValue, admission_program: e.target.value })}
-                  placeholder='Buscar por programa'
-                  size='sm'
-                  maxWidth='200px'
-                />
               </Table.ColumnHeader>
               <Table.ColumnHeader width='120px' alignContent={'start'}>
                 <SortableHeader
@@ -209,11 +178,6 @@ export const PaymentRequestsTable = ({ data, permissions, paymentMethodOptions, 
                   columnKey='status_display'
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
-                />
-                <ReactSelect
-                  options={statusOptions}
-                  value={searchValue.status}
-                  onChange={(option) => setSearchValue({ ...searchValue, status: option })}
                 />
               </Table.ColumnHeader>
               <Table.ColumnHeader alignContent={'start'}>Acciones</Table.ColumnHeader>
@@ -254,9 +218,4 @@ export const PaymentRequestsTable = ({ data, permissions, paymentMethodOptions, 
 PaymentRequestsTable.propTypes = {
   data: PropTypes.array,
   permissions: PropTypes.array,
-  paymentMethodOptions: PropTypes.array,
-  documentTypeOptions: PropTypes.array,
-  searchValue: PropTypes.object,
-  setSearchValue: PropTypes.func,
-  statusOptions: PropTypes.array,
 };
