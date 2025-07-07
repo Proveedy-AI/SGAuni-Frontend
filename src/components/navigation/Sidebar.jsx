@@ -30,12 +30,10 @@ import {
 import { useSidebarState } from '@/hooks';
 import { useProvideAuth } from '@/hooks/auth';
 import { useDataSidebar } from '@/data';
-import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 
-export const Sidebar = () => {
+export const Sidebar = ({ profile }) => {
 	const { isCollapsed, toggleSidebar } = useSidebarState();
 	const { logout } = useProvideAuth();
-	const { data: profile } = useReadUserLogged();
 
 	// Obtener permisos desde el profile
 
@@ -129,6 +127,7 @@ export const Sidebar = () => {
 									href={item.href}
 									icon={item.icon}
 									label={item.label}
+									profile={profile}
 									isCollapsed={isCollapsed}
 									subItems={
 										filteredSubItems.length > 0 ? filteredSubItems : undefined
@@ -148,6 +147,7 @@ export const Sidebar = () => {
 								icon={item.icon}
 								label={item.label}
 								isCollapsed={isCollapsed}
+								profile={profile}
 							/>
 						))}
 
@@ -156,6 +156,7 @@ export const Sidebar = () => {
 						icon={FiLogOut}
 						label='Cerrar sesión'
 						isCollapsed={isCollapsed}
+						profile={profile}
 					/>
 				</Box>
 			</Flex>
@@ -163,7 +164,19 @@ export const Sidebar = () => {
 	);
 };
 
-const SidebarItem = ({ href, icon, label, isCollapsed, subItems, ...atr }) => {
+Sidebar.propTypes = {
+	profile: PropTypes.object.isRequired,
+};
+
+const SidebarItem = ({
+	href,
+	icon,
+	label,
+	isCollapsed,
+	subItems,
+	profile,
+	...atr
+}) => {
 	const { colorMode } = useColorMode();
 	const location = useLocation();
 	const [isExpanded, setIsExpanded] = useState(() =>
@@ -181,7 +194,6 @@ const SidebarItem = ({ href, icon, label, isCollapsed, subItems, ...atr }) => {
 	const activeIconColor =
 		colorMode === 'dark' ? 'uni.secondary' : 'uni.secondary';
 
-	const { data: profile } = useReadUserLogged();
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])
@@ -387,4 +399,5 @@ SidebarItem.propTypes = {
 			label: PropTypes.string,
 		})
 	),
+	profile: PropTypes.object,
 };
