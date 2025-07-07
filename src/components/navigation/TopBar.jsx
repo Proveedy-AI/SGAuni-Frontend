@@ -16,10 +16,11 @@ import { Avatar, MenuContent, MenuItem, MenuRoot, MenuTrigger } from '../ui';
 import { FiChevronDown, FiLogOut } from 'react-icons/fi';
 import { useProvideAuth } from '@/hooks/auth';
 import { NotificationsPanel } from '../notifications';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 
 export const TopBar = () => {
-	const { getProfile, logout } = useProvideAuth();
-	const profile = getProfile();
+	const { logout } = useProvideAuth();
+	const { data: profile } = useReadUserLogged();
 	const roles = profile?.roles || [];
 
 	const permissions = roles
@@ -86,7 +87,7 @@ export const TopBar = () => {
 					{mensaje}
 				</Text>
 			</HStack>
-			<HStack	ack style={{ gap: 19 }}>
+			<HStack ack style={{ gap: 19 }}>
 				<NotificationsPanel />
 
 				<MenuRoot>

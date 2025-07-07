@@ -1,7 +1,7 @@
 import { AddAdmissionsProccessForm } from '@/components/forms/admissions';
 import { AdmissionsListTable } from '@/components/tables/admissions';
 import { useReadAdmissions } from '@/hooks/admissions_proccess';
-import { useProvideAuth } from '@/hooks/auth';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 
 import { Box, Heading, InputGroup, Input, Stack } from '@chakra-ui/react';
 import { useState } from 'react';
@@ -13,8 +13,7 @@ export const AdmissionsProccess = () => {
 		refetch: fetchAdmissions,
 		isLoading,
 	} = useReadAdmissions();
-	const { getProfile } = useProvideAuth();
-	const profile = getProfile();
+	const { data: profile } = useReadUserLogged();
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])

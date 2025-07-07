@@ -30,13 +30,15 @@ import {
 import { useSidebarState } from '@/hooks';
 import { useProvideAuth } from '@/hooks/auth';
 import { useDataSidebar } from '@/data';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 
 export const Sidebar = () => {
 	const { isCollapsed, toggleSidebar } = useSidebarState();
-	const { getProfile, logout } = useProvideAuth();
+	const { logout } = useProvideAuth();
+	const { data: profile } = useReadUserLogged();
 
 	// Obtener permisos desde el profile
-	const profile = getProfile();
+
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])
@@ -179,8 +181,7 @@ const SidebarItem = ({ href, icon, label, isCollapsed, subItems, ...atr }) => {
 	const activeIconColor =
 		colorMode === 'dark' ? 'uni.secondary' : 'uni.secondary';
 
-	const { getProfile } = useProvideAuth();
-	const profile = getProfile();
+	const { data: profile } = useReadUserLogged();
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])

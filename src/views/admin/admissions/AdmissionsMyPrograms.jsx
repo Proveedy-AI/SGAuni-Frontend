@@ -1,7 +1,6 @@
 import { AddAdmissionsProgramsForm } from '@/components/forms/admissions';
 import { AdmissionsMyProgramsTable } from '@/components/tables/admissions';
 import { useReadAdmissionById } from '@/hooks/admissions_proccess/useReadAdmissionsbyId';
-import { useProvideAuth } from '@/hooks/auth';
 import { LiaSlashSolid } from 'react-icons/lia';
 
 import {
@@ -18,6 +17,7 @@ import { useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router';
 import { useReadAdmissionsPrograms } from '@/hooks/admissions_programs';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 
 export const AdmissionsMyPrograms = () => {
 	const { id } = useParams();
@@ -30,8 +30,7 @@ export const AdmissionsMyPrograms = () => {
 		refetch: fetchAdmissionsPrograms,
 		isLoading,
 	} = useReadAdmissionsPrograms();
-	const { getProfile } = useProvideAuth();
-	const profile = getProfile();
+	const { data: profile } = useReadUserLogged();
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])

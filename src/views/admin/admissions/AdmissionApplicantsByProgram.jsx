@@ -16,7 +16,7 @@ import {
 import { useReadAdmissionApplicants } from '@/hooks/admissions_applicants';
 import { useReadAdmissionById } from '@/hooks/admissions_proccess/useReadAdmissionsbyId';
 import { useReadAdmissionProgramsById } from '@/hooks/admissions_programs';
-import { useProvideAuth } from '@/hooks/auth';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import {
 	Box,
 	Breadcrumb,
@@ -118,8 +118,7 @@ export const AdmissionApplicantsByProgram = () => {
 	const { id } = useParams();
 	const decoded = decodeURIComponent(id);
 	const decrypted = Encryptor.decrypt(decoded);
-	const { getProfile } = useProvideAuth();
-	const profile = getProfile();
+	const { data: profile } = useReadUserLogged();
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])
