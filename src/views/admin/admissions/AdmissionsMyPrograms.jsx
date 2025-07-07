@@ -23,14 +23,18 @@ export const AdmissionsMyPrograms = () => {
 	const { id } = useParams();
 	const decoded = decodeURIComponent(id);
 	const decrypted = Encryptor.decrypt(decoded);
+	const { data: profile } = useReadUserLogged();
 
 	const { data } = useReadAdmissionById(decrypted);
 	const {
 		data: dataAdmissionsPrograms,
 		refetch: fetchAdmissionsPrograms,
 		isLoading,
-	} = useReadAdmissionsPrograms();
-	const { data: profile } = useReadUserLogged();
+	} = useReadAdmissionsPrograms({
+		admission_process: Number(decrypted),
+		coordinator: profile?.id,
+	});
+
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])
@@ -38,11 +42,11 @@ export const AdmissionsMyPrograms = () => {
 
 	const [searchValue, setSearchValue] = useState('');
 
-	const filteredAdmissionsPrograms = dataAdmissionsPrograms?.results?.filter(
-		(item) =>
-			item.admission_process === Number(decrypted) &&
-			item.coordinator === profile.id &&
-			item.program_name.toLowerCase().includes(searchValue.toLowerCase())
+	const allAdmissionPrograms =
+		dataAdmissionsPrograms?.pages?.flatMap((page) => page.results) ?? [];
+
+	const filteredAdmissionsPrograms = allAdmissionPrograms?.filter((item) =>
+		item.program_name.toLowerCase().includes(searchValue.toLowerCase())
 	);
 
 	return (
