@@ -194,7 +194,24 @@ export const AdmissionApplicantsByProgramTable = ({
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [sortConfig, setSortConfig] = useState(null);
 	const sortedData = useSortedData(data, sortConfig);
-	const visibleRows = sortedData?.slice(startIndex, endIndex);
+
+  const {
+		currentPage,
+		startIndex,
+		visibleRows,
+		loadUntilPage,
+		setCurrentPage,
+	} = usePaginatedInfiniteData({
+		data: sortedData,
+		pageSize,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	});
+
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [resetPageTrigger]);
 
 	return (
 		<Box
