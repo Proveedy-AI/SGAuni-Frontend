@@ -1,4 +1,5 @@
 import { ReactSelect } from '@/components';
+import { PreviewMyOrdenDetailsModal } from '@/components/modals';
 import { Field } from '@/components/ui';
 import { formatDateString } from '@/components/ui/dateHelpers';
 import { useReadMyApplicants } from '@/hooks';
@@ -43,7 +44,7 @@ export const MyPaymentRequests = () => {
 			? item.status === selectedStatus.value
 			: true;
 		const matchMethod = selectedMethod
-			? item.method_payment_id === selectedMethod.value
+			? item.payment_method === selectedMethod.value
 			: true;
 		const matchPurpose = selectedPurpose
 			? item.purpose === selectedPurpose.value
@@ -169,38 +170,51 @@ export const MyPaymentRequests = () => {
 							<Table.Header></Table.Header>
 							<Table.Row>
 								<Table.ColumnHeader>N°</Table.ColumnHeader>
-								<Table.ColumnHeader>Programa</Table.ColumnHeader>
-								<Table.ColumnHeader>Propósito</Table.ColumnHeader>
-								<Table.ColumnHeader>Monto</Table.ColumnHeader>
+								<Table.ColumnHeader w={'20%'}>Programa</Table.ColumnHeader>
+								<Table.ColumnHeader w={'20%'}>Propósito</Table.ColumnHeader>
+								<Table.ColumnHeader w={'15%'}>Monto</Table.ColumnHeader>
 								<Table.ColumnHeader>Estado</Table.ColumnHeader>
-								<Table.ColumnHeader>Fecha Solicitud</Table.ColumnHeader>
-								<Table.ColumnHeader>Acciones</Table.ColumnHeader>
+								<Table.ColumnHeader w={'20%'}>
+									Fecha Solicitud
+								</Table.ColumnHeader>
+								<Table.ColumnHeader>Orden de Pago</Table.ColumnHeader>
 							</Table.Row>
 
 							<Table.Body>
-								{filteredRequests?.map((item, index) => (
-									<Table.Row key={item.id}>
-										<Table.Cell>{index + 1}</Table.Cell>
-										<Table.Cell>{item.program_name}</Table.Cell>
-										<Table.Cell>{item.purpose_display}</Table.Cell>
-										<Table.Cell>S/ {item.amount}</Table.Cell>
-										<Table.Cell>
-											<Badge
-												colorPalette={statusColorMap[item.status] || 'gray'}
-												variant='solid'
-											>
-												{
-													StatusOptions.find((opt) => opt.value === item.status)
-														?.label
-												}
-											</Badge>
+								{filteredRequests && filteredRequests.length > 0 ? (
+									filteredRequests.map((item, index) => (
+										<Table.Row key={item.id}>
+											<Table.Cell>{index + 1}</Table.Cell>
+											<Table.Cell>{item.program_name}</Table.Cell>
+											<Table.Cell>{item.purpose_display}</Table.Cell>
+											<Table.Cell>S/ {item.amount}</Table.Cell>
+											<Table.Cell>
+												<Badge
+													colorPalette={statusColorMap[item.status] || 'gray'}
+													variant='solid'
+												>
+													{
+														StatusOptions.find(
+															(opt) => opt.value === item.status
+														)?.label
+													}
+												</Badge>
+											</Table.Cell>
+											<Table.Cell>
+												{formatDateString(item.requested_at)}
+											</Table.Cell>
+											<Table.Cell>
+												<PreviewMyOrdenDetailsModal data={item} />
+											</Table.Cell>
+										</Table.Row>
+									))
+								) : (
+									<Table.Row>
+										<Table.Cell colSpan={7} textAlign='center'>
+											No hay solicitudes de pago
 										</Table.Cell>
-										<Table.Cell>
-											{formatDateString(item.requested_at)}
-										</Table.Cell>
-										<Table.Cell>{/* Acciones aquí */}</Table.Cell>
 									</Table.Row>
-								))}
+								)}
 							</Table.Body>
 						</Table.Root>
 					</Box>
