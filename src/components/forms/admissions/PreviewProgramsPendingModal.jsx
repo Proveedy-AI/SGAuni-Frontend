@@ -30,10 +30,10 @@ import {
 export const PreviewProgramsPendingModal = ({ data }) => {
 	const [open, setOpen] = useState(false);
 	const statusMap = {
-		Draft: { label: 'Borrador', color: 'gray' },
-		Pending: { label: 'Pendiente', color: 'orange.500' },
-		Approved: { label: 'Aprobado', color: 'green' },
-		Rejected: { label: 'Rechazado', color: 'red' },
+		Borrador: { label: 'Borrador', color: 'gray' },
+		Pendiente: { label: 'Pendiente', color: 'orange.500' },
+		Aprobado: { label: 'Aprobado', color: 'green' },
+		Rechazado: { label: 'Rechazado', color: 'red' },
 	};
 
 	return (
