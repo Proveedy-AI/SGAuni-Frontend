@@ -73,7 +73,6 @@ export const EditProgram = ({
 	};
 
 	const handleUpdate = async () => {
-		console.log(validateFields());
 		if (!validateFields()) return;
 		const payload = {
 			coordinator: Number(programRequest.coordinator.value),

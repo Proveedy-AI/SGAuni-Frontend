@@ -127,9 +127,9 @@ export const PaymentOrdersByApplicationTable = ({ data }) => {
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader>Sub Total</Table.ColumnHeader>
-							<Table.ColumnHeader>Descuento</Table.ColumnHeader>
-							<Table.ColumnHeader>Total</Table.ColumnHeader>
+							<Table.ColumnHeader>Sub Total (S/.)</Table.ColumnHeader>
+							<Table.ColumnHeader>Descuento (%)</Table.ColumnHeader>
+							<Table.ColumnHeader>Total (S/.)</Table.ColumnHeader>
 							<Table.ColumnHeader>Estado</Table.ColumnHeader>
 							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 						</Table.Row>

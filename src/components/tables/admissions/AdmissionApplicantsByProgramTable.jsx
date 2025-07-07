@@ -2,6 +2,7 @@ import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { ViewRegistrationDocumentModal } from '@/components/forms/admissions';
 import { CreateProgramExamToAdmissionProgram } from '@/components/forms/admissions/createProgramExamToAdmissionProgram';
 import { ViewAdmissionProgramExams } from '@/components/forms/admissions/ViewAdmissionProgramExams';
+import { usePaginatedInfiniteData } from '@/components/navigation';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { Pagination } from '@/components/ui';
 import SkeletonTable from '@/components/ui/SkeletonTable';
@@ -9,7 +10,7 @@ import { SortableHeader } from '@/components/ui/SortableHeader';
 import useSortedData from '@/utils/useSortedData';
 import { Badge, Box, HStack, Table } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
-import { memo, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 const Row = memo(
@@ -145,7 +146,9 @@ const Row = memo(
 						}
 					</Badge>
 				</Table.Cell>
-				<Table.Cell textAlign='center'>{item.qualification_average || '-'}</Table.Cell>
+				<Table.Cell textAlign='center'>
+					{item.qualification_average || '-'}
+				</Table.Cell>
 				<Table.Cell onClick={(e) => e.stopPropagation()}>
 					<HStack>
 						<ViewAdmissionProgramExams item={item} fetchData={fetchData} />
@@ -155,7 +158,7 @@ const Row = memo(
 								fetchData={fetchData}
 							/>
 						)}
-            <ViewRegistrationDocumentModal data={item} />
+						<ViewRegistrationDocumentModal data={item} />
 					</HStack>
 				</Table.Cell>
 			</Table.Row>
@@ -182,11 +185,13 @@ export const AdmissionApplicantsByProgramTable = ({
 	fetchData,
 	permissions,
 	isLoading,
+	isFetchingNextPage,
+	totalCount,
+	fetchNextPage,
+	hasNextPage,
+	resetPageTrigger,
 }) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
-	const [currentPage, setCurrentPage] = useState(1);
-	const startIndex = (currentPage - 1) * pageSize;
-	const endIndex = startIndex + pageSize;
 	const [sortConfig, setSortConfig] = useState(null);
 	const sortedData = useSortedData(data, sortConfig);
 	const visibleRows = sortedData?.slice(startIndex, endIndex);
@@ -275,11 +280,11 @@ export const AdmissionApplicantsByProgramTable = ({
 			</Table.ScrollArea>
 
 			<Pagination
-				count={data?.length}
-				pageSize={Number(pageSize)}
+				count={totalCount}
+				pageSize={pageSize}
 				currentPage={currentPage}
 				pageSizeOptions={pageSizeOptions}
-				onPageChange={(page) => setCurrentPage(page)}
+				onPageChange={loadUntilPage}
 				onPageSizeChange={(size) => {
 					setPageSize(size);
 					setCurrentPage(1);
@@ -295,4 +300,9 @@ AdmissionApplicantsByProgramTable.propTypes = {
 	fetchData: PropTypes.func,
 	permissions: PropTypes.array,
 	isLoading: PropTypes.bool,
+	totalCount: PropTypes.number,
+	fetchNextPage: PropTypes.func,
+	hasNextPage: PropTypes.bool,
+	isFetchingNextPage: PropTypes.bool,
+	resetPageTrigger: PropTypes.string,
 };

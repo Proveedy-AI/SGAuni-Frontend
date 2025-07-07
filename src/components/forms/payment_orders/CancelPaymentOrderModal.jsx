@@ -32,8 +32,6 @@ export const CancelPaymentOrderModal = ({ item, fetchPaymentOrders }) => {
     })
   }
 
-  console.log(item)
-
   return (
     <Stack css={{ "--field-label-width": "180px" }}>
       <Field orientation={{ base: "vertical", sm: "horizontal" }}>

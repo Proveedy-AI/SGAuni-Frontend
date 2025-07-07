@@ -1,7 +1,14 @@
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { ConfirmDownloadSuneduModal, GeneratePdfApliccationsModal } from '@/components/forms/admissions';
 import { AdmissionApplicantsByProgramTable } from '@/components/tables/admissions';
-import { Button, InputGroup, MenuContent, MenuItem, MenuRoot, MenuTrigger } from '@/components/ui';
+import {
+	Button,
+	InputGroup,
+	MenuContent,
+	MenuItem,
+	MenuRoot,
+	MenuTrigger,
+} from '@/components/ui';
 import { useReadAdmissionApplicants } from '@/hooks/admissions_applicants';
 import { useReadAdmissionById } from '@/hooks/admissions_proccess/useReadAdmissionsbyId';
 import { useReadAdmissionProgramsById } from '@/hooks/admissions_programs';
@@ -71,8 +78,8 @@ export const AdmissionApplicantsMenu = ({ applicants, data }) => {
 }
 
 AdmissionApplicantsMenu.propTypes = {
-  applicants: PropTypes.array,
-  data: PropTypes.object,
+	applicants: PropTypes.array,
+	data: PropTypes.object,
 };
 
 export const AdmissionApplicantsByProgram = () => {
@@ -88,22 +95,30 @@ export const AdmissionApplicantsByProgram = () => {
 
 	const { data: dataProgram, loading: isProgramLoading } =
 		useReadAdmissionProgramsById(decrypted);
+	const [searchApplicantValue, setSearchApplicantValue] = useState('');
+
 	const {
 		data: dataAdmissionApplicants,
-		refetch: fetchAdmissionApplicants,
-		isLoading,
+		fetchNextPage: fetchNextApplicants,
+		hasNextPage: hasNextPageApplicants,
+		isFetchingNextPage: isFetchingNextApplicants,
+		isLoading: isLoadingApplicants,
+		refetch: refetchApplicants,
 	} = useReadAdmissionApplicants();
 
-	const filteredApplicantsByProgramId =
-		dataAdmissionApplicants?.results?.filter(
-			(item) => item.admission_program === Number(decrypted)
-		);
+	const allApplicants =
+		dataAdmissionApplicants?.pages?.flatMap((page) => page.results) ?? [];
+	const isFiltering = searchApplicantValue.trim().length > 0;
 
-	const [searchValue, setSearchValue] = useState('');
-
-	const filteredApplicants = filteredApplicantsByProgramId?.filter((item) =>
-		item.person_full_name.toLowerCase().includes(searchValue.toLowerCase())
+	const filteredApplicants = allApplicants.filter((item) =>
+		item?.person_full_name
+			?.toLowerCase()
+			.includes(searchApplicantValue.trim().toLowerCase())
 	);
+
+	const totalCount = isFiltering
+		? filteredApplicants.length
+		: (dataAdmissionApplicants?.pages?.[0]?.count ?? 0);
 
 	return (
 		<Box spaceY='5'>
@@ -139,7 +154,7 @@ export const AdmissionApplicantsByProgram = () => {
 				justify='space-between'
 			>
 				<Heading
-          w={'100%'}
+					w={'100%'}
 					size={{
 						xs: 'xs',
 						sm: 'md',
@@ -147,17 +162,24 @@ export const AdmissionApplicantsByProgram = () => {
 					}}
 					color={'uni.secondary'}
 				>
-					 <HStack w={'100%'} justifyContent={'space-between'} alignItems='center'>
-            <Box>
-              <Text>{dataProgram?.program_name}</Text>
-              <Span fontSize='md' color='gray.500'>
-                {isProgramLoading
-                  ? 'Cargando...'
-                  : dataProgram?.admission_process_name}
-              </Span>
-            </Box>
-            <AdmissionApplicantsMenu applicants={filteredApplicantsByProgramId} data={dataProgram} />
-          </HStack>
+					<HStack
+						w={'100%'}
+						justifyContent={'space-between'}
+						alignItems='center'
+					>
+						<Box>
+							<Text>{dataProgram?.program_name}</Text>
+							<Span fontSize='md' color='gray.500'>
+								{isProgramLoading
+									? 'Cargando...'
+									: dataProgram?.admission_process_name}
+							</Span>
+						</Box>
+						<AdmissionApplicantsMenu
+							applicants={allApplicants}
+							data={dataProgram}
+						/>
+					</HStack>
 				</Heading>
 			</Stack>
 
@@ -174,17 +196,22 @@ export const AdmissionApplicantsByProgram = () => {
 						bg={'white'}
 						maxWidth={'550px'}
 						placeholder='Buscar por nombre del postulante ...'
-						value={searchValue}
-						onChange={(e) => setSearchValue(e.target.value)}
+						value={searchApplicantValue}
+						onChange={(e) => setSearchApplicantValue(e.target.value)}
 					/>
 				</InputGroup>
 			</Stack>
 
 			<AdmissionApplicantsByProgramTable
 				programId={decrypted}
-				isLoading={isLoading}
+				isLoading={isLoadingApplicants}
 				data={filteredApplicants}
-				fetchData={fetchAdmissionApplicants}
+				fetchNextPage={fetchNextApplicants}
+				fetchData={refetchApplicants}
+				totalCount={totalCount}
+				hasNextPage={hasNextPageApplicants}
+				isFetchingNext={isFetchingNextApplicants}
+				resetPageTrigger={searchApplicantValue}
 				permissions={permissions}
 			/>
 		</Box>

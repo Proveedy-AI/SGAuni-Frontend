@@ -27,11 +27,21 @@ import {
 import { Contracts, MyContracts } from './views/admin/contracts';
 import { AdmissionMyApplicants } from './views/admin/applicants/AdmissionMyApplicants';
 import { ApplicantsLayout } from './views/admin/applicants/ApplicantsLayout';
-import { DebtsLayout, PaymentOrdersByRequest, PaymentRequestsView } from './views/admin/debts';
+import {
+	DebtsLayout,
+	PaymentOrdersByRequest,
+	PaymentRequestsView,
+} from './views/admin/debts';
 import { CoursesAndSchedules } from './views/admin/courses_and_schedules';
 import ChakraInscriptionForm from './views/inscription-form';
 import { PaymentOrdersView } from './views/admin/debts/PaymentOrdersView';
 import { Tuition } from './views/admin/tuitions';
+import { MyPaymentDebt } from './views/admin/mypayments/MyPaymentDebt';
+import { MyPaymentsLayout } from './views/admin/mypayments/MyPaymentsLayout';
+import { MyPaymentRequests } from './views/admin/mypayments/MyPaymentRequests';
+import { MyPaymentAddRequests } from './views/admin/mypayments/MyPaymentAddRequests';
+import { MyPaymentUpload } from './views/admin/mypayments/MyPaymentUpload';
+import { MyPaymentHistories } from './views/admin/mypayments/MyPaymentHistories';
 
 function App() {
 	return (
@@ -99,7 +109,7 @@ function App() {
 								</Route>
 								<Route
 									element={
-										<ProtectedRoute requiredPermission='admissions.myapplicants.view' />
+										<ProtectedRoute requiredPermission='applicants.myapplicants.view' />
 									}
 								>
 									<Route path='myapplicants'>
@@ -160,20 +170,52 @@ function App() {
 									<Route index element={<CoursesAndSchedules />} />
 								</Route>
 							</Route>
+							<Route path='mypaymentsdebts' element={<MyPaymentsLayout />}>
+								<Route>
+									<Route
+										element={
+											<ProtectedRoute requiredPermission='payment.mypaymentsdebts.view' />
+										}
+									>
+										<Route path='debts'>
+											<Route index element={<MyPaymentDebt />} />
+										</Route>
+										<Route path='requests'>
+											<Route index element={<MyPaymentRequests />} />
+										</Route>
+										<Route path='addrequests'>
+											<Route index element={<MyPaymentAddRequests />} />
+										</Route>
+										<Route path='uploadsvouchers'>
+											<Route index element={<MyPaymentUpload />} />
+										</Route>
+										<Route path='history-requests'>
+											<Route index element={<MyPaymentHistories />} />
+										</Route>
+									</Route>
+								</Route>
+							</Route>
 
 							<Route path='debts' element={<DebtsLayout />}>
 								<Route
-									element={<ProtectedRoute requiredPermission='payment.requests.view' />}
+									element={
+										<ProtectedRoute requiredPermission='payment.requests.view' />
+									}
 								>
 									<Route path='payment-requests'>
-                    <Route index element={<PaymentRequestsView />} />
-                    <Route path=':id' element={<PaymentOrdersByRequest />} />
-                  </Route>
-                  <Route
-									  element={<ProtectedRoute requiredPermission='payment.orders.view' />}
-								  >
-                    <Route path='payment-orders' element={<PaymentOrdersView />} />
-                  </Route>
+										<Route index element={<PaymentRequestsView />} />
+										<Route path=':id' element={<PaymentOrdersByRequest />} />
+									</Route>
+									<Route
+										element={
+											<ProtectedRoute requiredPermission='payment.orders.view' />
+										}
+									>
+										<Route
+											path='payment-orders'
+											element={<PaymentOrdersView />}
+										/>
+									</Route>
 								</Route>
 							</Route>
 							{/* SETTINGS */}

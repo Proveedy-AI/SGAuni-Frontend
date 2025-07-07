@@ -8,14 +8,9 @@ import {
 import { AssignModalityToProgramForm } from '@/components/forms/admissions/AssignModalityProgramsForm';
 import { HistoryStatusProgramsView } from '@/components/forms/admissions/HistoryStatusProgramsView';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
-import {
-	ConfirmModal,
-	SendModal,
-	Pagination,
-	toaster,
-	Tooltip,
-} from '@/components/ui';
+import { ConfirmModal, Pagination, toaster } from '@/components/ui';
 import { formatDateString } from '@/components/ui/dateHelpers';
+import { SendConfirmationModal } from '@/components/ui/SendConfirmationModal';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import { useDeleteAdmissionsPrograms } from '@/hooks/admissions_programs';
@@ -24,7 +19,7 @@ import useSortedData from '@/utils/useSortedData';
 import { Box, HStack, IconButton, Span, Table, Text } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
-import { FiSend, FiTrash2 } from 'react-icons/fi';
+import { FiTrash2 } from 'react-icons/fi';
 
 const Row = memo(
 	({ item, fetchData, startIndex, index, permissions, sortConfig, data }) => {
@@ -77,7 +72,7 @@ const Row = memo(
 		};
 		const statusMap = {
 			Draft: { label: 'Borrador', color: 'gray' },
-			Pending: { label: 'Pendiente', color: 'orange.500' },
+			Pending: { label: 'Pendiente', color: 'orange' },
 			Approved: { label: 'Aprobado', color: 'green' },
 			Rejected: { label: 'Rechazado', color: 'red' },
 		};
@@ -104,43 +99,15 @@ const Row = memo(
 				<Table.Cell>
 					<HStack>
 						{permissions?.includes('admissions.myprograms.send') && (
-							<SendModal
-								placement='center'
-								trigger={
-									<Box>
-										<Tooltip
-											content='Enviar para aprobación'
-											positioning={{ placement: 'bottom-center' }}
-											showArrow
-											openDelay={0}
-										>
-											<IconButton
-												disabled={item.status === 4}
-												colorPalette='green'
-												size='xs'
-											>
-												<FiSend />
-											</IconButton>
-										</Tooltip>
-									</Box>
-								}
-								open={openSend}
-								onOpenChange={(e) => setOpenSend(e.open)}
-								onConfirm={() => handleSend(item.id)}
+							<SendConfirmationModal
+								item={item}
+								onConfirm={handleSend}
+								openSend={openSend}
+								setOpenSend={setOpenSend}
 								loading={LoadingProgramsReview}
-								icon={'FiSend'}
-								loadingText={'Enviando'}
-							>
-								<Text>
-									¿Estás seguro que quieres enviar a
-									<Span fontWeight='semibold' px='1'>
-										{item.program_name}
-									</Span>
-									para aprobación de cronograma?
-								</Text>
-							</SendModal>
+							/>
 						)}
-						<PreviewAdmissionsProgramsModal data={item} />
+						<PreviewAdmissionsProgramsModal statusMap={statusMap} data={item} />
 						{permissions?.includes('admissions.myprograms.assignmodality') && (
 							<AssignModalityToProgramForm data={item} fetchData={fetchData} />
 						)}

@@ -51,7 +51,7 @@ export const ConfirmDownloadApplicantsDataModal = ({ dataProgram, open, setOpen 
   }
   
   ConfirmDownloadApplicantsDataModal.propTypes = {
-    dataProgram: PropTypes.object.isRequired,
+    dataProgram: PropTypes.object,
     open: PropTypes.bool.isRequired,
     setOpen: PropTypes.func.isRequired,
   }

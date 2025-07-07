@@ -8,18 +8,30 @@ import {
 } from '@/hooks/admissions_evaluators';
 import { useReadUsers } from '@/hooks/users';
 import {
+	Badge,
 	Box,
+	Button,
+	Card,
 	Flex,
+	Grid,
 	IconButton,
-	Spinner,
+	SimpleGrid,
 	Stack,
 	Table,
 	Text,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
-import { FaSave } from 'react-icons/fa';
-import { FiCheckSquare, FiTrash2 } from 'react-icons/fi';
+import {
+	FiCheckSquare,
+	FiEye,
+	FiMessageSquare,
+	FiPlus,
+	FiTrash2,
+	FiUserCheck,
+	FiUsers,
+} from 'react-icons/fi';
+import { LuClipboardCheck } from 'react-icons/lu';
 
 export const AssignEvaluatorProgramModal = ({ data, fetchData }) => {
 	const contentRef = useRef();
@@ -30,18 +42,15 @@ export const AssignEvaluatorProgramModal = ({ data, fetchData }) => {
 		role: null,
 	});
 
-	const { data: dataUsers, isLoading: loadingUsers } = useReadUsers(
+	const { data: dataUsers } = useReadUsers(
 		{},
 		{
 			enabled: open,
 		}
 	);
 
-	const {
-		data: dataAdmissionEvaluators,
-		isLoading: loading,
-		refetch: fetchAdmissionEvaluators,
-	} = useReadAdmissionEvaluators({}, { enabled: open });
+	const { data: dataAdmissionEvaluators, refetch: fetchAdmissionEvaluators } =
+		useReadAdmissionEvaluators({ program_id: data.id }, { enabled: open });
 
 	const coordinatorOptions = dataUsers?.results
 		?.filter(
@@ -54,30 +63,39 @@ export const AssignEvaluatorProgramModal = ({ data, fetchData }) => {
 			value: c.id.toString(),
 			label: c.full_name,
 		}));
-
 	const roleOptions = [
 		{ label: 'Ensayo', value: '1' },
 		{ label: 'Examen', value: '2' },
 		{ label: 'Entrevista personal', value: '3' },
 	];
+	const getRoleInfo = (roleValue) => {
+		const roles = {
+			1: {
+				label: 'Ensayo',
+				color: 'bg-blue-100 text-blue-800 border-blue-300',
+				icon: FiMessageSquare,
+			},
+			2: {
+				label: 'Examen',
+				color: 'bg-green-100 text-green-800 border-green-300',
+				icon: LuClipboardCheck,
+			},
+			3: {
+				label: 'Entrevista Personal',
+				color: 'bg-purple-100 text-purple-800 border-purple-300',
+				icon: FiUsers,
+			},
+		};
+		return (
+			roles[roleValue] || {
+				label: 'Desconocido',
+				color: 'bg-gray-100 text-gray-800 border-gray-300',
+				icon: FiEye,
+			}
+		);
+	};
 
-	const evaluatorsAssigned = dataAdmissionEvaluators?.results?.filter(
-		(evaluator) => evaluator.admission_program === data.id
-	);
-
-	// Filtra los roles que NO están asignados al evaluador seleccionado
-	const filteredRolesOptions = evaluatorRequest.coordinator
-		? roleOptions.filter(
-				(option) =>
-					!loading &&
-					!evaluatorsAssigned?.some(
-						(evaluatorAssigned) =>
-							evaluatorAssigned.evaluator ===
-								Number(evaluatorRequest.coordinator?.value) &&
-							evaluatorAssigned.role === Number(option.value)
-					)
-			)
-		: roleOptions;
+	const evaluatorsAssigned = dataAdmissionEvaluators?.results;
 
 	const { mutateAsync: assignEvaluator, isPending: isSaving } =
 		useCreateAdmissionEvaluator();
@@ -148,6 +166,13 @@ export const AssignEvaluatorProgramModal = ({ data, fetchData }) => {
 		});
 	};
 
+	const roleStats =
+		evaluatorsAssigned?.reduce((acc, evaluator) => {
+			const roleInfo = getRoleInfo(evaluator.role);
+			acc[roleInfo.label] = (acc[roleInfo.label] || 0) + 1;
+			return acc;
+		}, {}) || {};
+
 	return (
 		<Modal
 			title='Asignar/Quitar Evaluadores'
@@ -172,61 +197,121 @@ export const AssignEvaluatorProgramModal = ({ data, fetchData }) => {
 			onOpenChange={(e) => setOpen(e.open)}
 			contentRef={contentRef}
 		>
-			{loadingUsers ? (
-				<Flex justify='center' align='center' minH='200px'>
-					<Spinner size='xl' />
-				</Flex>
-			) : (
-				<Stack spacing={4} css={{ '--field-label-width': '150px' }}>
-					<Flex
-						direction={{ base: 'column', md: 'row' }}
-						justify='flex-start'
-						align={'end'}
-						gap={2}
-						mt={2}
-					>
-						<Field label='Evaluador'>
-							<ReactSelect
-								options={coordinatorOptions}
-								value={evaluatorRequest.coordinator}
-								onChange={(value) =>
-									setEvaluatorRequest((prev) => ({
-										...prev,
-										coordinator: value,
-									}))
-								}
-							/>
-						</Field>
-						<Field label='Rol del evaluador'>
-							<ReactSelect
-								options={
-									evaluatorRequest.coordinator ? filteredRolesOptions : []
-								}
-								value={evaluatorRequest.role}
-								onChange={(value) =>
-									setEvaluatorRequest((prev) => ({ ...prev, role: value }))
-								}
-							/>
-						</Field>
-						<IconButton
-							size='sm'
-							bg='uni.secondary'
-							loading={isSaving}
-							disabled={
-								!evaluatorRequest.coordinator ||
-								!evaluatorRequest.role ||
-								data.status === 4
-							}
-							onClick={handleSubmit}
-							css={{ _icon: { width: '5', height: '5' } }}
+			<Stack
+				gap={2}
+				pb={6}
+				maxH={{ base: 'full', md: '75vh' }}
+				overflowY='auto'
+				sx={{
+					'&::-webkit-scrollbar': { width: '6px' },
+					'&::-webkit-scrollbar-thumb': {
+						background: 'gray.300',
+						borderRadius: 'full',
+					},
+				}}
+			>
+				<Card.Root>
+					<Card.Header>
+						<Card.Title display='flex' alignItems='center' gap={2}>
+							<FiPlus className='h-5 w-5' color='orange' />
+							Asignar Nuevo Evaluador
+						</Card.Title>
+					</Card.Header>
+
+					<Card.Body>
+						<Grid
+							templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }}
+							gap={4}
+							alignItems='end'
 						>
-							<FaSave />
-						</IconButton>
-					</Flex>
-					<Box mt={6}>
-						<Text fontWeight='semibold' mb={2}>
-							Evaluadores Asignados:
-						</Text>
+							{/* Evaluador */}
+							<Field label='Evaluador'>
+								<ReactSelect
+									options={coordinatorOptions}
+									value={evaluatorRequest.coordinator}
+									onChange={(value) =>
+										setEvaluatorRequest((prev) => ({
+											...prev,
+											coordinator: value,
+										}))
+									}
+								/>
+							</Field>
+							<Field label='Rol del evaluador'>
+								<ReactSelect
+									options={roleOptions}
+									value={evaluatorRequest.role}
+									onChange={(value) =>
+										setEvaluatorRequest((prev) => ({ ...prev, role: value }))
+									}
+								/>
+							</Field>
+
+							{/* Botón de Asignar */}
+							<Button
+								onClick={handleSubmit}
+								disabled={
+									!evaluatorRequest.coordinator ||
+									!evaluatorRequest.role ||
+									data.status === 4
+								}
+								colorPalette='orange'
+								loading={isSaving}
+								loadingText='Asignando...'
+							>
+								<FiPlus className='h-4 w-4' /> Asignar
+							</Button>
+						</Grid>
+					</Card.Body>
+				</Card.Root>
+				{Object.keys(roleStats).length > 0 && (
+					<Grid templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }} gap={4}>
+						{Object.entries(roleStats).map(([roleType, count]) => {
+							const roleOption = roleOptions.find((r) => r.label === roleType);
+							const roleInfo = getRoleInfo(
+								roleOption?.value ? Number(roleOption.value) : 1
+							);
+							const RoleIcon = roleInfo.icon;
+
+							return (
+								<Card.Root key={roleType} textAlign='center'>
+									<Card.Body pt={4}>
+										<Flex justify='center' mb={2}>
+											<RoleIcon className='h-6 w-6' color='orange' />
+										</Flex>
+										<Text fontSize='2xl' fontWeight='bold' color='orange.600'>
+											{count}
+										</Text>
+										<Text fontSize='sm' color='gray.600'>
+											{roleType}
+										</Text>
+									</Card.Body>
+								</Card.Root>
+							);
+						})}
+					</Grid>
+				)}
+
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>
+							<Flex align='center' justify='space-between' gap={2}>
+								<Flex align='center' gap={2}>
+									<FiUserCheck className='h-5 w-5 text-green-600' />
+									<Text fontWeight='medium'>Evaluadores Asignados</Text>
+									<Badge
+										variant='outline'
+										bg='green.50'
+										color='green.700'
+										borderColor='green.200'
+									>
+										{evaluatorsAssigned?.length || 0} evaluadores
+									</Badge>
+								</Flex>
+							</Flex>
+						</Card.Title>
+					</Card.Header>
+					<Card.Body>
 						<Table.Root size='sm' striped>
 							<Table.Header>
 								<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
@@ -277,9 +362,58 @@ export const AssignEvaluatorProgramModal = ({ data, fetchData }) => {
 								)}
 							</Table.Body>
 						</Table.Root>
-					</Box>
-				</Stack>
-			)}
+					</Card.Body>
+				</Card.Root>
+				{evaluatorsAssigned && evaluatorsAssigned.length > 0 && (
+					<Card.Root
+						bgGradient='linear(to-r, orange.50, yellow.50)'
+						border='1px solid'
+						borderColor='orange.200'
+					>
+						<Card.Body pt={6}>
+							<SimpleGrid
+								columns={{ base: 1, md: 3 }}
+								gap={4}
+								textAlign='center'
+							>
+								<Box>
+									<Text fontSize='2xl' fontWeight='bold' color='orange.600'>
+										{evaluatorsAssigned.length}
+									</Text>
+									<Text fontSize='sm' color='gray.600'>
+										Total Evaluadores
+									</Text>
+								</Box>
+
+								<Box>
+									<Text fontSize='2xl' fontWeight='bold' color='green.600'>
+										{Object.keys(roleStats).length}
+									</Text>
+									<Text fontSize='sm' color='gray.600'>
+										Tipos de Evaluación
+									</Text>
+								</Box>
+
+								<Box>
+									<Text fontSize='2xl' fontWeight='bold' color='blue.600'>
+										{Math.min(
+											100,
+											Math.round(
+												(Object.keys(roleStats).length / roleOptions.length) *
+													100
+											)
+										)}
+										%
+									</Text>
+									<Text fontSize='sm' color='gray.600'>
+										Cobertura
+									</Text>
+								</Box>
+							</SimpleGrid>
+						</Card.Body>
+					</Card.Root>
+				)}
+			</Stack>
 		</Modal>
 	);
 };
