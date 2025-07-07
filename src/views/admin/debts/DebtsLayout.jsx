@@ -22,7 +22,6 @@ export const DebtsLayout = () => {
     if (!permission) return true;
     const roles = profile?.roles || [];
     const permissions = roles.flatMap((r) => r.permissions || []);
-    console.log(permissions)
     return permissions.some((p) => p.guard_name === permission);
   };
 

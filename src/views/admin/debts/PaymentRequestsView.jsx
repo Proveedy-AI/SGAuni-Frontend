@@ -1,6 +1,5 @@
 import { PaymentRequestsTable } from "@/components/tables/payment_requests";
 import { useProvideAuth } from "@/hooks/auth";
-import { useReadPaymentOrders } from "@/hooks/payment_orders";
 import { useReadPaymentRequest } from "@/hooks/payment_requests/useReadPaymentRequest";
 import { Box, Heading, InputGroup, Input, Stack, Spinner } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
@@ -9,8 +8,7 @@ import { format, parseISO } from 'date-fns';
 import { GenerateMasivePaymentOrders } from "@/components/forms/payment_requests";
 
 export const PaymentRequestsView = () => {
-  const { data: dataPaymentRequests, loading: isPaymentRequestsLoading, refetch: fetchPaymentRequets } = useReadPaymentRequest();
-  const { data: dataPaymentOrders, loading: isPaymentOrdersLoading, refetch: fetchPaymentOrders } = useReadPaymentOrders();
+  const { data: dataPaymentRequests, loading: isPaymentRequestsLoading } = useReadPaymentRequest();
 
   const { getProfile } = useProvideAuth();
   const profile = getProfile();
@@ -61,13 +59,11 @@ export const PaymentRequestsView = () => {
     )
   );
 
-  console.log(dataPaymentRequests?.results);
-
   useEffect(() => {
     if (loading && filteredPaymentRequests) {
       setInitialLoading(false);
     }
-  }, [loading, filteredPaymentRequests, isPaymentOrdersLoading]);
+  }, [loading, filteredPaymentRequests]);
 
   return (
     <Box spaceY='5'>
@@ -114,10 +110,6 @@ export const PaymentRequestsView = () => {
         { !loading && dataPaymentRequests?.results?.length > 0 ? (
             <PaymentRequestsTable
               data={filteredPaymentRequests}
-              fetchData={fetchPaymentRequets}
-              fetchPaymentRequests={fetchPaymentRequets}
-              fetchPaymentOrders={fetchPaymentOrders}
-              paymentOrders={dataPaymentOrders?.results}
               permissions={permissions}
               documentTypeOptions={documentTypeOptions}
               paymentMethodOptions={paymentMethodOptions}

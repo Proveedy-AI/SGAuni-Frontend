@@ -1,12 +1,12 @@
-import { Button, Field, ModalSimple, toaster } from "@/components/ui";
+import { Field, ModalSimple, toaster } from "@/components/ui";
 import { Flex, IconButton, Input, Stack } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { FaSave, FaTimes } from "react-icons/fa";
 import { useCreatePaymentOrder } from "@/hooks/payment_orders";
-import { FiPlus } from "react-icons/fi";
+import { FiArrowUp } from "react-icons/fi";
 
-export const GeneratePaymentOrderModalByRequest = ({ item, paymentOrders, fetchPaymentRequests, fetchPaymentOrders }) => {
+export const GeneratePaymentOrderModalByRequest = ({ item }) => {
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
   const { mutateAsync: generatePaymentOrder, isSaving } = useCreatePaymentOrder();
@@ -48,8 +48,6 @@ export const GeneratePaymentOrderModalByRequest = ({ item, paymentOrders, fetchP
           title: 'Orden generada con éxito',
           type: 'success',
         });
-        fetchPaymentRequests();
-        fetchPaymentOrders();
         handleReset();
       },
       onError: (error) => {
@@ -69,14 +67,9 @@ export const GeneratePaymentOrderModalByRequest = ({ item, paymentOrders, fetchP
           title="Generar Orden de Pago"
           placement="center"
           trigger={
-            <Button
-              bg='uni.secondary'
-              color='white'
-              size='xs'
-              w={{ base: 'full', sm: 'auto' }}
-            >
-              <FiPlus /> Generar orden de pago
-            </Button>
+            <IconButton colorPalette='purple' size='xs'>
+              <FiArrowUp />
+            </IconButton>
           }
           size='4xl'
           open={open}

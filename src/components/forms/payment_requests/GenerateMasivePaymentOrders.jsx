@@ -2,6 +2,7 @@ import { Button, Field, ModalSimple } from "@/components/ui";
 import { Flex, Span, Stack } from "@chakra-ui/react";
 import { useState } from "react";
 import PropTypes from "prop-types";
+import { FiPlus } from "react-icons/fi";
 
 export const GenerateMasivePaymentOrders = ({ data }) => {
   const [open, setOpen] = useState(false);
@@ -45,9 +46,10 @@ export const GenerateMasivePaymentOrders = ({ data }) => {
         <ModalSimple
           trigger={
             <Button
+              size='xs'
               bg='uni.secondary'
             >
-              Generar Ordenes de Pago
+              <FiPlus /> Generar Ordenes de Pago
             </Button>
           }
           title="Generar Ordenes de Pago"

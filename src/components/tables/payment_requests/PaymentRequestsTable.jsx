@@ -15,15 +15,19 @@ import { ReactSelect } from '@/components/select';
 import { useNavigate } from 'react-router';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { format, parseISO } from 'date-fns';
+import { 
+  GeneratePaymentOrderModalByRequest, 
+  ViewPaymentRequestModal
+} from '@/components/forms/payment_requests';
 
-const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests, fetchPaymentOrders, permissions, sortConfig, data }) => {
+const Row = memo(({ item, startIndex, index, permissions, sortConfig, data }) => {
   const navigate = useNavigate();
   const encrypted = Encryptor.encrypt(item.id);
   const encoded = encodeURIComponent(encrypted);
   const handleRowClick = () => {
-    navigate(`/debts/payment-requests/${encoded}`);
+    //navigate(`/debts/payment-requests/${encoded}`);
   };
-  
+
   const statusDisplay = [
     { id: 1, label: 'Pendiente', value: 'Pending', bg:'#AEAEAE', color:'#F5F5F5' },
     { id: 2, label: 'Disponible', value: 'Available', bg:'#C6E7FC80', color:'#0661D8' },
@@ -55,7 +59,7 @@ const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests
       <Table.Cell>{item.num_document}</Table.Cell>
       <Table.Cell >{item.payment_method_display}</Table.Cell>
       <Table.Cell>{item.admission_process_program_name}</Table.Cell>
-      <Table.Cell display="flex" justifyContent="center">
+      <Table.Cell textAlign="center">
         <Badge
           bg={statusDisplay.find(status => status.id === item.status)?.bg}
           color={statusDisplay.find(status => status.id === item.status)?.color}
@@ -66,6 +70,8 @@ const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests
       <Table.Cell>
         <HStack justify='space-between'>
           <Group>
+            { permissions.includes('payment.requests.view') && <ViewPaymentRequestModal item={item} /> }
+            { permissions.includes('payment.orders.generate') && <GeneratePaymentOrderModalByRequest item={item} /> }
           </Group>
         </HStack>
       </Table.Cell>
@@ -80,14 +86,11 @@ Row.propTypes = {
   permissions: PropTypes.array,
   startIndex: PropTypes.number,
   index: PropTypes.number,
-  paymentOrders: PropTypes.array,
-  fetchPaymentRequests: PropTypes.func,
-  fetchPaymentOrders: PropTypes.func,
   sortConfig: PropTypes.object,
   data: PropTypes.array,
 };
 
-export const PaymentRequestsTable = ({ data, paymentOrders, fetchPaymentRequests, fetchPaymentOrders, permissions, paymentMethodOptions, documentTypeOptions, searchValue, setSearchValue, statusOptions }) => {
+export const PaymentRequestsTable = ({ data, permissions, paymentMethodOptions, documentTypeOptions, searchValue, setSearchValue, statusOptions }) => {
   const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
     const [currentPage, setCurrentPage] = useState(1);
     const startIndex = (currentPage - 1) * pageSize;
@@ -224,9 +227,6 @@ export const PaymentRequestsTable = ({ data, paymentOrders, fetchPaymentRequests
                 startIndex={startIndex}
                 index={index}
                 permissions={permissions}
-                paymentOrders={paymentOrders}
-                fetchPaymentRequests={fetchPaymentRequests}
-                fetchPaymentOrders={fetchPaymentOrders}
                 sortConfig={sortConfig}
                 data={data}
               />
@@ -253,9 +253,6 @@ export const PaymentRequestsTable = ({ data, paymentOrders, fetchPaymentRequests
 
 PaymentRequestsTable.propTypes = {
   data: PropTypes.array,
-  paymentOrders: PropTypes.array,
-  fetchPaymentRequests: PropTypes.func,
-  fetchPaymentOrders: PropTypes.func,
   permissions: PropTypes.array,
   paymentMethodOptions: PropTypes.array,
   documentTypeOptions: PropTypes.array,
