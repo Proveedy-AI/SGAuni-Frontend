@@ -46,6 +46,7 @@ const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 						: startIndex + index + 1}
 				</Table.Cell>
 				<Table.Cell>{item.name}</Table.Cell>
+				<Table.Cell>{item.postgraduate_type_name}</Table.Cell>
 				<Table.Cell>
 					<Switch.Root
 						checked={item.enabled}
@@ -126,6 +127,14 @@ export const AdmissionModalitiesTable = ({ isLoading, data, fetchData }) => {
 								<SortableHeader
 									label='Modalidad'
 									columnKey='name'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader w='20%'>
+								<SortableHeader
+									label='Tipo de Postgrado'
+									columnKey='postgraduate_type_name'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
