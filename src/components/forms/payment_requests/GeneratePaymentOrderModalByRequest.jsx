@@ -1,10 +1,10 @@
 import { Field, ModalSimple, toaster } from "@/components/ui";
-import { Flex, IconButton, Input, Stack } from "@chakra-ui/react";
+import { Card, Flex, Heading, Icon, IconButton, Input, Stack } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { FaSave, FaTimes } from "react-icons/fa";
 import { useCreatePaymentOrder } from "@/hooks/payment_orders";
-import { FiArrowUp } from "react-icons/fi";
+import { FiArrowUp, FiPlus } from "react-icons/fi";
 
 export const GeneratePaymentOrderModalByRequest = ({ item }) => {
   const contentRef = useRef();
@@ -77,8 +77,28 @@ export const GeneratePaymentOrderModalByRequest = ({ item }) => {
           onOpenChange={(e) => setOpen(e.open)}
           contentRef={contentRef}
         >
-          <Stack spacing={4} css={{ '--field-label-width': '150px' }}>
-            <Flex
+          <Stack
+            gap={2}
+            pb={6}
+            maxH={{ base: 'full', md: '75vh' }}
+            overflowY='auto'
+            sx={{
+              '&::-webkit-scrollbar': { width: '6px' },
+              '&::-webkit-scrollbar-thumb': {
+                background: 'gray.300',
+                borderRadius: 'full',
+              },
+            }}
+          >
+            <Card.Root>
+              <Card.Header pb={0}>
+                <Flex align='center' gap={2}>
+                  <Icon as={FiPlus} w={5} h={5} color='purple.600' />
+                  <Heading size='sm'>Generar Orden de Pago</Heading>
+                </Flex>
+              </Card.Header>
+              <Card.Body>
+                <Flex
               direction={{ base: 'column', md: 'row' }}
               justify='flex-start'
               align={'end'}
@@ -86,11 +106,11 @@ export const GeneratePaymentOrderModalByRequest = ({ item }) => {
               mt={2}
             >
               <Field label='Id de Orden'>
-                  <Input
-                    placeholder="Ingresar id de Orden"
-                    value={orderIdInput}
-                    onChange={(e) => setOrderIdInput(e.target.value)}
-                    />
+                <Input
+                  placeholder="Ingresar id de Orden"
+                  value={orderIdInput}
+                  onChange={(e) => setOrderIdInput(e.target.value)}
+                  />
                 </Field>
                 <Field label='Descuento'>
                   <Input
@@ -131,7 +151,9 @@ export const GeneratePaymentOrderModalByRequest = ({ item }) => {
                     <FaTimes />
                   </IconButton>
                   </Flex>
-            </Flex>
+                </Flex>
+              </Card.Body>
+            </Card.Root>
           </Stack>
         </ModalSimple>
       </Field>

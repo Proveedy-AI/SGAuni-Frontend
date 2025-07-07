@@ -19,6 +19,7 @@ export const PaymentRequestsView = () => {
 	const [selectedPurpose, setSelectedPurpose] = useState(null);
 	const [selectedDocumentType, setSelectedDocumentType] = useState(null);
   //const [selectedRequestedAt, setSelectedRequestedAt] = useState(null);
+  const [selectedApplicantDocumentNumber, setSelectedApplicantDocumentNumber] = useState('');
 
   const { data: dataPaymentRequests, isLoading: isPaymentRequestsLoading } = useReadPaymentRequest();
 
@@ -60,17 +61,6 @@ export const PaymentRequestsView = () => {
     { id: 4, label: 'Expirado', value: 4}
   ];
 
-  const [searchValue, setSearchValue] = useState({
-    purpose_display: '',
-    requested_at: '',
-    purpose: null,
-    document_type: null,
-    payment_method: null,
-    admission_program: '',
-    status: statusOptions[0],
-  });
-
-  
   const filteredPaymentRequests = dataPaymentRequests?.results?.filter((item) => {
     const matchProgram = selectedProgram
       ? item.admission_process_program === selectedProgram.value
@@ -96,10 +86,16 @@ export const PaymentRequestsView = () => {
     //   ? format(parseISO(item.requested_at), 'yyyy-MM-dd') === format(selectedRequestedAt, 'yyyy-MM-dd')
     //   : true;
 
+    const  matchApplicantDocumentNumber = selectedApplicantDocumentNumber
+      ? item.num_document.toLowerCase().includes(selectedApplicantDocumentNumber.toLowerCase())
+      : true;
+
     return (
-      matchProgram && matchStatus && matchMethod && matchPurpose && matchDocumentType /*&& matchRequestedAt*/
+      matchProgram && matchStatus && matchMethod && matchPurpose && matchDocumentType /*&& matchRequestedAt*/ && matchApplicantDocumentNumber
     )
   })
+
+  console.log(filteredPaymentRequests);
 
   return (
     <Stack gap={4}>
@@ -205,8 +201,8 @@ export const PaymentRequestsView = () => {
             bg={'white'}
             maxWidth={'550px'}
             placeholder='Buscar por DNI de postulante...'
-            value={searchValue.purpose_display}
-            onChange={(e) => setSearchValue({ purpose_display: e.target.value })}
+            value={selectedApplicantDocumentNumber}
+            onChange={(e) => setSelectedApplicantDocumentNumber(e.target.value)}
           />
         </InputGroup>
         <GenerateMasivePaymentOrders data={dataPaymentRequests?.results} />

@@ -34,14 +34,7 @@ const Row = memo(({ item, startIndex, index, permissions, sortConfig, data }) =>
   ]  
 
   return (
-    <Table.Row 
-
-      key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}
-			_hover={{
-				bg: 'blue.100',
-				cursor: 'pointer',
-			}}
-    >
+    <Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
       <Table.Cell>
 				{sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
 					? data.length - (startIndex + index)
