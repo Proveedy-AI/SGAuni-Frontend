@@ -1,5 +1,4 @@
 import { PaymentRequestsTable } from "@/components/tables/payment_requests";
-import { LinkButton } from "@/components/ui/link-button";
 import { useProvideAuth } from "@/hooks/auth";
 import { useReadPaymentOrders } from "@/hooks/payment_orders";
 import { useReadPaymentRequest } from "@/hooks/payment_requests/useReadPaymentRequest";
@@ -7,6 +6,7 @@ import { Box, Heading, InputGroup, Input, Stack, Spinner } from '@chakra-ui/reac
 import { useEffect, useState } from 'react';
 import { FiSearch } from "react-icons/fi";
 import { format, parseISO } from 'date-fns';
+import { GenerateMasivePaymentOrders } from "@/components/forms/payment_requests";
 
 export const PaymentRequestsView = () => {
   const { data: dataPaymentRequests, loading: isPaymentRequestsLoading, refetch: fetchPaymentRequets } = useReadPaymentRequest();
@@ -47,12 +47,14 @@ export const PaymentRequestsView = () => {
     requested_at: '',
     document_type: documentTypeOptions[0],
     payment_method: paymentMethodOptions[0],
+    admission_program: '',
     status: statusOptions[0],
   });
   const filteredPaymentRequests = dataPaymentRequests?.results?.filter((item) =>
     (!searchValue.purpose_display || item?.purpose_display.toLowerCase().includes(searchValue.purpose_display.toLowerCase())) &&
     (searchValue.document_type.value === 0 || item?.document_type === searchValue.document_type.value) &&
     (searchValue.payment_method.value === 0 || item?.payment_method === searchValue.payment_method.value) &&
+    (!searchValue.admission_program || item?.admission_process_program_name.toLowerCase().includes(searchValue.admission_program.toLowerCase())) &&
     (searchValue.status.id === 0 || item?.status === searchValue.status.value) &&
     (!searchValue.requested_at || 
       format(parseISO(item?.requested_at), 'yyyy-MM-dd') === format(parseISO(searchValue.requested_at), 'yyyy-MM-dd')
@@ -103,9 +105,7 @@ export const PaymentRequestsView = () => {
             onChange={(e) => setSearchValue({ purpose_display: e.target.value })}
           />
         </InputGroup>
-        <LinkButton bg='#711610' href="./downloads/plantilla_cobranzas_demo.xlsx" download={''}>
-          Descargar Plantilla
-        </LinkButton>
+        <GenerateMasivePaymentOrders data={dataPaymentRequests?.results} />
       </Stack>
 
       { isPaymentRequestsLoading && <Spinner /> }

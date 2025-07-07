@@ -26,7 +26,7 @@ const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests
   
   const statusDisplay = [
     { id: 1, label: 'Pendiente', value: 'Pending', bg:'#AEAEAE', color:'#F5F5F5' },
-    { id: 2, label: 'Disponible', value: 'Available', bg:'#FDD9C6', color:'#F86A1E' },
+    { id: 2, label: 'Disponible', value: 'Available', bg:'#C6E7FC80', color:'#0661D8' },
     { id: 3, label: 'Verificado', value: 'Verified', bg:'#D0EDD0', color:'#2D9F2D' },
     { id: 4, label: 'Expirado', value: 'Expired', bg:'#F7CDCE', color:'#E0383B' }
   ]  
@@ -53,8 +53,9 @@ const Row = memo(({ item, startIndex, index, paymentOrders, fetchPaymentRequests
       </Table.Cell>
       <Table.Cell>{item.purpose_display}</Table.Cell>
       <Table.Cell>{item.num_document}</Table.Cell>
-      <Table.Cell>{item.payment_method_display || item.payment_method}</Table.Cell>
-      <Table.Cell>
+      <Table.Cell >{item.payment_method_display}</Table.Cell>
+      <Table.Cell>{item.admission_process_program_name}</Table.Cell>
+      <Table.Cell display="flex" justifyContent="center">
         <Badge
           bg={statusDisplay.find(status => status.id === item.status)?.bg}
           color={statusDisplay.find(status => status.id === item.status)?.color}
@@ -87,7 +88,6 @@ Row.propTypes = {
 };
 
 export const PaymentRequestsTable = ({ data, paymentOrders, fetchPaymentRequests, fetchPaymentOrders, permissions, paymentMethodOptions, documentTypeOptions, searchValue, setSearchValue, statusOptions }) => {
-
   const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
     const [currentPage, setCurrentPage] = useState(1);
     const startIndex = (currentPage - 1) * pageSize;
@@ -185,6 +185,22 @@ export const PaymentRequestsTable = ({ data, paymentOrders, fetchPaymentRequests
                 />
               </Table.ColumnHeader>
               <Table.ColumnHeader alignContent={'start'}>
+                <SortableHeader
+                  label='Programa de admisión'
+                  columnKey='payment_order_name'
+                  sortConfig={sortConfig}
+                  onSort={setSortConfig}
+                />
+                <Input
+                  type='text'
+                  value={searchValue.admission_program}
+                  onChange={(e) => setSearchValue({ ...searchValue, admission_program: e.target.value })}
+                  placeholder='Buscar por programa'
+                  size='sm'
+                  maxWidth='200px'
+                />
+              </Table.ColumnHeader>
+              <Table.ColumnHeader width='120px' alignContent={'start'}>
                 <SortableHeader
                   label='Estado'
                   columnKey='status_display'
