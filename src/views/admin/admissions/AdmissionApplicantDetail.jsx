@@ -1,21 +1,37 @@
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { GenerateApplicantDataPdfModal } from '@/components/forms/admissions';
 import { PaymentOrdersByApplicationTable } from '@/components/tables/payment_orders';
+import { Avatar, Tooltip } from '@/components/ui';
 import ApplicantSkeleton from '@/components/ui/ApplicantSkeleton';
+import { formatDateString } from '@/components/ui/dateHelpers';
 import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
 import { useReadAdmissionApplicantById } from '@/hooks/admissions_applicants/useReadAdmissionApplicantById';
 import {
 	Badge,
 	Box,
+	Card,
 	Flex,
-	Grid,
 	Heading,
-	HStack,
+	Icon,
 	SimpleGrid,
 	Stack,
 	Text,
+	VStack,
 } from '@chakra-ui/react';
-import React from 'react';
+import {
+	FiCalendar,
+	FiCheckCircle,
+	FiClock,
+	FiCreditCard,
+	FiGlobe,
+	FiHome,
+	FiMail,
+	FiMapPin,
+	FiPhone,
+	FiUser,
+	FiXCircle,
+} from 'react-icons/fi';
+import { LuGraduationCap, LuIdCard } from 'react-icons/lu';
 import { useParams } from 'react-router';
 
 export const AdmissionApplicantDetail = () => {
@@ -29,9 +45,21 @@ export const AdmissionApplicantDetail = () => {
 		useReadAdmissionApplicantById(decrypted);
 
 	const statusEnum = [
-		{ id: 1, label: 'En Revisión', bg: '#FDD9C6', color: '#F86A1E' },
-		{ id: 2, label: 'Aprobado', bg: 'green', color: 'white' },
-		{ id: 3, label: 'Rechazado', bg: 'red', color: 'white' },
+		{
+			id: 1,
+			label: 'En Revisión',
+			bg: '#FDD9C6',
+			color: 'orange',
+			icon: FiClock,
+		},
+		{
+			id: 2,
+			label: 'Aprobado',
+			bg: 'green',
+			color: 'white',
+			icon: FiCheckCircle,
+		},
+		{ id: 3, label: 'Rechazado', bg: 'red', color: 'white', icon: FiXCircle },
 	];
 
 	const statusEnumSelected = statusEnum.find(
@@ -53,194 +81,315 @@ export const AdmissionApplicantDetail = () => {
 				]}
 			/>
 
-			<Stack
-				Stack
-				direction={{ base: 'column', sm: 'row' }}
-				align={{ base: 'start', sm: 'center' }}
-				justify='space-between'
-			>
-				<Heading
-					size={{
-						xs: 'xs',
-						sm: 'md',
-						md: 'xl',
-					}}
-					color={'uni.secondary'}
-				>
-					<Text color='gray.500'>
-						{isApplicantLoading
-							? 'Cargando...'
-							: dataApplicant?.person_full_name}
-					</Text>
-				</Heading>
-			</Stack>
-
 			{isApplicantLoading ? (
 				<ApplicantSkeleton />
 			) : dataApplicant ? (
-				<Box mx='auto'>
-					<Flex
-						bg={{ base: 'white', _dark: 'its.gray.500' }}
-						borderRadius='10px'
-						overflow='hidden'
-						boxShadow='md'
-						mb={6}
-						px={6}
-						py={8}
-						align='center'
-						justify='space-between'
-						wrap='wrap'
-					>
-						<HStack spacing={2} align='flex-end'>
-							<Text as='span' fontWeight='semibold'>
-								Estado:
-							</Text>
-							<Badge
-								bg={statusEnumSelected?.bg}
-								color={statusEnumSelected?.color}
-								variant='solid'
-								fontSize='0.9em'
-							>
-								{statusEnumSelected?.label}
-							</Badge>
-						</HStack>
+				<Stack maxW={'80%'} spaceY='5' mx={'auto'}>
+					<Box bg='white' rounded='lg' shadow='md' p={6}>
+						<Flex
+							direction={{ base: 'column', md: 'row' }}
+							justify='space-between'
+							align={{ base: 'flex-start', md: 'center' }}
+							gap={4}
+						>
+							{/* Avatar + Nombre + Rol */}
+							<Flex align='center' gap={4}>
+								<Avatar
+									boxSize='4rem'
+									name={dataApplicant?.person_full_name}
+									src={dataApplicant?.profile_image || '/placeholder.svg'}
+								/>
+								<Box>
+									<Text fontSize='2xl' fontWeight='bold' color='gray.900'>
+										{isApplicantLoading
+											? 'Cargando...'
+											: dataApplicant?.person_full_name}
+									</Text>
+									<Text color='gray.600'>
+										Postulante a programa de posgrado
+									</Text>
+								</Box>
+							</Flex>
 
-						<HStack spacing={2} align='flex-end'>
-							<Text as='span' fontWeight='semibold'>
-								Programa académico:
-							</Text>
-							<Text
-								borderBottom='1px solid'
-								pb='1px'
-								minW={{ base: 'auto', lg: '350px' }}
-								borderColor='gray.300'
-							>
-								{dataApplicant?.postgrade_name}
-							</Text>
-						</HStack>
-						<HStack spacing={2} align='flex-end'>
-							<Text as='span' fontWeight='semibold'>
-								Modalidad:
-							</Text>
-							<Text
-								borderBottom='1px solid'
-								pb='1px'
-								minW={{ base: 'auto', lg: '200px' }}
-								borderColor='gray.300'
-							>
-								{dataApplicant?.modality_display || '—'}
-							</Text>
-						</HStack>
-					</Flex>
-					<Box
-						bg={{ base: 'white', _dark: 'its.gray.500' }}
-						borderRadius='10px'
-						overflow='hidden'
-						boxShadow='md'
-						p={6}
-						mb={6}
-					>
-						<Flex justify='space-between' align='center' mb={4}>
-              <Text fontWeight='bold' color='red.600' mb={4}>
-                Datos del postulante:
-              </Text>
-              <GenerateApplicantDataPdfModal applicationPersonalData={dataApplicant} />
-            </Flex>
-						<SimpleGrid columns={[1, 2]} spacingY={2} columnGap={6}>
-							<Grid templateColumns={{ base: '1fr', md: '200px 1fr' }} gap={4}>
-								{[
-									{
-										label: 'Fecha de Nacimiento',
-										value: dataApplicant?.person_details?.birth_date || '—',
-									},
-									{
-										label: 'País de Nacimiento',
-										value: dataApplicant?.person_details?.country_name || '—',
-									},
-									{
-										label: 'Nacionalidad',
-										value:
-											dataApplicant?.person_details?.nationality_name || '—',
-									},
-									{
-										label: 'Celular',
-										value: dataApplicant?.person_details?.phone || '—',
-									},
-									{
-										label: 'Correo',
-										value: dataApplicant?.person_details?.email || '—',
-									},
-								].map(({ label, value }, index) => (
-									<React.Fragment key={index}>
-										<Text fontWeight='semibold'>{label}:</Text>
-										<Text
-											borderBottom='1px solid'
-											pb='1px'
-											maxW='full'
-											borderColor='gray.300'
-										>
-											{value}
+							{/* Badge de estado */}
+							{statusEnumSelected && (
+								<Badge
+									px={3}
+									py={1}
+									display='flex'
+									alignItems='center'
+									alignSelf={{ base: 'flex-start', md: 'auto' }}
+									border='1px solid'
+									borderColor={`${statusEnumSelected.color}.200`}
+									bg={`${statusEnumSelected.bg}.50`}
+									color={`${statusEnumSelected.color}.700`}
+								>
+									<Box as={statusEnumSelected.icon} w={4} h={4} mr={1} />
+									{statusEnumSelected.label}
+								</Badge>
+							)}
+						</Flex>
+					</Box>
+					<SimpleGrid columns={{ base: 1, lg: 1 }} gap={6}>
+						{/* Información del Programa */}
+						<Box bg='white' rounded='lg' shadow='md'>
+							<Box borderBottomWidth='1px' p={4}>
+								<Flex align='center' gap={2}>
+									<Icon as={LuGraduationCap} boxSize={5} color='blue.600' />
+									<Text fontWeight='bold'>Información del Programa</Text>
+								</Flex>
+							</Box>
+							<Box p={4}>
+								<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+									<Box>
+										<Text fontSize='sm' fontWeight='medium' color='gray.600'>
+											Programa Académico
 										</Text>
-									</React.Fragment>
-								))}
-							</Grid>
+										<Text
+											fontSize='lg'
+											fontWeight='semibold'
+											color='gray.900'
+											mt={1}
+										>
+											{dataApplicant.postgrade_name}
+										</Text>
+									</Box>
+									<Box>
+										<Text fontSize='sm' fontWeight='medium' color='gray.600'>
+											Modalidad
+										</Text>
+										<Text
+											fontSize='lg'
+											fontWeight='semibold'
+											color='gray.900'
+											mt={1}
+										>
+											{dataApplicant.modality_display || 'No especificada'}
+										</Text>
+									</Box>
+								</SimpleGrid>
+							</Box>
+						</Box>
 
-							<Grid templateColumns={{ base: '1fr', md: '200px 1fr' }} gap={4}>
-								{[
-									{
-										label: 'Documento de identidad',
-										value:
-											dataApplicant?.person_details?.document_number || '—',
-									},
-									{
-										label: 'Dirección',
-										value: dataApplicant?.person_details?.address || '—',
-									},
-									{
-										label: 'Departamento',
-										value:
-											dataApplicant?.person_details?.department_name || '—',
-									},
-									{
-										label: 'Provincia',
-										value: dataApplicant?.person_details?.province_name || '—',
-									},
-									{
-										label: 'Distrito',
-										value: dataApplicant?.person_details?.district_name || '—',
-									},
-								].map(({ label, value }, index) => (
-									<React.Fragment key={index}>
-										<Text fontWeight='semibold'>{label}:</Text>
-										<Text
-											borderBottom='1px solid'
-											pb='1px'
-											maxW='full'
-											borderColor='gray.300'
-										>
-											{value}
-										</Text>
-									</React.Fragment>
-								))}
-							</Grid>
-						</SimpleGrid>
-					</Box>
-					<Box
-						bg={{ base: 'white', _dark: 'its.gray.500' }}
-						borderRadius='10px'
-						overflow='hidden'
-						boxShadow='md'
-						p={6}
-						mb={6}
-					>
-						<Text fontWeight='bold' color='red.600' mb={4}>
-							Trámites:
-						</Text>
-						<PaymentOrdersByApplicationTable
-							data={dataApplicant?.payment_orders}
-						/>
-					</Box>
-				</Box>
+						{/* Datos Personales */}
+						<Box bg='white' rounded='lg' shadow='md'>
+							<Box borderBottomWidth='1px' p={4}>
+								<Flex
+									direction={{ base: 'column', md: 'row' }}
+									justify='space-between'
+									align={{ base: 'flex-start', md: 'center' }}
+									gap={2}
+								>
+									{/* Título e ícono */}
+									<Flex align='center' gap={2}>
+										<Icon as={FiUser} boxSize={5} color='green.600' />
+										<Text fontWeight='bold'>Datos Personales</Text>
+									</Flex>
+
+									{/* Botón de descarga */}
+									<Tooltip label='Descargar datos del postulante' hasArrow>
+										<GenerateApplicantDataPdfModal
+											applicationPersonalData={dataApplicant}
+										/>
+									</Tooltip>
+								</Flex>
+							</Box>
+
+							<Box p={4}>
+								<SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
+									{/* Columna 1 */}
+									<VStack align='stretch' gap={4}>
+										<Flex gap={3} align='start'>
+											<Icon as={FiCalendar} boxSize={4} color='gray.400' />
+											<Box>
+												<Text
+													fontSize='sm'
+													fontWeight='medium'
+													color='gray.600'
+												>
+													Fecha de Nacimiento
+												</Text>
+												<Text color='gray.900'>
+													{dataApplicant.person_details?.birth_date
+														? formatDateString(
+																dataApplicant.person_details.birth_date
+															)
+														: '—'}
+												</Text>
+											</Box>
+										</Flex>
+
+										<Flex gap={3} align='start'>
+											<Icon as={FiGlobe} boxSize={4} color='gray.400' />
+											<Box>
+												<Text
+													fontSize='sm'
+													fontWeight='medium'
+													color='gray.600'
+												>
+													País de Nacimiento
+												</Text>
+												<Text color='gray.900'>
+													{dataApplicant.person_details?.country_name || '—'}
+												</Text>
+											</Box>
+										</Flex>
+
+										<Flex gap={3} align='start'>
+											<Icon as={FiGlobe} boxSize={4} color='gray.400' />
+											<Box>
+												<Text
+													fontSize='sm'
+													fontWeight='medium'
+													color='gray.600'
+												>
+													Nacionalidad
+												</Text>
+												<Text color='gray.900'>
+													{dataApplicant.person_details?.nationality_name ||
+														'—'}
+												</Text>
+											</Box>
+										</Flex>
+
+										<Flex gap={3} align='start'>
+											<Icon as={FiPhone} boxSize={4} color='gray.400' />
+											<Box>
+												<Text
+													fontSize='sm'
+													fontWeight='medium'
+													color='gray.600'
+												>
+													Celular
+												</Text>
+												<Text color='gray.900'>
+													{dataApplicant.person_details?.phone || '—'}
+												</Text>
+											</Box>
+										</Flex>
+
+										<Flex gap={3} align='start'>
+											<Icon as={FiMail} boxSize={4} color='gray.400' />
+											<Box>
+												<Text
+													fontSize='sm'
+													fontWeight='medium'
+													color='gray.600'
+												>
+													Correo Electrónico
+												</Text>
+												<Text color='gray.900'>
+													{dataApplicant.person_details?.email || '—'}
+												</Text>
+											</Box>
+										</Flex>
+									</VStack>
+
+									{/* Columna 2 */}
+									<VStack align='stretch' gap={4}>
+										<Flex gap={3} align='start'>
+											<Icon as={LuIdCard} boxSize={4} color='gray.400' />
+											<Box>
+												<Text
+													fontSize='sm'
+													fontWeight='medium'
+													color='gray.600'
+												>
+													Documento de Identidad
+												</Text>
+												<Text color='gray.900'>
+													{dataApplicant.person_details?.document_number || '—'}
+												</Text>
+											</Box>
+										</Flex>
+
+										<Flex gap={3} align='start'>
+											<Icon as={FiHome} boxSize={4} color='gray.400' />
+											<Box>
+												<Text
+													fontSize='sm'
+													fontWeight='medium'
+													color='gray.600'
+												>
+													Dirección
+												</Text>
+												<Text color='gray.900'>
+													{dataApplicant.person_details?.address || '—'}
+												</Text>
+											</Box>
+										</Flex>
+
+										<Flex gap={3} align='start'>
+											<Icon as={FiMapPin} boxSize={4} color='gray.400' />
+											<Box>
+												<Text
+													fontSize='sm'
+													fontWeight='medium'
+													color='gray.600'
+												>
+													Departamento
+												</Text>
+												<Text color='gray.900'>
+													{dataApplicant.person_details?.department_name || '—'}
+												</Text>
+											</Box>
+										</Flex>
+
+										<Flex gap={3} align='start'>
+											<Icon as={FiMapPin} boxSize={4} color='gray.400' />
+											<Box>
+												<Text
+													fontSize='sm'
+													fontWeight='medium'
+													color='gray.600'
+												>
+													Provincia
+												</Text>
+												<Text color='gray.900'>
+													{dataApplicant.person_details?.province_name || '—'}
+												</Text>
+											</Box>
+										</Flex>
+
+										<Flex gap={3} align='start'>
+											<Icon as={FiMapPin} boxSize={4} color='gray.400' />
+											<Box>
+												<Text
+													fontSize='sm'
+													fontWeight='medium'
+													color='gray.600'
+												>
+													Distrito
+												</Text>
+												<Text color='gray.900'>
+													{dataApplicant.person_details?.district_name || '—'}
+												</Text>
+											</Box>
+										</Flex>
+									</VStack>
+								</SimpleGrid>
+							</Box>
+						</Box>
+					</SimpleGrid>
+
+					<Card.Root>
+						<Card.Header>
+							<Flex align='center' gap={2}>
+								<Icon as={FiCreditCard} boxSize={5} color='blue.600' />
+								<Heading size='md'>Trámites y Pagos</Heading>
+								<Badge colorScheme='blue'>
+									{dataApplicant.payment_orders.length} trámites
+								</Badge>
+							</Flex>
+						</Card.Header>
+
+						<Card.Body>
+							<PaymentOrdersByApplicationTable
+								data={dataApplicant?.payment_orders}
+							/>
+						</Card.Body>
+					</Card.Root>
+				</Stack>
 			) : (
 				<Heading size='sm' color='gray.500'>
 					Postulante no encontrado

@@ -663,12 +663,13 @@ export default function AdmissionForm() {
 						) : (
 							<Container maxW='container.md' py={20} textAlign='center'>
 								<Text fontSize='2xl' color='#8B2635' fontWeight='bold' mb={4}>
-									Proceso de admisión no disponible
+									Proceso de admisión ha finalizado
 								</Text>
 								<Text color='gray.600'>
-									El proceso de admisión seleccionado no se encuentra disponible
-									en este momento. Por favor, verifique la fecha o contacte a la
-									oficina de admisión para más información.
+									El proceso de admisión seleccionado ha finalizado. La fecha
+									límite para participar ya ha vencido. Si tienes dudas o
+									necesitas más información, por favor contacta a la oficina de
+									admisión.
 								</Text>
 							</Container>
 						)

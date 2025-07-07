@@ -17,6 +17,8 @@ const Row = memo(
 		fetchData,
 		startIndex,
 		index,
+		ProgramFocusOptions,
+		DirectorOptions,
 		programTypesOptions,
 		coordinatorsOptions,
 		loadingProgramTypes,
@@ -40,6 +42,8 @@ const Row = memo(
 							<EditProgram
 								fetchData={fetchData}
 								item={item}
+								DirectorOptions={DirectorOptions}
+								ProgramFocusOptions={ProgramFocusOptions}
 								programTypesOptions={programTypesOptions}
 								coordinatorsOptions={coordinatorsOptions}
 								loadingProgramTypes={loadingProgramTypes}
@@ -68,11 +72,15 @@ Row.propTypes = {
 	loadingCoordinators: PropTypes.bool,
 	sortConfig: PropTypes.object,
 	data: PropTypes.array,
+	ProgramFocusOptions: PropTypes.array,
+	DirectorOptions: PropTypes.array,
 };
 
 export const ProgramTable = ({
 	data,
 	fetchData,
+	DirectorOptions,
+	ProgramFocusOptions,
 	programTypesOptions,
 	coordinatorsOptions,
 	loadingProgramTypes,
@@ -128,6 +136,8 @@ export const ProgramTable = ({
 									key={item.id}
 									item={item}
 									data={data}
+									ProgramFocusOptions={ProgramFocusOptions}
+									DirectorOptions={DirectorOptions}
 									sortConfig={sortConfig}
 									fetchData={fetchData}
 									startIndex={startIndex}
@@ -171,4 +181,6 @@ ProgramTable.propTypes = {
 	loadingProgramTypes: PropTypes.bool,
 	loadingCoordinators: PropTypes.bool,
 	isLoading: PropTypes.bool,
+	DirectorOptions: PropTypes.array,
+	ProgramFocusOptions: PropTypes.array,
 };

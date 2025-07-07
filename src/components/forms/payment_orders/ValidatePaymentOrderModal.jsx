@@ -4,24 +4,22 @@ import { useState } from "react";
 import { HiCheck } from "react-icons/hi2";
 import PropTypes from "prop-types";
 import { FaCheck } from "react-icons/fa";
-import { useUpdatePaymentVoucherStatus } from "@/hooks/payment_vouchers";
+import { useUpdatePaymentOrder } from "@/hooks/payment_orders";
 
 export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
   const [open, setOpen] = useState(false);
 
-  const { mutateAsync: validatePaymentVoucher, isSaving } = useUpdatePaymentVoucherStatus();
+  const { mutateAsync: updatePaymentOrder, isSaving } = useUpdatePaymentOrder();
 
   const handleValidate = async () => {
     const payload = {
-      id_orden: item.id_orden,
-      verified_by: item?.id,
-      file_path: item?.voucher?.file_path,
+      status: 3
     }
-    validatePaymentVoucher( payload, {
+    updatePaymentOrder({ id: item.id, payload }, {
       onSuccess: () => {
         toaster.create({
           title: "Orden de pago validada correctamente",
-          status: "success",
+          type: 'success',
         });
         setOpen(false);
         fetchPaymentOrders();
@@ -29,7 +27,7 @@ export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
       onError: (error) => {
         toaster.create({
           title: error ? error.message : "Error al validar la orden de pago",
-          status: "error",
+          type: "error",
         });
       }
     })
@@ -55,7 +53,7 @@ export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
           }
           title="Validar Voucher de Pago"
           placement="center"
-          size="3xl"
+          size="xl"
           open={open}
           onOpenChange={(e) => setOpen(e.open)}
           onSave={() => {}}
@@ -64,7 +62,7 @@ export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
           <Stack spacing={4}>
             <Stack spacing={4} w="full"
             >
-              <Flex justify='space-between' gap={2} mt={2}>
+              {/* <Flex justify='space-between' gap={2} mt={2}>
                 <Box w='100%'>
                   <Field label='Id de la ordern:'>
                     <Text fontSize='xl' color={'uni.secondary'}>
@@ -99,7 +97,11 @@ export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
                     </Text>
                   </Field>
                 </Box>
-              </Flex>
+              </Flex> */}
+
+              <Text fontSize='md'>
+                ¿Estás seguro de que deseas cancelar esta orden de pago <strong>{item?.id_orden}</strong> de postulante <strong>{item?.name?.toUpperCase()}</strong>? 
+              </Text>
 
               <Flex justify='flex-end' gap={2} mt={2}>
                 <Button

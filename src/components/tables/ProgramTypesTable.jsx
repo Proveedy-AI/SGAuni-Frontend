@@ -22,6 +22,7 @@ const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 			</Table.Cell>
 			<Table.Cell>{item.name}</Table.Cell>
 			<Table.Cell>{item.code}</Table.Cell>
+			<Table.Cell>{item.min_grade}</Table.Cell>
 			<Table.Cell>
 				<HStack justify='space-between'>
 					<Group>
@@ -75,7 +76,7 @@ export const ProgramTypesTable = ({ data, fetchData, isLoading }) => {
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='40%'>
+							<Table.ColumnHeader w='30%'>
 								<SortableHeader
 									label='Tipo de programa'
 									columnKey='name'
@@ -83,7 +84,22 @@ export const ProgramTypesTable = ({ data, fetchData, isLoading }) => {
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='30%'>Código</Table.ColumnHeader>
+							<Table.ColumnHeader w='20%'>
+								<SortableHeader
+									label='Código'
+									columnKey='code'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader w='20%'>
+								<SortableHeader
+									label='Nota mínima aprobatoria'
+									columnKey='min_grade'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
 							<Table.ColumnHeader w='10%'>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>

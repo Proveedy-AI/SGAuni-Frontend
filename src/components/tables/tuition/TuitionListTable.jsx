@@ -73,8 +73,6 @@ const Row = memo(({
 			}
 		};
 
-		// console.log(item);
-
 		return (
 			<Table.Row
 				onClick={(e) => {

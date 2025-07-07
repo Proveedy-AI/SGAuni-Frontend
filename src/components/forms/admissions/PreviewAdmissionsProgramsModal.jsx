@@ -1,38 +1,35 @@
 import PropTypes from 'prop-types';
-import { Box, IconButton, Input, SimpleGrid, Stack } from '@chakra-ui/react';
-import { Field, Modal, Tooltip } from '@/components/ui';
-import { FiEye } from 'react-icons/fi';
-import { ReactSelect } from '@/components/select';
-import { useReadPrograms } from '@/hooks';
+import {
+	Badge,
+	Box,
+	Card,
+	Flex,
+	Heading,
+	Icon,
+	IconButton,
+	Separator,
+	SimpleGrid,
+	Stack,
+	Text,
+	VStack,
+} from '@chakra-ui/react';
+import { Modal, Tooltip } from '@/components/ui';
+import {
+	FiBookOpen,
+	FiCalendar,
+	FiClock,
+	FiEye,
+	FiMapPin,
+} from 'react-icons/fi';
 import { useState } from 'react';
 import { formatDateString } from '@/components/ui/dateHelpers';
+import { FaGraduationCap } from 'react-icons/fa';
 
-export const PreviewAdmissionsProgramsModal = ({ data }) => {
+export const PreviewAdmissionsProgramsModal = ({ data, statusMap }) => {
 	const [open, setOpen] = useState(false);
-	const { data: dataPrograms } = useReadPrograms({}, { enabled: open });
-
-	const dataMode = [
-		{ label: 'Virtual', value: 1 },
-		{ label: 'Semi-Presencial', value: 2 },
-		{ label: 'Presencial', value: 3 },
-	];
-
-	const dataType = [
-		{ label: 'Investigación', value: 1 },
-		{ label: 'Profesionalizante', value: 2 },
-	];
-
-	const ProgramsOptions = dataPrograms?.results?.map((department) => ({
-		label: department.name,
-		value: department.id,
-	}));
-
-	const getLabel = (options, value) =>
-		options?.find((opt) => opt.value === value) || { label: '—', value: null };
 
 	return (
 		<Modal
-			title='Vista previa del Programa de Admisión'
 			placement='center'
 			trigger={
 				<Box>
@@ -62,94 +59,135 @@ export const PreviewAdmissionsProgramsModal = ({ data }) => {
 			size='4xl'
 			hiddenFooter={true}
 		>
-			<Stack css={{ '--field-label-width': '140px' }}>
-				<Field label='Programa:'>
-					<ReactSelect
-						value={getLabel(ProgramsOptions, data.program)}
-						isDisabled
-						variant='flushed'
-						size='xs'
-					/>
-				</Field>
+			<Stack gap={2} px={6}>
+				<Box
+					top='0'
+					bg='white'
+					borderBottom='1px solid'
+					borderColor='gray.200'
+					px={6}
+					py={4}
+					zIndex={1}
+				>
+					<Flex justify='space-between' align='flex-start'>
+						<Box>
+							<Text fontSize='2xl' fontWeight='bold'>
+								{data.program_name}
+							</Text>
+							<Flex align='center' gap={2} mt={2}>
+								<Icon as={FaGraduationCap} color='blue.600' boxSize={4} />
+								<Text fontSize='md' color='gray.600'>
+									{data.study_mode_display}
+								</Text>
+							</Flex>
+						</Box>
 
-				<Field label='Tipo de Postgrado:'>
-					<ReactSelect
-						value={getLabel(dataType, data.postgrad_type)}
-						isDisabled
-						variant='flushed'
-						size='xs'
-					/>
-				</Field>
+						<Flex align='center' gap={3}>
+							{(() => {
+								const status = statusMap[data.status_display] || {
+									label: data.status_display,
+									color: 'default',
+								};
+								return (
+									<Badge variant='solid' bg={status.color}>
+										{status.label}
+									</Badge>
+								);
+							})()}
+						</Flex>
+					</Flex>
+				</Box>
 
-				<Field label='Modo de estudio:'>
-					<ReactSelect
-						value={getLabel(dataMode, data.study_mode)}
-						isDisabled
-						variant='flushed'
-						size='xs'
-					/>
-				</Field>
-
-				<Field label='Director:'>
-					<Input value={data.director_name} isReadOnly></Input>
-				</Field>
-
-				<Field label='Inicio de semestre:'>
-					<Input
-						value={formatDateString(data.semester_start_date) || ''}
-						isReadOnly
-						size='xs'
-					/>
-				</Field>
-
+				<Card.Root borderLeft='4px solid' borderLeftColor='blue.500'>
+					<Card.Header>
+						<Flex align='center' gap={2}>
+							<Icon as={FiBookOpen} boxSize={5} color='blue.600' />
+							<Heading fontSize='24px'>Información General</Heading>
+						</Flex>
+					</Card.Header>
+					<Card.Body>
+						<SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
+							<Box>
+								<Flex align='center' gap={2} mb={1}>
+									<Icon as={FiCalendar} boxSize={4} color='green.600' />
+									<Text fontSize='sm' fontWeight='medium' color='gray.700'>
+										Inicio de Semestre
+									</Text>
+								</Flex>
+								<Text
+									ml={6}
+									fontSize='lg'
+									fontWeight='semibold'
+									color='gray.900'
+								>
+									{formatDateString(data.semester_start_date)}
+								</Text>
+							</Box>
+						</SimpleGrid>
+					</Card.Body>
+				</Card.Root>
 				<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-					<Field label='Inicio de inscripción:'>
-						<Input
-							value={formatDateString(data.registration_start_date) || ''}
-							isReadOnly
-							size='xs'
-						/>
-					</Field>
+					{/* Periodo de Inscripción */}
+					<Card.Root borderLeft='4px solid' borderLeftColor='orange.500'>
+						<Card.Header pb={1}>
+							<Flex align='center' gap={1}>
+								<Icon as={FiClock} boxSize={5} color='orange.600' />
+								<Heading fontSize='24px'>Periodo de Inscripción</Heading>
+							</Flex>
+						</Card.Header>
+						<Card.Body>
+							<VStack align='start' gap={1}>
+								<Box>
+									<Text fontSize='sm' fontWeight='medium' color='gray.600'>
+										Fecha de Inicio
+									</Text>
+									<Text fontSize='lg' fontWeight='semibold' color='gray.900'>
+										{formatDateString(data.registration_start_date)}
+									</Text>
+								</Box>
 
-					<Field label='Fin de inscripción:'>
-						<Input
-							value={formatDateString(data.registration_end_date) || ''}
-							isReadOnly
-							size='xs'
-						/>
-					</Field>
+								<Box>
+									<Text fontSize='sm' fontWeight='medium' color='gray.600'>
+										Fecha de Cierre
+									</Text>
+									<Text fontSize='lg' fontWeight='semibold' color='gray.900'>
+										{formatDateString(data.registration_end_date)}
+									</Text>
+								</Box>
+							</VStack>
+						</Card.Body>
+					</Card.Root>
 
-					<Field label='Inicio de examen:'>
-						<Input
-							value={formatDateString(data.exam_date_start) || ''}
-							isReadOnly
-							size='xs'
-						/>
-					</Field>
-
-					<Field label='Fin de examen:'>
-						<Input
-							value={formatDateString(data.exam_date_end) || ''}
-							isReadOnly
-							size='xs'
-						/>
-					</Field>
-
-					<Field label='Inicio Pre-Maestría:'>
-						<Input
-							value={formatDateString(data.pre_master_start_date) || ''}
-							isReadOnly
-							size='xs'
-						/>
-					</Field>
-
-					<Field label='Fin Pre-Maestría:'>
-						<Input
-							value={formatDateString(data.pre_master_end_date) || ''}
-							isReadOnly
-							size='xs'
-						/>
-					</Field>
+					{/* Fechas de Examen */}
+					<Card.Root borderLeft='4px solid' borderLeftColor='red.500'>
+						<Card.Header pb={1}>
+							<Flex align='center' gap={2}>
+								<Icon as={FiMapPin} boxSize={5} color='red.600' />
+								<Heading fontSize='24px'>Fechas de evaluaciones</Heading>
+							</Flex>
+						</Card.Header>
+						<Card.Body>
+							<VStack align='start' gap={1}>
+								<Box>
+									<Text fontSize='sm' fontWeight='medium' color='gray.600'>
+										Fecha de Inicio
+									</Text>
+									<Text fontSize='lg' fontWeight='semibold' color='gray.900'>
+										{formatDateString(data.exam_date_start)}
+									</Text>
+								</Box>
+								<Separator />
+								<Box>
+									<Text fontSize='sm' fontWeight='medium' color='gray.600'>
+										Fecha de Finalización
+									</Text>
+									<Text fontSize='lg' fontWeight='semibold' color='gray.900'>
+										{formatDateString(data.exam_date_end)}
+									</Text>
+								</Box>
+							</VStack>
+						</Card.Body>
+					</Card.Root>
 				</SimpleGrid>
 			</Stack>
 		</Modal>
@@ -158,4 +196,5 @@ export const PreviewAdmissionsProgramsModal = ({ data }) => {
 
 PreviewAdmissionsProgramsModal.propTypes = {
 	data: PropTypes.object.isRequired,
+	statusMap: PropTypes.object.isRequired,
 };

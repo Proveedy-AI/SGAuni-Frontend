@@ -98,9 +98,9 @@ export const WorkApplicant = ({ onAllCompleted }) => {
 	};
 
 	const STATUS_MAP = {
-		Pending: { label: 'Pendiente', color: 'yellow' },
-		Completed: { label: 'Completado', color: 'green' },
-		Rejected: { label: 'Rechazado', color: 'red' },
+		Pendiente: { label: 'Pendiente', color: 'yellow' },
+		Completado: { label: 'Completado', color: 'green' },
+		Rechazado: { label: 'Rechazado', color: 'red' },
 		// Agrega más si existen
 	};
 

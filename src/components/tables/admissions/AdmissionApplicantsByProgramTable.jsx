@@ -1,6 +1,8 @@
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
+import { ViewRegistrationDocumentModal } from '@/components/forms/admissions';
 import { CreateProgramExamToAdmissionProgram } from '@/components/forms/admissions/createProgramExamToAdmissionProgram';
 import { ViewAdmissionProgramExams } from '@/components/forms/admissions/ViewAdmissionProgramExams';
+import { usePaginatedInfiniteData } from '@/components/navigation';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { Pagination } from '@/components/ui';
 import SkeletonTable from '@/components/ui/SkeletonTable';
@@ -8,7 +10,7 @@ import { SortableHeader } from '@/components/ui/SortableHeader';
 import useSortedData from '@/utils/useSortedData';
 import { Badge, Box, HStack, Table } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
-import { memo, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 const Row = memo(
@@ -40,28 +42,28 @@ const Row = memo(
 		const applicationStatusEnum = [
 			{
 				id: 1,
-				value: 'Incomplete',
+				value: 'Incompleto',
 				label: 'En revisión',
 				bg: '#FDD9C6',
 				color: '#F86A1E',
 			},
 			{
 				id: 2,
-				value: 'Approved',
+				value: 'Aprobado',
 				label: 'Aprobado',
 				bg: '#D0EDD0',
 				color: '#2D9F2D',
 			},
 			{
 				id: 3,
-				value: 'rejected',
+				value: 'Rechazado',
 				label: 'Rechazado',
 				bg: '#F7CDCE',
 				color: '#E0383B',
 			},
 			{
 				id: 4,
-				value: 'Observed',
+				value: 'Observado',
 				label: 'Observado',
 				bg: '#E3D1F6',
 				color: '#9049DB',
@@ -71,15 +73,15 @@ const Row = memo(
 		const calificationStatusEnum = [
 			{
 				id: 1,
-				value: 'Pending',
+				value: 'Pendiente',
 				label: 'Pendiente',
 				bg: '#AEAEAE',
 				color: '#F5F5F5',
 			},
 			{
 				id: 2,
-				value: 'Completed',
-				label: 'Calificado',
+				value: 'Completado',
+				label: 'Completado',
 				bg: '#D0EDD0',
 				color: '#2D9F2D',
 			},
@@ -146,7 +148,9 @@ const Row = memo(
 						}
 					</Badge>
 				</Table.Cell>
-				<Table.Cell textAlign='center'>{item.qualification_average || '-'}</Table.Cell>
+				<Table.Cell textAlign='center'>
+					{item.qualification_average || '-'}
+				</Table.Cell>
 				<Table.Cell onClick={(e) => e.stopPropagation()}>
 					<HStack>
 						<ViewAdmissionProgramExams item={item} fetchData={fetchData} />
@@ -156,6 +160,7 @@ const Row = memo(
 								fetchData={fetchData}
 							/>
 						)}
+						<ViewRegistrationDocumentModal data={item} />
 					</HStack>
 				</Table.Cell>
 			</Table.Row>
@@ -182,14 +187,33 @@ export const AdmissionApplicantsByProgramTable = ({
 	fetchData,
 	permissions,
 	isLoading,
+	isFetchingNextPage,
+	totalCount,
+	fetchNextPage,
+	hasNextPage,
+	resetPageTrigger,
 }) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
-	const [currentPage, setCurrentPage] = useState(1);
-	const startIndex = (currentPage - 1) * pageSize;
-	const endIndex = startIndex + pageSize;
 	const [sortConfig, setSortConfig] = useState(null);
 	const sortedData = useSortedData(data, sortConfig);
-	const visibleRows = sortedData?.slice(startIndex, endIndex);
+
+	const {
+		currentPage,
+		startIndex,
+		visibleRows,
+		loadUntilPage,
+		setCurrentPage,
+	} = usePaginatedInfiniteData({
+		data: sortedData,
+		pageSize,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	});
+
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [resetPageTrigger]);
 
 	return (
 		<Box
@@ -275,11 +299,11 @@ export const AdmissionApplicantsByProgramTable = ({
 			</Table.ScrollArea>
 
 			<Pagination
-				count={data?.length}
-				pageSize={Number(pageSize)}
+				count={totalCount}
+				pageSize={pageSize}
 				currentPage={currentPage}
 				pageSizeOptions={pageSizeOptions}
-				onPageChange={(page) => setCurrentPage(page)}
+				onPageChange={loadUntilPage}
 				onPageSizeChange={(size) => {
 					setPageSize(size);
 					setCurrentPage(1);
@@ -295,4 +319,9 @@ AdmissionApplicantsByProgramTable.propTypes = {
 	fetchData: PropTypes.func,
 	permissions: PropTypes.array,
 	isLoading: PropTypes.bool,
+	totalCount: PropTypes.number,
+	fetchNextPage: PropTypes.func,
+	hasNextPage: PropTypes.bool,
+	isFetchingNextPage: PropTypes.bool,
+	resetPageTrigger: PropTypes.string,
 };

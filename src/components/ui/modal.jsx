@@ -48,7 +48,7 @@ export const Modal = ({
 				positionerProps={positionerProps} // Estilos personalizados
 			>
 				<DialogHeader>
-					{title && <DialogTitle color='uni.secondary'>{title}</DialogTitle>}
+					{title && <DialogTitle>{title}</DialogTitle>}
 				</DialogHeader>
 				<DialogBody
 					overflowY='auto'

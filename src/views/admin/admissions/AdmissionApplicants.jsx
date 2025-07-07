@@ -19,6 +19,7 @@ export const AdmissionApplicants = () => {
 
 	const filteredAdmissionPrograms = dataAdmissionPrograms?.results?.filter(
 		(item) =>
+			item.status === 4 &&
 			(!searchValue.program_name ||
 				item.program_name
 					.toLowerCase()
@@ -31,6 +32,8 @@ export const AdmissionApplicants = () => {
 			(!searchValue.date ||
 				item.semester_start_date.slice(0, 10) === searchValue.date)
 	);
+
+	console.log(dataAdmissionPrograms);
 
 	return (
 		<Box spaceY='5'>

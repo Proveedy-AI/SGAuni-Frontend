@@ -223,6 +223,7 @@ export const UpdateTuitionProcessModal = ({
 				if (!e.open) onClose();
 			}}
 			onSave={handleSave}
+			loading={isCreating || isUpdating}
 			disabledSave={!isValid || isCreating || isUpdating || toasterShown}
 			positionerProps={{ style: { padding: '0 40px' } }}
 		>

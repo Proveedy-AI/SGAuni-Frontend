@@ -8,6 +8,8 @@ import { ReactSelect } from '@/components/select';
 
 export const AddProgram = ({
 	fetchData,
+	DirectorOptions,
+	ProgramFocusOptions,
 	programTypesOptions,
 	coordinatorsOptions,
 	loadingProgramTypes,
@@ -15,7 +17,7 @@ export const AddProgram = ({
 }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
-
+	const [errors, setErrors] = useState({});
 	const { mutate: register, isPending: loading } = useCreateProgram();
 
 	const [programRequest, setProgramRequest] = useState({
@@ -23,22 +25,43 @@ export const AddProgram = ({
 		type: null,
 		coordinator: null,
 		price_credit: '',
+		director: null,
+		postgraduate_focus: null,
 	});
+
+	const validateFields = () => {
+		const newErrors = {};
+
+		if (!programRequest.name.trim()) newErrors.name = 'El nombre es requerido';
+		if (!programRequest.type) newErrors.type = 'Seleccione un tipo de programa';
+		if (!programRequest.coordinator)
+			newErrors.coordinator = 'Seleccione un coordinador';
+		if (
+			!programRequest.price_credit ||
+			Number(programRequest.price_credit) <= 0
+		)
+			newErrors.price_credit = 'El precio debe ser mayor a 0';
+		if (!programRequest.director)
+			newErrors.director = 'Seleccione un director';
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
 
 	const handleSubmitData = async (e) => {
 		e.preventDefault();
-		if (
-			!programRequest.name ||
-			!programRequest.type ||
-			!programRequest.coordinator ||
-			programRequest.price_credit <= 0
-		)
-			return;
+
+		if (!validateFields()) return;
 
 		const payload = {
 			name: programRequest.name,
 			type: Number(programRequest.type.value),
 			coordinator: Number(programRequest.coordinator.value),
+			director: programRequest.director
+				? Number(programRequest.director.value)
+				: null,
+			postgraduate_focus: programRequest.postgraduate_focus
+				? Number(programRequest.postgraduate_focus.value)
+				: null,
 			price_credit: programRequest.price_credit,
 		};
 
@@ -87,7 +110,12 @@ export const AddProgram = ({
 			contentRef={contentRef}
 		>
 			<Stack css={{ '--field-label-width': '120px' }}>
-				<Field label='Nombre del Programa'>
+				<Field
+					label='Nombre del Programa'
+					invalid={!!errors.name}
+					errorText={errors.name}
+					required
+				>
 					<Input
 						required
 						type='text'
@@ -99,7 +127,12 @@ export const AddProgram = ({
 						}
 					/>
 				</Field>
-				<Field label='Tipo de Programa'>
+				<Field
+					label='Tipo de Programa'
+					errorText={errors.type}
+					invalid={!!errors.type}
+					required
+				>
 					<ReactSelect
 						value={programRequest.type}
 						variant='flushed'
@@ -115,7 +148,55 @@ export const AddProgram = ({
 						options={programTypesOptions}
 					/>
 				</Field>
-				<Field label='Coordinador'>
+				<Field
+					label='Enfoque de Programa'
+					errorText={errors.postgraduate_focus}
+					invalid={!!errors.postgraduate_focus}
+				>
+					<ReactSelect
+						value={programRequest.postgraduate_focus}
+						onChange={(select) => {
+							setProgramRequest({
+								...programRequest,
+								postgraduate_focus: select,
+							});
+						}}
+						variant='flushed'
+						size='xs'
+						isSearchable={true}
+						isClearable
+						name='Enfoques de Programa'
+						options={ProgramFocusOptions}
+					/>
+				</Field>
+				<Field
+					label='Director'
+					errorText={errors.director}
+					invalid={!!errors.director}
+					required
+				>
+					<ReactSelect
+						value={programRequest.director}
+						onChange={(select) => {
+							setProgramRequest({ ...programRequest, director: select });
+						}}
+						variant='flushed'
+						size='xs'
+						isDisabled={loadingCoordinators}
+						isLoading={loadingCoordinators}
+						isSearchable={true}
+						isClearable
+						name='Directores'
+						options={DirectorOptions}
+					/>
+				</Field>
+
+				<Field
+					label='Coordinador'
+					errorText={errors.coordinator}
+					invalid={!!errors.coordinator}
+					required
+				>
 					<ReactSelect
 						value={programRequest.coordinator}
 						onChange={(select) => {
@@ -131,7 +212,12 @@ export const AddProgram = ({
 						options={coordinatorsOptions}
 					/>
 				</Field>
-				<Field label='Precio por crédito (S/.)'>
+				<Field
+					label='Precio por crédito (S/.)'
+					errorText={errors.price_credit}
+					invalid={!!errors.price_credit}
+					required
+				>
 					<Input
 						required
 						type='number'
@@ -157,4 +243,6 @@ AddProgram.propTypes = {
 	coordinatorsOptions: PropTypes.array,
 	loadingProgramTypes: PropTypes.bool,
 	loadingCoordinators: PropTypes.bool,
+	ProgramFocusOptions: PropTypes.array,
+	DirectorOptions: PropTypes.array,
 };

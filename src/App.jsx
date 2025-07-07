@@ -25,14 +25,17 @@ import {
 	AdmissionEvaluatorsByProgram,
 } from './views/admin/admissions';
 import { Contracts, MyContracts } from './views/admin/contracts';
-import AdmissionForm from './views/Inscription';
 import { AdmissionMyApplicants } from './views/admin/applicants/AdmissionMyApplicants';
 import { ApplicantsLayout } from './views/admin/applicants/ApplicantsLayout';
-import { Debts } from './views/admin/debts';
-import { 
-	TuitionProcess,
-	TuitionPrograms
-} from './views/admin/tuitions';
+import { TuitionProcess, TuitionPrograms } from './views/admin/tuitions';
+import {
+	DebtsLayout,
+	PaymentOrdersByRequest,
+	PaymentRequestsView,
+} from './views/admin/debts';
+import { CoursesAndSchedules } from './views/admin/courses_and_schedules';
+import ChakraInscriptionForm from './views/inscription-form';
+import { PaymentOrdersView } from './views/admin/debts/PaymentOrdersView';
 
 function App() {
 	return (
@@ -98,7 +101,7 @@ function App() {
 										/>
 									</Route>
 								</Route>
-								<Route >
+								<Route>
 									<Route path='myapplicants'>
 										<Route index element={<AdmissionMyApplicants />} />
 										<Route
@@ -155,13 +158,36 @@ function App() {
 								</Route>
 							</Route>
 
-							<Route path='debts'>
+							<Route path='courses-schedules'>
 								<Route
 									element={
-										<ProtectedRoute requiredPermission='dashboard.debt.view' />
+										<ProtectedRoute requiredPermission='courses.schedules.view' />
 									}
 								>
-									<Route index element={<Debts />} />
+									<Route index element={<CoursesAndSchedules />} />
+								</Route>
+							</Route>
+
+							<Route path='debts' element={<DebtsLayout />}>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='payment.requests.view' />
+									}
+								>
+									<Route path='payment-requests'>
+										<Route index element={<PaymentRequestsView />} />
+										<Route path=':id' element={<PaymentOrdersByRequest />} />
+									</Route>
+									<Route
+										element={
+											<ProtectedRoute requiredPermission='payment.orders.view' />
+										}
+									>
+										<Route
+											path='payment-orders'
+											element={<PaymentOrdersView />}
+										/>
+									</Route>
 								</Route>
 							</Route>
 							{/* SETTINGS */}
@@ -215,7 +241,10 @@ function App() {
 					</Route>
 
 					{/* Ruta para ir a formulario de inscripción */}
-					<Route path='admission-process/:uuid' element={<AdmissionForm />} />
+					<Route
+						path='admission-process/:uuid'
+						element={<ChakraInscriptionForm />}
+					/>
 				</Routes>
 			</BrowserRouter>
 		</>

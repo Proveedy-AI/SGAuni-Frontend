@@ -13,8 +13,15 @@ export function CustomDatePicker({
 	onDateChange,
 	buttonSize = 'xs',
 	size = { base: '330px', md: '470px' },
+	disableFutureDates = false,
+	minDate,
+	maxDate,
+	asChild = false,
 }) {
 	const [openPopover, setOpenPopover] = useState(false);
+	const effectiveMaxDate = disableFutureDates
+		? new Date()
+		: (maxDate ?? undefined);
 
 	return (
 		<>
@@ -32,7 +39,7 @@ export function CustomDatePicker({
 				open={openPopover}
 				onOpenChange={(details) => setOpenPopover(details.open)}
 			>
-				<Popover.Trigger style={{ width: '100%' }}>
+				<Popover.Trigger asChild={asChild} style={{ width: '100%' }}>
 					<Button
 						as='div'
 						role='textbox'
@@ -79,13 +86,15 @@ export function CustomDatePicker({
 
 				<Portal>
 					<Popover.Positioner>
-						<Popover.Content style={{ padding: 0, overflow: 'hidden', borderRadius: 20 }}>
+						<Popover.Content
+							style={{ padding: 0, overflow: 'hidden', borderRadius: 20 }}
+						>
 							<Popover.Body style={{ padding: 0 }}>
 								<Box
-									// mt='-8'
-									// ml={'-2'}
-									// transform='scale(0.90)'
-									// transformOrigin='top left'
+								// mt='-8'
+								// ml={'-2'}
+								// transform='scale(0.90)'
+								// transformOrigin='top left'
 								>
 									<Calendar
 										date={selectedDate ? parseISO(selectedDate) : new Date()}
@@ -93,6 +102,8 @@ export function CustomDatePicker({
 											onDateChange(date);
 											setOpenPopover(false);
 										}}
+										minDate={minDate}
+										maxDate={effectiveMaxDate}
 										locale={es}
 										color='#711610'
 										style={{ width: '100%' }}
@@ -112,5 +123,10 @@ CustomDatePicker.propTypes = {
 	selectedDate: PropTypes.string,
 	onDateChange: PropTypes.func,
 	buttonSize: PropTypes.string,
+	// size: PropTypes.object,
 	size: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+	disableFutureDates: PropTypes.bool,
+	minDate: PropTypes.instanceOf(Date),
+	maxDate: PropTypes.instanceOf(Date),
+	asChild: PropTypes.bool,
 };

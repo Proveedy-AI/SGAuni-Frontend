@@ -27,12 +27,12 @@ export const ViewAdmissionProgramExams = ({ item }) => {
 
 	return (
 		<Modal
-			title='Ver Tareas'
+			title='Ver Evaluaciones'
 			placement='center'
 			trigger={
 				<Box>
 					<Tooltip
-						content='Ver Tareas'
+						content='Ver Evaluaciones'
 						positioning={{ placement: 'bottom-center' }}
 						showArrow
 						openDelay={0}

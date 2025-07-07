@@ -1,8 +1,11 @@
-import { Field, Modal, Tooltip } from '@/components/ui';
+import { Button, Modal, Tooltip } from '@/components/ui';
 import { useReadUserById } from '@/hooks/users/useReadUserById';
 import {
-	Badge,
 	Box,
+	Card,
+	Flex,
+	Heading,
+	Icon,
 	IconButton,
 	SimpleGrid,
 	Stack,
@@ -10,7 +13,19 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { FiEye } from 'react-icons/fi';
+import {
+	FiDownload,
+	FiExternalLink,
+	FiEye,
+	FiFileText,
+	FiMail,
+	FiPhone,
+	FiTag,
+	FiUser,
+} from 'react-icons/fi';
+import { HiIdentification } from 'react-icons/hi';
+import { Link } from 'react-router';
+import { LuGraduationCap } from 'react-icons/lu';
 
 export const ViewUserModal = ({ selectedUser }) => {
 	const [open, setOpen] = useState(false);
@@ -51,100 +66,175 @@ export const ViewUserModal = ({ selectedUser }) => {
 			onOpenChange={(e) => setOpen(e.open)}
 			size='2xl'
 		>
-			<Stack css={{ '--field-label-width': '140px' }} fontSize={'md'}>
-				<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-					<Field color={'uni.secondary'} label='Nombre completo:'>
-						<Text color={'black'} fontWeight='medium'>
-							{dataUser?.full_name ||
-								`${dataUser?.first_name || ''} ${dataUser?.last_name || ''}`}
-						</Text>
-					</Field>
+			<Stack
+				gap={2}
+				pb={6}
+				maxH={{ base: 'full', md: '75vh' }}
+				overflowY='auto'
+				sx={{
+					'&::-webkit-scrollbar': { width: '6px' },
+					'&::-webkit-scrollbar-thumb': {
+						background: 'gray.300',
+						borderRadius: 'full',
+					},
+				}}
+			>
+				<Card.Root>
+					<Card.Header pb={0}>
+						<Flex align='center' gap={2}>
+							<Icon as={FiUser} w={5} h={5} color='blue.600' />
+							<Heading fontSize='20px'>Información Personal</Heading>
+						</Flex>
+					</Card.Header>
+					<Card.Body pt={4}>
+						<SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
+							<Box>
+								<Flex align='center' gap={2} fontSize='sm' color='gray.600'>
+									<Icon as={FiUser} w={4} h={4} />
+									<Text>Nombre completo</Text>
+								</Flex>
+								<Text fontWeight='semibold' color='gray.900' ml={6}>
+									{dataUser?.full_name || 'No disponible'}
+								</Text>
+							</Box>
+							{/* Nombre de Usuario */}
+							<Box>
+								<Flex align='center' gap={2} fontSize='sm' color='gray.600'>
+									<Icon as={FiUser} w={4} h={4} />
+									<Text>Usuario</Text>
+								</Flex>
+								<Text fontWeight='semibold' color='gray.900' ml={6}>
+									{dataUser?.user?.username || 'No disponible'}
+								</Text>
+							</Box>
 
-					<Field color={'uni.secondary'} label='Usuario:'>
-						<Text color='black' fontWeight='medium'>
-							{dataUser?.user?.username}
-						</Text>
-					</Field>
+							{/* Número de Documento */}
+							<Box>
+								<Flex align='center' gap={2} fontSize='sm' color='gray.600'>
+									<Icon as={HiIdentification} w={4} h={4} />
+									<Text>Número de Documento</Text>
+								</Flex>
+								<Text fontWeight='semibold' color='gray.900' ml={6}>
+									{dataUser?.num_doc || 'No disponible'}
+								</Text>
+							</Box>
 
-					<Field color={'uni.secondary'} label='Correo Institucional:'>
-						<Text
-							color={dataUser?.uni_email ? 'black' : 'gray.500'}
-							fontWeight='medium'
-						>
-							{dataUser?.uni_email || 'Sin datos'}
-						</Text>
-					</Field>
-					<Field color={'uni.secondary'} label='Número de documento:'>
-						<Text
-							color={dataUser?.num_doc ? 'black' : 'gray.500'}
-							fontWeight='medium'
-						>
-							{dataUser?.num_doc}
-						</Text>
-					</Field>
-					<Field color={'uni.secondary'} label='Categoría:'>
-						<Text
-							color={dataUser?.category ? 'black' : 'gray.500'}
-							fontWeight='medium'
-						>
-							{dataUser?.category}
-						</Text>
-					</Field>
-					<Field color='uni.secondary' label='Teléfono:'>
-						<Text
-							color={dataUser?.phone ? 'black' : 'gray.500'}
-							fontWeight='medium'
-						>
-							{dataUser?.phone || 'Sin datos'}
-						</Text>
-					</Field>
-					<Field color='uni.secondary' label='Curriculum:'>
+							{/* Categoría */}
+							<Box>
+								<Flex align='center' gap={2} fontSize='sm' color='gray.600'>
+									<Icon as={FiTag} w={4} h={4} />
+									<Text>Categoría</Text>
+								</Flex>
+								<Text fontWeight='semibold' color='gray.900' ml={6}>
+									{dataUser?.category || 'No especificada'}
+								</Text>
+							</Box>
+
+							{/* Departamento */}
+						</SimpleGrid>
+					</Card.Body>
+				</Card.Root>
+
+				<Card.Root>
+					<Card.Header pb={0}>
+						<Flex align='center' gap={2}>
+							<Icon as={FiMail} w={5} h={5} color='green.600' />
+							<Heading fontSize='20px'>Información de Contacto</Heading>
+						</Flex>
+					</Card.Header>
+					<Card.Body pt={4}>
+						<SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
+							{/* Correo Personal */}
+							<Box>
+								<Flex align='center' gap={2} fontSize='sm' color='gray.600'>
+									<Icon as={FiMail} w={4} h={4} />
+									<Text>Correo Personal</Text>
+								</Flex>
+								<Text fontWeight='semibold' color='gray.900' ml={6}>
+									{dataUser?.user?.username || 'No disponible'}
+								</Text>
+							</Box>
+
+							{/* Correo Institucional */}
+							<Box>
+								<Flex align='center' gap={2} fontSize='sm' color='gray.600'>
+									<Icon as={FiMail} w={4} h={4} color='blue.500' />
+									<Text>Correo Institucional</Text>
+								</Flex>
+								<Text fontWeight='semibold' color='gray.900' ml={6}>
+									{dataUser?.uni_email || 'No disponible'}
+								</Text>
+							</Box>
+
+							{/* Teléfono */}
+							<Box>
+								<Flex align='center' gap={2} fontSize='sm' color='gray.600'>
+									<Icon as={FiPhone} w={4} h={4} />
+									<Text>Teléfono</Text>
+								</Flex>
+								<Text fontWeight='semibold' color='gray.900' ml={6}>
+									{dataUser?.phone || 'No disponible'}
+								</Text>
+							</Box>
+						</SimpleGrid>
+					</Card.Body>
+				</Card.Root>
+
+				<Card.Root>
+					<Card.Header pb={0}>
+						<Flex align='center' gap={2}>
+							<Icon as={FiFileText} w={5} h={5} color='green.600' />
+							<Heading fontSize='20px'>Curriculum Vitae</Heading>
+						</Flex>
+					</Card.Header>
+
+					<Card.Body pt={4}>
 						{dataUser?.path_cv ? (
-							<Badge
-								as='a'
+							<Button
+								as={Link}
 								href={dataUser.path_cv}
-								target='_blank'
-								rel='noopener noreferrer'
-								colorPalette='green'
-								variant='solid'
-								px={3}
-								py={1}
-								borderRadius='md'
-								cursor='pointer'
-								_hover={{ textDecoration: 'underline', bg: 'uni.secondary' }}
+								isExternal
+								variant='outline'
+								color='green.700'
+								borderColor='green.200'
+								bg='green.50'
+								_hover={{ bg: 'green.100' }}
 							>
-								Ver archivo
-							</Badge>
+								<FiDownload /> Descargar CV <FiExternalLink />
+							</Button>
 						) : (
-							<Text color='gray.500' fontWeight='medium'>
-								Sin datos
-							</Text>
+							<Text color='gray.500'>No disponible</Text>
 						)}
-					</Field>
-					<Field color='uni.secondary' label='Título o grado:'>
+					</Card.Body>
+				</Card.Root>
+
+				<Card.Root>
+					<Card.Header pb={0}>
+						<Flex align='center' gap={2}>
+							<Icon as={LuGraduationCap} w={5} h={5} color='blue.600' />
+							<Heading fontSize='20px'>Formación Académica</Heading>
+						</Flex>
+					</Card.Header>
+
+					<Card.Body pt={4}>
 						{dataUser?.path_grade ? (
-							<Badge
-								as='a'
+							<Button
+								as={Link}
 								href={dataUser.path_grade}
-								target='_blank'
-								rel='noopener noreferrer'
-								colorPalette='blue'
-								variant='solid'
-								px={3}
-								py={1}
-								borderRadius='md'
-								cursor='pointer'
-								_hover={{ textDecoration: 'underline', bg: 'uni.secondary' }}
+								isExternal
+								variant='outline'
+								color='blue.700'
+								borderColor='blue.200'
+								bg='blue.50'
+								_hover={{ bg: 'blue.100' }}
 							>
-								Ver archivo
-							</Badge>
+								<FiDownload /> Descargar Título <FiExternalLink />
+							</Button>
 						) : (
-							<Text color='gray.500' fontWeight='medium'>
-								Sin datos
-							</Text>
+							<Text color='gray.500'>No disponible</Text>
 						)}
-					</Field>
-				</SimpleGrid>
+					</Card.Body>
+				</Card.Root>
 			</Stack>
 		</Modal>
 	);

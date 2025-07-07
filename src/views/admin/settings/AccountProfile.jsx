@@ -3,7 +3,7 @@ import { toaster } from '@/components/ui';
 import { Box, Heading, VStack, Text } from '@chakra-ui/react';
 import { FiAlertCircle } from 'react-icons/fi';
 import { Link } from 'react-router';
-import { useUpdateUser } from '@/hooks/users';
+import { useUpdateProfile } from '@/hooks/users';
 import { ChangeDataProfileForm } from '@/components/forms/acount/ChangeDataProfileForm';
 import { ChangeProfileControl } from '@/components/forms/acount/ChangeProfileControl';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
@@ -12,17 +12,22 @@ import { uploadToS3 } from '@/utils/uploadToS3';
 export const AccountProfile = () => {
 	const { data: dataUser, isLoading, error, refetch } = useReadUserLogged();
 
-	const { mutate: update, loading: loadingUpdate } = useUpdateUser();
 	const [disableUpload, setDisableUpload] = useState(false);
 
+  const { mutateAsync: updateProfile, loading: loadingProfile } = useUpdateProfile();
+
+  const [errors, setErrors] = useState({});
+
+  
 	const [profile, setProfile] = useState({
-		id: '',
-		user: {},
-		username: '',
-		first_name: '',
-		password: '',
-		confirmPassword: '',
-		last_name: '',
+    id: '',
+		user: {
+      id: '',
+      username: '',
+      first_name: '',
+      last_name: '',
+      password: '',
+    },
 		full_name: '',
 		num_doc: '',
 		uni_email: '',
@@ -30,18 +35,23 @@ export const AccountProfile = () => {
 		path_grade: '',
 		category: '',
 		phone: '',
-		created_at: null,
-		updated_at: null,
-		deleted_at: null,
-		// Campos no devueltos por la API
 		roles: [],
-		color: '',
-		status: null,
-		country: {},
-		pathContract: '',
-		contractExpiresAt: null,
-		userId: '',
+    // para el icono
+    first_name: '',
+    last_name: '',
 	});
+
+  const validate = () => {
+    const newErrors = {};
+    if (!profile.first_name) newErrors.first_name = 'El nombre es obligatorio';
+    if (!profile.last_name) newErrors.last_name = 'El apellido es obligatorio';
+    if (!profile.num_doc) newErrors.num_doc = 'El número de documento es obligatorio';
+    if (!profile.category) newErrors.category = 'La categoría es obligatoria';
+    if (!profile.phone) newErrors.phone = 'El número de teléfono es obligatorio';
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }
 
 	const [isChangesMade, setIsChangesMade] = useState(false);
 	const [initialProfile, setInitialProfile] = useState(null);
@@ -51,6 +61,10 @@ export const AccountProfile = () => {
 			const updatedProfile = {
 				first_name: dataUser.user.first_name,
 				last_name: dataUser.user.last_name,
+        user: {
+          username: dataUser.user.username,
+          ...dataUser.user,
+        },
 				...dataUser,
 			};
 			setProfile(updatedProfile);
@@ -71,6 +85,8 @@ export const AccountProfile = () => {
 	};
 
 	const handleUpdateProfile = async (e) => {
+    if (!validate()) return;
+
 		e.preventDefault();
 		setDisableUpload(true);
 		let pathCvUrl = profile?.path_cv;
@@ -98,7 +114,7 @@ export const AccountProfile = () => {
 				username: profile.username,
 				first_name: profile.first_name,
 				last_name: profile.last_name,
-				is_active: profile.status === null ? true : profile.status, // Por si no viene el campo
+				is_active: true,
 				password: profile.password,
 			},
 			num_doc: profile.num_doc,
@@ -106,23 +122,27 @@ export const AccountProfile = () => {
 			path_cv: pathCvUrl,
 			path_grade: pathGradeUrl,
 			category: profile.category,
-			phone: profile.phoneNumber,
+			phone: profile.phone,
 		};
 
-		try {
-			update({ id: profile.id, payload });
-			setInitialProfile(profile);
-			setIsChangesMade(false);
-			toaster.create({
-				title: 'Perfil actualizado correctamente.',
-				type: 'success',
-			});
-			refetch();
-			setDisableUpload(false);
-		} catch (error) {
-			setDisableUpload(false);
-			toaster.create({ title: error.message, type: 'error' });
-		}
+    console.log(payload)
+
+		updateProfile(payload, {
+      onSuccess: () => {
+        setInitialProfile(profile);
+        setIsChangesMade(false);
+        toaster.create({
+          title: 'Perfil actualizado correctamente.',
+          type: 'success',
+        });
+        refetch();
+        setDisableUpload(false);
+      }, 
+      onError: (error) => {
+        setDisableUpload(false);
+        toaster.create({ title: error.message, type: 'error' });
+      }
+    });
 	};
 
 	return (
@@ -177,11 +197,12 @@ export const AccountProfile = () => {
 						profile={profile}
 						isChangesMade={isChangesMade}
 						handleUpdateProfile={handleUpdateProfile}
-						loadingUpdate={loadingUpdate}
+						loadingUpdate={loadingProfile}
 						disableUpload={disableUpload}
 					/>
 
 					<ChangeDataProfileForm
+            errors={errors}
 						profile={profile}
 						updateProfileField={updateProfileField}
 					/>

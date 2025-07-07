@@ -1,20 +1,49 @@
-import { Field, ModalSimple, Tooltip } from "@/components/ui";
+import { Field, Modal, Tooltip, toaster } from "@/components/ui";
 import { Box, IconButton, Stack, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { HiEye } from "react-icons/hi2";
 import PropTypes from "prop-types";
+import { useUpdatePaymentOrder } from "@/hooks/payment_orders";
 
-export const ViewPaymentOrderVoucherModal = ({ item }) => {
+export const ViewPaymentOrderVoucherModal = ({ item, fetchPaymentOrders }) => {
   const [open, setOpen] = useState(false);
+
+  const { mutateAsync: updatePaymentOrder, isSaving } = useUpdatePaymentOrder();
+
+  const handleValidate = () => {
+    const payload = {
+      status: 5,
+    }
+
+    updatePaymentOrder({
+      id: item.id,
+      payload
+    }, {
+      onSuccess: () => {
+        setOpen(false);
+        fetchPaymentOrders();
+        toaster.create({
+          title: "Orden de pago validada correctamente",
+          type: 'success',
+        });
+      },
+      onError: (error) => {
+        toaster.create({
+          title: error ? error.message : "Error al validar la orden de pago",
+          type: "error",
+        });
+      }
+    })
+  }
 
   return (
     <Stack css={{ "--field-label-width": "180px" }}>
       <Field orientation={{ base: "vertical", sm: "horizontal" }}>
-        <ModalSimple
+        <Modal
           trigger={
             <Box>
               <Tooltip
-                content='Ver Voucher'
+                content='Verificar manualmente el voucher de pago'
                 positioning={{ placement: 'bottom-center' }}
                 showArrow
                 openDelay={0}
@@ -25,13 +54,14 @@ export const ViewPaymentOrderVoucherModal = ({ item }) => {
               </Tooltip>
             </Box>
           }
-          title="Ver Voucher"
+          title="Verificar manualmente el voucher de pago"
           placement="center"
           size="5xl"
           open={open}
           onOpenChange={(e) => setOpen(e.open)}
-          onSave={() => {}}
-          hiddenFooter={true}
+          onSave={handleValidate}
+          isSaving={isSaving}
+          saveLabel="Validar voucher"
         >
           <Stack spacing={4}>
             <Stack
@@ -58,12 +88,13 @@ export const ViewPaymentOrderVoucherModal = ({ item }) => {
               }
             </Stack>
           </Stack>
-        </ModalSimple>
+        </Modal>
       </Field>
     </Stack>
   );
 }
 
 ViewPaymentOrderVoucherModal.propTypes = {
-  item: PropTypes.object
+  item: PropTypes.object,
+  fetchPaymentOrders: PropTypes.func,
 };

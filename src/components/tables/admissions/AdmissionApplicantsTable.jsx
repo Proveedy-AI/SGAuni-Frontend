@@ -1,11 +1,11 @@
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { Pagination } from '@/components/ui';
+import { formatDateString } from '@/components/ui/dateHelpers';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import useSortedData from '@/utils/useSortedData';
 import { Box, Table } from '@chakra-ui/react';
-import { format, parseISO } from 'date-fns';
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -37,11 +37,9 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 					: startIndex + index + 1}
 			</Table.Cell>
 			<Table.Cell>{item.program_name}</Table.Cell>
-			<Table.Cell>{item.program_type}</Table.Cell>
+			<Table.Cell>{item.program_type_name}</Table.Cell>
 			<Table.Cell>{item.admission_process_name}</Table.Cell>
-			<Table.Cell>
-				{format(parseISO(item.semester_start_date), 'dd/MM/yyyy')}
-			</Table.Cell>
+			<Table.Cell>{formatDateString(item.semester_start_date)}</Table.Cell>
 			<Table.Cell onClick={(e) => e.stopPropagation()}></Table.Cell>
 		</Table.Row>
 	);
@@ -93,7 +91,7 @@ export const AdmissionApplicantsTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w={'40%'}>
+							<Table.ColumnHeader w={'35%'}>
 								<SortableHeader
 									label='Nombres del programa'
 									columnKey='program_name'
@@ -101,9 +99,30 @@ export const AdmissionApplicantsTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w={'20%'}>Tipo del programa</Table.ColumnHeader>
-							<Table.ColumnHeader w={'20%'}> Proceso de Admisión</Table.ColumnHeader>
-							<Table.ColumnHeader w={'10%'}>Fecha</Table.ColumnHeader>
+							<Table.ColumnHeader w={'20%'}>
+								<SortableHeader
+									label='Tipo de Programa'
+									columnKey='program_type_name'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader w={'20%'}>
+								<SortableHeader
+									label='Proceso de Admisión'
+									columnKey='admission_process_name'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader w={'10%'}>
+								<SortableHeader
+									label='Inicio de Semestre'
+									columnKey='semester_start_date'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
