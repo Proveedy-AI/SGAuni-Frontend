@@ -5,7 +5,7 @@ import { InputGroup } from "@/components/ui";
 import { useReadCourses } from "@/hooks/courses";
 import { useReadSchedules } from "@/hooks/schedules";
 import { useReadUsers } from "@/hooks/users";
-import { Box, Heading, HStack, Input, Spinner, Stack, Tabs } from "@chakra-ui/react";
+import { Box, Heading, HStack, Input, Spinner, Stack, Tabs, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 
@@ -28,19 +28,19 @@ export const CoursesAndSchedules = () => {
     label: user.full_name
   }));
 
-
   useEffect(() => {
     setSearchCourseName('');
   }, [tab])
 
   const { 
-    //data: dataCourses, 
-    //isLoading: isLoadingCourses, 
+    data: dataCourses, 
+    isLoading: isLoadingCourses, 
     refetch: fetchCourses
   } = useReadCourses();
+
   const { 
-    //data: dataSchedules, 
-    //isLoading: isLoadingSchedules, 
+    data: dataSchedules, 
+    isLoading: isLoadingSchedules, 
     refetch: fetchSchedules
   } = useReadSchedules();
 
@@ -51,9 +51,8 @@ export const CoursesAndSchedules = () => {
     { id: 4, code: 'CS104', name: 'Bases de Datos', credits: 12, type: 9, pre_requisite: 'CS102' },
     { id: 5, code: 'CS105', name: 'Sistemas Operativos', credits: 12, type: 15, pre_requisite: 'CS103' },
   ]
-  const isLoadingCourses = false;
 
-  const filteredCourses = dataLocalCourses.filter(course =>
+  const filteredCourses = dataCourses?.results?.filter(course =>
     course.name.toLowerCase().includes(searchCourseName.toLowerCase())
   );
 
@@ -75,7 +74,7 @@ export const CoursesAndSchedules = () => {
         </Heading>
 
         {tab === 1 ? (
-          <AddCourseModal data={dataLocalCourses} fetchData={fetchCourses} />
+          <AddCourseModal data={dataCourses?.results} fetchData={fetchCourses} />
         ) : (
           <AddCourseSchedule fetchData={fetchSchedules} />
         )}
@@ -154,7 +153,13 @@ export const CoursesAndSchedules = () => {
                 </InputGroup>
               </HStack>
             </Stack>
-
+             
+             { isLoadingSchedules 
+              ? (
+                  <Spinner />
+              ) : (
+                <Text>{JSON.stringify(dataSchedules)}</Text>
+              )}
           </Stack>
         </Tabs.Content>
       </Tabs.Root>

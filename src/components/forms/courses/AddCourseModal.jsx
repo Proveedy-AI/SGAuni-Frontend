@@ -3,7 +3,7 @@ import { Button, Checkbox, Field, Modal, toaster } from "@/components/ui";
 import { useCreateCourse } from "@/hooks/courses";
 import { useRef, useState } from "react";
 import { FiPlus } from 'react-icons/fi';
-import { CheckboxGroup, Flex, Input, Stack } from '@chakra-ui/react';
+import { CheckboxGroup, Flex, Input, Stack, Textarea } from '@chakra-ui/react';
 import { ReactSelect } from '@/components/select';
 
 export const AddCourseModal = ({ data, fetchData }) => {
@@ -12,12 +12,13 @@ export const AddCourseModal = ({ data, fetchData }) => {
   
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [credits, setCredits] = useState('');
   const [type, setType] = useState('');
   const [preRequisite, setPreRequisite] = useState([]);
 
   const preRequisiteOptions = data
-    .filter((course) => 
+    ?.filter((course) => 
       !preRequisite.some((selected) => selected.value === course.id)
     )
     .map((course) => ({
@@ -36,7 +37,7 @@ export const AddCourseModal = ({ data, fetchData }) => {
   const handleSubmitData = async (e) => {
     e.preventDefault();
 
-    if (!name || !code || !credits || !type) {
+    if (!name || !code || !credits || !type || !description) {
         toaster.create({
           title: 'Por favor, completa todos los campos requeridos',
           type: 'warning',
@@ -54,11 +55,14 @@ export const AddCourseModal = ({ data, fetchData }) => {
 
     const payload = {
       name: name,
+      description: description,
       code: code,
-      credits: credits,
+      default_credits: credits,
       type: type,
       ids_preRequisite: preRequisite,
     };
+
+    console.log(payload)
 
     register(payload, {
       onSuccess: () => {
@@ -123,6 +127,23 @@ export const AddCourseModal = ({ data, fetchData }) => {
             />
           </Field>
         </Flex>
+        <Field
+          orientation={{ base: 'vertical', sm: 'horizontal' }}
+          label='Descripción:'
+          display='flex'
+          alignItems='flex-start'
+        >
+          <Textarea
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            size='xs'
+            placeholder='Descripción del curso'
+            css={{ height: '100px', resize: 'none', overflowY: 'auto' }}
+            _placeholder={{ color: 'gray.500' }}
+            _focus={{ borderColor: 'gray.300', boxShadow: 'none' }}
+          
+          />
+        </Field>
         <Flex flexDirection={{ base:'column', md: 'row' }} gap={3}>
           <Field
             orientation={{ base: 'vertical', sm: 'horizontal' }}
