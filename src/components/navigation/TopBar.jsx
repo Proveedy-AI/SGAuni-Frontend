@@ -10,16 +10,19 @@ import {
 	Box,
 	MenuSeparator,
 	VStack,
-	Spinner,
+	Skeleton,
+	SkeletonCircle,
+	SkeletonText,
 } from '@chakra-ui/react';
 import { Avatar, MenuContent, MenuItem, MenuRoot, MenuTrigger } from '../ui';
 import { FiChevronDown, FiLogOut } from 'react-icons/fi';
 import { useProvideAuth } from '@/hooks/auth';
 import { NotificationsPanel } from '../notifications';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 
 export const TopBar = () => {
-	const { getProfile, logout } = useProvideAuth();
-	const profile = getProfile();
+	const { logout } = useProvideAuth();
+	const { data: profile } = useReadUserLogged();
 	const roles = profile?.roles || [];
 
 	const permissions = roles
@@ -44,8 +47,39 @@ export const TopBar = () => {
 
 	if (!profile) {
 		return (
-			<Flex align='center' justify='center' h='100vh'>
-				<Spinner size='xl' />
+			<Flex
+				bg={'white'}
+				justify='space-between'
+				align='center'
+				px='6'
+				py='2.5'
+				boxShadow='md'
+				h='64px'
+			>
+				<HStack>
+					<Skeleton
+						height='20px'
+						width='180px'
+						ml={{ base: '0px', md: '30px' }}
+					/>
+				</HStack>
+
+				<HStack spacing='5'>
+					{/* Notificaciones (puede ser ícono o badge con skeleton) */}
+					<SkeletonCircle size='8' />
+
+					{/* Avatar + nombre + rol */}
+					<HStack spacing='3'>
+						<SkeletonCircle size='10' />
+
+						<Box display={['none', 'none', 'none', 'block']}>
+							<SkeletonText noOfLines={2} spacing='1' width='120px' />
+						</Box>
+					</HStack>
+
+					{/* Flechita del menú */}
+					<Skeleton height='16px' width='16px' />
+				</HStack>
 			</Flex>
 		);
 	}
@@ -86,7 +120,7 @@ export const TopBar = () => {
 					{mensaje}
 				</Text>
 			</HStack>
-			<HStack	ack style={{ gap: 19 }}>
+			<HStack ack style={{ gap: 19 }}>
 				<NotificationsPanel />
 
 				<MenuRoot>

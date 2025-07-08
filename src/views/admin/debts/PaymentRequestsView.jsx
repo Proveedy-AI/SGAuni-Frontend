@@ -1,5 +1,4 @@
 import { PaymentRequestsTable } from "@/components/tables/payment_requests";
-import { useProvideAuth } from "@/hooks/auth";
 import { useReadPaymentRequest } from "@/hooks/payment_requests/useReadPaymentRequest";
 import { Heading, InputGroup, Input, Stack, Spinner, Card, Flex, Icon, SimpleGrid } from '@chakra-ui/react';
 import { useState } from 'react';
@@ -11,6 +10,7 @@ import { ReactSelect } from "@/components";
 import { useReadMethodPayment } from "@/hooks/method_payments";
 import { useReadPurposes } from "@/hooks/purposes";
 import { useReadPrograms } from "@/hooks";
+import { useReadUserLogged } from "@/hooks/users/useReadUserLogged";
 
 export const PaymentRequestsView = () => {
   const [selectedProgram, setSelectedProgram] = useState(null);
@@ -23,12 +23,11 @@ export const PaymentRequestsView = () => {
 
   const { data: dataPaymentRequests, isLoading: isPaymentRequestsLoading } = useReadPaymentRequest();
 
-  const { getProfile } = useProvideAuth();
-  const profile = getProfile();
-  const roles = profile?.roles || [];
-  const permissions = roles
-    .flatMap((r) => r.permissions || [])
-    .map((p) => p.guard_name);
+	const { data: profile } = useReadUserLogged();
+	const roles = profile?.roles || [];
+	const permissions = roles
+		.flatMap((r) => r.permissions || [])
+		.map((p) => p.guard_name);
 
   const { data: dataPurposes, isLoading: isLoadingPurposes } = useReadPurposes();
   const { data: dataMethodsPayment, isLoading: isLoadingMethodsPayment } = useReadMethodPayment();

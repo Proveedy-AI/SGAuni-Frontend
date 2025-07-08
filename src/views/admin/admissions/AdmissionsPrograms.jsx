@@ -1,6 +1,4 @@
 import { AdmissionsProgramsTable } from '@/components/tables/admissions';
-import { useReadAdmissionById } from '@/hooks/admissions_proccess/useReadAdmissionsbyId';
-import { useProvideAuth } from '@/hooks/auth';
 import { LiaSlashSolid } from 'react-icons/lia';
 
 import {
@@ -18,40 +16,40 @@ import { useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router';
 import { useReadAdmissionsPrograms } from '@/hooks/admissions_programs';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 
 export const AdmissionsPrograms = () => {
 	const { id } = useParams();
 	const decoded = decodeURIComponent(id);
 	const decrypted = Encryptor.decrypt(decoded);
-	const { data } = useReadAdmissionById(decrypted);
+	const { data: profile } = useReadUserLogged();
 	const [tab, setTab] = useState(1);
 	const {
 		data: dataAdmissionsPrograms,
 		refetch: fetchAdmissionsPrograms,
 		isLoading,
-	} = useReadAdmissionsPrograms();
+	} = useReadAdmissionsPrograms({
+		admission_process: Number(decrypted),
+		director: profile?.id,
+	});
 
-	const { getProfile } = useProvideAuth();
-	const profile = getProfile();
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])
 		.map((p) => p.guard_name);
 
 	const [searchValue, setSearchValue] = useState('');
+	const allAdmissionPrograms =
+		dataAdmissionsPrograms?.pages?.flatMap((page) => page.results) ?? [];
 
-	const filteredAdmissionsPrograms = dataAdmissionsPrograms?.results?.filter(
+	const filteredAdmissionsPrograms = allAdmissionPrograms?.filter(
 		(item) =>
-			item.admission_process_name === data?.admission_process_name &&
-			item.director === profile.id &&
 			item.status === 2 &&
 			item.program_name.toLowerCase().includes(searchValue.toLowerCase())
 	);
 
-	const filteredAprovedPrograms = dataAdmissionsPrograms?.results?.filter(
+	const filteredAprovedPrograms = allAdmissionPrograms?.filter(
 		(item) =>
-			item.admission_process_name === data?.admission_process_name &&
-			item.director === profile.id &&
 			item.status === 4 &&
 			item.program_name.toLowerCase().includes(searchValue.toLowerCase())
 	);
@@ -95,7 +93,8 @@ export const AdmissionsPrograms = () => {
 					}}
 					color={'uni.secondary'}
 				>
-					{data?.admission_process_name}
+					{allAdmissionPrograms[0]?.admission_process_name ||
+						'No hay procesos de admisión disponibles'}
 				</Heading>
 			</Stack>
 			<Tabs.Root

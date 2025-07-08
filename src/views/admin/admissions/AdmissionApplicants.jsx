@@ -5,35 +5,48 @@ import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 
 export const AdmissionApplicants = () => {
-	const {
-		data: dataAdmissionPrograms,
-		refetch: fetchAdmissionPrograms,
-		isLoading,
-	} = useReadAdmissionsPrograms();
 	const [searchValue, setSearchValue] = useState({
 		program_name: '',
 		program_type: null,
 		admission_process: null,
 		date: null,
 	});
+	const {
+		data: dataAdmissionPrograms,
+		fetchNextPage: fetchNextAdmissionPrograms,
+		hasNextPage: hasNextPageAdmissionPrograms,
+		isFetchingNextPage: isFetchingNextAdmissionPrograms,
+		refetch: fetchAdmissionPrograms,
+		isLoading,
+	} = useReadAdmissionsPrograms({
+		status: 4, // Only fetch programs with status 4 (Aprobado)
+	});
 
-	const filteredAdmissionPrograms = dataAdmissionPrograms?.results?.filter(
+	const allAdmissionPrograms =
+		dataAdmissionPrograms?.pages?.flatMap((page) => page.results) ?? [];
+	const isFiltering =
+		!!searchValue.program_name.trim() ||
+		!!searchValue.program_type ||
+		!!searchValue.admission_process ||
+		!!searchValue.date;
+	const filteredAdmissionPrograms = allAdmissionPrograms?.filter(
 		(item) =>
-			item.status === 4 &&
 			(!searchValue.program_name ||
 				item.program_name
 					.toLowerCase()
-					.includes(searchValue.program_name.toLowerCase())) &&
+					.includes(searchValue.program_name.trim().toLowerCase())) &&
 			(!searchValue.program_type?.value ||
-				item.program_type.toLowerCase() ===
-					searchValue.program_type.label.toLowerCase()) &&
+				item.program_type.trim().toLowerCase() ===
+					searchValue.program_type.label.trim().toLowerCase()) &&
 			(!searchValue.admission_process?.value ||
 				item.admission_process === searchValue.admission_process.value) &&
 			(!searchValue.date ||
 				item.semester_start_date.slice(0, 10) === searchValue.date)
 	);
 
-	console.log(dataAdmissionPrograms);
+	const totalCount = isFiltering
+		? filteredAdmissionPrograms.length
+		: (allAdmissionPrograms?.length ?? 0);
 
 	return (
 		<Box spaceY='5'>
@@ -78,10 +91,13 @@ export const AdmissionApplicants = () => {
 			<AdmissionApplicantsTable
 				data={filteredAdmissionPrograms}
 				fetchData={fetchAdmissionPrograms}
+				fetchNextPage={fetchNextAdmissionPrograms}
+				hasNextPage={hasNextPageAdmissionPrograms}
+				isFetchingNextPage={isFetchingNextAdmissionPrograms}
+				resetPageTrigger={searchValue}
+				totalCount={totalCount}
 				permissions={[]}
-				search={searchValue}
 				isLoading={isLoading}
-				setSearch={setSearchValue}
 			/>
 		</Box>
 	);

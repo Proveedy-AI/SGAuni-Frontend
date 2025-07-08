@@ -14,10 +14,10 @@ import { memo, useState } from 'react';
 const Row = memo(
 	({ item, fetchData, startIndex, index, permissions, sortConfig, data }) => {
 		const statusMap = {
-			Draft: { label: 'Borrador', color: 'gray' },
-			Pending: { label: 'Pendiente', color: 'orange.500' },
-			Approved: { label: 'Aprobado', color: 'green' },
-			Rejected: { label: 'Rechazado', color: 'red' },
+			Borrador: { label: 'Borrador', color: 'gray' },
+			Pendiente: { label: 'Pendiente', color: 'orange.500' },
+			Aprobado: { label: 'Aprobado', color: 'green' },
+			Rechazado: { label: 'Rechazado', color: 'red' },
 		};
 		return (
 			<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>

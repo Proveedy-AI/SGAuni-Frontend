@@ -1,12 +1,11 @@
 import { ContractsMyListTable } from '@/components/tables/contracts';
-import { useProvideAuth } from '@/hooks/auth';
 import { useReadContracts } from '@/hooks/contracts';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 
 import { Box, Heading, Stack } from '@chakra-ui/react';
 
 export const MyContracts = () => {
-	const { getProfile } = useProvideAuth();
-	const profile = getProfile();
+	const { data: profile } = useReadUserLogged();
 
 	const {
 		data: dataContracts,

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router';
 import { useProvideAuth } from './hooks/auth';
+import { useReadUserLogged } from './hooks/users/useReadUserLogged';
 
 export const PrivateRoute = () => {
 	const { getUser, getUserCookie, refresh, loading, getRefreshToken } =
@@ -113,9 +114,8 @@ export const PrivateRoute = () => {
 };
 
 export const ProtectedRoute = ({ requiredPermission }) => {
-	const { getProfile } = useProvideAuth();
+	const { data: profile } = useReadUserLogged();
 	const location = useLocation();
-	const profile = getProfile();
 
 	const roles = profile?.roles || [];
 	const permissions = roles

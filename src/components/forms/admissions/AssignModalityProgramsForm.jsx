@@ -43,7 +43,7 @@ export const AssignModalityToProgramForm = ({ data }) => {
 	const { mutate: deleteAssignment } = useDeleteModalityAssignment();
 	const { mutate: updateAssignment } = useUpdateModalityAssignment();
 	const { data: modalityList } = useReadModalities(
-		{},
+		{ postgraduate_type: data?.program_type },
 		{
 			enabled: open,
 		}

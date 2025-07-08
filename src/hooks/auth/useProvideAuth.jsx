@@ -54,20 +54,6 @@ export const useProvideAuth = () => {
 				cookieOptions
 			);
 
-			const axiosPrivate = axios.create({
-				baseURL: import.meta.env.VITE_API_URL,
-				headers: { Authorization: `Bearer ${data['access']}` },
-			});
-
-			const res = await axiosPrivate.get('/api/v1/users/profile/');
-			const userProfile = res.data;
-
-			Cookies.set('user', JSON.stringify(userProfile), {
-				secure: true,
-				sameSite: 'strict',
-				httpOnly: false,
-			});
-
 			navigate('/');
 		} catch (err) {
 			setError(err.response ? err.response.data.detail : 'Error de red');
@@ -107,7 +93,6 @@ export const useProvideAuth = () => {
 			}
 		} finally {
 			Cookies.remove(import.meta.env.VITE_TOKEN_COOKIE, cookieOptions);
-			Cookies.remove('user');
 			setAuth(null);
 			navigate('/auth/login');
 			setLoading(false);
@@ -148,20 +133,6 @@ export const useProvideAuth = () => {
 				cookieOptions
 			);
 
-			const axiosPrivate = axios.create({
-				baseURL: import.meta.env.VITE_API_URL,
-				headers: { Authorization: `Bearer ${data['access']}` },
-			});
-
-			const res = await axiosPrivate.get('/api/v1/users/profile/');
-			const userProfile = res.data;
-
-			Cookies.set('user', JSON.stringify(userProfile), {
-				secure: true,
-				sameSite: 'strict',
-				httpOnly: false,
-			});
-
 			return response.data['access'];
 		} catch (err) {
 			console.error('[refresh] Error al refrescar el token:', err);
@@ -172,7 +143,6 @@ export const useProvideAuth = () => {
 					: undefined,
 			};
 			Cookies.remove(import.meta.env.VITE_TOKEN_COOKIE, cookieOptions);
-			Cookies.remove('user');
 			setAuth(null);
 			navigate('/auth/login');
 			setLoading(false);
@@ -185,18 +155,6 @@ export const useProvideAuth = () => {
 	const getUser = useCallback(() => {
 		const user = auth?.user;
 		return user;
-	}, []);
-
-	const getProfile = useCallback(() => {
-		try {
-			const cookie = Cookies.get('user');
-			if (!cookie) return null;
-			const parsed = JSON.parse(cookie);
-			return parsed || null;
-		} catch (err) {
-			console.error('[getAccessToken] Error al parsear cookie:', err);
-			return null;
-		}
 	}, []);
 
 	const getUserCookie = useCallback(() => {
@@ -233,7 +191,6 @@ export const useProvideAuth = () => {
 		getUserCookie,
 		getAccessToken,
 		getRefreshToken,
-		getProfile,
 		error,
 		loading,
 	};

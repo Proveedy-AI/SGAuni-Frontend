@@ -1,4 +1,5 @@
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
+import { usePaginatedInfiniteData } from '@/components/navigation';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { Pagination } from '@/components/ui';
 import { formatDateString } from '@/components/ui/dateHelpers';
@@ -7,7 +8,7 @@ import { SortableHeader } from '@/components/ui/SortableHeader';
 import useSortedData from '@/utils/useSortedData';
 import { Box, Table } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
-import { memo, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
@@ -61,15 +62,34 @@ export const AdmissionApplicantsTable = ({
 	data,
 	fetchData,
 	permissions,
+	isFetchingNextPage,
+	totalCount,
+	fetchNextPage,
+	hasNextPage,
+	resetPageTrigger,
 	isLoading,
 }) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
-	const [currentPage, setCurrentPage] = useState(1);
-	const startIndex = (currentPage - 1) * pageSize;
-	const endIndex = startIndex + pageSize;
 	const [sortConfig, setSortConfig] = useState(null);
 	const sortedData = useSortedData(data, sortConfig);
-	const visibleRows = sortedData?.slice(startIndex, endIndex);
+
+	const {
+		currentPage,
+		startIndex,
+		visibleRows,
+		loadUntilPage,
+		setCurrentPage,
+	} = usePaginatedInfiniteData({
+		data: sortedData,
+		pageSize,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	});
+
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [resetPageTrigger]);
 
 	return (
 		<Box
@@ -153,11 +173,11 @@ export const AdmissionApplicantsTable = ({
 			</Table.ScrollArea>
 
 			<Pagination
-				count={data?.length}
-				pageSize={Number(pageSize)}
+				count={totalCount}
+				pageSize={pageSize}
 				currentPage={currentPage}
 				pageSizeOptions={pageSizeOptions}
-				onPageChange={(page) => setCurrentPage(page)}
+				onPageChange={loadUntilPage}
 				onPageSizeChange={(size) => {
 					setPageSize(size);
 					setCurrentPage(1);
@@ -173,5 +193,9 @@ AdmissionApplicantsTable.propTypes = {
 	isLoading: PropTypes.bool,
 	permissions: PropTypes.array,
 	search: PropTypes.object,
-	setSearch: PropTypes.func,
+	fetchNextPage: PropTypes.func,
+	hasNextPage: PropTypes.bool,
+	isFetchingNextPage: PropTypes.bool,
+	resetPageTrigger: PropTypes.object,
+	totalCount: PropTypes.number,
 };
