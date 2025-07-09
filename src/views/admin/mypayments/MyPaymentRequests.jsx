@@ -34,8 +34,6 @@ export const MyPaymentRequests = () => {
 	const { data: MethodPayment, isLoading: isLoadingMethodPayment } =
 		useReadMethodPayment();
 
-	console.log(dataPaymentRequests);
-
 	const filteredRequests = dataPaymentRequests?.filter((item) => {
 		const matchProgram = selectedProgram
 			? item.applicant_id === selectedProgram.value
