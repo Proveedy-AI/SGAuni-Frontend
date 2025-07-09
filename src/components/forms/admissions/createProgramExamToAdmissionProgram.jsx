@@ -1,6 +1,7 @@
 import { ReactSelect } from '@/components/select';
 import { Alert, Field, Modal, toaster, Tooltip } from '@/components/ui';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
+import { useReadOneModality } from '@/hooks';
 import {
 	useCreateAdmissionEvaluation,
 	useDeleteAdmissionEvaluation,
@@ -48,6 +49,11 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 	const { mutate: deleteEvaluation, isPending: isDeleteEvaluationPending } =
 		useDeleteAdmissionEvaluation();
 
+	const { data: dataModality } = useReadOneModality({
+		id: item?.modality_id,
+		open,
+	});
+
 	const { data: dataUsers, isLoading: evaluatorsLoading } = useReadUsers(
 		{},
 		{
@@ -67,10 +73,14 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 		}));
 
 	const applicationTypeOptions = [
-		{ value: 1, label: 'Ensayo' },
-		{ value: 2, label: 'Entrevista' },
-		{ value: 3, label: 'Examen' },
+		{ value: 1, label: 'Ensayo', key: 'requires_essay' },
+		{ value: 2, label: 'Entrevista', key: 'requires_interview' },
+		{ value: 3, label: 'Examen', key: 'requires_pre_master_exam' },
 	];
+
+	const filteredApplicationTypeOptions = applicationTypeOptions.filter(
+		(option) => dataModality?.[option.key]
+	);
 
 	const filteredEvaluationsByStudent = dataEvaluations?.results?.filter(
 		(evaluation) => evaluation.application === item?.id
@@ -324,8 +334,14 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 							<Field label='Tipo de Examen' w='full'>
 								<ReactSelect
 									value={applicationTypeInput}
-									options={applicationTypeOptions}
+									options={filteredApplicationTypeOptions}
 									onChange={(value) => setApplicationTypeInput(value)}
+									isDisabled={filteredApplicationTypeOptions.length === 0}
+									placeholder={
+										filteredApplicationTypeOptions.length === 0
+											? 'Esta modalidad no requiere evaluaciones'
+											: 'Selecciona un tipo'
+									}
 								/>
 							</Field>
 
@@ -472,7 +488,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 									))
 								) : (
 									<Table.Row>
-										<Table.Cell colSpan={6} textAlign='center'>
+										<Table.Cell colSpan={7} textAlign='center'>
 											Sin datos disponibles
 										</Table.Cell>
 									</Table.Row>
