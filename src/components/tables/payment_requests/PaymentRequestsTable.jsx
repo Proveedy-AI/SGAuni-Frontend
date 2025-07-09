@@ -59,7 +59,7 @@ const Row = memo(({ item, startIndex, index, permissions, sortConfig, data }) =>
         <HStack justify='space-between'>
           <Group>
             { permissions.includes('payment.requests.view') && <ViewPaymentRequestModal item={item} /> }
-            { permissions.includes('payment.orders.generate') && <GeneratePaymentOrderModalByRequest item={item} /> }
+            { permissions.includes('payment.orders.generate') && <GeneratePaymentOrderModalByRequest item={item} permissions={permissions} /> }
           </Group>
         </HStack>
       </Table.Cell>

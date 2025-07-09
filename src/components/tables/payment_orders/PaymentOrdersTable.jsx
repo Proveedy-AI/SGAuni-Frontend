@@ -5,23 +5,20 @@ import {
   Box,
   Group,
   HStack,
-  Input,
   Table
 } from '@chakra-ui/react';
 import { Pagination } from '@/components/ui'
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { SortableHeader } from '@/components/ui/SortableHeader';
-import { CancelPaymentOrderModal, ValidatePaymentOrderModal, ViewPaymentOrderVoucherModal } from '@/components/forms/payment_orders';
+import { ValidatePaymentOrderModal, ViewPaymentOrderVoucherModal } from '@/components/forms/payment_orders';
 import { format, parseISO } from 'date-fns';
 
 const Row = memo(({ item, startIndex, index, refetch, permissions, sortConfig, data }) => {
   const statusDisplay = [
-    { id: 1, label: 'Pendiente', value: 'Pending', bg:'#AEAEAE', color:'#F5F5F5' },
-    { id: 2, label: 'Disponible', value: 'Available', bg:'#FDD9C6', color:'#F86A1E' },
-    { id: 3, label: 'Verificado', value: 'Verified', bg:'#D0EDD0', color:'#2D9F2D' },
-    { id: 4, label: 'Expirado', value: 'Expired', bg:'#F7CDCE', color:'#E0383B' },
-    { id: 5, label: 'Cancelado', value: 'Cancelled', bg:'#B0B0B0', color:'#333333' },
-    { id: 6, label: 'Devolución', value: 'Refunded', bg:'#C6E6FD', color:'#1E5CF8' }
+    { id: 1, label: 'Pendiente', bg:'#AEAEAE', color:'#F5F5F5' },
+    { id: 2, label: 'Generado', bg:'#C6E7FC', color:'#0661D8' },
+    { id: 3, label: 'Verificado', bg:'#D0EDD0', color:'#2D9F2D' },
+    { id: 4, label: 'Expirado', bg:'#F7CDCE', color:'#E0383B' },
   ]
 
   return (
@@ -53,9 +50,6 @@ const Row = memo(({ item, startIndex, index, refetch, permissions, sortConfig, d
             {permissions.includes('payment.orders.validate') && ( 
               <ValidatePaymentOrderModal item={item} fetchPaymentOrders={refetch}  />
             )}
-            {permissions.includes('payment.orders.validate') && ( 
-              <CancelPaymentOrderModal item={item} fetchPaymentOrders={refetch}  />
-            )}
           </Group>
         </HStack>
       </Table.Cell>
@@ -75,7 +69,7 @@ Row.propTypes = {
   data: PropTypes.array,
 };
 
-export const PaymentOrdersTable = ({ data, filteredValues, filter, refetch, permissions }) => {
+export const PaymentOrdersTable = ({ data, refetch, permissions }) => {
 
   const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
     const [currentPage, setCurrentPage] = useState(1);
@@ -130,15 +124,6 @@ export const PaymentOrdersTable = ({ data, filteredValues, filter, refetch, perm
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
                 />
-                <Input
-                  type='date'
-                  value={filteredValues?.due_date}
-                  onChange={(e) => filter('due_date', e.target.value)}
-                  buttonSize='xs'
-                  placeholder='Buscar por fecha de vencimiento'
-                  size='sm'
-                  maxWidth='150px'
-                />
               </Table.ColumnHeader>
               <Table.ColumnHeader alignContent={'start'}>
                 <SortableHeader
@@ -155,13 +140,6 @@ export const PaymentOrdersTable = ({ data, filteredValues, filter, refetch, perm
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
                 />
-                <Input
-                  value={filteredValues?.document_num}
-                  onChange={(e) => filter('document_num', e.target.value )}
-                  placeholder='Buscar por N° Documento'
-                  size='sm'
-                  maxWidth='150px'
-                />
               </Table.ColumnHeader>
               <Table.ColumnHeader alignContent={'start'}>
                 <SortableHeader
@@ -169,13 +147,6 @@ export const PaymentOrdersTable = ({ data, filteredValues, filter, refetch, perm
                   columnKey='email'
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
-                />
-                <Input
-                  value={filteredValues?.email}
-                  onChange={(e) => filter('email', e.target.value )}
-                  placeholder='Buscar por correo'
-                  size='sm'
-                  maxWidth='150px'
                 />
               </Table.ColumnHeader>
               <Table.ColumnHeader alignContent={'start'}>
@@ -232,8 +203,6 @@ export const PaymentOrdersTable = ({ data, filteredValues, filter, refetch, perm
 
 PaymentOrdersTable.propTypes = {
   data: PropTypes.array,
-  filteredValues: PropTypes.object,
-  filter: PropTypes.func,
   refetch: PropTypes.func,
   permissions: PropTypes.array,
 };

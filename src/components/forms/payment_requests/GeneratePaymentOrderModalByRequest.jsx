@@ -1,15 +1,28 @@
 import { Field, ModalSimple, toaster } from "@/components/ui";
-import { Card, Flex, Heading, Icon, IconButton, Input, Stack } from "@chakra-ui/react";
+import { Badge, Card, Flex, Heading, Icon, IconButton, Input, Spinner, Stack } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { FaSave, FaTimes } from "react-icons/fa";
-import { useCreatePaymentOrder } from "@/hooks/payment_orders";
-import { FiArrowUp, FiPlus } from "react-icons/fi";
+import { useCreatePaymentOrder, useReadPaymentOrders } from "@/hooks/payment_orders";
+import { FiArrowUp, FiDollarSign, FiPlus } from "react-icons/fi";
+import { PaymentOrdersTable } from "@/components/tables/payment_orders";
 
-export const GeneratePaymentOrderModalByRequest = ({ item }) => {
+export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
   const { mutateAsync: generatePaymentOrder, isSaving } = useCreatePaymentOrder();
+  const {
+    data: dataPaymentOrders,
+    isLoading: loadingPaymentOrders,
+    refetch: fetchPaymentOrders
+  } = useReadPaymentOrders(
+    { request: item.id },
+    { enabled: open }
+  );
+
+  const sortedFilteredOrders = dataPaymentOrders?.results?.sort(
+		(a, b) => a.status - b.status
+	);
 
   const [orderIdInput, setOrderIdInput] = useState("");
   const [discountInput, setDiscountInput] = useState("");
@@ -27,18 +40,30 @@ export const GeneratePaymentOrderModalByRequest = ({ item }) => {
     }
   }, [open]);
 
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const newErrors = {};
+    if (item?.payment_method !== 2 && !orderIdInput) newErrors.orderId = "El ID de la orden es requerido";
+    if (!dueDateInput) newErrors.dueDate = "La fecha de vencimiento es requerida";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }
+
   const handleSubmit = async () => {
-    if (!orderIdInput || !discountInput || !dueDateInput) {
+    if (!validate()) {
       toaster.create({
-        title: 'Completar los campos necesarios',
+        title: 'Campos incompletos',
+        description: 'Por favor, complete todos los campos requeridos',
         type: 'warning'
       })
+      return
     }
 
     const payload = {
       request: item.id,
-      id_orden: orderIdInput,
-      discount_value: (Number(discountInput)/100).toString(),
+      id_orden: orderIdInput | null,
+      discount_value: (Number(discountInput)/100).toString() || '0',
       due_date: dueDateInput
     }
     
@@ -48,6 +73,7 @@ export const GeneratePaymentOrderModalByRequest = ({ item }) => {
           title: 'Orden generada con éxito',
           type: 'success',
         });
+        fetchPaymentOrders();
         handleReset();
       },
       onError: (error) => {
@@ -99,59 +125,108 @@ export const GeneratePaymentOrderModalByRequest = ({ item }) => {
               </Card.Header>
               <Card.Body>
                 <Flex
-              direction={{ base: 'column', md: 'row' }}
-              justify='flex-start'
-              align={'end'}
-              gap={2}
-              mt={2}
-            >
-              <Field label='Id de Orden'>
-                <Input
-                  placeholder="Ingresar id de Orden"
-                  value={orderIdInput}
-                  onChange={(e) => setOrderIdInput(e.target.value)}
-                  />
-                </Field>
-                <Field label='Descuento'>
-                  <Input
-                    type='number'
-                    min={0}
-                    max={100}
-                    placeholder="Ingresar descuento"
-                    value={discountInput}
-                    onChange={(e) => setDiscountInput(e.target.value)}
-                    />
-                </Field>
-                <Field label='Fecha de Vencimiento'>
-                  <Input
-                    type="date"
-                    placeholder="Ingresar fecha de vencimiento"
-                    value={dueDateInput}
-                    onChange={(e) => setDueDateInput(e.target.value)}
-                    />
-                </Field>
-                <Flex gap={2}>
-                  <IconButton
-                    size='sm'
-                    bg='green'
-                    loading={isSaving}
-                    disabled={!orderIdInput || !discountInput || !dueDateInput}
-                    onClick={handleSubmit}
-                    css={{ _icon: { width: '5', height: '5' } }}
+                  direction={{ base: 'column', md: 'row' }}
+                  justify='flex-start'
+                  align={'end'}
+                  gap={2}
+                  mt={2}
+                >
+                  {
+                    item?.payment_method !== 2 && (
+                      <Field 
+                        label='Id de Orden'
+                        required={item?.payment_method !== 2}
+                        isInvalid={!!errors.orderId}
+                        errorMessage={errors.orderId}
+                      >
+                        <Input
+                          placeholder="Ingresar id de Orden"
+                          value={orderIdInput}
+                          onChange={(e) => setOrderIdInput(e.target.value)}
+                          />
+                      </Field>
+                    )
+                  }
+                  <Field label='Descuento'>
+                    <Input
+                      type='number'
+                      min={0}
+                      max={100}
+                      placeholder="Opcional"
+                      minLength={0}
+                      maxLength={3}
+                      value={discountInput}
+                      onChange={(e) => setDiscountInput(e.target.value)}
+                      />
+                  </Field>
+                  <Field 
+                    label='Fecha de Vencimiento'
+                    required
+                    isInvalid={!!errors.dueDate}
+                    errorMessage={errors.dueDate}
+                  >
+                    <Input
+                      type="date"
+                      placeholder="Ingresar fecha de vencimiento"
+                      value={dueDateInput}
+                      onChange={(e) => setDueDateInput(e.target.value)}
+                      />
+                  </Field>
+                  <Flex gap={2}>
+                    <IconButton
+                      size='sm'
+                      bg='green'
+                      loading={isSaving}
+                      disabled={(item?.payment_method !== 2 && !orderIdInput) || !dueDateInput}
+                      onClick={handleSubmit}
+                      css={{ _icon: { width: '5', height: '5' } }}
+                      >
+                      <FaSave />
+                    </IconButton>
+                    <IconButton
+                      size='sm'
+                      bg='red'
+                      onClick={handleReset}
+                      disabled={item?.payment_method !== 2 && !orderIdInput && !dueDateInput}
+                      css={{ _icon: { width: '5', height: '5' } }}
                     >
-                    <FaSave />
-                  </IconButton>
-                  <IconButton
-                    size='sm'
-                    bg='red'
-                    onClick={handleReset}
-                    disabled={!orderIdInput && !discountInput && !dueDateInput}
-                    css={{ _icon: { width: '5', height: '5' } }}
-                    >
-                    <FaTimes />
-                  </IconButton>
+                      <FaTimes />
+                    </IconButton>
                   </Flex>
                 </Flex>
+              </Card.Body>
+            </Card.Root>
+
+            <Card.Root>
+              <Card.Header pb={8}>
+                <Flex justify='space-between' align='center'>
+                  <Flex align='center' gap={2}>
+                    <Icon as={FiDollarSign} w={5} h={5} color='blue.600' />
+                    <Heading size='sm'>Ordenes de pago generadas</Heading>
+                    <Badge
+                      variant='subtle'
+                      colorScheme='blue'
+                      bg='blue.50'
+                      color='blue.700'
+                      border='1px solid'
+                      borderColor='blue.200'
+                      >
+                      {dataPaymentOrders?.results?.length} ordenes de pago
+                    </Badge>
+                  </Flex>
+                </Flex>
+              </Card.Header>
+
+              <Card.Body pt={0}>
+                {loadingPaymentOrders ? (
+                  <Spinner />
+                ) : (
+                  <PaymentOrdersTable
+                    data={sortedFilteredOrders}
+                    refetch={fetchPaymentOrders}
+                    permissions={permissions}
+                  />
+                )}
               </Card.Body>
             </Card.Root>
           </Stack>
@@ -163,7 +238,5 @@ export const GeneratePaymentOrderModalByRequest = ({ item }) => {
 
 GeneratePaymentOrderModalByRequest.propTypes = {
   item: PropTypes.object,
-  paymentOrders: PropTypes.array,
-  fetchPaymentRequests: PropTypes.func,
-  fetchPaymentOrders: PropTypes.func
+  permissions: PropTypes.array
 };

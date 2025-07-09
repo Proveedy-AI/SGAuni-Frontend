@@ -94,8 +94,6 @@ export const PaymentRequestsView = () => {
     )
   })
 
-  console.log(filteredPaymentRequests);
-
   return (
     <Stack gap={4}>
       <Card.Root>
