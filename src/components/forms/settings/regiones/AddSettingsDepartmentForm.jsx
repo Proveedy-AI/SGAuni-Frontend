@@ -102,7 +102,7 @@ export const AddSettingsDepartmentForm = ({
 					<Input
 						value={code}
 						onChange={(e) => setCode(e.target.value)}
-						placeholder='Lima'
+						placeholder='01'
 						size='xs'
 					/>
 				</Field>
