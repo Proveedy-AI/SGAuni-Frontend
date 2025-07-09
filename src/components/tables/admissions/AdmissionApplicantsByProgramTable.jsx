@@ -24,7 +24,6 @@ const Row = memo(
 		data,
 		sortConfig,
 	}) => {
-    console.log(item)
 		const navigate = useNavigate();
 		const encrypted = Encryptor.encrypt(item.id);
 		const encoded = encodeURIComponent(encrypted);
