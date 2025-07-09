@@ -33,8 +33,8 @@ const Row = memo(
         </Table.Cell>
         <Table.Cell>{item.code}</Table.Cell>
         <Table.Cell>{item.name}</Table.Cell>
-        <Table.Cell textAlign='center'>{item.credits}</Table.Cell>
-        <Table.Cell textAlign='center'>{item.type}</Table.Cell>
+        <Table.Cell textAlign='center'>{item.default_credits}</Table.Cell>
+        <Table.Cell textAlign='center'>{item.level || '-'}</Table.Cell>
         <Table.Cell>{item.pre_requisite || '-'}</Table.Cell>
         <Table.Cell>
           <HStack justify='space-between'>
@@ -157,7 +157,7 @@ export const CoursesTable = ({
               ))
             ) : (
               <Table.Row>
-                <Table.Cell colSpan={3} textAlign='center' py={2}>
+                <Table.Cell colSpan={7} textAlign='center' py={2}>
                   No hay datos disponibles.
                 </Table.Cell>
               </Table.Row>

@@ -1,9 +1,5 @@
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
-import {
-	ConfirmDownloadApplicantsDataModal,
-	ConfirmDownloadSuneduModal,
-	GeneratePdfApliccationsModal,
-} from '@/components/forms/admissions';
+import { ConfirmDownloadSuneduModal, GeneratePdfApliccationsModal } from '@/components/forms/admissions';
 import { AdmissionApplicantsByProgramTable } from '@/components/tables/admissions';
 import {
 	Button,
@@ -36,78 +32,50 @@ import { useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router';
 
 export const AdmissionApplicantsMenu = ({ applicants, data }) => {
-	const [openGeneratePdfModal, setOpenGeneratePdfModal] = useState(false);
-	const [openGenerateSuneduExcelModal, setOpenGenerateSuneduExcelModal] =
-		useState(false);
-	const [
-		openGenerateFichaPostulantesModal,
-		setOpenGenerateFichaPostulantesModal,
-	] = useState(false);
-	const admissionProcessId = data?.admission_process || null;
-	const { data: dataAdmissionProcess, loading: isAdmissionProcessLoading } =
-		useReadAdmissionById(admissionProcessId);
+  const [openGeneratePdfModal, setOpenGeneratePdfModal] = useState(false);
+  const [openGenerateSuneduExcelModal, setOpenGenerateSuneduExcelModal] = useState(false);
+  const admissionProcessId = data?.admission_process || null;
+  const { data: dataAdmissionProcess, loading: isAdmissionProcessLoading } = useReadAdmissionById(admissionProcessId);
+  
+  return (
+    <Box>
+      <MenuRoot>
+        <MenuTrigger>
+          <Button 
+            size="sm" 
+            bg="white" 
+            color="black" 
+            border={'1px solid'}
+            _hover={{ bg: 'gray.100' }}
+          >
+            Más Acciones
+          </Button>
+        </MenuTrigger>
+        <MenuContent>
+          <MenuItem
+            _hover={{ bg: 'gray.100', color: 'uni.secondary' }} 
+            onClick={() => setOpenGeneratePdfModal(applicants.length > 0)}
+          >
+            Generar acta de notas
+          </MenuItem>
+          <MenuItem
+            _hover={{ bg: 'gray.100', color: 'uni.secondary' }}
+            onClick={() => {
+              setOpenGenerateSuneduExcelModal(applicants.length > 0);
+            }}
+            >
+              Descargar estudiantes (SUNEDU)
+		      </MenuItem>
+        </MenuContent>
+      </MenuRoot>
 
-	return (
-		<Box>
-			<MenuRoot>
-				<MenuTrigger>
-					<Button
-						size='sm'
-						bg='white'
-						color='black'
-						border={'1px solid'}
-						_hover={{ bg: 'gray.100' }}
-					>
-						Más Acciones
-					</Button>
-				</MenuTrigger>
-				<MenuContent>
-					<MenuItem
-						_hover={{ bg: 'gray.100', color: 'uni.secondary' }}
-						onClick={() => setOpenGeneratePdfModal(applicants.length > 0)}
-					>
-						Generar acta de notas
-					</MenuItem>
-					<MenuItem
-						_hover={{ bg: 'gray.100', color: 'uni.secondary' }}
-						onClick={() => {
-							setOpenGenerateSuneduExcelModal(applicants.length > 0);
-						}}
-					>
-						Descargar estudiantes (SUNEDU)
-					</MenuItem>
-					<MenuItem
-						_hover={{ bg: 'gray.100', color: 'uni.secondary' }}
-						onClick={() => {
-							setOpenGenerateFichaPostulantesModal(applicants.length > 0);
-						}}
-					>
-						Descargar ficha de postulantes
-					</MenuItem>
-				</MenuContent>
-			</MenuRoot>
-
-			<GeneratePdfApliccationsModal
-				data={data}
-				open={openGeneratePdfModal}
-				setOpen={setOpenGeneratePdfModal}
-			/>
-			{isAdmissionProcessLoading && <Spinner />}
-			{!isAdmissionProcessLoading && dataAdmissionProcess && (
-				<ConfirmDownloadSuneduModal
-					admissionProcess={dataAdmissionProcess}
-					open={openGenerateSuneduExcelModal}
-					setOpen={setOpenGenerateSuneduExcelModal}
-				/>
-			)}
-			<ConfirmDownloadApplicantsDataModal
-				dataProgram={data}
-				open={openGenerateFichaPostulantesModal}
-				setOpen={setOpenGenerateFichaPostulantesModal}
-			/>
-		</Box>
-	);
-};
+      <GeneratePdfApliccationsModal data={data} open={openGeneratePdfModal} setOpen={setOpenGeneratePdfModal} />
+      {isAdmissionProcessLoading ? <Spinner /> : (
+          dataAdmissionProcess && <ConfirmDownloadSuneduModal admissionProcess={dataAdmissionProcess} open={openGenerateSuneduExcelModal} setOpen={setOpenGenerateSuneduExcelModal} />
+      )}
+      </Box>
+  )
+}
 
 AdmissionApplicantsMenu.propTypes = {
 	applicants: PropTypes.array,

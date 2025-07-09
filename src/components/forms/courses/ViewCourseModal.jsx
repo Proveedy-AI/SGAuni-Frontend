@@ -10,13 +10,13 @@ export const ViewCourseModal = ({ item }) => {
   
   return (
     <ModalSimple
-      title='Agregar nuevo curso'
+      title='Vista previa de curso'
       placement='center'
-      // size='lg'
+      size='lg'
       trigger={
         <Box>
           <Tooltip
-            content='Ver curso'
+            content='Vista previa de curso'
             positioning={{ placement: 'bottom-center' }}
             showArrow
             openDelay={0}
@@ -59,7 +59,7 @@ export const ViewCourseModal = ({ item }) => {
         >
           <Input
             readOnly
-            value={item.credits}
+            value={item.default_credits}
             size='xs'
           />
         </Field>
@@ -69,17 +69,7 @@ export const ViewCourseModal = ({ item }) => {
         >
           <Input
             readOnly
-            value={item.type}
-            size='xs'
-          />
-        </Field>
-        <Field
-          orientation={{ base: 'vertical', sm: 'horizontal' }}
-          label='Curso pre-requisito:'
-        >
-          <Input
-            readOnly
-            value={item.pre_requisite}
+            value={item.level || '-'}
             size='xs'
           />
         </Field>

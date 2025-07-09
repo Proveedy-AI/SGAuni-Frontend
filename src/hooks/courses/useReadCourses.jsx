@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from '@/api/axios';
+import useAxiosPrivate from '../axios/useAxiosPrivate';
 
 export const useReadCourses = (params = {}) => {
+  const axiosPrivate = useAxiosPrivate();
 
 	return useQuery({
 		queryKey: ['courses', params],
 		queryFn: async () => {
-			const res = await axios.get('/api/v1/courses/', { params });
+			const res = await axiosPrivate.get('/api/v1/courses/', { params });
 			return res.data;
 		},
 	});

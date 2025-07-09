@@ -1,4 +1,4 @@
-import { GeneratePaymentOrderModal } from '@/components/forms/payment_requests';
+import { GeneratePaymentOrderModal } from '@/components/forms/payment_orders';
 import { PaymentOrdersTable } from '@/components/tables/payment_orders';
 import { InputGroup } from '@/components/ui';
 import { useReadPaymentOrders } from '@/hooks/payment_orders';

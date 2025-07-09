@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from '@/api/axios';
+import useAxiosPrivate from '../axios/useAxiosPrivate';
 
 export const useReadSchedules = (params = {}) => {
+  const axiosPrivate = useAxiosPrivate();
 
 	return useQuery({
 		queryKey: ['schedules', params],
 		queryFn: async () => {
-			const res = await axios.get('/api/v1/schedules/', { params });
+			const res = await axiosPrivate.get('/api/v1/course-schedules/', { params });
 			return res.data;
 		},
 	});
