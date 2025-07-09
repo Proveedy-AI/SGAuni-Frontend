@@ -305,7 +305,7 @@ export const PreviewMyOrdenDetailsModal = ({ data }) => {
 									))}
 									{PaymentOrder?.results?.length === 0 && (
 										<Table.Row>
-											<Table.Cell colSpan={7} textAlign='center'>
+											<Table.Cell colSpan={9} textAlign='center'>
 												Sin datos disponibles
 											</Table.Cell>
 										</Table.Row>
