@@ -10,10 +10,10 @@ export const EditCourseModal = ({ data, item, fetchData }) => {
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
   
-  const [code, setCode] = useState('');
-  const [name, setName] = useState('');
-  const [credits, setCredits] = useState(null);
-  const [type, setType] = useState(null);
+  const [code, setCode] = useState(item?.code || '');
+  const [name, setName] = useState(item?.name || '');
+  const [defaultCredits, setDefaultCredits] = useState(item?.default_credits || '');
+  const [level, setLevel] = useState(item?.level || '');
   const [preRequisite, setPreRequisite] = useState(null);
 
   useEffect(() => {
@@ -37,10 +37,25 @@ export const EditCourseModal = ({ data, item, fetchData }) => {
 
   const { mutate: update, isPending: loading } = useUpdateCourse();
 
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const newErrors = {};
+    if (!name) newErrors.name = 'El nombre del curso es requerido';
+    if (!code) newErrors.code = 'El código del curso es requerido';
+    if (!defaultCredits) newErrors.defaultCredits = 'Los créditos son requeridos';
+    if (!level) newErrors.level = 'El tipo de curso es requerido';
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }
+
   const handleSubmitData = async (e) => {
     e.preventDefault();
 
-    if (!name || !code || !credits || !type) {
+    if (!validate()) return;
+
+    if (!name || !code || !defaultCredits || !level) {
         toaster.create({
           title: 'Por favor, completa todos los campos requeridos',
           type: 'warning',
@@ -48,7 +63,7 @@ export const EditCourseModal = ({ data, item, fetchData }) => {
         return;
     }
 
-    if (data.find((course) => course.code === code)) {
+    if (data.find((course) => course.code === code && course.id !== item.id)) {
       toaster.create({
         title: 'Ya existe un curso con ese código',
         type: 'warning',
@@ -59,12 +74,11 @@ export const EditCourseModal = ({ data, item, fetchData }) => {
     const payload = {
       name: name,
       code: code,
-      credits: credits,
-      type: type,
-      preRequisite: preRequisite ? preRequisite.value : null,
+      default_credits: defaultCredits,
+      level: level,
     };
 
-    update(payload, {
+    update({ id: item.id, payload}, {
       onSuccess: () => {
         toaster.create({
           title: 'Curso actualizado correctamente',
@@ -72,7 +86,6 @@ export const EditCourseModal = ({ data, item, fetchData }) => {
         });
         setOpen(false);
         fetchData();
-        setName('');
       },
       onError: (error) => {
         toaster.create({
@@ -110,8 +123,10 @@ export const EditCourseModal = ({ data, item, fetchData }) => {
     >
       <Stack css={{ '--field-label-width': '120px' }}>
         <Field
-          orientation={{ base: 'vertical', sm: 'horizontal' }}
+          orientation='vertical'
           label='Código del curso:'
+          invalid={!!errors.code}
+          errorText={errors.code}
         >
           <Input
             value={code}
@@ -120,8 +135,10 @@ export const EditCourseModal = ({ data, item, fetchData }) => {
           />
         </Field>
         <Field
-          orientation={{ base: 'vertical', sm: 'horizontal' }}
+          orientation='vertical'
           label='Nombre del curso:'
+          invalid={!!errors.name}
+          errorText={errors.name}
         >
           <Input
             value={name}
@@ -130,27 +147,31 @@ export const EditCourseModal = ({ data, item, fetchData }) => {
           />
         </Field>
         <Field
-          orientation={{ base: 'vertical', sm: 'horizontal' }}
+          orientation='vertical'
           label='Créditos:'
+          invalid={!!errors.defaultCredits}
+          errorText={errors.defaultCredits}
         >
           <Input
-            value={credits}
-            onChange={(event) => setCredits(event.target.value)}
+            value={defaultCredits}
+            onChange={(event) => setDefaultCredits(event.target.value)}
             size='xs'
           />
         </Field>
         <Field
-          orientation={{ base: 'vertical', sm: 'horizontal' }}
-          label='Tipo de curso:'
+          orientation='vertical'
+          label='Nivel de curso:'
+          invalid={!!errors.level}
+          errorText={errors.level}
         >
           <Input
-            value={type}
-            onChange={(event) => setType(event.target.value)}
+            value={level}
+            onChange={(event) => setLevel(event.target.value)}
             size='xs'
           />
         </Field>
         <Field
-          orientation={{ base: 'vertical', sm: 'horizontal' }}
+          orientation='vertical'
           label='Curso pre-requisito:'
         >
           <ReactSelect
