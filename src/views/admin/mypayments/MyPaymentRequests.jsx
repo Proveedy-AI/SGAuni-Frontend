@@ -34,11 +34,9 @@ export const MyPaymentRequests = () => {
 	const { data: MethodPayment, isLoading: isLoadingMethodPayment } =
 		useReadMethodPayment();
 
-	console.log(dataPaymentRequests);
-
 	const filteredRequests = dataPaymentRequests?.filter((item) => {
 		const matchProgram = selectedProgram
-			? item.applicant_id === selectedProgram.value
+			? item.admission_process_program_name === selectedProgram.label
 			: true;
 		const matchStatus = selectedStatus
 			? item.status === selectedStatus.value
@@ -57,6 +55,8 @@ export const MyPaymentRequests = () => {
 			matchProgram && matchStatus && matchMethod && matchPurpose && matchDocType
 		);
 	});
+
+	console.log(filteredRequests, dataMyApplicants)
 
 	const ProgramsOptions = dataMyApplicants?.map((programs) => ({
 		label: programs.postgraduate_name,
@@ -185,7 +185,7 @@ export const MyPaymentRequests = () => {
 									filteredRequests.map((item, index) => (
 										<Table.Row key={item.id}>
 											<Table.Cell>{index + 1}</Table.Cell>
-											<Table.Cell>{item.program_name}</Table.Cell>
+											<Table.Cell>{item.admission_process_program_name}</Table.Cell>
 											<Table.Cell>{item.purpose_display}</Table.Cell>
 											<Table.Cell>S/ {item.amount}</Table.Cell>
 											<Table.Cell>

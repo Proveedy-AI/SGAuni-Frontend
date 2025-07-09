@@ -96,7 +96,7 @@ export const AddSettingsCountryForm = ({ fetchData }) => {
 					<Input
 						value={code}
 						onChange={(e) => setCode(e.target.value)}
-						placeholder='PER'
+						placeholder='01'
 						size='xs'
 					/>
 				</Field>
