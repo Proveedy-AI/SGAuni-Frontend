@@ -12,7 +12,6 @@ import {
 } from '@chakra-ui/react';
 import {
 	FiAlertCircle,
-	FiEye,
 	FiFileText,
 	FiPlus,
 	FiUpload,
@@ -58,12 +57,7 @@ export const MyPaymentsLayout = () => {
 			icon: FiUpload,
 			permission: null,
 		},
-		{
-			href: '/mypaymentsdebts/history-requests',
-			label: 'Historial',
-			icon: FiEye,
-			permission: null,
-		},
+		
 	];
 
 	return (
