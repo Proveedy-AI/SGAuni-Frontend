@@ -420,7 +420,7 @@ export default function ChakraInscriptionForm() {
 				country: Number(formData.country),
 				address: formData.address,
 				has_one_surname: formData.hasOneLastName,
-				type_disability: Number(formData.type_disability),
+				type_disability: Number(formData.type_disability) || null,
 				other_disability: formData.other_disability,
 				has_disability: formData.has_disability,
 			},
