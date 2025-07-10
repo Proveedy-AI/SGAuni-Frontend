@@ -421,7 +421,7 @@ export default function ChakraInscriptionForm() {
 				address: formData.address,
 				has_one_surname: formData.hasOneLastName,
 				type_disability: Number(formData.type_disability) || null,
-				other_disability: formData.other_disability,
+				other_disability: formData.other_disability || '',
 				has_disability: formData.has_disability,
 			},
 			admission_program: dataAdmissionProgram?.id,
