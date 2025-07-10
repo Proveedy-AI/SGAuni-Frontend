@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router';
 import { useProvideAuth } from './hooks/auth';
 import { useReadUserLogged } from './hooks/users/useReadUserLogged';
+import { ApplicantHasDebts } from './components/control';
 
 export const PrivateRoute = () => {
 	const { getUser, getUserCookie, refresh, loading, getRefreshToken } =
@@ -113,9 +114,10 @@ export const PrivateRoute = () => {
 	return <Outlet />;
 };
 
-export const ProtectedRoute = ({ requiredPermission }) => {
+export const ProtectedRoute = ({ requiredPermission, requiredDebt=false }) => {
 	const { data: profile } = useReadUserLogged();
 	const location = useLocation();
+  console.log(profile)
 
 	const roles = profile?.roles || [];
 	const permissions = roles
@@ -144,6 +146,23 @@ export const ProtectedRoute = ({ requiredPermission }) => {
 		return <Navigate to='/' replace state={{ from: location }} />;
 	}
 
+  if (requiredDebt) {
+    //const { data: dataCondition } = useCheckUserHasDebts();
+    const dataCondition = {
+      results: {
+        total: 100, // Simulación de deuda
+        has_debts: true, // Simulación de estado de deuda
+        user: {
+          firstname: 'USUARIO LOGUEADO',
+        }
+      }
+    }
+    const userHasDebts = dataCondition?.results?.has_debts || false;
+    if (userHasDebts) {
+      return <ApplicantHasDebts data={dataCondition?.results} />;
+    }
+  }
+
 	return <Outlet />;
 };
 
@@ -152,4 +171,5 @@ ProtectedRoute.propTypes = {
 		PropTypes.string,
 		PropTypes.arrayOf(PropTypes.string),
 	]).isRequired,
+	requiredDebt: PropTypes.bool,
 };
