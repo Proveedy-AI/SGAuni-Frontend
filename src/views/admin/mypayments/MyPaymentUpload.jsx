@@ -163,11 +163,6 @@ export const MyPaymentUpload = () => {
 												isClearable
 												options={requestOptions}
 											/>
-											{errors.selectedRequests && (
-												<Text color='red.500' fontSize='xs' mt={1}>
-													{errors.selectedRequests}
-												</Text>
-											)}
 										</Field>
 										<Field
 											label='Ordenes de Pago:'
@@ -186,11 +181,6 @@ export const MyPaymentUpload = () => {
 												isClearable
 												options={orderOptions}
 											/>
-											{errors.selectedOrders && (
-												<Text color='red.500' fontSize='xs' mt={1}>
-													{errors.selectedOrders}
-												</Text>
-											)}
 										</Field>
 									</Box>
 								</Box>
