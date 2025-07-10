@@ -14,10 +14,7 @@ export const CoursesAndSchedules = () => {
 
   const [searchCourseName, setSearchCourseName] = useState('');
 
-  const {
-    data: dataUsers,
-    isLoading: isLoadingUsers,
-  } = useReadUsers();
+  const { data: dataUsers } = useReadUsers();
 
   const filteredProfessors = dataUsers?.results?.filter(
     user => user.is_active && user.roles?.find(role => role.name === 'Docente')
@@ -43,14 +40,6 @@ export const CoursesAndSchedules = () => {
     isLoading: isLoadingSchedules, 
     refetch: fetchSchedules
   } = useReadSchedules();
-
-  const dataLocalCourses = [
-    { id: 1, code: 'CS101', name: 'Introducción a la Programación', credits: 12, type: 1, pre_requisite: null },
-    { id: 2, code: 'CS102', name: 'Estructuras de Datos', credits: 7, type: 2, pre_requisite: 'CS101' },
-    { id: 3, code: 'CS103', name: 'Algoritmos', credits: 12, type: 6, pre_requisite: 'CS102' },
-    { id: 4, code: 'CS104', name: 'Bases de Datos', credits: 12, type: 9, pre_requisite: 'CS102' },
-    { id: 5, code: 'CS105', name: 'Sistemas Operativos', credits: 12, type: 15, pre_requisite: 'CS103' },
-  ]
 
   const filteredCourses = dataCourses?.results?.filter(course =>
     course.name.toLowerCase().includes(searchCourseName.toLowerCase())
@@ -117,17 +106,12 @@ export const CoursesAndSchedules = () => {
               </HStack>
             </Stack>
             
-            { isLoadingUsers 
-            ? (
-                <Spinner />
-            ) : (
-              <CoursesTable
-                data={filteredCourses}
-                fetchData={fetchCourses}
-                isLoading={isLoadingCourses}
-                professorsOptions={professorsOptions}
-              />
-            )}
+            <CoursesTable
+              data={filteredCourses}
+              fetchData={fetchCourses}
+              isLoading={isLoadingCourses}
+              professorsOptions={professorsOptions}
+            />
 
           </Stack>
         </Tabs.Content>

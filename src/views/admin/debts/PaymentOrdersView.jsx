@@ -1,4 +1,4 @@
-import { GeneratePaymentOrderModal } from '@/components/forms/payment_orders';
+import { GeneratePaymentOrderModal, LoadExcelValidationsModal } from '@/components/forms/payment_orders';
 import { PaymentOrdersTable } from '@/components/tables/payment_orders';
 import { Field } from '@/components/ui';
 import { useReadPaymentOrders } from '@/hooks/payment_orders';
@@ -107,6 +107,7 @@ export const PaymentOrdersView = () => {
 				align={{ base: 'start', sm: 'center' }}
 				justify='flex-end'
 			>
+        <LoadExcelValidationsModal />
         {isPaymentRequestsLoading ? (
 					<Spinner />
 				) : (

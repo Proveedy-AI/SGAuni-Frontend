@@ -1,5 +1,5 @@
 import { Field, ModalSimple, toaster } from "@/components/ui";
-import { Badge, Card, Flex, Heading, Icon, IconButton, Input, Spinner, Stack } from "@chakra-ui/react";
+import { Badge, Card, Flex, Heading, Icon, IconButton, Input, Stack } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { FaSave, FaTimes } from "react-icons/fa";
@@ -218,15 +218,12 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
               </Card.Header>
 
               <Card.Body pt={0}>
-                {loadingPaymentOrders ? (
-                  <Spinner />
-                ) : (
-                  <PaymentOrdersTable
-                    data={sortedFilteredOrders}
-                    refetch={fetchPaymentOrders}
-                    permissions={permissions}
-                  />
-                )}
+                <PaymentOrdersTable
+                  isLoading={loadingPaymentOrders}
+                  data={sortedFilteredOrders}
+                  refetch={fetchPaymentOrders}
+                  permissions={permissions}
+                />
               </Card.Body>
             </Card.Root>
           </Stack>
