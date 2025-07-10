@@ -12,6 +12,7 @@ import { usePaginationSettings } from '@/components/navigation/usePaginationSett
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import { ValidatePaymentOrderModal, ViewPaymentOrderVoucherModal } from '@/components/forms/payment_orders';
 import { format, parseISO } from 'date-fns';
+import SkeletonTable from '@/components/ui/SkeletonTable';
 
 const Row = memo(({ item, startIndex, index, refetch, permissions, sortConfig, data }) => {
   const statusDisplay = [
@@ -69,7 +70,7 @@ Row.propTypes = {
   data: PropTypes.array,
 };
 
-export const PaymentOrdersTable = ({ data, refetch, permissions }) => {
+export const PaymentOrdersTable = ({ isLoading, data, refetch, permissions }) => {
 
   const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
     const [currentPage, setCurrentPage] = useState(1);
@@ -169,18 +170,28 @@ export const PaymentOrdersTable = ({ data, refetch, permissions }) => {
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {visibleRows?.map((item, index) => (
-              <Row
-                key={item.id}
-                item={item}
-                refetch={refetch}
-                startIndex={startIndex}
-                index={index}
-                permissions={permissions}
-                sortConfig={sortConfig}
-                data={data}
-              />
-            ))}
+            {isLoading ? (
+              <SkeletonTable columns={8} />
+            ) : visibleRows?.length > 0 ? (
+              visibleRows?.map((item, index) => (
+                <Row
+                  key={item.id}
+                  item={item}
+                  refetch={refetch}
+                  startIndex={startIndex}
+                  index={index}
+                  permissions={permissions}
+                  sortConfig={sortConfig}
+                  data={data}
+                />
+              ))
+            ) : (
+              <Table.Row>
+                <Table.Cell colSpan={8} textAlign='center' py={2}>
+                  No hay datos disponibles.
+                </Table.Cell>
+              </Table.Row>
+            )}
           </Table.Body>
         </Table.Root>
       </Table.ScrollArea>
@@ -202,6 +213,7 @@ export const PaymentOrdersTable = ({ data, refetch, permissions }) => {
 }
 
 PaymentOrdersTable.propTypes = {
+  isLoading: PropTypes.bool,
   data: PropTypes.array,
   refetch: PropTypes.func,
   permissions: PropTypes.array,

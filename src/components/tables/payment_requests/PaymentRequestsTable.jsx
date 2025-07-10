@@ -17,6 +17,7 @@ import {
   GeneratePaymentOrderModalByRequest, 
   ViewPaymentRequestModal
 } from '@/components/forms/payment_requests';
+import SkeletonTable from '@/components/ui/SkeletonTable';
 
 const Row = memo(({ item, startIndex, index, permissions, sortConfig, data }) => {
   // const navigate = useNavigate();
@@ -78,7 +79,7 @@ Row.propTypes = {
   data: PropTypes.array,
 };
 
-export const PaymentRequestsTable = ({ data, permissions }) => {
+export const PaymentRequestsTable = ({ isLoading, data, permissions }) => {
   const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
     const [currentPage, setCurrentPage] = useState(1);
     const startIndex = (currentPage - 1) * pageSize;
@@ -177,17 +178,27 @@ export const PaymentRequestsTable = ({ data, permissions }) => {
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {visibleRows?.map((item, index) => (
-              <Row
-                key={item.id}
-                item={item}
-                startIndex={startIndex}
-                index={index}
-                permissions={permissions}
-                sortConfig={sortConfig}
-                data={data}
-              />
-            ))}
+            {isLoading ? (
+              <SkeletonTable columns={8} />
+            ) : visibleRows?.length > 0 ? (
+              visibleRows?.map((item, index) => (
+                <Row
+                  key={item.id}
+                  item={item}
+                  startIndex={startIndex}
+                  index={index}
+                  permissions={permissions}
+                  sortConfig={sortConfig}
+                  data={data}
+                />
+              ))
+            ) : (
+              <Table.Row>
+                <Table.Cell colSpan={8} textAlign='center' py={2}>
+                  No hay datos disponibles.
+                </Table.Cell>
+              </Table.Row>
+            )}
           </Table.Body>
         </Table.Root>
       </Table.ScrollArea>
@@ -209,6 +220,7 @@ export const PaymentRequestsTable = ({ data, permissions }) => {
 }
 
 PaymentRequestsTable.propTypes = {
+  isLoading: PropTypes.bool,
   data: PropTypes.array,
   permissions: PropTypes.array,
 };

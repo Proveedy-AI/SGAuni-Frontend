@@ -20,12 +20,12 @@ export const PaymentOrdersView = () => {
 		.flatMap((r) => r.permissions || [])
 		.map((p) => p.guard_name);
 
-	const { data: dataPaymentRequests, loading: isPaymentRequestsLoading } =
+	const { data: dataPaymentRequests, isLoading: isPaymentRequestsLoading } =
 		useReadPaymentRequest();
 
 	const {
 		data: dataPaymentOrders,
-		loading: loadingPaymentOrders,
+		isLoading: loadingPaymentOrders,
 		refetch: fetchPaymentOrders,
 	} = useReadPaymentOrders();
 
@@ -117,15 +117,12 @@ export const PaymentOrdersView = () => {
 				)}
 			</Stack>
 
-			{loadingPaymentOrders ? (
-				<Spinner />
-			) : (
-				<PaymentOrdersTable
-					data={sortedPaymentOrders}
-					refetch={fetchPaymentOrders}
-					permissions={permissions}
-				/>
-			)}
+			<PaymentOrdersTable
+        isLoading={loadingPaymentOrders}
+        data={sortedPaymentOrders}
+        refetch={fetchPaymentOrders}
+        permissions={permissions}
+      />
 		</Stack>
 	);
 };

@@ -136,7 +136,7 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
                       <Field 
                         label='Id de Orden'
                         required={item?.payment_method !== 2}
-                        isInvalid={!!errors.orderId}
+                        invalid={!!errors.orderId}
                         errorMessage={errors.orderId}
                       >
                         <Input
@@ -162,7 +162,7 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
                   <Field 
                     label='Fecha de Vencimiento'
                     required
-                    isInvalid={!!errors.dueDate}
+                    invalid={!!errors.dueDate}
                     errorMessage={errors.dueDate}
                   >
                     <Input

@@ -145,7 +145,7 @@ export const AdmissionModalitiesTable = ({ isLoading, data, fetchData }) => {
 					</Table.Header>
 					<Table.Body>
 						{isLoading ? (
-							<SkeletonTable columns={4} />
+							<SkeletonTable columns={8} />
 						) : visibleRows?.length > 0 ? (
 							visibleRows.map((item, index) => (
 								<Row
