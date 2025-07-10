@@ -56,8 +56,6 @@ export const MyPaymentRequests = () => {
 		);
 	});
 
-	console.log(filteredRequests, dataMyApplicants)
-
 	const ProgramsOptions = dataMyApplicants?.map((programs) => ({
 		label: programs.postgraduate_name,
 		value: programs.id,
