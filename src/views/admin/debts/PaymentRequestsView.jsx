@@ -1,6 +1,6 @@
 import { PaymentRequestsTable } from "@/components/tables/payment_requests";
 import { useReadPaymentRequest } from "@/hooks/payment_requests/useReadPaymentRequest";
-import { Heading, InputGroup, Input, Stack, Spinner, Card, Flex, Icon, SimpleGrid } from '@chakra-ui/react';
+import { Heading, InputGroup, Input, Stack, Card, Flex, Icon, SimpleGrid } from '@chakra-ui/react';
 import { useState } from 'react';
 import { FiFileText, FiSearch } from "react-icons/fi";
 //import { format, parseISO } from 'date-fns';
@@ -93,8 +93,6 @@ export const PaymentRequestsView = () => {
       matchProgram && matchStatus && matchMethod && matchPurpose && matchDocumentType /*&& matchRequestedAt*/ && matchApplicantDocumentNumber
     )
   })
-
-  console.log(filteredPaymentRequests);
 
   return (
     <Stack gap={4}>
@@ -207,22 +205,11 @@ export const PaymentRequestsView = () => {
         <GenerateMasivePaymentOrders data={dataPaymentRequests?.results} />
       </Stack>
 
-      {isPaymentRequestsLoading ? (
-        <Spinner />
-      ) : (
-        <>
-          { filteredPaymentRequests?.length > 0 ? (
-            <PaymentRequestsTable
-              data={filteredPaymentRequests}
-              permissions={permissions}
-            />
-          ) : (
-            <Heading size='sm' color='gray.500' textAlign={'center'}>
-              No se encontraron Solicitudes de Pago
-            </Heading>
-          )}
-        </>
-      )}
+      <PaymentRequestsTable
+        isLoading={isPaymentRequestsLoading}
+        data={filteredPaymentRequests}
+        permissions={permissions}
+      />
 
     </Stack>
   );

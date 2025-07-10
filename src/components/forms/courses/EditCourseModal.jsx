@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import { Field, Modal, toaster, Tooltip } from "@/components/ui";
 import { useUpdateCourse } from "@/hooks/courses";
-import { useEffect, useRef, useState } from "react";
-import { Box, IconButton, Input, Stack } from '@chakra-ui/react';
+import { useRef, useState } from "react";
+import { Box, Card, Flex, Icon, IconButton, Input, Stack, Textarea } from '@chakra-ui/react';
 import { HiPencil } from 'react-icons/hi2';
-import { ReactSelect } from '@/components/select';
+import { FiBookOpen } from 'react-icons/fi';
 
 export const EditCourseModal = ({ data, item, fetchData }) => {
   const contentRef = useRef();
@@ -12,28 +12,9 @@ export const EditCourseModal = ({ data, item, fetchData }) => {
   
   const [code, setCode] = useState(item?.code || '');
   const [name, setName] = useState(item?.name || '');
+  const [description, setDescription] = useState(item?.description || '');
   const [defaultCredits, setDefaultCredits] = useState(item?.default_credits || '');
   const [level, setLevel] = useState(item?.level || '');
-  const [preRequisite, setPreRequisite] = useState(null);
-
-  useEffect(() => {
-    if(item?.pre_requisite) {
-      const foundCourse = data.find((course) => course.code === item?.pre_requisite);
-      setPreRequisite({
-        value: foundCourse?.id || null,
-        label: foundCourse ? `${foundCourse.code} - ${foundCourse.name}` : '',
-      });
-    } else {
-      setPreRequisite(null);
-    }
-  }, [data, item])
-
-  const preRequisiteOptions = data
-    .filter((course) => course.id !== item.id)
-    .map((course) => ({
-      value: course.id,
-      label: `${course.code} - ${course.name}`,
-    }));
 
   const { mutate: update, isPending: loading } = useUpdateCourse();
 
@@ -43,8 +24,11 @@ export const EditCourseModal = ({ data, item, fetchData }) => {
     const newErrors = {};
     if (!name) newErrors.name = 'El nombre del curso es requerido';
     if (!code) newErrors.code = 'El código del curso es requerido';
-    if (!defaultCredits) newErrors.defaultCredits = 'Los créditos son requeridos';
+    if (!defaultCredits) newErrors.credits = 'Los créditos son requeridos';
     if (!level) newErrors.level = 'El tipo de curso es requerido';
+    if (!description) newErrors.description = 'La descripción es requerida';
+
+    if (data.find((course) => course.code === code && course.id !== item.id)) newErrors.code = 'El código ya fue registrado';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -53,14 +37,12 @@ export const EditCourseModal = ({ data, item, fetchData }) => {
   const handleSubmitData = async (e) => {
     e.preventDefault();
 
-    if (!validate()) return;
-
-    if (!name || !code || !defaultCredits || !level) {
-        toaster.create({
-          title: 'Por favor, completa todos los campos requeridos',
-          type: 'warning',
-        });
-        return;
+    if (!validate()) {
+      toaster.create({
+        title: 'Por favor, completa todos los campos requeridos',
+        type: 'warning',
+      });
+      return;
     }
 
     if (data.find((course) => course.code === code && course.id !== item.id)) {
@@ -100,7 +82,7 @@ export const EditCourseModal = ({ data, item, fetchData }) => {
     <Modal
       title='Editar curso'
       placement='center'
-      // size='lg'
+      size='xl'
       trigger={
         <Box>
           <Tooltip
@@ -121,69 +103,104 @@ export const EditCourseModal = ({ data, item, fetchData }) => {
       onOpenChange={(e) => setOpen(e.open)}
       contentRef={contentRef}
     >
-      <Stack css={{ '--field-label-width': '120px' }}>
-        <Field
-          orientation='vertical'
-          label='Código del curso:'
-          invalid={!!errors.code}
-          errorText={errors.code}
+      <Stack
+          gap={2}
+          pb={6}
+          maxH={{ base: 'full', md: '65vh' }}
+          overflowY='auto'
+          sx={{
+            '&::-webkit-scrollbar': { width: '6px' },
+            '&::-webkit-scrollbar-thumb': {
+              background: 'gray.300',
+              borderRadius: 'full',
+            },
+          }}
         >
-          <Input
-            value={code}
-            onChange={(event) => setCode(event.target.value)}
-            size='xs'
-          />
-        </Field>
-        <Field
-          orientation='vertical'
-          label='Nombre del curso:'
-          invalid={!!errors.name}
-          errorText={errors.name}
-        >
-          <Input
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            size='xs'
-          />
-        </Field>
-        <Field
-          orientation='vertical'
-          label='Créditos:'
-          invalid={!!errors.defaultCredits}
-          errorText={errors.defaultCredits}
-        >
-          <Input
-            value={defaultCredits}
-            onChange={(event) => setDefaultCredits(event.target.value)}
-            size='xs'
-          />
-        </Field>
-        <Field
-          orientation='vertical'
-          label='Nivel de curso:'
-          invalid={!!errors.level}
-          errorText={errors.level}
-        >
-          <Input
-            value={level}
-            onChange={(event) => setLevel(event.target.value)}
-            size='xs'
-          />
-        </Field>
-        <Field
-          orientation='vertical'
-          label='Curso pre-requisito:'
-        >
-          <ReactSelect
-            value={preRequisite}
-            onChange={(option) => setPreRequisite(option)}
-            options={preRequisiteOptions}
-            placeholder='Selecciona un curso pre-requisito'
-            isClearable
-            isSearchable
-            size='xs'
-          />
-        </Field>
+        <Card.Root>
+          <Card.Header>
+            <Card.Title
+              display='flex'
+              alignItems='center'
+              gap={2}
+              fontSize='lg'
+            >
+              <Icon as={FiBookOpen} boxSize={5} color='blue.600' />
+              Campos para para editar curso
+            </Card.Title>
+          </Card.Header>
+          <Card.Body>
+            <Flex flexDirection='column' gap={3}>
+              <Field
+                label='Código del curso:'
+                invalid={!!errors.code}
+                errorText={errors.code}
+                required
+              >
+                <Input
+                  type='text'
+                  value={code}
+                  onChange={(event) => setCode(event.target.value)}
+                />
+              </Field>
+              <Field
+                label='Nombre del curso:'
+                invalid={!!errors.name}
+                errorText={errors.name}
+                required
+              >
+                <Input
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                />
+              </Field>
+              <Field
+                label='Descripción:'
+                invalid={!!errors.description}
+                errorText={errors.description}
+                required
+              >
+                <Textarea
+                  value={description}
+                  onChange={(event) => setDescription(event.target.value)}
+                  size='xs'
+                  placeholder='Descripción del curso'
+                  css={{ height: '100px', resize: 'none', overflowY: 'auto' }}
+                  _placeholder={{ color: 'gray.500' }}
+                  _focus={{ borderColor: 'gray.300', boxShadow: 'none' }}
+                
+                />
+              </Field>
+              <Flex flexDirection={{ base:'column', md: 'row' }} gap={3}>
+              <Field
+                label='Créditos:'
+                invalid={!!errors.credits}
+                errorText={errors.credits}
+                required  
+              >
+                <Input
+                  type='number'
+                  min={0}
+                  value={defaultCredits}
+                  onChange={(event) => setDefaultCredits(event.target.value)}
+                  size='xs'
+                />
+              </Field>
+              <Field
+                label='Nivel de curso:'
+                invalid={!!errors.level}
+                errorText={errors.level}
+                required
+              >
+                <Input
+                  value={level}
+                  onChange={(event) => setLevel(event.target.value)}
+                  size='xs'
+                />
+              </Field>
+            </Flex>
+            </Flex>
+          </Card.Body>
+        </Card.Root>
       </Stack>
     </Modal>
   );
