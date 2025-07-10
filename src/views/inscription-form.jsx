@@ -183,7 +183,7 @@ export default function ChakraInscriptionForm() {
 
 		// Additional Info
 		has_disability: false,
-		type_disability: '',
+		type_disability: null,
 		other_disability: '',
 		scholarshipInterest: false,
 		howDidYouKnow: '',
