@@ -183,7 +183,7 @@ export default function ChakraInscriptionForm() {
 
 		// Additional Info
 		has_disability: false,
-		type_disability: null,
+		type_disability: '',
 		other_disability: '',
 		scholarshipInterest: false,
 		howDidYouKnow: '',
@@ -531,7 +531,7 @@ export default function ChakraInscriptionForm() {
 
 	const DisabilitesOptions =
 		dataDisabilites?.results?.map((disability) => ({
-			value: disability.id,
+			value: disability.id.toString(),
 			label: disability.name,
 		})) || [];
 	// Get available options based on selections
