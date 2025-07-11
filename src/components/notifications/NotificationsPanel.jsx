@@ -318,7 +318,7 @@ export const NotificationToast = ({
 	open,
 	onClose,
 	title = 'Notificación',
-	message = 'Acción realizada correctamente.',
+	message = 'Tiene una nueva notificación.',
 	duration = 3000,
 }) => {
 	useEffect(() => {
