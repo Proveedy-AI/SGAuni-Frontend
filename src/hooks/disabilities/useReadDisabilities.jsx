@@ -1,6 +1,5 @@
 // src/hooks/countries/useReadCountries.jsx
 import { useQuery } from '@tanstack/react-query';
-import useAxiosPrivate from '../axios/useAxiosPrivate';
 import axios from '@/api/axios';
 
 export const useReadDisabilities = (params = {}) => {
