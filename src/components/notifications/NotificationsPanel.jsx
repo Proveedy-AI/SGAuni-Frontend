@@ -13,14 +13,7 @@ import {
 	Text,
 	VStack,
 } from '@chakra-ui/react';
-import {
-	Fragment,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FiBell, FiX } from 'react-icons/fi';
 import { BsCheck2All } from 'react-icons/bs';
@@ -35,7 +28,11 @@ import { useTimeDifference } from '@/hooks';
 
 export const NotificationsPanel = () => {
 	const [visibleCount, setVisibleCount] = useState(4);
-	const [openToast, setOpenToast] = useState(false);
+	const [toastData, setToastData] = useState({
+		open: false,
+		title: '',
+		message: '',
+	});
 	const { data: dataUser } = useReadUserLogged();
 	const socketRef = useRef(null);
 	/*const {
@@ -49,56 +46,10 @@ export const NotificationsPanel = () => {
 		{},
 		{ enabled: true }
 	);
-	console.log(notifications);
 
-	/*const dummyNotifications = [
-		{
-			id: 1,
-			title: 'Nueva asignación de curso',
-			message: 'Has sido asignado como docente en Matemáticas Avanzadas.',
-			timeAgo: '2 horas',
-			viewed: false,
-		},
-		{
-			id: 2,
-			title: 'Cambio de horario',
-			message: 'Tu clase de Física se ha movido a las 10:00 AM.',
-			timeAgo: '4 horas',
-			viewed: true,
-		},
-		{
-			id: 3,
-			title: 'Pago recibido',
-			message: 'Se ha registrado tu pago de matrícula.',
-			timeAgo: '1 día',
-			viewed: true,
-		},
-		{
-			id: 4,
-			title: 'Nueva notificación general',
-			message: 'La plataforma estará en mantenimiento este fin de semana.',
-			timeAgo: '2 días',
-			viewed: false,
-		},
-		{
-			id: 5,
-			title: 'Nueva notificación general',
-			message: 'La plataforma estará en mantenimiento este fin de semana.',
-			timeAgo: '2 días',
-			viewed: false,
-		},
-		{
-			id: 6,
-			title: 'Nueva notificación general',
-			message: 'La plataforma estará en mantenimiento este fin de semana.',
-			timeAgo: '2 días',
-			viewed: false,
-		},
-	];*/
-
-	const handleCloseToast = useCallback(() => {
-		setOpenToast(false);
-	}, []);
+	const handleCloseToast = () => {
+		setToastData((prev) => ({ ...prev, open: false }));
+	};
 
 	const counter = useMemo(() => {
 		return (
@@ -123,7 +74,11 @@ export const NotificationsPanel = () => {
 					const audio = new Audio('/notificaciones.wav');
 					audio.play();
 
-					setOpenToast(true);
+					setToastData({
+						open: true,
+						title: data?.title ?? 'Notificación',
+						message: data?.message ?? 'Tienes una nueva notificación.',
+					});
 				}
 			} catch (error) {
 				console.error('Error al parsear mensaje del WebSocket:', error);
@@ -231,7 +186,12 @@ export const NotificationsPanel = () => {
 					</Card.Root>
 				</MenuContent>
 			</MenuRoot>
-			<NotificationToast open={openToast} close={handleCloseToast} />
+			<NotificationToast
+				open={toastData.open}
+				onClose={handleCloseToast}
+				title={toastData.title}
+				message={toastData.message}
+			/>
 		</>
 	);
 };
