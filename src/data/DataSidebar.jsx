@@ -14,12 +14,12 @@ import {
 } from 'react-icons/fi';
 import { FaFileContract, FaRegFile } from 'react-icons/fa';
 import { HiOutlineClipboardList } from 'react-icons/hi';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { useProvideAuth } from '@/hooks/auth';
 import { href } from 'react-router';
 
 export const useDataSidebar = () => {
-	const { getProfile } = useProvideAuth();
-	const profile = getProfile();
+	const { data: profile } = useReadUserLogged();
 	const roles = profile?.roles || [];
 
 	const permissions = roles

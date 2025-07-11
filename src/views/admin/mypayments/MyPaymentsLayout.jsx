@@ -1,5 +1,5 @@
 import { useColorMode } from '@/components/ui';
-import { useProvideAuth } from '@/hooks/auth';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import {
 	Box,
 	Grid,
@@ -10,14 +10,18 @@ import {
 	Icon,
 	Heading,
 } from '@chakra-ui/react';
-import { FiAlertCircle, FiEye, FiFileText, FiPlus, FiUpload } from 'react-icons/fi';
+import {
+	FiAlertCircle,
+	FiFileText,
+	FiPlus,
+	FiUpload,
+} from 'react-icons/fi';
 import { Link, Outlet, useLocation } from 'react-router';
 
 export const MyPaymentsLayout = () => {
 	const { colorMode } = useColorMode();
 	const location = useLocation();
-	const { getProfile } = useProvideAuth();
-	const profile = getProfile();
+	const { data: profile } = useReadUserLogged();
 
 	const hasPermission = (permission) => {
 		if (!permission) return true;
@@ -53,12 +57,7 @@ export const MyPaymentsLayout = () => {
 			icon: FiUpload,
 			permission: null,
 		},
-    {
-			href: '/mypaymentsdebts/history-requests',
-			label: 'Historial',
-			icon: FiEye,
-			permission: null,
-		},
+		
 	];
 
 	return (

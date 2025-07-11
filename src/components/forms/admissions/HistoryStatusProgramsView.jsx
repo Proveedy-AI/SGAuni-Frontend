@@ -36,23 +36,23 @@ export const HistoryStatusProgramsView = ({ data, statusMap }) => {
 
 	const getStatusIcon = (status) => {
 		switch (status) {
-			case 'Draft':
+			case 'Borrador':
 				return <FiFileText className='h-4 w-4' />;
-			case 'Pending':
+			case 'Pendiente':
 				return <FiClock className='h-4 w-4' />;
-			case 'Approved':
+			case 'Aprobado':
 				return <FiCheckCircle className='h-4 w-4' />;
-			case 'Rejected':
+			case 'Rechazado':
 				return <FiXCircle className='h-4 w-4' />;
 			default:
 				return <FiAlertCircle className='h-4 w-4' />;
 		}
 	};
 	const approvedCount =
-		admissionReviews?.results?.filter((r) => r.status_display === 'Approved')
+		admissionReviews?.results?.filter((r) => r.status_display === 'Aprobado')
 			.length || 0;
 	const rejectedCount =
-		admissionReviews?.results?.filter((r) => r.status_display === 'Rejected')
+		admissionReviews?.results?.filter((r) => r.status_display === 'Rechazado')
 			.length || 0;
 	const totalEvaluations =
 		admissionReviews?.results?.filter((review) => review.review_at !== null)
@@ -117,7 +117,7 @@ export const HistoryStatusProgramsView = ({ data, statusMap }) => {
 								return (
 									<Badge
 										variant='solid'
-										colorPalette={status.color}
+										bg={status.color}
 										display='flex'
 										alignItems='center'
 										gap={1}

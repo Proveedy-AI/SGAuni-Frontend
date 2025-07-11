@@ -1,7 +1,7 @@
 import { AddContractsForm } from '@/components/forms';
 import { ContractsListTable } from '@/components/tables/contracts';
-import { useProvideAuth } from '@/hooks/auth';
 import { useReadContracts } from '@/hooks/contracts';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 
 import {
 	Box,
@@ -20,8 +20,7 @@ export const Contracts = () => {
 		refetch: fetchContracts,
 		isLoading,
 	} = useReadContracts();
-	const { getProfile } = useProvideAuth();
-	const profile = getProfile();
+	const { data: profile } = useReadUserLogged();
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])

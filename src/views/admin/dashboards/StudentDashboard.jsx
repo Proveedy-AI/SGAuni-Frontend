@@ -1,5 +1,5 @@
 import { useUpdateNotifications } from '@/hooks';
-import { useProvideAuth } from '@/hooks/auth';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import {
 	Box,
 	Heading,
@@ -14,9 +14,7 @@ import {
 import { LuCheckCheck } from 'react-icons/lu';
 
 export const StudentDashboard = () => {
-	const { getProfile } = useProvideAuth();
-	const profile = getProfile();
-	console.log('Perfil del usuario:', profile);
+	const { data: profile } = useReadUserLogged();
 	const { mutate: updateNotifications } = useUpdateNotifications();
 
 	const handleMarkAsSeen = () => {

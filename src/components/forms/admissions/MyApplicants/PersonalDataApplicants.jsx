@@ -55,7 +55,7 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 	const UbigeosOptions =
 		dataUbigeo?.results?.map((ubigeo) => ({
 			value: ubigeo.id,
-			label: ubigeo.code,
+			label: ubigeo.code + ' - ' + ubigeo.district_name,
 		})) || [];
 
 	const DiscapacityOptions =
@@ -184,7 +184,7 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 				</Heading>
 			</Stack>
 			<Text fontWeight='semibold' mb={2}>
-				1. Subir foto de documento:
+				1. Adjuntar documento de identidad (anverso y reverso en un solo archivo PDF)
 			</Text>
 			<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
 				<CompactFileUpload

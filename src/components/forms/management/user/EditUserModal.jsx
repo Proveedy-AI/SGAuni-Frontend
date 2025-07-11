@@ -109,12 +109,11 @@ export const EditUserModal = ({
 				>
 					<Stack spacing={6} p={2} mt={2}>
 						<Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} gap={5}>
-							<Field label='Correo/Usuario'>
+							<Field label='Correo del usuario'>
 								<InputGroup startElement={<FiUserCheck />}>
 									<Input
+                    readOnly
 										value={selectedUser?.user?.username || ''}
-										placeholder='Nombre de usuario'
-										isDisabled
 										bg='gray.50'
 										_disabled={{ opacity: 1, color: 'gray.500' }}
 									/>

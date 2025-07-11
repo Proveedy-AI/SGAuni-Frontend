@@ -34,7 +34,9 @@ export const GeneratePdfApliccationsModal = ({ data, open, setOpen }) => {
       hiddenFooter={true}
     >
       <Stack css={{ '--field-label-width': '140px' }}>
-        <Field label='Modalidad de admisión'>
+        <Field
+          label='Modalidad de admisión'
+        >
           <ReactSelect
             name='modality'
             options={modalityOptions}
@@ -43,11 +45,15 @@ export const GeneratePdfApliccationsModal = ({ data, open, setOpen }) => {
             onChange={(setValue) => setSelectedModality(setValue)}
           />
         </Field>
-        <FinalRecordDocument 
-          modality={selectedModality} 
-          dataProgram={data} 
-          headers={PDFHeaders} 
-        />
+        {
+          selectedModality && (
+            <FinalRecordDocument 
+              modality={selectedModality} 
+              dataProgram={data} 
+              headers={PDFHeaders}
+            />
+          )
+        }
       </Stack>
     </ControlledModal>
   );

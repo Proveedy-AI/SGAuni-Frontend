@@ -55,8 +55,8 @@ export const PreviewMyOrdenDetailsModal = ({ data }) => {
 		4: 'red',
 	};
 
-	const handleRowClick = (item) => {
-		navigate(`/mypaymentsdebts/uploadsvouchers?request=${item.id}`);
+	const handleRowClick = () => {
+		navigate(`/mypaymentsdebts/uploadsvouchers`);
 	};
 
 	return (
@@ -194,7 +194,7 @@ export const PreviewMyOrdenDetailsModal = ({ data }) => {
 									{data.num_document}
 								</Text>
 							</Box>
-							
+
 							<Box>
 								<Flex align='center' gap={2} mb={1}>
 									<Icon as={FiHash} boxSize={4} color='green.600' />
@@ -293,6 +293,7 @@ export const PreviewMyOrdenDetailsModal = ({ data }) => {
 												<Button
 													size='sm'
 													colorScheme='blue'
+													disabled={item.status === 3 || item.status === 4}
 													onClick={() => {
 														handleRowClick(item);
 													}}
@@ -305,7 +306,7 @@ export const PreviewMyOrdenDetailsModal = ({ data }) => {
 									))}
 									{PaymentOrder?.results?.length === 0 && (
 										<Table.Row>
-											<Table.Cell colSpan={7} textAlign='center'>
+											<Table.Cell colSpan={9} textAlign='center'>
 												Sin datos disponibles
 											</Table.Cell>
 										</Table.Row>

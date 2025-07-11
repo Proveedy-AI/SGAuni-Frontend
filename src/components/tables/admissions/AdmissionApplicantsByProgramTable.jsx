@@ -39,53 +39,50 @@ const Row = memo(
 			}
 		};
 
-		const applicationStatusEnum = [
-			{
+    const statusEnum = [
+      {
 				id: 1,
 				value: 'Incompleto',
-				label: 'En revisión',
+				label: 'Incompleto',
 				bg: '#FDD9C6',
 				color: '#F86A1E',
 			},
-			{
-				id: 2,
-				value: 'Aprobado',
-				label: 'Aprobado',
-				bg: '#D0EDD0',
-				color: '#2D9F2D',
-			},
-			{
-				id: 3,
-				value: 'Rechazado',
-				label: 'Rechazado',
-				bg: '#F7CDCE',
-				color: '#E0383B',
-			},
-			{
-				id: 4,
-				value: 'Observado',
-				label: 'Observado',
-				bg: '#E3D1F6',
-				color: '#9049DB',
-			},
-		];
-
-		const calificationStatusEnum = [
-			{
-				id: 1,
-				value: 'Pendiente',
-				label: 'Pendiente',
-				bg: '#AEAEAE',
-				color: '#F5F5F5',
-			},
-			{
-				id: 2,
-				value: 'Completado',
-				label: 'Completado',
-				bg: '#D0EDD0',
-				color: '#2D9F2D',
-			},
-		];
+      {
+        id: 2,
+        value: 'Completado',
+        label: 'Completado',
+        bg: '#D0EDD0',
+        color: '#2D9F2D',
+      },
+      {
+        id: 3,
+        value: 'Pendiente',
+        label: 'Pendiente',
+        bg: '#AEAEAE',
+        color: '#F5F5F5',
+      },
+      {
+        id: 4,
+        value: 'Evaluado',
+        label: 'Evaluado',
+        bg: '#F7CDCE',
+        color: '#E0383B',
+      },
+      {
+        id: 5,
+        value: 'Admitido',
+        label: 'Admitido',
+        bg: '#D0EDD0',
+        color: '#2D9F2D',
+      },
+      {
+        id: 6,
+        value: 'Rechazado',
+        label: 'Rechazado',
+        bg: '#FDD9C6',
+        color: '#F86A1E',
+      },
+    ]
 
 		return (
 			<Table.Row
@@ -109,19 +106,19 @@ const Row = memo(
 				<Table.Cell>
 					<Badge
 						bg={
-							applicationStatusEnum.find(
+							statusEnum.find(
 								(status) => status.value === item.status_display
 							)?.bg
 						}
 						color={
-							applicationStatusEnum.find(
+							statusEnum.find(
 								(status) => status.value === item.status_display
 							)?.color
 						}
 						fontWeight='semibold'
 					>
 						{
-							applicationStatusEnum.find(
+							statusEnum.find(
 								(status) => status.value === item.status_display
 							)?.label
 						}
@@ -130,19 +127,19 @@ const Row = memo(
 				<Table.Cell>
 					<Badge
 						bg={
-							calificationStatusEnum.find(
+							statusEnum.find(
 								(status) => status.value === item.status_qualification_display
 							)?.bg
 						}
 						color={
-							calificationStatusEnum.find(
+							statusEnum.find(
 								(status) => status.value === item.status_qualification_display
 							)?.color
 						}
 						fontWeight='semibold'
 					>
 						{
-							calificationStatusEnum.find(
+							statusEnum.find(
 								(status) => status.value === item.status_qualification_display
 							)?.label
 						}
@@ -197,7 +194,7 @@ export const AdmissionApplicantsByProgramTable = ({
 	const [sortConfig, setSortConfig] = useState(null);
 	const sortedData = useSortedData(data, sortConfig);
 
-	const {
+  const {
 		currentPage,
 		startIndex,
 		visibleRows,

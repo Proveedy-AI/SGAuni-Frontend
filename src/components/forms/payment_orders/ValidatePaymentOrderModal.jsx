@@ -62,48 +62,20 @@ export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
           <Stack spacing={4}>
             <Stack spacing={4} w="full"
             >
-              {/* <Flex justify='space-between' gap={2} mt={2}>
-                <Box w='100%'>
-                  <Field label='Id de la ordern:'>
-                    <Text fontSize='xl' color={'uni.secondary'}>
-                      {item?.id_orden}
-                    </Text>
-                  </Field>
-                  <Field label='Núm. de Documento - Nombre del postulante:'>
-                    <Text fontSize='xl' color={'uni.secondary'}>
-                      {item?.document_num} - {item?.name}
-                    </Text>
-                  </Field>
-                  <Field label='Pago total:'>
-                    <Text fontSize='xl' color={'uni.secondary'}>
-                      S/ {item?.sub_amount}
-                    </Text>
-                  </Field>
-                </Box>
-                <Box w='100%'>
-                  <Field label='Método de pago:'>
-                    <Text fontSize='xl' color={'uni.secondary'}>
-                      {item?.payment_method_slug}
-                    </Text>
-                  </Field>
-                  <Field label='Modalidad:'>
-                    <Text fontSize='xl' color={'uni.secondary'}>
-                      {item?.modality_name}
-                    </Text>
-                  </Field>
-                  <Field label='Fecha de vencimiento:'>
-                    <Text fontSize='xl' color={'uni.secondary'}>
-                      S/ {item?.due_date}
-                    </Text>
-                  </Field>
-                </Box>
-              </Flex> */}
 
               <Text fontSize='md'>
-                ¿Estás seguro de que deseas cancelar esta orden de pago <strong>{item?.id_orden}</strong> de postulante <strong>{item?.name?.toUpperCase()}</strong>? 
+                ¿Estás seguro de que deseas <strong>validar/rechazar</strong> esta orden de pago <strong>{item?.id_orden}</strong> del postulante <strong>{item?.name?.toUpperCase()}</strong>? 
               </Text>
 
               <Flex justify='flex-end' gap={2} mt={2}>
+                <Button
+                  bg={'uni.secondary'}
+                  variant={'solid'}
+                  size='sm'
+                  onClick={() => setOpen(false)}
+                >
+                  Cancelar
+                </Button>
                 <Button
                   colorPalette={'green'}
                   variant={'solid'}
@@ -113,14 +85,6 @@ export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
                 >
                   <FaCheck />
                   Validar
-                </Button>
-                <Button
-                  colorPalette={'red'}
-                  variant={'solid'}
-                  size='sm'
-                  onClick={() => setOpen(false)}
-                >
-                  Cancelar
                 </Button>
               </Flex>
             </Stack>

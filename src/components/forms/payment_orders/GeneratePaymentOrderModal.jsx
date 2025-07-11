@@ -17,7 +17,6 @@ export const GeneratePaymentOrderModal = ({ requests, fetchData }) => {
   const [orderIdInput, setOrderIdInput] = useState("");
   const [discountInput, setDiscountInput] = useState("");
   const [dueDateInput, setDueDateInput] = useState("");
-  const [receipt, setReceipt] = useState(null);
   const [selectedRequest, setSelectedRequest] = useState(null);
 
   const requestOptions = requests.map((request) => ({
@@ -29,16 +28,11 @@ export const GeneratePaymentOrderModal = ({ requests, fetchData }) => {
   const isUniPaymentMethod = 
     requests.find(request => request.id === selectedRequest?.value)?.payment_method === 2;
 
-  const receiptOptions = [
-    { value: 1, label: 'Boleta' },
-    { value: 2, label: 'Factura' },
-  ]
 
   const handleReset = () => {
     setOrderIdInput("");
     setDiscountInput("");
     setDueDateInput("");
-    setReceipt(null);
     setSelectedRequest(null);
   }
 
@@ -58,7 +52,6 @@ export const GeneratePaymentOrderModal = ({ requests, fetchData }) => {
       newErrors.discountInput = 'El descuento debe estar entre 0 y 100';
     }
     if (!dueDateInput) newErrors.dueDateInput = 'Selecciona una fecha de vencimiento';
-    if (!receipt) newErrors.receipt = 'Selecciona un tipo de recibo';
     if (!isUniPaymentMethod && !orderIdInput) {
       newErrors.orderIdInput = 'Ingresa el id de orden';
     }
@@ -82,7 +75,7 @@ export const GeneratePaymentOrderModal = ({ requests, fetchData }) => {
       request: selectedRequest.value,
       id_orden: orderIdInput || null,
       discount_value: (Number(discountInput)/100).toString(),
-      status: 1, // 1 = Pendiente
+      status: 1,
       payment_method: requests.find(request => request.id === selectedRequest.value)?.payment_method,
       due_date: dueDateInput
     }
@@ -191,18 +184,6 @@ export const GeneratePaymentOrderModal = ({ requests, fetchData }) => {
                     size={{ base: '330px', md: '420px' }}
                   />
                 </Field>
-                <Field
-                  label='Tipo de Recibo'
-                  invalid={!!errors.receipt}
-                  errorText={errors.receipt}
-                >
-                  <ReactSelect
-                    options={receiptOptions}
-                    value={receipt}
-                    onChange={(option) => setReceipt(option)}
-                    placeholder="Seleccionar tipo de recibo"
-                  />
-                </Field>
               </SimpleGrid>
               <Flex
                 gap={2}
@@ -214,7 +195,7 @@ export const GeneratePaymentOrderModal = ({ requests, fetchData }) => {
                   size='sm'
                   bg='green'
                   loading={isSaving}
-                  disabled={!selectedRequest || !discountInput || !dueDateInput || !receipt}
+                  disabled={!selectedRequest || !discountInput || !dueDateInput}
                   onClick={handleSubmit}
                   css={{ _icon: { width: '5', height: '5' } }}
                 >

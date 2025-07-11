@@ -183,7 +183,7 @@ export default function ChakraInscriptionForm() {
 
 		// Additional Info
 		has_disability: false,
-		type_disability: '',
+		type_disability: null,
 		other_disability: '',
 		scholarshipInterest: false,
 		howDidYouKnow: '',
@@ -402,6 +402,7 @@ export default function ChakraInscriptionForm() {
 				user: {
 					username: formData.email,
 				},
+				personal_email: formData.email,
 				first_name: formData.first_name,
 				paternal_surname: formData.hasOneLastName
 					? formData.last_name
@@ -417,12 +418,31 @@ export default function ChakraInscriptionForm() {
 					? `${formData.dial_code} ${formData.phone_number}`
 					: formData.phone_number,
 				nationality: Number(formData.nationality),
-				country: Number(formData.country),
 				address: formData.address,
 				has_one_surname: formData.hasOneLastName,
-				type_disability: Number(formData.type_disability),
-				other_disability: formData.other_disability,
+				type_disability: Number(formData.type_disability) || null,
+				other_disability: formData.other_disability || '',
 				has_disability: formData.has_disability,
+				alternativePhone: formData.alternativePhone,
+				emergencyContact: formData.emergencyContact,
+				emergencyPhone: formData.emergencyPhone,
+				birth_country: Number(formData.birthCountry),
+				residence_country: Number(formData.residenceCountry),
+				department: Number(formData.department),
+				province: Number(formData.province),
+				postalCode: formData.postalCode,
+				referenceAddress: formData.referenceAddress,
+				previousEducation: formData.previousEducation,
+				university: formData.university,
+				graduationYear: formData.graduationYear,
+				hasWorkExperience: formData.hasWorkExperience,
+				workExperience: formData.workExperience,
+				scholarshipInterest: formData.scholarshipInterest,
+				howDidYouKnow: formData.howDidYouKnow,
+				additionalComments: formData.additionalComments,
+				gender: formData.gender,
+				acceptsTerms: formData.acceptsTerms,
+				acceptsDataProcessing: formData.acceptsDataProcessing,
 			},
 			admission_program: dataAdmissionProgram?.id,
 			modality_id: Number(formData.modality_type),
@@ -1522,7 +1542,6 @@ export default function ChakraInscriptionForm() {
 																					val
 																				)
 																			}
-																			
 																		/>
 																	</Field>
 

@@ -12,142 +12,142 @@ import { memo, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 const Row = memo(
-    ({
-        programId,
-        item,
-        fetchData,
-        startIndex,
-        index,
-        permissions,
-        data,
-        sortConfig,
-    }) => {
-        const navigate = useNavigate();
-        const encrypted = Encryptor.encrypt(item.id);
-        const encoded = encodeURIComponent(encrypted);
+	({
+		programId,
+		item,
+		fetchData,
+		startIndex,
+		index,
+		permissions,
+		data,
+		sortConfig,
+	}) => {
+		const navigate = useNavigate();
+		const encrypted = Encryptor.encrypt(item.id);
+		const encoded = encodeURIComponent(encrypted);
 
-        const encryptedProgram = Encryptor.encrypt(programId);
-        const encodedProgram = encodeURIComponent(encryptedProgram);
+		const encryptedProgram = Encryptor.encrypt(programId);
+		const encodedProgram = encodeURIComponent(encryptedProgram);
 
-        const handleRowClick = () => {
-            if (permissions?.includes('admissions.evaluators.view')) {
-                navigate(
-                    `/admissions/evaluators/programs/${encodedProgram}/estudiante/${encoded}`
-                );
-            }
-        };
+		const handleRowClick = () => {
+			if (permissions?.includes('admissions.evaluators.view')) {
+				navigate(
+					`/admissions/evaluators/programs/${encodedProgram}/estudiante/${encoded}`
+				);
+			}
+		};
 
-        const applicationStatusEnum = [
-            {
-                id: 1,
-                value: 'Incomplete',
-                label: 'En revisión',
-                bg: '#FDD9C6',
-                color: '#F86A1E',
-            },
-            {
-                id: 2,
-                value: 'Approved',
-                label: 'Aprobado',
-                bg: '#D0EDD0',
-                color: '#2D9F2D',
-            },
-            {
-                id: 3,
-                value: 'rejected',
-                label: 'Rechazado',
-                bg: '#F7CDCE',
-                color: '#E0383B',
-            },
-            {
-                id: 4,
-                value: 'Observed',
-                label: 'Observado',
-                bg: '#E3D1F6',
-                color: '#9049DB',
-            },
-        ];
+		const applicationStatusEnum = [
+			{
+				id: 1,
+				value: 'Incompleto',
+				label: 'En revisión',
+				bg: '#FDD9C6',
+				color: '#F86A1E',
+			},
+			{
+				id: 2,
+				value: 'Aprobado',
+				label: 'Aprobado',
+				bg: '#D0EDD0',
+				color: '#2D9F2D',
+			},
+			{
+				id: 3,
+				value: 'Rechazado',
+				label: 'Rechazado',
+				bg: '#F7CDCE',
+				color: '#E0383B',
+			},
+			{
+				id: 4,
+				value: 'Observado',
+				label: 'Observado',
+				bg: '#E3D1F6',
+				color: '#9049DB',
+			},
+		];
 
-        const calificationStatusEnum = [
-            {
-                id: 1,
-                value: 'Pending',
-                label: 'Pendiente',
-                bg: '#AEAEAE',
-                color: '#F5F5F5',
-            },
-            {
-                id: 2,
-                value: 'Calificado',
-                label: 'Calificado',
-                bg: '#D0EDD0',
-                color: '#2D9F2D',
-            },
-        ];
+		const calificationStatusEnum = [
+			{
+				id: 1,
+				value: 'Pendiente',
+				label: 'Pendiente',
+				bg: '#AEAEAE',
+				color: '#F5F5F5',
+			},
+			{
+				id: 2,
+				value: 'Calificado',
+				label: 'Calificado',
+				bg: '#D0EDD0',
+				color: '#2D9F2D',
+			},
+		];
 
-        return (
-            <Table.Row
-                onClick={(e) => {
-                    if (e.target.closest('button') || e.target.closest('a')) return;
-                    handleRowClick();
-                }}
-                key={item.id}
-                bg={index % 2 === 0 ? 'gray.100' : 'white'}
-                _hover={{
-                    bg: 'blue.100',
-                    cursor: 'pointer',
-                }}
-            >
-                <Table.Cell>
-                    {sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
-                        ? data.length - (startIndex + index)
-                        : startIndex + index + 1}
-                </Table.Cell>
-                <Table.Cell>{item.person_full_name}</Table.Cell>
-                <Table.Cell>
-                    <Badge
-                        bg={
-                            applicationStatusEnum.find(
-                                (status) => status.value === item.status_display
-                            )?.bg
-                        }
-                        color={
-                            applicationStatusEnum.find(
-                                (status) => status.value === item.status_display
-                            )?.color
-                        }
-                        fontWeight='semibold'
-                    >
-                        {
-                            applicationStatusEnum.find(
-                                (status) => status.value === item.status_display
-                            )?.label
-                        }
-                    </Badge>
-                </Table.Cell>
-                <Table.Cell>
-                    <Badge
-                        bg={
-                            calificationStatusEnum.find(
-                                (status) => status.value === item.status_qualification_display
-                            )?.bg
-                        }
-                        color={
-                            calificationStatusEnum.find(
-                                (status) => status.value === item.status_qualification_display
-                            )?.color
-                        }
-                        fontWeight='semibold'
-                    >
-                        {
-                            calificationStatusEnum.find(
-                                (status) => status.value === item.status_qualification_display
-                            )?.label
-                        }
-                    </Badge>
-                </Table.Cell>
-                <Table.Cell textAlign='center'>{item.calification || '-'}</Table.Cell>
-                {/* <Table.Cell onClick={(e) => e.stopPropagation()}>
+		return (
+			<Table.Row
+				onClick={(e) => {
+					if (e.target.closest('button') || e.target.closest('a')) return;
+					handleRowClick();
+				}}
+				key={item.id}
+				bg={index % 2 === 0 ? 'gray.100' : 'white'}
+				_hover={{
+					bg: 'blue.100',
+					cursor: 'pointer',
+				}}
+			>
+				<Table.Cell>
+					{sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
+						? data.length - (startIndex + index)
+						: startIndex + index + 1}
+				</Table.Cell>
+				<Table.Cell>{item.person_full_name}</Table.Cell>
+				<Table.Cell>
+					<Badge
+						bg={
+							applicationStatusEnum.find(
+								(status) => status.value === item.status_display
+							)?.bg
+						}
+						color={
+							applicationStatusEnum.find(
+								(status) => status.value === item.status_display
+							)?.color
+						}
+						fontWeight='semibold'
+					>
+						{
+							applicationStatusEnum.find(
+								(status) => status.value === item.status_display
+							)?.label
+						}
+					</Badge>
+				</Table.Cell>
+				<Table.Cell>
+					<Badge
+						bg={
+							calificationStatusEnum.find(
+								(status) => status.value === item.status_qualification_display
+							)?.bg
+						}
+						color={
+							calificationStatusEnum.find(
+								(status) => status.value === item.status_qualification_display
+							)?.color
+						}
+						fontWeight='semibold'
+					>
+						{
+							calificationStatusEnum.find(
+								(status) => status.value === item.status_qualification_display
+							)?.label
+						}
+					</Badge>
+				</Table.Cell>
+				<Table.Cell textAlign='center'>{item.calification || '-'}</Table.Cell>
+				{/* <Table.Cell onClick={(e) => e.stopPropagation()}>
                     <HStack>
                         <ViewAdmissionProgramExams item={item} fetchData={fetchData} />
                         {permissions?.includes('admissions.create.evaluation') && (
@@ -158,141 +158,141 @@ const Row = memo(
                         )}
                     </HStack>
                 </Table.Cell> */}
-            </Table.Row>
-        );
-    }
+			</Table.Row>
+		);
+	}
 );
 
 Row.displayName = 'Row';
 
 Row.propTypes = {
-    programId: PropTypes.number,
-    item: PropTypes.object,
-    fetchData: PropTypes.func,
-    startIndex: PropTypes.number,
-    index: PropTypes.number,
-    permissions: PropTypes.array,
-    sortConfig: PropTypes.object,
-    data: PropTypes.array,
+	programId: PropTypes.number,
+	item: PropTypes.object,
+	fetchData: PropTypes.func,
+	startIndex: PropTypes.number,
+	index: PropTypes.number,
+	permissions: PropTypes.array,
+	sortConfig: PropTypes.object,
+	data: PropTypes.array,
 };
 
 export const AdmissionEvaluatorsByProgramTable = ({
-    programId,
-    data,
-    fetchData,
-    permissions,
-    isLoading,
+	programId,
+	data,
+	fetchData,
+	permissions,
+	isLoading,
 }) => {
-    const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
-    const [currentPage, setCurrentPage] = useState(1);
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    const [sortConfig, setSortConfig] = useState(null);
-    const sortedData = useSortedData(data, sortConfig);
-    const visibleRows = sortedData?.slice(startIndex, endIndex);
+	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
+	const [currentPage, setCurrentPage] = useState(1);
+	const startIndex = (currentPage - 1) * pageSize;
+	const endIndex = startIndex + pageSize;
+	const [sortConfig, setSortConfig] = useState(null);
+	const sortedData = useSortedData(data, sortConfig);
+	const visibleRows = sortedData?.slice(startIndex, endIndex);
 
-    return (
-        <Box
-            bg={{ base: 'white', _dark: 'its.gray.500' }}
-            p='3'
-            borderRadius='10px'
-            overflow='hidden'
-            boxShadow='md'
-        >
-            <Table.ScrollArea>
-                <Table.Root size='sm' w='full'>
-                    <Table.Header>
-                        <Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
-                            <Table.ColumnHeader w={'5%'}>
-                                <SortableHeader
-                                    label='N°'
-                                    columnKey='index'
-                                    sortConfig={sortConfig}
-                                    onSort={setSortConfig}
-                                />
-                            </Table.ColumnHeader>
-                            <Table.ColumnHeader>
-                                <SortableHeader
-                                    label='Nombres del postulante'
-                                    columnKey='applicant_name'
-                                    sortConfig={sortConfig}
-                                    onSort={setSortConfig}
-                                />
-                            </Table.ColumnHeader>
-                            <Table.ColumnHeader textAlign='center'>
-                                <SortableHeader
-                                    label='Estado de postulación'
-                                    columnKey='status_display'
-                                    sortConfig={sortConfig}
-                                    onSort={setSortConfig}
-                                />
-                            </Table.ColumnHeader>
-                            <Table.ColumnHeader textAlign='center'>
-                                <SortableHeader
-                                    label='Estado de calificación'
-                                    columnKey='status_qualification_display'
-                                    sortConfig={sortConfig}
-                                    onSort={setSortConfig}
-                                />
-                            </Table.ColumnHeader>
-                            <Table.ColumnHeader textAlign='center'>
-                                <SortableHeader
-                                    label='Calificación'
-                                    columnKey='calification'
-                                    sortConfig={sortConfig}
-                                    onSort={setSortConfig}
-                                />
-                            </Table.ColumnHeader>
-                            <Table.ColumnHeader>Acciones</Table.ColumnHeader>
-                        </Table.Row>
-                    </Table.Header>
-                    <Table.Body>
-                        {isLoading ? (
-                            <SkeletonTable columns={6} />
-                        ) : visibleRows?.length > 0 ? (
-                            visibleRows.map((item, index) => (
-                                <Row
-                                    key={item.id}
-                                    programId={programId}
-                                    item={item}
-                                    data={data}
-                                    sortConfig={sortConfig}
-                                    permissions={permissions}
-                                    fetchData={fetchData}
-                                    startIndex={startIndex}
-                                    index={index}
-                                />
-                            ))
-                        ) : (
-                            <Table.Row>
-                                <Table.Cell colSpan={6} textAlign='center' py={2}>
-                                    No hay datos disponibles.
-                                </Table.Cell>
-                            </Table.Row>
-                        )}
-                    </Table.Body>
-                </Table.Root>
-            </Table.ScrollArea>
+	return (
+		<Box
+			bg={{ base: 'white', _dark: 'its.gray.500' }}
+			p='3'
+			borderRadius='10px'
+			overflow='hidden'
+			boxShadow='md'
+		>
+			<Table.ScrollArea>
+				<Table.Root size='sm' w='full'>
+					<Table.Header>
+						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
+							<Table.ColumnHeader w={'5%'}>
+								<SortableHeader
+									label='N°'
+									columnKey='index'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader>
+								<SortableHeader
+									label='Nombres del postulante'
+									columnKey='applicant_name'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader textAlign='center'>
+								<SortableHeader
+									label='Estado de postulación'
+									columnKey='status_display'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader textAlign='center'>
+								<SortableHeader
+									label='Estado de calificación'
+									columnKey='status_qualification_display'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader textAlign='center'>
+								<SortableHeader
+									label='Calificación'
+									columnKey='calification'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
+						</Table.Row>
+					</Table.Header>
+					<Table.Body>
+						{isLoading ? (
+							<SkeletonTable columns={6} />
+						) : visibleRows?.length > 0 ? (
+							visibleRows.map((item, index) => (
+								<Row
+									key={item.id}
+									programId={programId}
+									item={item}
+									data={data}
+									sortConfig={sortConfig}
+									permissions={permissions}
+									fetchData={fetchData}
+									startIndex={startIndex}
+									index={index}
+								/>
+							))
+						) : (
+							<Table.Row>
+								<Table.Cell colSpan={6} textAlign='center' py={2}>
+									No hay datos disponibles.
+								</Table.Cell>
+							</Table.Row>
+						)}
+					</Table.Body>
+				</Table.Root>
+			</Table.ScrollArea>
 
-            <Pagination
-                count={data?.length}
-                pageSize={Number(pageSize)}
-                currentPage={currentPage}
-                pageSizeOptions={pageSizeOptions}
-                onPageChange={(page) => setCurrentPage(page)}
-                onPageSizeChange={(size) => {
-                    setPageSize(size);
-                    setCurrentPage(1);
-                }}
-            />
-        </Box>
-    );
+			<Pagination
+				count={data?.length}
+				pageSize={Number(pageSize)}
+				currentPage={currentPage}
+				pageSizeOptions={pageSizeOptions}
+				onPageChange={(page) => setCurrentPage(page)}
+				onPageSizeChange={(size) => {
+					setPageSize(size);
+					setCurrentPage(1);
+				}}
+			/>
+		</Box>
+	);
 };
 
 AdmissionEvaluatorsByProgramTable.propTypes = {
-    programId: PropTypes.number,
-    data: PropTypes.array,
-    fetchData: PropTypes.func,
-    permissions: PropTypes.array,
-    isLoading: PropTypes.bool,
+	programId: PropTypes.number,
+	data: PropTypes.array,
+	fetchData: PropTypes.func,
+	permissions: PropTypes.array,
+	isLoading: PropTypes.bool,
 };

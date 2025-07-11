@@ -9,6 +9,8 @@ import {
 	IconButton,
 	Image,
 	Separator,
+	Skeleton,
+	SkeletonCircle,
 	Stack,
 	Text,
 	VStack,
@@ -31,12 +33,62 @@ import { useSidebarState } from '@/hooks';
 import { useProvideAuth } from '@/hooks/auth';
 import { useDataSidebar } from '@/data';
 
-export const Sidebar = () => {
+export const Sidebar = ({ profile }) => {
 	const { isCollapsed, toggleSidebar } = useSidebarState();
-	const { getProfile, logout } = useProvideAuth();
-
+	const { logout } = useProvideAuth();
+	const { mainItems, bottomItems } = useDataSidebar();
 	// Obtener permisos desde el profile
-	const profile = getProfile();
+
+	if (!profile) {
+		return (
+			<Box mt={24} w={isCollapsed ? '60px' : '230px'} py='4' px='3' h='100vh'>
+				<Flex
+					direction='column'
+					flex='1'
+					maxHeight='calc(100svh - 130px)'
+					justify='space-between'
+				>
+					<Box
+						align='start'
+						overflowY='auto'
+						h='full'
+						css={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}
+					>
+						<VStack align='start' spacing='3'>
+							{[...Array(5)].map((_, i) => (
+								<Flex key={i} align='center' gap='3' w='full'>
+									<SkeletonCircle size='6' />
+									{!isCollapsed && <Skeleton height='16px' width='120px' />}
+								</Flex>
+							))}
+						</VStack>
+					</Box>
+
+					<Box mt='auto' pt='10'>
+						<VStack
+							align='start'
+							justify={isCollapsed ? 'center' : 'space-between'}
+							gap='2'
+						>
+							{[...Array(2)].map((_, i) => (
+								<Flex key={i} align='center' gap='3' w='full'>
+									<SkeletonCircle size='6' />
+									{!isCollapsed && <Skeleton height='16px' width='100px' />}
+								</Flex>
+							))}
+
+							{/* Cerrar sesión */}
+							<Flex align='center' gap='3' w='full'>
+								<SkeletonCircle size='6' />
+								{!isCollapsed && <Skeleton height='16px' width='100px' />}
+							</Flex>
+						</VStack>
+					</Box>
+				</Flex>
+			</Box>
+		);
+	}
+
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])
@@ -47,8 +99,6 @@ export const Sidebar = () => {
 		if (!permissions || permissions.length === 0) return false;
 		return permissions.includes(requiredPermission.trim());
 	};
-
-	const { mainItems, bottomItems } = useDataSidebar();
 
 	const handleLogout = () => {
 		logout();
@@ -127,6 +177,7 @@ export const Sidebar = () => {
 									href={item.href}
 									icon={item.icon}
 									label={item.label}
+									profile={profile}
 									isCollapsed={isCollapsed}
 									subItems={
 										filteredSubItems.length > 0 ? filteredSubItems : undefined
@@ -146,6 +197,7 @@ export const Sidebar = () => {
 								icon={item.icon}
 								label={item.label}
 								isCollapsed={isCollapsed}
+								profile={profile}
 							/>
 						))}
 
@@ -154,6 +206,7 @@ export const Sidebar = () => {
 						icon={FiLogOut}
 						label='Cerrar sesión'
 						isCollapsed={isCollapsed}
+						profile={profile}
 					/>
 				</Box>
 			</Flex>
@@ -161,7 +214,19 @@ export const Sidebar = () => {
 	);
 };
 
-const SidebarItem = ({ href, icon, label, isCollapsed, subItems, ...atr }) => {
+Sidebar.propTypes = {
+	profile: PropTypes.object.isRequired,
+};
+
+const SidebarItem = ({
+	href,
+	icon,
+	label,
+	isCollapsed,
+	subItems,
+	profile,
+	...atr
+}) => {
 	const { colorMode } = useColorMode();
 	const location = useLocation();
 	const [isExpanded, setIsExpanded] = useState(() =>
@@ -179,8 +244,6 @@ const SidebarItem = ({ href, icon, label, isCollapsed, subItems, ...atr }) => {
 	const activeIconColor =
 		colorMode === 'dark' ? 'uni.secondary' : 'uni.secondary';
 
-	const { getProfile } = useProvideAuth();
-	const profile = getProfile();
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])
@@ -386,4 +449,5 @@ SidebarItem.propTypes = {
 			label: PropTypes.string,
 		})
 	),
+	profile: PropTypes.object,
 };

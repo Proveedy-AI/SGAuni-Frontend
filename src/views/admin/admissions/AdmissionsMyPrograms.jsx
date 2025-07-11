@@ -1,7 +1,6 @@
 import { AddAdmissionsProgramsForm } from '@/components/forms/admissions';
 import { AdmissionsMyProgramsTable } from '@/components/tables/admissions';
 import { useReadAdmissionById } from '@/hooks/admissions_proccess/useReadAdmissionsbyId';
-import { useProvideAuth } from '@/hooks/auth';
 import { LiaSlashSolid } from 'react-icons/lia';
 
 import {
@@ -18,20 +17,24 @@ import { useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router';
 import { useReadAdmissionsPrograms } from '@/hooks/admissions_programs';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 
 export const AdmissionsMyPrograms = () => {
 	const { id } = useParams();
 	const decoded = decodeURIComponent(id);
 	const decrypted = Encryptor.decrypt(decoded);
+	const { data: profile } = useReadUserLogged();
 
 	const { data } = useReadAdmissionById(decrypted);
 	const {
 		data: dataAdmissionsPrograms,
 		refetch: fetchAdmissionsPrograms,
 		isLoading,
-	} = useReadAdmissionsPrograms();
-	const { getProfile } = useProvideAuth();
-	const profile = getProfile();
+	} = useReadAdmissionsPrograms({
+		admission_process: Number(decrypted),
+		coordinator: profile?.id,
+	});
+
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])
@@ -39,14 +42,12 @@ export const AdmissionsMyPrograms = () => {
 
 	const [searchValue, setSearchValue] = useState('');
 
-	const filteredAdmissionsPrograms = dataAdmissionsPrograms?.results?.filter(
-		(item) =>
-			// item.admission_process === Number(decrypted) &&
-			// item.coordinator === profile.id &&
-			item.program_name.toLowerCase().includes(searchValue.toLowerCase())
-	);
+	const allAdmissionPrograms =
+		dataAdmissionsPrograms?.pages?.flatMap((page) => page.results) ?? [];
 
-	console.log(filteredAdmissionsPrograms);
+	const filteredAdmissionsPrograms = allAdmissionPrograms?.filter((item) =>
+		item.program_name.toLowerCase().includes(searchValue.toLowerCase())
+	);
 
 	return (
 		<Box spaceY='5'>
