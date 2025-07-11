@@ -270,7 +270,7 @@ export const PaymentApplicant = ({ onValidationChange }) => {
 			</Flex>
 		);
 	}
-console.log(item)
+
 	return (
 		<Stack maxW={{ base: 'full', md: '80%' }} spaceY='5' mx={'auto'}>
 			<Box bg='white' rounded='lg' shadow='md' p={6}>
