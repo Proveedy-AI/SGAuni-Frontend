@@ -7,6 +7,7 @@ import {
 } from '@/components/forms/admissions';
 import { AssignModalityToProgramForm } from '@/components/forms/admissions/AssignModalityProgramsForm';
 import { HistoryStatusProgramsView } from '@/components/forms/admissions/HistoryStatusProgramsView';
+import { ApproveTuitionProgramsModal, DeleteTuitionProgramsModal } from '@/components/modals/tuition';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import {
     ConfirmModal,
@@ -24,7 +25,7 @@ import useSortedData from '@/utils/useSortedData';
 import { Box, HStack, IconButton, Span, Table, Text } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
-import { FiSend, FiTrash2 } from 'react-icons/fi';
+import { FiEdit2, FiSend, FiTrash2 } from 'react-icons/fi';
 
 const Row = memo(({ 
     item, 
@@ -38,59 +39,13 @@ const Row = memo(({
     setModalData, 
     setActionType 
 }) => {
-        const [open, setOpen] = useState(false);
-        const [openSend, setOpenSend] = useState(false);
-
-        const { mutate: deleteAdmisionsPrograms, isPending } =
-            useDeleteAdmissionsPrograms();
-
-        const { mutate: createProgramsReview, isPending: LoadingProgramsReview } =
-            useCreateProgramsReview();
-
-        const handleDelete = () => {
-            deleteAdmisionsPrograms(item.id, {
-                onSuccess: () => {
-                    toaster.create({
-                        title: 'Proceso eliminado correctamente',
-                        type: 'success',
-                    });
-                    fetchData();
-                    setOpen(false);
-                },
-                onError: (error) => {
-                    toaster.create({
-                        title: error.message,
-                        type: 'error',
-                    });
-                },
-            });
-        };
-
-        const handleSend = () => {
-            createProgramsReview(item.id, {
-                onSuccess: () => {
-                    toaster.create({
-                        title: 'Programa enviado correctamente',
-                        type: 'success',
-                    });
-                    fetchData();
-                    setOpenSend(false);
-                },
-                onError: (error) => {
-                    console.log(error);
-                    toaster.create({
-                        title: error.message,
-                        type: 'error',
-                    });
-                },
-            });
-        };
         const statusMap = {
             Draft: { label: 'Borrador', color: 'gray' },
             Pending: { label: 'Pendiente', color: 'orange.500' },
             Approved: { label: 'Aprobado', color: 'green' },
             Rejected: { label: 'Rechazado', color: 'red' },
         };
+
         return (
             <Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
                 <Table.Cell>
@@ -98,11 +53,10 @@ const Row = memo(({
                         ? data.length - (startIndex + index)
                         : startIndex + index + 1}
                 </Table.Cell>
+                <Table.Cell>{item.name}</Table.Cell>
                 <Table.Cell>{item.program_name}</Table.Cell>
                 <Table.Cell>{formatDateString(item.semester_start_date)}</Table.Cell>
-                <Table.Cell>
-                    {formatDateString(item.registration_start_date)}
-                </Table.Cell>
+                <Table.Cell>{formatDateString(item.registration_start_date)}</Table.Cell>
                 <Table.Cell>{formatDateString(item.registration_end_date)}</Table.Cell>
                 <Table.Cell>
                     <HistoryStatusProgramsView
@@ -113,80 +67,39 @@ const Row = memo(({
                 </Table.Cell>
                 <Table.Cell>
                     <HStack>
-                        {/* {permissions?.includes('admissions.myprograms.send') && ( */}
-                            <SendModal
-                                placement='center'
-                                trigger={
-                                    <Box>
-                                        <Tooltip
-                                            content='Enviar para aprobación'
-                                            positioning={{ placement: 'bottom-center' }}
-                                            showArrow
-                                            openDelay={0}
-                                        >
-                                            <IconButton
-                                                disabled={item.status === 4}
-                                                colorPalette='green'
-                                                size='xs'
-                                            >
-                                                <FiSend />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </Box>
-                                }
-                                open={openSend}
-                                onOpenChange={(e) => setOpenSend(e.open)}
-                                onConfirm={() => handleSend(item.id)}
-                                loading={LoadingProgramsReview}
-                                icon={'FiSend'}
-                                loadingText={'Enviando'}
-                            >
-                                <Text>
-                                    ¿Estás seguro que quieres enviar a
-                                    <Span fontWeight='semibold' px='1'>
-                                        {item.program_name}
-                                    </Span>
-                                    para aprobación de cronograma?
-                                </Text>
-                            </SendModal>
-                        {/* )} */}
-                        <PreviewAdmissionsProgramsModal data={item} />
+                        <ApproveTuitionProgramsModal permissions={permissions} item={item} fetchData={fetchData} />
+                        {/* <PreviewAdmissionsProgramsModal data={item} /> */}
                         {/* {permissions?.includes('admissions.myprograms.assignmodality') && ( */}
-                            <AssignModalityToProgramForm data={item} fetchData={fetchData} />
+                            {/* <AssignModalityToProgramForm data={item} fetchData={fetchData} /> */}
                         {/* )} */}
 
                         {/* {permissions?.includes('admissions.myprograms.assignevaluator') && ( */}
-                            <AssignEvaluatorProgramModal data={item} fetchData={fetchData} />
+                            {/* <AssignEvaluatorProgramModal data={item} fetchData={fetchData} /> */}
                         {/* )} */}
                         {/* {permissions?.includes('admissions.myprograms.edit') && ( */}
-                            <UpdateAdmissionsProgramsForm data={item} fetchData={fetchData} />
-                        {/* )} */}
-                        {/* {permissions?.includes('admissions.myprograms.delete') && ( */}
-                            <ConfirmModal
-                                placement='center'
-                                trigger={
-                                    <IconButton
-                                        disabled={item.status === 4}
-                                        colorPalette='red'
-                                        size='xs'
-                                    >
-                                        <FiTrash2 />
-                                    </IconButton>
-                                }
-                                open={open}
-                                onOpenChange={(e) => setOpen(e.open)}
-                                onConfirm={() => handleDelete(item.id)}
-                                loading={isPending}
+                            {/* <UpdateAdmissionsProgramsForm data={item} fetchData={fetchData} /> */}
+                            <Tooltip
+                                content='Editar'
+                                positioning={{ placement: 'bottom-center' }}
+                                showArrow
+                                openDelay={0}
                             >
-                                <Text>
-                                    ¿Estás seguro que quieres eliminar a
-                                    <Span fontWeight='semibold' px='1'>
-                                        {item.program_name}
-                                    </Span>
-                                    de la lista de Procesos?
-                                </Text>
-                            </ConfirmModal>
+                                <IconButton 
+                                    size='xs' 
+                                    colorPalette='cyan'
+                                    // disabled={!permissions?.includes('enrollments.myprograms.edit')}
+                                    disabled={item.status === 4 || item.status_display === 'Aprobado'}
+                                    onClick={() => {
+                                        setModalData(item);
+                                        setIsModalOpen(true);
+                                        setActionType('edit');
+                                    }}
+                                >
+                                    <FiEdit2 />
+                                </IconButton>
+                            </Tooltip>
                         {/* )} */}
+                        <DeleteTuitionProgramsModal permissions={permissions} item={item} fetchData={fetchData} />
                     </HStack>
                 </Table.Cell>
             </Table.Row>
@@ -246,14 +159,8 @@ export const EnrollmentsMyProgramsTable = ({
                                     onSort={setSortConfig}
                                 />
                             </Table.ColumnHeader>
-                            <Table.ColumnHeader>
-                                <SortableHeader
-                                    label='Programa'
-                                    columnKey='program_name'
-                                    sortConfig={sortConfig}
-                                    onSort={setSortConfig}
-                                />
-                            </Table.ColumnHeader>
+                            <Table.ColumnHeader>Nombre</Table.ColumnHeader>
+                            <Table.ColumnHeader>Programa</Table.ColumnHeader>
                             <Table.ColumnHeader>Inicio Semestre</Table.ColumnHeader>
                             <Table.ColumnHeader>Inicio de Inscripciones</Table.ColumnHeader>
                             <Table.ColumnHeader>Fin de Inscripciones</Table.ColumnHeader>
@@ -263,7 +170,7 @@ export const EnrollmentsMyProgramsTable = ({
                     </Table.Header>
                     <Table.Body>
                         {isLoading ? (
-                            <SkeletonTable columns={7} />
+                            <SkeletonTable columns={8} />
                         ) : visibleRows?.length > 0 ? (
                             visibleRows.map((item, index) => (
                                 <Row
@@ -282,7 +189,7 @@ export const EnrollmentsMyProgramsTable = ({
                             ))
                         ) : (
                             <Table.Row>
-                                <Table.Cell colSpan={7} textAlign='center' py={2}>
+                                <Table.Cell colSpan={8} textAlign='center' py={2}>
                                     No hay datos disponibles.
                                 </Table.Cell>
                             </Table.Row>

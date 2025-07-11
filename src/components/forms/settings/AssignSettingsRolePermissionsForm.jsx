@@ -99,62 +99,82 @@ export const AssignSettingsRolePermissionsForm = ({
 			open={open}
 			onOpenChange={(e) => setOpen(e.open)}
 		>
-			{loadingAssigned ? (
-				<Flex justify='center' align='center' minH='200px'>
-					<Spinner size='xl' />
-				</Flex>
-			) : (
-				groupedPermissions &&
-				Object.entries(groupedPermissions).map(
-					([category, subcategories], idx) => (
-						<Stack key={category} gap={4}>
-							<Fieldset.Root>
-								<Fieldset.Legend
-									fontSize='md'
-									textTransform='capitalize'
-									color={{ base: 'its.primary', _dark: 'its.secondary' }}
-								>
-									{groupTitles.category[category] || category}
-								</Fieldset.Legend>
+			<Stack
+				gap={2}
+				pb={6}
+				maxH={{ base: 'full', md: '75vh' }}
+				overflowY='auto'
+				sx={{
+					'&::-webkit-scrollbar': { width: '6px' },
+					'&::-webkit-scrollbar-thumb': {
+						background: 'gray.300',
+						borderRadius: 'full',
+					},
+				}}
+			>
+				{loadingAssigned ? (
+					<Flex justify='center' align='center' minH='200px'>
+						<Spinner size='xl' />
+					</Flex>
+				) : (
+					groupedPermissions &&
+					Object.entries(groupedPermissions).map(
+						([category, subcategories], idx) => (
+							<Stack key={category} gap={4}>
+								<Fieldset.Root>
+									<Fieldset.Legend
+										fontSize='md'
+										textTransform='capitalize'
+										color={{ base: 'its.primary', _dark: 'its.secondary' }}
+									>
+										{groupTitles.category[category] || category}
+									</Fieldset.Legend>
 
-								<Grid
-									w='full'
-									templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }}
-									gap={4}
-								>
-									{Object.entries(subcategories).map(([subcategory, perms]) => (
-										<VStack key={subcategory} align='start' gap='4'>
-											<Fieldset.Legend fontSize='sm' textTransform='capitalize'>
-												{groupTitles.subCategory[subcategory] || subcategory}
-											</Fieldset.Legend>
-											<CheckboxGroup>
-												{perms.map((permission) => (
-													<Checkbox
-														key={permission.id}
-														defaultValue={permission.id}
-														checked={
-															Array.isArray(selectedPermissions) &&
-															selectedPermissions.includes(permission.id)
-														}
-														onChange={() =>
-															handlePermissionToggle(permission.id)
-														}
+									<Grid
+										w='full'
+										templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }}
+										gap={4}
+									>
+										{Object.entries(subcategories).map(
+											([subcategory, perms]) => (
+												<VStack key={subcategory} align='start' gap='4'>
+													<Fieldset.Legend
+														fontSize='sm'
+														textTransform='capitalize'
 													>
-														{permission.name}
-													</Checkbox>
-												))}
-											</CheckboxGroup>
-										</VStack>
-									))}
-								</Grid>
-							</Fieldset.Root>
-							{idx < Object.keys(groupedPermissions).length - 1 && (
-								<Separator mb={4} />
-							)}
-						</Stack>
+														{groupTitles.subCategory[subcategory] ||
+															subcategory}
+													</Fieldset.Legend>
+													<CheckboxGroup>
+														{perms.map((permission) => (
+															<Checkbox
+																key={permission.id}
+																defaultValue={permission.id}
+																checked={
+																	Array.isArray(selectedPermissions) &&
+																	selectedPermissions.includes(permission.id)
+																}
+																onChange={() =>
+																	handlePermissionToggle(permission.id)
+																}
+															>
+																{permission.name}
+															</Checkbox>
+														))}
+													</CheckboxGroup>
+												</VStack>
+											)
+										)}
+									</Grid>
+								</Fieldset.Root>
+								{idx < Object.keys(groupedPermissions).length - 1 && (
+									<Separator mb={4} />
+								)}
+							</Stack>
+						)
 					)
-				)
-			)}
+				)}
+			</Stack>
 		</Modal>
 	);
 };
@@ -172,7 +192,12 @@ const groupTitles = {
 		users: 'Usuarios',
 		admissions: 'Admisiones',
 		contracts: 'Contratos',
-		tuition: 'Matrícula'
+		tuition: 'Matrícula',
+		enrollments: 'Matriculas',
+		applicants: 'Postulantes',
+		payment: 'Pagos y deudas',
+		courses: 'Cursos',
+		
 	},
 	subCategory: {
 		program: 'Programas',
@@ -181,12 +206,12 @@ const groupTitles = {
 		users: 'Usuarios',
 		modalities: 'Modalidades',
 		countries: 'Regiones - Paises',
-		proccess: 'Procesos Admisión',
+		proccess: 'Procesos Admisión (P. A.)',
 		properties: 'Propiedades de producto',
 		list: 'Lista General',
 		mylist: 'Lista Personal',
 		myprograms: 'Mis Programas de Admisión',
-		programs: 'Programas de Admisión',
+		programs: 'Programas de Admisión ',
 		processes: 'Procesos de Matricula',
 		evaluators: 'Evaluaciones',
 		studenprofile: 'Perfil de Estudiante',
@@ -195,5 +220,11 @@ const groupTitles = {
 		applicant: 'Postulante',
 		debt: 'Cobranzas',
 		adminprofile: 'Perfil de Administrador',
+		student: 'Postulante/Estudiante/Egresado',
+		orders: 'Órdenes de Pago',
+		vouchers: 'Comprobantes de Pago',
+		requests: 'Solicitudes de Pago',
+		schedules: 'Cursos',
+		mypaymentsdebts: 'Mis Pagos y Deudas',
 	},
 };

@@ -68,9 +68,9 @@ const Row = memo(({
 		};
 
 		const handleRowClick = () => {
-			if (permissions?.includes('enrollments.programs.view')) {
+			// if (permissions?.includes('enrollments.programs.view')) {
 				navigate(`/enrollments/programs/${encoded}`);
-			}
+			// }
 		};
 
 		return (

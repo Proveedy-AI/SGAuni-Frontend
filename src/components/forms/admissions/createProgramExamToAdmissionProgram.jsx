@@ -400,7 +400,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 									color='blue.700'
 									borderColor='blue.200'
 								>
-									{filteredEvaluationsByStudent.length} evaluaciones
+									{filteredEvaluationsByStudent?.length} evaluaciones
 								</Badge>
 							</Flex>
 						</Flex>

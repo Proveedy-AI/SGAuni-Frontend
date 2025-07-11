@@ -10,6 +10,7 @@ import {
 	FiDollarSign,
 	FiFileText,
 	FiBookOpen,
+	FiCreditCard,
 } from 'react-icons/fi';
 import { FaFileContract, FaRegFile } from 'react-icons/fa';
 import { HiOutlineClipboardList } from 'react-icons/hi';
@@ -71,7 +72,13 @@ export const useDataSidebar = () => {
 			href: '/admissions/myapplicants',
 			icon: FiUserCheck,
 			label: 'Mis Postulaciones',
-			permission: 'admissions.myapplicants.view',
+			permission: 'applicants.myapplicants.view',
+		},
+		{
+			href: '/mypaymentsdebts/debts',
+			icon: FiCreditCard,
+			label: 'Mis Pagos',
+			permission: 'payment.mypaymentsdebts.view',
 		},
 		{
 			href: '/contracts',
@@ -112,11 +119,11 @@ export const useDataSidebar = () => {
 			permission: 'payment.requests.view',
 		},
 		{
-      href: '/courses-schedules',
-      icon: FiBookOpen,
-      label: 'Cursos y Horarios',
-      permission: 'courses.schedules.view',
-    },
+			href: '/courses-schedules',
+			icon: FiBookOpen,
+			label: 'Cursos y Horarios',
+			permission: 'courses.schedules.view',
+		},
 		{
 			href: '/users',
 			icon: FiUsers,

@@ -41,10 +41,12 @@ export const AdmissionsMyPrograms = () => {
 
 	const filteredAdmissionsPrograms = dataAdmissionsPrograms?.results?.filter(
 		(item) =>
-			item.admission_process === Number(decrypted) &&
-			item.coordinator === profile.id &&
+			// item.admission_process === Number(decrypted) &&
+			// item.coordinator === profile.id &&
 			item.program_name.toLowerCase().includes(searchValue.toLowerCase())
 	);
+
+	console.log(filteredAdmissionsPrograms);
 
 	return (
 		<Box spaceY='5'>

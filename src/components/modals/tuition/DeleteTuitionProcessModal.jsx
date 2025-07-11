@@ -1,23 +1,12 @@
-import { Field, ConfirmModal, toaster, Tooltip } from '@/components/ui';
-import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
+import { ConfirmModal, toaster, Tooltip } from '@/components/ui';
 import {
 	Box,
-	FieldErrorText,
-	Heading,
 	IconButton,
-	Input,
-	SimpleGrid,
 	Span,
-	Stack,
     Text,
 } from '@chakra-ui/react';
-import {
-	useCreateEnrollments,
-	useUpdateEnrollments,
-} from '@/hooks/enrollments_proccess';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useDeleteEnrollments } from '@/hooks/enrollments_proccess/useDeleteEnrollments';
-import { format } from 'date-fns';
 import { FiTrash2 } from 'react-icons/fi';
 import PropTypes from 'prop-types';
 

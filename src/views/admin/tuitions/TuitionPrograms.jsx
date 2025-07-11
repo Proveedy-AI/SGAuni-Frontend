@@ -45,12 +45,17 @@ export const TuitionPrograms = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [modalData, setModalData] = useState(null);
 
-	const filteredEnrollmentsPrograms = dataEnrollmentsPrograms?.results?.filter(
-		(item) =>
-			item.academic_period_name === data?.academic_period_name &&
-			item.director === profile.id &&
-			item.name.toLowerCase().includes(searchValue.toLowerCase())
-	);
+	const filteredEnrollmentsPrograms = dataEnrollmentsPrograms?.results?.filter((item) => {
+		// item.name === data?.name &&
+		// item.director === profile.id &&
+		// item.name.toLowerCase().includes(searchValue.toLowerCase())
+
+		const matchesSearch = item.program_name
+			?.toLowerCase()
+			.includes(searchValue.toLowerCase());
+
+		return matchesSearch
+	});
 
 	return (
 		<Box spaceY='5'>
@@ -101,17 +106,22 @@ export const TuitionPrograms = () => {
 				align={{ base: 'center', sm: 'center' }}
 				justify='space-between'
 			>
-				<InputGroup flex='1' startElement={<FiSearch />}>
+				<InputGroup
+					startElement={<FiSearch />}
+					flex='1' 
+					minW={'240px'}
+					maxW={'400px'}
+				>
 					<Input
-						ml='1'
 						size='sm'
 						bg={'white'}
-						maxWidth={'550px'}
-						placeholder='Buscar por programa ...'
+						maxWidth={'450px'}
+						placeholder='Buscar por programa'
 						value={searchValue}
 						onChange={(e) => setSearchValue(e.target.value)}
 					/>
 				</InputGroup>
+
 				{permissions?.includes('enrollments.proccess.create') && (
 					<Button
 						bg='uni.secondary'
@@ -146,9 +156,10 @@ export const TuitionPrograms = () => {
 					setModalData(null);
 				}}
 				data={modalData}
+				processData={data}
 				fetchData={fetchEnrollmentsPrograms}
 				actionType={actionType}
-				existingNames={filteredEnrollmentsPrograms?.map(item => item?.academic_period_name?.toLowerCase())}
+				existingNames={filteredEnrollmentsPrograms?.map(item => item?.program_name?.toLowerCase())}
 			/>
 		</Box>
 	);

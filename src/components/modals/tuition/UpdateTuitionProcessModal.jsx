@@ -155,7 +155,11 @@ export const UpdateTuitionProcessModal = ({
 					toaster.create({
 						title: error.message || 'Error al registrar el Proceso',
 						type: 'error',
+						onStatusChange({ status }) {
+							if (status === 'unmounted') setToasterShown(false);
+						}
 					});
+					setToasterShown(true);
 				},
 			});
 		} else if (actionType === 'edit') {
@@ -199,7 +203,11 @@ export const UpdateTuitionProcessModal = ({
 						toaster.create({
 							title: error.message || 'Error al actualizar el Proceso',
 							type: 'error',
+							onStatusChange({ status }) {
+								if (status === 'unmounted') setToasterShown(false);
+							}
 						});
+						setToasterShown(true);
 					},
 				}
 			);

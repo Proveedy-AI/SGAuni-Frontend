@@ -7,23 +7,23 @@ import { StudentDashboard } from './StudentDashboard';
 export const dashboardsByPermission = [
 	{
 		permission: 'dashboard.admin.view',
-		component: <AdminDashboard />,
+		component: () => <AdminDashboard />,
 	},
 	{
 		permission: 'dashboard.coord.view',
-		component: <CoordinatorDashboard />,
+		component: () => <CoordinatorDashboard />,
 	},
 	{
 		permission: 'dashboard.applicant.view',
-		component: <ApplicantDashboard />,
+		component: () => <ApplicantDashboard />,
 	},
 
 	{
 		permission: 'dashboard.student.view',
-		component: <StudentDashboard />,
+		component: () => <StudentDashboard />,
 	},
 	{
 		permission: 'dashboard.debt.view',
-		component: <DebtDashboard />,
+		component: () => <DebtDashboard />,
 	},
 ];
