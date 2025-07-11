@@ -13,23 +13,36 @@ import { SortableHeader } from '@/components/ui/SortableHeader';
 const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 	const navigate = useNavigate();
 	const statusMap = {
-		1: { label: 'Imcompleto', color: 'orange.500' },
+		1: { label: 'Incompleto', color: 'orange.500' },
 		2: { label: 'Pendiente', color: 'orange.500' },
 		3: { label: 'Aprobado', color: 'green' },
 		4: { label: 'Rechazado', color: 'red' },
 	};
 
+	const handleRowClick = (e) => {
+		if (e.target.closest('button') || e.target.closest('a')) return;
+
+		const now = new Date();
+		const examEnd = item.exam_date_end ? new Date(item.exam_date_end) : null;
+		const isIncomplete = item.status_display === 'Incompleto';
+
+		if (examEnd && isIncomplete && now > examEnd) {
+			// Puedes mostrar una alerta o toast si quieres
+			console.warn(
+				'No se puede acceder: el examen ya terminó y está incompleto.'
+			);
+			return;
+		}
+
+		EncryptedStorage.save('selectedApplicant', item);
+		navigate(`/admissions/myapplicants/proccess`, {
+			state: { item },
+		});
+	};
+
 	return (
 		<Table.Row
-			onClick={(e) => {
-				if (e.target.closest('button') || e.target.closest('a')) return;
-
-				EncryptedStorage.save('selectedApplicant', item);
-
-				navigate(`/admissions/myapplicants/proccess`, {
-					state: { item },
-				});
-			}}
+			onClick={handleRowClick}
 			key={item.id}
 			bg={index % 2 === 0 ? 'gray.100' : 'white'} // tu color alternado aquí
 			_hover={{
