@@ -2,13 +2,14 @@
 
 import { Box, Button, Flex, Heading, Steps, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { PaymentApplicant } from './PaymentApplicant';
+
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { PersonalDataApplicants } from '@/components/forms/admissions/MyApplicants';
 import { FaCheckCircle, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
 import { DocumentsApplicant } from './DocumentsApplicant';
 import { WorkApplicant } from './WorkApplicant';
+import { PaymentApplicant } from './PaymentApplicant';
 
 export const ApplicantsLayout = () => {
 	const [step, setStep] = useState(0);
