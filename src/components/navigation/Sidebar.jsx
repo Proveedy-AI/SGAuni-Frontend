@@ -215,7 +215,7 @@ export const Sidebar = ({ profile }) => {
 };
 
 Sidebar.propTypes = {
-	profile: PropTypes.object.isRequired,
+	profile: PropTypes.object,
 };
 
 const SidebarItem = ({
