@@ -1,2 +1,2 @@
 export * from './TuitionProcess';
-export * from './TuitionPrograms';
+export * from './TuitionMyPrograms';

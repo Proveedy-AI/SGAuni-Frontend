@@ -1,7 +1,5 @@
-import { ReactSelect } from '@/components';
 import { UpdateTuitionProcessModal } from '@/components/modals/tuition';
 import { TuitionListTable } from '@/components/tables/tuition';
-import { Field } from '@/components/ui';
 import { useReadEnrollments } from '@/hooks/enrollments_proccess';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import {
@@ -29,26 +27,13 @@ export const TuitionProcess = () => {
 
 	const [searchValue, setSearchValue] = useState('');
 	const [actionType, setActionType] = useState('create');
-	const [selectedStatus, setSelectedStatus] = useState(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [modalData, setModalData] = useState(null);
-
-	// const statusOptions = Array.from(
-	// 	new Set(tuitionProcessesData.map((item) => item.status))
-	// ).map((status) => ({
-	// 	label: status,
-	// 	value: status,
-	// }));
 
 	const filteredTuitionProcesses = dataEnrollments?.results?.filter((item) => {
 		const matchesSearch = item.academic_period_name
 			?.toLowerCase()
 			.includes(searchValue.toLowerCase());
-
-		// const matchesStatus = selectedStatus
-		// 	? item.status === selectedStatus.value
-		// 	: true;
-
 		return matchesSearch; // && matchesStatus;
 	});
 
@@ -86,51 +71,6 @@ export const TuitionProcess = () => {
 							onChange={(e) => setSearchValue(e.target.value)}
 						/>
 					</InputGroup>
-
-					{/* <Field flex={1} minW={'200px'} maxW={'300px'}>
-						<ReactSelect
-							label='Estado'
-							placeholder='Filtrar por estado'
-							isSearchable={false}
-							options={statusOptions}
-							value={selectedStatus}
-							onChange={(value) => setSelectedStatus(value)}
-							isClearable
-							styles={{
-								control: (base, state) => ({
-									...base,
-									fontSize: '14px',
-									borderColor: state.isFocused ? '#711610' : base.borderColor,
-									boxShadow: state.isFocused ? '0 0 0 1px #711610' : 'none',
-									cursor: 'pointer',
-									'&:hover': {
-										borderColor: '#711610',
-									},
-								}),
-
-								option: (base, state) => {
-									const isSelected = state.isSelected;
-									const isFocused = state.isFocused;
-
-									return {
-										...base,
-										fontSize: '14px',
-										backgroundColor: isSelected
-											? '#711610'
-											: isFocused
-												? '#F2F2F2'
-												: 'white',
-										color: isSelected ? 'white' : 'black',
-										cursor: 'pointer',
-										'&:hover': {
-											backgroundColor: isSelected ? '#711610' : '#F2F2F2',
-											color: isSelected ? 'white' : 'black',
-										},
-									};
-								},
-							}}
-						/>
-					</Field> */}
 				</Stack>
 
 				{permissions?.includes('enrollments.proccessEnrollments.create') && (

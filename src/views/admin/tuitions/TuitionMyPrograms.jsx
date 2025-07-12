@@ -5,7 +5,6 @@ import {
 	Input,
 	Stack,
 	Breadcrumb,
-	Tabs,
 	Button,
 } from '@chakra-ui/react';
 import { useState } from 'react';
@@ -14,15 +13,13 @@ import { useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router';
 import { useReadEnrollmentsPrograms } from '@/hooks/enrollments_programs';
 import { useReadEnrollmentById } from '@/hooks/enrollments_proccess';
-import { AdmissionsProgramsTable } from '@/components/tables/admissions';
-import { useProvideAuth } from '@/hooks/auth';
 import { LiaSlashSolid } from 'react-icons/lia';
-import { useReadAdmissionsPrograms } from '@/hooks/admissions_programs';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { EnrollmentsMyProgramsTable } from '@/components/tables/tuition';
 import { UpdateTuitionProgramsModal } from '@/components/modals/tuition';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 
-export const TuitionPrograms = () => {
+export const TuitionMyPrograms = () => {
 	const { id } = useParams();
 	const decoded = decodeURIComponent(id);
 	const decrypted = Encryptor.decrypt(decoded);
@@ -33,8 +30,7 @@ export const TuitionPrograms = () => {
 		isLoading,
 	} = useReadEnrollmentsPrograms();
 
-	const { getProfile } = useProvideAuth();
-	const profile = getProfile();
+	const { data: profile } = useReadUserLogged();
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])
@@ -45,17 +41,15 @@ export const TuitionPrograms = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [modalData, setModalData] = useState(null);
 
-	const filteredEnrollmentsPrograms = dataEnrollmentsPrograms?.results?.filter((item) => {
-		// item.name === data?.name &&
-		// item.director === profile.id &&
-		// item.name.toLowerCase().includes(searchValue.toLowerCase())
+	const filteredEnrollmentsPrograms = dataEnrollmentsPrograms?.results?.filter(
+		(item) => {
+			const matchesSearch = item.program_name
+				?.toLowerCase()
+				.includes(searchValue.toLowerCase());
 
-		const matchesSearch = item.program_name
-			?.toLowerCase()
-			.includes(searchValue.toLowerCase());
-
-		return matchesSearch
-	});
+			return matchesSearch;
+		}
+	);
 
 	return (
 		<Box spaceY='5'>
@@ -76,7 +70,7 @@ export const TuitionPrograms = () => {
 							<LiaSlashSolid />
 						</Breadcrumb.Separator>
 						<Breadcrumb.Item>
-							<Breadcrumb.CurrentLink>Programas</Breadcrumb.CurrentLink>
+							<Breadcrumb.CurrentLink>Mis Programas</Breadcrumb.CurrentLink>
 						</Breadcrumb.Item>
 					</Breadcrumb.List>
 				</Breadcrumb.Root>
@@ -108,7 +102,7 @@ export const TuitionPrograms = () => {
 			>
 				<InputGroup
 					startElement={<FiSearch />}
-					flex='1' 
+					flex='1'
 					minW={'240px'}
 					maxW={'400px'}
 				>
@@ -122,7 +116,7 @@ export const TuitionPrograms = () => {
 					/>
 				</InputGroup>
 
-				{permissions?.includes('enrollments.proccessEnrollments.create') && (
+				{permissions?.includes('enrollments.myprogramsEnrollments.create') && (
 					<Button
 						bg='uni.secondary'
 						size='xs'
@@ -134,7 +128,9 @@ export const TuitionPrograms = () => {
 						}}
 					>
 						<FiPlus color='white' />
-						<div style={{ marginRight: 3, marginBottom: 2 }}>Añadir Programas</div>
+						<div style={{ marginRight: 3, marginBottom: 2 }}>
+							Añadir Programas
+						</div>
 					</Button>
 				)}
 			</Stack>
@@ -156,10 +152,10 @@ export const TuitionPrograms = () => {
 					setModalData(null);
 				}}
 				data={modalData}
+				profileId={profile?.id}
 				processData={data}
 				fetchData={fetchEnrollmentsPrograms}
 				actionType={actionType}
-				existingNames={filteredEnrollmentsPrograms?.map(item => item?.program_name?.toLowerCase())}
 			/>
 		</Box>
 	);

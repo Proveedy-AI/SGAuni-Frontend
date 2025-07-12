@@ -13,7 +13,6 @@ import {
 	SimpleGrid,
 } from '@chakra-ui/react';
 import { Modal, Tooltip } from '@/components/ui';
-import { useReadAdmissionsProgramsReview } from '@/hooks/admissions_review_programs';
 import { format } from 'date-fns';
 import { LuFileText, LuHistory } from 'react-icons/lu';
 import {
@@ -23,14 +22,15 @@ import {
 	FiFileText,
 	FiXCircle,
 } from 'react-icons/fi';
-import { ObservationCell } from './ObservationCell';
+import { ObservationCell } from '../admissions/ObservationCell';
+import { useReadEnrollmentsProgramsReview } from '@/hooks/enrollments_review_programs';
 
-export const HistoryStatusProgramsView = ({ data, statusMap }) => {
+export const HistoryStatusEnrollmentProgramsView = ({ data, statusMap }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 
-	const { data: admissionReviews } = useReadAdmissionsProgramsReview(
-		{ program_id: data.id },
+	const { data: admissionReviews } = useReadEnrollmentsProgramsReview(
+		{ enrollment_period_program: data.id },
 		{ enabled: open } // Evita llamada automática
 	);
 
@@ -270,7 +270,7 @@ export const HistoryStatusProgramsView = ({ data, statusMap }) => {
 	);
 };
 
-HistoryStatusProgramsView.propTypes = {
+HistoryStatusEnrollmentProgramsView.propTypes = {
 	data: PropTypes.object,
 	statusMap: PropTypes.object,
 };

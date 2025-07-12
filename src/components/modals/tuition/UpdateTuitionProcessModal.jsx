@@ -5,7 +5,6 @@ import {
 	Heading,
 	Input,
 	SimpleGrid,
-	Spinner,
 	Stack,
 } from '@chakra-ui/react';
 import {
@@ -51,7 +50,7 @@ export const UpdateTuitionProcessModal = ({
 	// 	if (typeof val === 'string') return val.trim() !== '';
 	// 	return val !== null && val !== undefined;
 	// });
-	const isFilled = Object.values(formData).every(([_, val]) => {
+	const isFilled = Object.values(formData).every((val) => {
 		if (typeof val === 'string') return val.trim() !== '';
 		return val !== null && val !== undefined;
 	});
@@ -261,7 +260,7 @@ export const UpdateTuitionProcessModal = ({
 						{actionType === 'duplicate' &&
 							!formData.academicPeriod.toLowerCase().includes('-copia') && (
 								<FieldErrorText>
-									El nombre del período debe incluir "-Copia".
+									El nombre del período debe incluir &quot;-Copia&quot;.
 								</FieldErrorText>
 							)}
 					</Field>
@@ -339,4 +338,5 @@ UpdateTuitionProcessModal.propTypes = {
 	data: PropTypes.object,
 	fetchData: PropTypes.func,
 	actionType: PropTypes.oneOf(['create', 'edit', 'duplicate']),
+	existingNames: PropTypes.arrayOf(PropTypes.string),
 };

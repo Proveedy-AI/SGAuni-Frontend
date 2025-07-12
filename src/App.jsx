@@ -27,7 +27,7 @@ import {
 import { Contracts, MyContracts } from './views/admin/contracts';
 import { AdmissionMyApplicants } from './views/admin/applicants/AdmissionMyApplicants';
 import { ApplicantsLayout } from './views/admin/applicants/ApplicantsLayout';
-import { TuitionProcess, TuitionPrograms } from './views/admin/tuitions';
+import { TuitionMyPrograms, TuitionProcess } from './views/admin/tuitions';
 import {
 	DebtsLayout,
 	PaymentOrdersByRequest,
@@ -110,9 +110,9 @@ function App() {
 								<Route
 									element={
 										<ProtectedRoute
-                      requiredPermission='applicants.myapplicants.view'
-                      requiredDebt={true}  
-                    />
+											requiredPermission='applicants.myapplicants.view'
+											requiredDebt={true}
+										/>
 									}
 								>
 									<Route path='myapplicants'>
@@ -164,11 +164,21 @@ function App() {
 								</Route>
 								<Route
 									element={
-										// <ProtectedRoute requiredPermission='enrollments.programs.view' />
-										<ProtectedRoute requiredPermission='enrollments.proccessEnrollments.view' />
+										<ProtectedRoute requiredPermission='enrollments.myprogramsEnrollments.view' />
 									}
 								>
-									<Route path='programs/:id' element={<TuitionPrograms />} />
+									<Route path='myprograms/:id' element={<TuitionMyPrograms />} />
+								</Route>
+
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='admissions.myprogramsEnrollments.view' />
+									}
+								>
+									<Route
+										path='programs/:id'
+										element={<AdmissionsMyPrograms />}
+									/>
 								</Route>
 							</Route>
 

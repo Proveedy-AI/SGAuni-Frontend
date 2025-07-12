@@ -23,6 +23,7 @@ import {
 	FiX,
 } from 'react-icons/fi';
 import { LuFileCheck } from 'react-icons/lu';
+import { formatDateString } from './dateHelpers';
 
 export const SendConfirmationModal = ({
 	openSend,
@@ -35,22 +36,15 @@ export const SendConfirmationModal = ({
 		onConfirm(item.id);
 	};
 
-	const formatDate = (dateString) => {
-		if (!dateString) return 'No especificada';
-		return new Date(dateString).toLocaleDateString('es-ES', {
-			year: 'numeric',
-			month: 'long',
-			day: 'numeric',
-		});
-	};
-
 	if (!openSend) {
 		return (
 			<Tooltip
 				content={
-					item.status === 4
+					item.status === 2
 						? 'Ya fue enviado para aprobación'
-						: 'Enviar para aprobación'
+						: item.status === 4
+							? 'Aprobado'
+							: 'Enviar para aprobación'
 				}
 				positioning={{ placement: 'bottom-center' }}
 				showArrow
@@ -60,7 +54,7 @@ export const SendConfirmationModal = ({
 					onClick={() => setOpenSend(true)}
 					colorPalette='green'
 					size='sm'
-					disabled={item.status === 4}
+					disabled={item.status === 4 || item.status === 2}
 				>
 					<FiSend />
 				</IconButton>
@@ -74,12 +68,11 @@ export const SendConfirmationModal = ({
 			inset={0}
 			bg='blackAlpha.600'
 			display='flex'
-            borderRadius={'20px'}
+			borderRadius={'20px'}
 			alignItems='center'
 			justifyContent='center'
 			p={4}
 			zIndex={50}
-            
 		>
 			<Box
 				bg='white'
@@ -88,14 +81,15 @@ export const SendConfirmationModal = ({
 				w='full'
 				maxW='90vh'
 				maxH='90vh' // Máximo 90% del alto de la ventana
-                overflowY='auto'
+				overflowY='auto'
 				sx={{
 					'&::-webkit-scrollbar': { width: '6px' },
 					'&::-webkit-scrollbar-thumb': {
 						background: 'gray.300',
 						borderRadius: 'full',
 					},
-				}}s
+				}}
+				s
 				// Scroll si el contenido se excede
 			>
 				{/* Header */}
@@ -119,7 +113,6 @@ export const SendConfirmationModal = ({
 							onClick={() => setOpenSend(false)}
 							variant='ghost'
 							size='sm'
-						
 							disabled={loading}
 						>
 							<FiX size={16} />
@@ -200,7 +193,7 @@ export const SendConfirmationModal = ({
 										<FiCalendar size={16} color='#9333EA' />
 										<Text>Inicio de semestre:</Text>
 										<Text fontWeight='medium' color='gray.800'>
-											{formatDate(item.semester_start_date)}
+											{formatDateString(item.semester_start_date)}
 										</Text>
 									</HStack>
 								)}
@@ -268,11 +261,11 @@ export const SendConfirmationModal = ({
 						colorPalette='green'
 						minW='120px'
 						loading={loading}
-                        loadingText='Enviando...'
+						loadingText='Enviando...'
 						leftIcon={!loading ? <FiSend size={16} /> : undefined}
 						spinner={<FiLoader className='animate-spin' size={16} />}
 					>
-						Enviar 
+						Enviar
 					</Button>
 				</Flex>
 			</Box>

@@ -3,14 +3,12 @@ import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import {
 	Box,
 	Card,
-	FieldErrorText,
 	Flex,
 	Heading,
 	Icon,
 	Input,
 	List,
 	SimpleGrid,
-	Spinner,
 	Stack,
 	Text,
 } from '@chakra-ui/react';
@@ -21,8 +19,16 @@ import {
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import PropTypes from 'prop-types';
-import { FiBookOpen, FiCalendar, FiCheckCircle, FiClock, FiUsers } from 'react-icons/fi';
+import {
+	FiBookOpen,
+	FiCalendar,
+	FiCheckCircle,
+	FiClock,
+	FiUsers,
+} from 'react-icons/fi';
 import { LuGraduationCap } from 'react-icons/lu';
+import { ReactSelect } from '@/components/select';
+import { useReadPrograms } from '@/hooks';
 
 export const UpdateTuitionProgramsModal = ({
 	open,
@@ -30,51 +36,133 @@ export const UpdateTuitionProgramsModal = ({
 	data,
 	processData,
 	fetchData,
+	profileId,
 	actionType,
-	existingNames = [],
 }) => {
 	const { mutate: createEnrollmentsPrograms, isPending: isCreating } =
 		useCreateEnrollmentsPrograms();
 	const { mutate: updateEnrollmentsPrograms, isPending: isUpdating } =
 		useUpdateEnrollmentsPrograms();
 
-	const [toasterShown, setToasterShown] = useState(false);
+	const { data: dataPrograms } = useReadPrograms(
+		{ coordinator_id: profileId },
+		{ enabled: open }
+	);
+
 	const [formData, setFormData] = useState({
-		name: '',
+		program: '',
 		startDate: '',
 		endDate: '',
 		evalStart: '',
 		evalEnd: '',
 		semester_start_date: '',
+		semesterCredits: '',
 	});
 
-	const isValid = Object.values(formData).every((val) =>
-		typeof val === 'string'
-			? val.trim() !== ''
-			: val !== null && val !== undefined
-	);
+	const ProgramsOptions = dataPrograms?.results?.map((department) => ({
+		label: department.name,
+		value: department.id,
+	}));
 
 	useEffect(() => {
 		if (open && data) {
 			setFormData({
-				name: data.name || data.academic_period_name || '',
-				startDate: data.examen_start_date || '',
-				endDate: data.examen_end_date || '',
-				evalStart: data.registration_start_date || '',
-				evalEnd: data.registration_end_date || '',
+				program: data.program || '',
+				enrollment_period: data.enrollment_period || '',
+				startDate: data.registration_start_date || '',
+				endDate: data.registration_end_date || '',
+				evalStart: data.examen_start_date || '',
+				evalEnd: data.examen_end_date || '',
 				semester_start_date: data.semester_start_date || '',
+				semesterCredits: data.credits || '',
 			});
 		} else {
 			setFormData({
-				name: '',
+				program: '',
 				startDate: '',
 				endDate: '',
 				evalStart: '',
 				evalEnd: '',
 				semester_start_date: '',
+				semesterCredits: '',
 			});
 		}
 	}, [open, data]);
+
+	const [errors, setErrors] = useState({});
+	const validateFields = () => {
+		const newErrors = {};
+
+		if (!formData.program) {
+			newErrors.program = 'El programa es requerido';
+		}
+
+		if (!formData.startDate) {
+			newErrors.startDate = 'La fecha de inicio de inscripción es requerida';
+		}
+
+		if (!formData.endDate) {
+			newErrors.endDate = 'La fecha de fin de inscripción es requerida';
+		}
+
+		if (
+			formData.startDate &&
+			formData.endDate &&
+			new Date(formData.startDate) >= new Date(formData.endDate)
+		) {
+			newErrors.endDate =
+				'La fecha de fin debe ser posterior a la fecha de inicio';
+		}
+
+		// Validar que el examen comience después del período de registro
+		if (
+			formData.endDate &&
+			formData.evalStart &&
+			new Date(formData.evalStart) <= new Date(formData.endDate)
+		) {
+			newErrors.evalStart =
+				'El examen debe comenzar después del fin del período de Inscripciones';
+		}
+
+		if (!formData.evalStart) {
+			newErrors.evalStart = 'La fecha de inicio de evaluación es requerida';
+		}
+
+		if (!formData.evalEnd) {
+			newErrors.evalEnd = 'La fecha de fin de evaluación es requerida';
+		}
+
+		if (
+			formData.evalStart &&
+			formData.evalEnd &&
+			new Date(formData.evalStart) >= new Date(formData.evalEnd)
+		) {
+			newErrors.evalEnd =
+				'La fecha de fin de evaluación debe ser posterior a la fecha de inicio';
+		}
+
+		if (!formData.semester_start_date) {
+			newErrors.semester_start_date =
+				'La fecha de inicio del semestre es requerida';
+		}
+
+		// Validar que el semestre comience después del período de examen
+		if (
+			formData.evalEnd &&
+			formData.semester_start_date &&
+			new Date(formData.semester_start_date) <= new Date(formData.evalEnd)
+		) {
+			newErrors.semester_start_date =
+				'El semestre debe comenzar después del fin del período de examen';
+		}
+
+		if (!formData.semesterCredits) {
+			newErrors.semesterCredits = 'Los créditos del semestre son requeridos';
+		}
+
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
 
 	const handleChange = (key, value) => {
 		const formatted =
@@ -87,35 +175,19 @@ export const UpdateTuitionProgramsModal = ({
 	};
 
 	const handleSave = () => {
-		if (toasterShown) return;
-		setToasterShown(true);
-
-		const normalizedName = formData.name.trim().toLowerCase();
+		if (!validateFields()) return;
 
 		if (actionType === 'create') {
 			const payload = {
-				name: formData.name,
-				admission_process_program: 1,
+				program: formData.program,
 				enrollment_period: processData.id,
 				registration_start_date: formData.startDate,
 				registration_end_date: formData.endDate,
 				examen_start_date: formData.evalStart,
 				examen_end_date: formData.evalEnd,
 				semester_start_date: formData.semester_start_date,
-				credits: 1,
+				credits: formData.semesterCredits,
 			};
-
-			if (existingNames.includes(normalizedName)) {
-				toaster.create({
-					title: 'Ya existe un programa con este nombre',
-					type: 'error',
-					onStatusChange({ status }) {
-						if (status === 'unmounted') setToasterShown(false);
-					},
-				});
-				setToasterShown(true);
-				return;
-			}
 
 			createEnrollmentsPrograms(payload, {
 				onSuccess: () => {
@@ -123,10 +195,10 @@ export const UpdateTuitionProgramsModal = ({
 						title: 'Proceso registrado correctamente',
 						type: 'success',
 						onStatusChange({ status }) {
-							if (status === 'unmounted') setToasterShown(false);
+							if (status === 'unmounted');
 						},
 					});
-					setToasterShown(true);
+
 					fetchData();
 					onClose();
 				},
@@ -138,7 +210,7 @@ export const UpdateTuitionProgramsModal = ({
 						errorMessage = Object.entries(backendErrors)
 							// .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
 							.map(
-								([key, value]) =>
+								([, value]) =>
 									`${Array.isArray(value) ? value.join(', ') : value}`
 							)
 							.join(', ');
@@ -148,41 +220,22 @@ export const UpdateTuitionProgramsModal = ({
 						title: errorMessage,
 						type: 'error',
 						onStatusChange({ status }) {
-							if (status === 'unmounted') setToasterShown(false);
+							if (status === 'unmounted');
 						},
 					});
-
-					setToasterShown(true);
 				},
 			});
 		} else if (actionType === 'edit') {
 			const payload = {
-				name: formData.name,
-				admission_process_program: 1,
+				program: formData.program,
 				enrollment_period: processData.id,
-				registration_start_date: formData.evalStart,
-				registration_end_date: formData.evalEnd,
-				examen_start_date: formData.startDate,
-				examen_end_date: formData.endDate,
+				registration_start_date: formData.startDate,
+				registration_end_date: formData.endDate,
+				examen_start_date: formData.evalStart,
+				examen_end_date: formData.evalEnd,
 				semester_start_date: formData.semester_start_date,
-				credits: 1,
+				credits: formData.semesterCredits,
 			};
-
-			const existingOtherNames = existingNames.filter(
-				(name) => name !== data.program_name?.toLowerCase()
-			);
-
-			if (existingOtherNames.includes(normalizedName)) {
-				toaster.create({
-					title: 'Ya existe otro programa con este nombre',
-					type: 'error',
-					onStatusChange({ status }) {
-						if (status === 'unmounted') setToasterShown(false);
-					},
-				});
-				setToasterShown(true);
-				return;
-			}
 
 			updateEnrollmentsPrograms(
 				{ id: data.id, payload },
@@ -192,10 +245,10 @@ export const UpdateTuitionProgramsModal = ({
 							title: 'Programa actualizado correctamente',
 							type: 'success',
 							onStatusChange({ status }) {
-								if (status === 'unmounted') setToasterShown(false);
+								if (status === 'unmounted');
 							},
 						});
-						setToasterShown(true);
+
 						fetchData();
 						onClose();
 					},
@@ -204,10 +257,9 @@ export const UpdateTuitionProgramsModal = ({
 							title: error.message || 'Error al actualizar el Programa',
 							type: 'error',
 							onStatusChange({ status }) {
-								if (status === 'unmounted') setToasterShown(false);
+								if (status === 'unmounted');
 							},
 						});
-						setToasterShown(true);
 					},
 				}
 			);
@@ -216,22 +268,19 @@ export const UpdateTuitionProgramsModal = ({
 
 	return (
 		<Modal
-			scrollBehavior='inside'
 			title={
 				actionType === 'edit'
 					? 'Editar Programa de Matrícula'
 					: 'Crear Programa de Matrícula'
 			}
 			placement='center'
-			size='4xl'
+			size='5xl'
 			open={open}
 			onOpenChange={(e) => {
 				if (!e.open) onClose();
 			}}
 			onSave={handleSave}
 			loading={isCreating || isUpdating}
-			disabledSave={!isValid || isCreating || isUpdating || toasterShown}
-			positionerProps={{ style: { padding: '0 40px' } }}
 		>
 			<Stack
 				gap={2}
@@ -261,13 +310,24 @@ export const UpdateTuitionProgramsModal = ({
 
 					<Card.Body>
 						<SimpleGrid gap={6}>
-							<Field label='Nombre'>
-								<Input
-									type='text'
-									value={formData.name}
-									onChange={(e) => handleChange('name', e.target.value)}
-									css={{ '--focus-color': '#000' }}
-									rounded='md'
+							<Field
+								label='Programa Académico:'
+								invalid={!!errors.program}
+								errorText={errors.program}
+								required
+							>
+								<ReactSelect
+									value={ProgramsOptions?.find(
+										(opt) => opt.value === formData.program
+									)}
+									onChange={(option) =>
+										handleChange('program', option?.value || '')
+									}
+									variant='flushed'
+									size='xs'
+									isSearchable
+									isClearable
+									options={ProgramsOptions}
 								/>
 							</Field>
 						</SimpleGrid>
@@ -297,7 +357,12 @@ export const UpdateTuitionProgramsModal = ({
 								</Text>
 							</Flex>
 							<SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
-								<Field label='Fecha de inicio'>
+								<Field
+									label='Fecha de inicio'
+									invalid={!!errors.startDate}
+									errorText={errors.startDate}
+									required
+								>
 									<CustomDatePicker
 										selectedDate={formData.startDate}
 										onDateChange={(date) => handleChange('startDate', date)}
@@ -305,7 +370,12 @@ export const UpdateTuitionProgramsModal = ({
 										size='100%'
 									/>
 								</Field>
-								<Field label='Fecha de fin'>
+								<Field
+									label='Fecha de fin'
+									invalid={!!errors.endDate}
+									errorText={errors.endDate}
+									required
+								>
 									<CustomDatePicker
 										selectedDate={formData.endDate}
 										onDateChange={(date) => handleChange('endDate', date)}
@@ -325,7 +395,12 @@ export const UpdateTuitionProgramsModal = ({
 								</Text>
 							</Flex>
 							<SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
-								<Field label='Evaluación inicial'>
+								<Field
+									label='Evaluación inicial'
+									invalid={!!errors.evalStart}
+									errorText={errors.evalStart}
+									required
+								>
 									<CustomDatePicker
 										selectedDate={formData.evalStart}
 										onDateChange={(date) => handleChange('evalStart', date)}
@@ -333,7 +408,12 @@ export const UpdateTuitionProgramsModal = ({
 										size='150px'
 									/>
 								</Field>
-								<Field label='Evaluación final'>
+								<Field
+									label='Evaluación final'
+									invalid={!!errors.evalEnd}
+									errorText={errors.evalEnd}
+									required
+								>
 									<CustomDatePicker
 										selectedDate={formData.evalEnd}
 										onDateChange={(date) => handleChange('evalEnd', date)}
@@ -359,91 +439,41 @@ export const UpdateTuitionProgramsModal = ({
 						</Card.Title>
 					</Card.Header>
 
-					<Card.Body className='space-y-6'>
+					<Card.Body gap={6}>
 						<Box>
-							<CustomDatePicker
-								selectedDate={formData.semester_start_date}
-								onDateChange={(date) =>
-									handleChange('semester_start_date', date)
-								}
-								buttonSize='md'
-								size='150px'
-							/>
+							<Field
+								label='Inicio de semestre:'
+								invalid={!!errors.semester_start_date}
+								errorText={errors.semester_start_date}
+								required
+							>
+								<CustomDatePicker
+									selectedDate={formData.semester_start_date}
+									onDateChange={(date) =>
+										handleChange('semester_start_date', date)
+									}
+									buttonSize='md'
+									size='150px'
+								/>
+							</Field>
+						</Box>
+						<Box>
+							<Field
+								label='Creditos del semestre:'
+								invalid={!!errors.semesterCredits}
+								errorText={errors.semesterCredits}
+								required
+							>
+								<Input
+									value={formData.semesterCredits}
+									onChange={(e) =>
+										handleChange('semesterCredits', e.target.value)
+									}
+								/>
+							</Field>
 						</Box>
 					</Card.Body>
 				</Card.Root>
-
-				{/* <Stack>
-					<Field label='Nombre'>
-						<Input
-							type='text'
-							value={formData.name}
-							onChange={(e) => handleChange('name', e.target.value)}
-							css={{ '--focus-color': '#000' }}
-							rounded='md'
-						/>
-					</Field>
-				</Stack>
-
-				<Stack>
-					<Heading size='md' color='uni.secondary'>
-						Inscripción
-					</Heading>
-					<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-						<Field label='Fecha de inicio'>
-							<CustomDatePicker
-								selectedDate={formData.startDate}
-								onDateChange={(date) => handleChange('startDate', date)}
-								buttonSize='md'
-								size='100%'
-							/>
-						</Field>
-						<Field label='Fecha de fin'>
-							<CustomDatePicker
-								selectedDate={formData.endDate}
-								onDateChange={(date) => handleChange('endDate', date)}
-								buttonSize='md'
-								size='150px'
-							/>
-						</Field>
-					</SimpleGrid>
-				</Stack>
-
-				<Stack>
-					<Heading size='md' color='uni.secondary'>
-						Cronograma de evaluaciones
-					</Heading>
-					<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-						<Field label='Evaluación inicial'>
-							<CustomDatePicker
-								selectedDate={formData.evalStart}
-								onDateChange={(date) => handleChange('evalStart', date)}
-								buttonSize='md'
-								size='150px'
-							/>
-						</Field>
-						<Field label='Evaluación final'>
-							<CustomDatePicker
-								selectedDate={formData.evalEnd}
-								onDateChange={(date) => handleChange('evalEnd', date)}
-								buttonSize='md'
-								size='150px'
-							/>
-						</Field>
-					</SimpleGrid>
-				</Stack>
-
-				<Stack>
-					<Heading size='md' color='uni.secondary'>
-						Inicio de semestre
-					</Heading>
-					<CustomDatePicker
-						selectedDate={formData.semester_start_date}
-						onDateChange={(date) => handleChange('semester_start_date', date)}
-						buttonSize='md'
-						size='150px'
-					/>
-				</Stack> */}
 
 				<Box
 					bg='blue.50'
@@ -506,5 +536,7 @@ UpdateTuitionProgramsModal.propTypes = {
 	data: PropTypes.object,
 	processData: PropTypes.object,
 	fetchData: PropTypes.func,
+	profileId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	actionType: PropTypes.oneOf(['create', 'edit']),
+	existingNames: PropTypes.arrayOf(PropTypes.string),
 };
