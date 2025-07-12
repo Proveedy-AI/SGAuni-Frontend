@@ -109,7 +109,10 @@ function App() {
 								</Route>
 								<Route
 									element={
-										<ProtectedRoute requiredPermission='applicants.myapplicants.view' />
+										<ProtectedRoute
+                      requiredPermission='applicants.myapplicants.view'
+                      requiredDebt={true}  
+                    />
 									}
 								>
 									<Route path='myapplicants'>

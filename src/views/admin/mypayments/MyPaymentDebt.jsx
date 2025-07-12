@@ -1,3 +1,4 @@
+import { FractionateDebt } from '@/components/forms/mypayments';
 import { PreviewMypaymentDetailsModal } from '@/components/modals';
 import { Alert } from '@/components/ui';
 import { CustomSelect } from '@/components/ui/CustomSelect';
@@ -192,10 +193,15 @@ export const MyPaymentDebt = () => {
 			)}
 			<Card.Root borderRadius={'lg'}>
 				<Card.Header>
-					<Card.Title fontSize={'24px'}>
-						Deudas Consolidadas por Propósito
-					</Card.Title>
-					<Card.Description>{description}</Card.Description>
+					<Flex justify='space-between' align='center'>
+            <Box>
+              <Card.Title fontSize={'24px'}>
+						  Deudas Consolidadas por Propósito
+					    </Card.Title>
+					    <Card.Description>{description}</Card.Description>
+            </Box>
+            <FractionateDebt />
+          </Flex>
 				</Card.Header>
 
 				<Card.Body>
