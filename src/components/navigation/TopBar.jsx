@@ -121,7 +121,7 @@ export const TopBar = () => {
 				</Text>
 			</HStack>
 			<HStack ack style={{ gap: 19 }}>
-				<NotificationsPanel />
+				<NotificationsPanel dataUser={profile} />
 
 				<MenuRoot>
 					<MenuTrigger asChild>

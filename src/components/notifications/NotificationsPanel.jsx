@@ -22,17 +22,15 @@ import {
 	useMarkReadNotifications,
 	useReadMyNotifications,
 } from '@/hooks/notifications';
-import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { useTimeDifference } from '@/hooks';
 
-export const NotificationsPanel = () => {
+export const NotificationsPanel = ({ dataUser }) => {
 	const [visibleCount, setVisibleCount] = useState(4);
 	const [toastData, setToastData] = useState({
 		open: false,
 		title: '',
 		message: '',
 	});
-	const { data: dataUser } = useReadUserLogged();
 	const socketRef = useRef(null);
 	const { data: notifications, refetch } = useReadMyNotifications(
 		{},
@@ -200,6 +198,12 @@ export const NotificationsPanel = () => {
 			/>
 		</>
 	);
+};
+
+NotificationsPanel.propTypes = {
+	dataUser: PropTypes.shape({
+		id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	}),
 };
 
 export const NotificationItem = ({ data, fetchData }) => {
