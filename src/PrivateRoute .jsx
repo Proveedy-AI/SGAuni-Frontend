@@ -117,7 +117,6 @@ export const PrivateRoute = () => {
 export const ProtectedRoute = ({ requiredPermission, requiredDebt=false }) => {
 	const { data: profile } = useReadUserLogged();
 	const location = useLocation();
-  console.log(profile)
 
 	const roles = profile?.roles || [];
 	const permissions = roles
