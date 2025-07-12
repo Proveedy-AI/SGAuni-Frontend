@@ -10,6 +10,7 @@ import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import useSortedData from '@/utils/useSortedData';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import PropTypes from 'prop-types';
+import { formatDateString } from '@/components/ui/dateHelpers';
 
 const Row = memo(
 	({
@@ -32,6 +33,9 @@ const Row = memo(
 			if (permissions?.includes('enrollments.myprogramsEnrollments.view')) {
 				navigate(`/enrollments/myprograms/${encoded}`);
 			}
+			if (permissions?.includes('enrollments.proccessEnrollments.view')) {
+				navigate(`/enrollments/programs/${encoded}`);
+			}
 		};
 
 		return (
@@ -53,8 +57,8 @@ const Row = memo(
 						: startIndex + index + 1}
 				</Table.Cell>
 				<Table.Cell>{item.academic_period_name}</Table.Cell>
-				<Table.Cell>{item.start_date}</Table.Cell>
-				<Table.Cell>{item.end_date}</Table.Cell>
+				<Table.Cell>{formatDateString(item.start_date)}</Table.Cell>
+				<Table.Cell>{formatDateString(item.end_date)}</Table.Cell>
 
 				<Table.Cell onClick={(e) => e.stopPropagation()}>
 					<Box css={{ display: 'flex' }} gap={2}>
@@ -93,13 +97,9 @@ const Row = memo(
 								size='xs'
 								colorPalette='purple'
 								borderRadius='md'
-								onClick={() => {
-									const duplicatedData = {
-										...item,
-										academicPeriod: `${item.academicPeriod}-Copia`,
-									};
-									setModalData(duplicatedData);
-									setIsModalOpen(true);
+								onClick={() => {                                    setModalData(item);
+                                    setActionType('duplicate');
+                                    setIsModalOpen(true);
 								}}
 							>
 								<FiCopy /> Duplicar

@@ -10,6 +10,7 @@ import {
 import {
 	useCreateEnrollments,
 	useUpdateEnrollments,
+	useDuplicateEnrollments,
 } from '@/hooks/enrollments_proccess';
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
@@ -27,6 +28,8 @@ export const UpdateTuitionProcessModal = ({
 		useCreateEnrollments();
 	const { mutate: updateEnrollments, isPending: isUpdating } =
 		useUpdateEnrollments();
+	const { mutate: duplicateEnrollments, isPending: isDuplicating } =
+		useDuplicateEnrollments();
 
 	const [toasterShown, setToasterShown] = useState(false);
 	const [touched, setTouched] = useState({ academicPeriod: false });
@@ -44,50 +47,27 @@ export const UpdateTuitionProcessModal = ({
 		formData.academicPeriod.trim()
 	);
 
-	// const requiredKeys = ['academicPeriod', 'startDate', 'endDate'];
-	// const isFilled = requiredKeys.every((key) => {
-	// 	const val = formData[key];
-	// 	if (typeof val === 'string') return val.trim() !== '';
-	// 	return val !== null && val !== undefined;
-	// });
-	const isFilled = Object.values(formData).every((val) => {
-		if (typeof val === 'string') return val.trim() !== '';
-		return val !== null && val !== undefined;
-	});
-
 	const isDuplicatedValid = data
-		? formData.academicPeriod.toLowerCase().includes('-copia')
+		? formData.academicPeriod.toLowerCase().includes(' - copia')
 		: true;
-
-	const isValid =
-		actionType === 'duplicate'
-			? isFilled && isDuplicatedValid && isAcademicPeriodValid
-			: isFilled && isAcademicPeriodValid;
 
 	useEffect(() => {
 		if (open) {
 			if (data) {
-				const baseAcademicPreiod =
-					data.academicPeriod || data.academic_period_name || '';
+				const baseAcademicPeriod = data.academic_period_name || '';
 				setFormData({
 					academicPeriod:
 						actionType === 'duplicate'
-							? `${baseAcademicPreiod} - Copia`
-							: baseAcademicPreiod,
+							? baseAcademicPeriod.trim() + ' - Copia'
+							: baseAcademicPeriod,
 					startDate: data.start_date || '',
 					endDate: data.end_date || '',
-					// evalStart: '2026-09-03',
-					// evalEnd: '2026-12-20',
-					// semesterStart: '2026-12-25',
 				});
 			} else {
 				setFormData({
 					academicPeriod: '',
 					startDate: '',
 					endDate: '',
-					// evalStart: '',
-					// evalEnd: '',
-					// semesterStart: '',
 				});
 			}
 
@@ -118,7 +98,54 @@ export const UpdateTuitionProcessModal = ({
 
 		const normalizedName = formData.academicPeriod.trim().toLowerCase();
 
-		if (actionType === 'create') {
+		if (actionType === 'duplicate') {
+			const payload = {
+				academic_period_name: formData.academicPeriod,
+				start_date: formData.startDate,
+				end_date: formData.endDate,
+				elective_period: data.elective_period
+			};
+
+			if (existingNames.includes(normalizedName)) {
+				toaster.create({
+					title: 'Ya existe un periodo con este nombre',
+					type: 'error',
+					onStatusChange({ status }) {
+						if (status === 'unmounted') setToasterShown(false);
+					},
+				});
+				setToasterShown(true);
+				return;
+			}
+
+			duplicateEnrollments(
+				{ id: data.id, payload },
+				{
+					onSuccess: () => {
+						toaster.create({
+							title: 'Periodo duplicado correctamente',
+							type: 'success',
+							onStatusChange({ status }) {
+								if (status === 'unmounted') setToasterShown(false);
+							},
+						});
+						setToasterShown(true);
+						fetchData();
+						onClose();
+					},
+					onError: (error) => {
+						toaster.create({
+							title: error.message || 'Error al duplicar el Periodo',
+							type: 'error',
+							onStatusChange({ status }) {
+								if (status === 'unmounted') setToasterShown(false);
+							},
+						});
+						setToasterShown(true);
+					},
+				}
+			);
+		} else if (actionType === 'create') {
 			const payload = {
 				academic_period_name: formData.academicPeriod,
 				start_date: formData.startDate,
@@ -233,8 +260,8 @@ export const UpdateTuitionProcessModal = ({
 				if (!e.open) onClose();
 			}}
 			onSave={handleSave}
-			loading={isCreating || isUpdating}
-			disabledSave={!isValid || isCreating || isUpdating || toasterShown}
+			loading={isCreating || isUpdating || isDuplicating}
+			disabledSave={ isCreating || isUpdating || isDuplicating || toasterShown}
 			positionerProps={{ style: { padding: '0 40px' } }}
 		>
 			<Stack gap={4}>
@@ -258,9 +285,9 @@ export const UpdateTuitionProcessModal = ({
 							<FieldErrorText>Formato inválido. Ej: 2025-1.</FieldErrorText>
 						)}
 						{actionType === 'duplicate' &&
-							!formData.academicPeriod.toLowerCase().includes('-copia') && (
+							!formData.academicPeriod.toLowerCase().includes(' - copia') && (
 								<FieldErrorText>
-									El nombre del período debe incluir &quot;-Copia&quot;.
+									El nombre del período debe incluir &quot; - Copia&quot;
 								</FieldErrorText>
 							)}
 					</Field>

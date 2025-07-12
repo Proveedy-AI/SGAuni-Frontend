@@ -1,5 +1,6 @@
 import { PreviewProgramsPendingModal } from '@/components/forms/admissions';
 import { UpdateStatusAdmissionsProccessForm } from '@/components/forms/admissions/UpdateStatusAdmissionsProccessForm';
+import { UpdateStatusEnrollmentProcessForm } from '@/components/forms/enrollment_proccess/UpdateStatusEnrollmentProcessForm';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { Pagination } from '@/components/ui';
 import { formatDateString } from '@/components/ui/dateHelpers';
@@ -12,7 +13,16 @@ import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
 
 const Row = memo(
-	({ item, fetchData, startIndex, index, permissions, sortConfig, data }) => {
+	({
+		item,
+		fetchData,
+		startIndex,
+		index,
+		permissions,
+		sortConfig,
+		data,
+		enrollment,
+	}) => {
 		const statusMap = {
 			Borrador: { label: 'Borrador', color: 'gray' },
 			Pendiente: { label: 'Pendiente', color: 'orange.500' },
@@ -50,12 +60,19 @@ const Row = memo(
 					<HStack>
 						<PreviewProgramsPendingModal data={item} />
 						{permissions?.includes('admissions.programs.approve') &&
-							item.status === 2 && (
+							!enrollment && (
 								<UpdateStatusAdmissionsProccessForm
 									data={item}
 									fetchData={fetchData}
 								/>
 							)}
+						{enrollment && (
+							<UpdateStatusEnrollmentProcessForm
+								data={item}
+								fetchData={fetchData}
+								enrollment={enrollment}
+							/>
+						)}
 					</HStack>
 				</Table.Cell>
 			</Table.Row>
@@ -73,6 +90,7 @@ Row.propTypes = {
 	permissions: PropTypes.array,
 	sortConfig: PropTypes.object,
 	data: PropTypes.array,
+	enrollment: PropTypes.bool,
 };
 
 export const AdmissionsProgramsTable = ({
@@ -80,6 +98,7 @@ export const AdmissionsProgramsTable = ({
 	fetchData,
 	permissions,
 	isLoading,
+	enrollment = false,
 }) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [currentPage, setCurrentPage] = useState(1);
@@ -171,6 +190,7 @@ export const AdmissionsProgramsTable = ({
 									sortConfig={sortConfig}
 									permissions={permissions}
 									fetchData={fetchData}
+									enrollment={enrollment}
 									startIndex={startIndex}
 									index={index}
 								/>
@@ -206,4 +226,5 @@ AdmissionsProgramsTable.propTypes = {
 	fetchData: PropTypes.func,
 	isLoading: PropTypes.bool,
 	permissions: PropTypes.array,
+	enrollment: PropTypes.bool,
 };

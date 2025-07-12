@@ -16,7 +16,6 @@ import {
 } from '@chakra-ui/react';
 import { Alert, Modal, toaster, Tooltip } from '@/components/ui';
 import { LiaCheckCircleSolid } from 'react-icons/lia';
-import { useAproveeAdmissionsPrograms } from '@/hooks/admissions_programs';
 import {
 	FiAlertTriangle,
 	FiCalendar,
@@ -26,14 +25,15 @@ import {
 } from 'react-icons/fi';
 import { LuGraduationCap } from 'react-icons/lu';
 import { formatDateString } from '@/components/ui/dateHelpers';
+import { useAproveeEnrollmentPrograms } from '@/hooks/enrollments_programs/useAproveeEnrollmentPrograms';
 
-export const UpdateStatusAdmissionsProccessForm = ({ data, fetchData }) => {
+export const UpdateStatusEnrollmentProcessForm = ({ data, fetchData }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 	const [comments, setComments] = useState('');
 	const [selectedStatus, setSelectedStatus] = useState(null); // 4: Aprobado, 3: Rechazado
 
-	const { mutate: aproveePrograms, isPending } = useAproveeAdmissionsPrograms();
+	const { mutate: aproveePrograms, isPending } = useAproveeEnrollmentPrograms();
 
 	const handleSubmitStatus = () => {
 		if (!selectedStatus) {
@@ -105,7 +105,6 @@ export const UpdateStatusAdmissionsProccessForm = ({ data, fetchData }) => {
 						<IconButton
 							size='xs'
 							colorPalette='green'
-							disabled={data.status !== 2}
 							css={{ _icon: { width: '5', height: '5' } }}
 						>
 							<LiaCheckCircleSolid />
@@ -368,7 +367,7 @@ export const UpdateStatusAdmissionsProccessForm = ({ data, fetchData }) => {
 	);
 };
 
-UpdateStatusAdmissionsProccessForm.propTypes = {
+UpdateStatusEnrollmentProcessForm.propTypes = {
 	fetchData: PropTypes.func,
 	data: PropTypes.object,
 };
