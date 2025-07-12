@@ -368,6 +368,7 @@ export const UpdateTuitionProgramsModal = ({
 										onDateChange={(date) => handleChange('startDate', date)}
 										buttonSize='md'
 										size='100%'
+										minDate={new Date()}
 									/>
 								</Field>
 								<Field
@@ -381,6 +382,7 @@ export const UpdateTuitionProgramsModal = ({
 										onDateChange={(date) => handleChange('endDate', date)}
 										buttonSize='md'
 										size='150px'
+										minDate={new Date()}
 									/>
 								</Field>
 							</SimpleGrid>
@@ -406,6 +408,7 @@ export const UpdateTuitionProgramsModal = ({
 										onDateChange={(date) => handleChange('evalStart', date)}
 										buttonSize='md'
 										size='150px'
+										minDate={new Date()}
 									/>
 								</Field>
 								<Field
@@ -419,6 +422,7 @@ export const UpdateTuitionProgramsModal = ({
 										onDateChange={(date) => handleChange('evalEnd', date)}
 										buttonSize='md'
 										size='150px'
+										minDate={new Date()}
 									/>
 								</Field>
 							</SimpleGrid>
@@ -454,6 +458,7 @@ export const UpdateTuitionProgramsModal = ({
 									}
 									buttonSize='md'
 									size='150px'
+									minDate={new Date()}
 								/>
 							</Field>
 						</Box>
