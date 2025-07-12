@@ -111,7 +111,7 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 							<FiArrowUp />
 						</IconButton>
 					}
-					size='4xl'
+					size='5xl'
 					open={open}
 					hiddenFooter={true}
 					onOpenChange={(e) => setOpen(e.open)}

@@ -132,7 +132,7 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 							<FiPlus /> Generar orden de pago
 						</Button>
 					}
-					size='4xl'
+					size='5xl'
 					open={open}
 					hiddenFooter={true}
 					onOpenChange={(e) => setOpen(e.open)}
