@@ -27,6 +27,7 @@ import {
 import { Contracts, MyContracts } from './views/admin/contracts';
 import { AdmissionMyApplicants } from './views/admin/applicants/AdmissionMyApplicants';
 import { ApplicantsLayout } from './views/admin/applicants/ApplicantsLayout';
+import { TuitionProcess, TuitionPrograms } from './views/admin/tuitions';
 import {
 	DebtsLayout,
 	PaymentOrdersByRequest,
@@ -35,7 +36,6 @@ import {
 import { CoursesAndSchedules } from './views/admin/courses_and_schedules';
 import ChakraInscriptionForm from './views/inscription-form';
 import { PaymentOrdersView } from './views/admin/debts/PaymentOrdersView';
-import { Tuition } from './views/admin/tuitions';
 import { MyPaymentDebt } from './views/admin/mypayments/MyPaymentDebt';
 import { MyPaymentsLayout } from './views/admin/mypayments/MyPaymentsLayout';
 import { MyPaymentRequests } from './views/admin/mypayments/MyPaymentRequests';
@@ -151,13 +151,21 @@ function App() {
 									<Route path='list' element={<Contracts />} />
 								</Route>
 							</Route>
-							<Route path='tuition'>
+							<Route path='enrollments'>
 								<Route
 									element={
-										<ProtectedRoute requiredPermission='tuition.processes.view' />
+										<ProtectedRoute requiredPermission='enrollments.proccess.view' />
 									}
 								>
-									<Route index element={<Tuition />} />
+									<Route path='proccess' element={<TuitionProcess />} />
+								</Route>
+								<Route
+									element={
+										// <ProtectedRoute requiredPermission='enrollments.programs.view' />
+										<ProtectedRoute requiredPermission='enrollments.proccess.view' />
+									}
+								>
+									<Route path='programs/:id' element={<TuitionPrograms />} />
 								</Route>
 							</Route>
 
@@ -216,6 +224,18 @@ function App() {
 											element={<PaymentOrdersView />}
 										/>
 									</Route>
+									<Route index element={<PaymentRequestsView />} />
+									<Route path=':id' element={<PaymentOrdersByRequest />} />
+								</Route>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='payment.orders.view' />
+									}
+								>
+									<Route
+										path='payment-orders'
+										element={<PaymentOrdersView />}
+									/>
 								</Route>
 							</Route>
 							{/* SETTINGS */}

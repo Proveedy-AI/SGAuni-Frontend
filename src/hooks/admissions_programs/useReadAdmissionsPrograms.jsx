@@ -18,6 +18,7 @@ export const useReadAdmissionsPrograms = (params = {}) => {
 				}
 			);
 
+			console.log(res.data)
 			return res.data;
 		},
 		getNextPageParam: (lastPage) => {

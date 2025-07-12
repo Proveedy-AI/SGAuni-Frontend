@@ -24,61 +24,98 @@ export function CustomDatePicker({
 		: (maxDate ?? undefined);
 
 	return (
-		<Popover.Root
-			open={openPopover}
-			onOpenChange={(details) => setOpenPopover(details.open)}
-		>
-			<Popover.Trigger asChild={asChild}>
-				<Button
-					as='div'
-					role='textbox'
-					cursor='pointer'
-					variant='outline'
-					size={buttonSize}
-					px={3}
-					py={2}
-					w='full'
-					minW={size}
-					justifyContent='space-between'
-				>
-					<Box>
-						{selectedDate
-							? format(parseISO(selectedDate), 'dd/MM/yyyy', { locale: es })
-							: 'dd/mm/aaaa'}
-					</Box>
-					<Box>
-						<FiCalendar />
-					</Box>
-				</Button>
-			</Popover.Trigger>
+		<>
+			<style>
+				{`
+					.rdrCalendarWrapper {
+						display: block;
+						padding: 0 16px;
+						overflow: hidden;
+					}
+				`}
+			</style>
 
-			<Portal>
-				<Popover.Positioner>
-					<Popover.Content>
-						<Popover.Body>
-							<Box
-								mt='-8'
-								ml={'-2'}
-								transform='scale(0.90)'
-								transformOrigin='top left'
-							>
-								<Calendar
-									date={selectedDate ? parseISO(selectedDate) : new Date()}
-									onChange={(date) => {
-										onDateChange(date);
-									}}
-									minDate={minDate}
-									maxDate={effectiveMaxDate}
-									locale={es}
-									color='#711610'
-								/>
-							</Box>
-						</Popover.Body>
-						<Popover.CloseTrigger />
-					</Popover.Content>
-				</Popover.Positioner>
-			</Portal>
-		</Popover.Root>
+			<Popover.Root
+				open={openPopover}
+				onOpenChange={(details) => setOpenPopover(details.open)}
+			>
+				<Popover.Trigger asChild={asChild} style={{ width: '100%' }}>
+					<Button
+						as='div'
+						role='textbox'
+						cursor='pointer'
+						variant='outline'
+						size={buttonSize}
+						px={3}
+						py={2}
+						w='full'
+						minW={size}
+						justifyContent='space-between'
+						position='relative'
+						rounded='md'
+						fontWeight='400'
+						style={{
+							border: openPopover ? '1px solid #000' : '',
+							boxShadow: openPopover ? '0 0 0 1px #000' : 'none',
+						}}
+					>
+						<Box>
+							{selectedDate
+								? format(parseISO(selectedDate), 'dd/MM/yyyy', { locale: es })
+								: 'dd/mm/aaaa'}
+						</Box>
+						<Box
+							roundedRight='md'
+							style={{
+								position: 'absolute',
+								top: 0,
+								right: 0,
+								bottom: 0,
+								padding: '0 11px',
+								display: 'flex',
+								alignItems: 'center',
+								backgroundColor: '#F5F5F5',
+								borderLeft: '1px solid #e4e4e7',
+								color: openPopover ? '#000' : '#9A999D',
+							}}
+						>
+							<FiCalendar style={{ width: '18px', height: '18px' }} />
+						</Box>
+					</Button>
+				</Popover.Trigger>
+
+				<Portal>
+					<Popover.Positioner>
+						<Popover.Content
+							style={{ padding: 0, overflow: 'hidden', borderRadius: 20 }}
+						>
+							<Popover.Body style={{ padding: 0 }}>
+								<Box
+								// mt='-8'
+								// ml={'-2'}
+								// transform='scale(0.90)'
+								// transformOrigin='top left'
+								>
+									<Calendar
+										date={selectedDate ? parseISO(selectedDate) : new Date()}
+										onChange={(date) => {
+											onDateChange(date);
+											setOpenPopover(false);
+										}}
+										minDate={minDate}
+										maxDate={effectiveMaxDate}
+										locale={es}
+										color='#711610'
+										style={{ width: '100%' }}
+									/>
+								</Box>
+							</Popover.Body>
+							<Popover.CloseTrigger />
+						</Popover.Content>
+					</Popover.Positioner>
+				</Portal>
+			</Popover.Root>
+		</>
 	);
 }
 
@@ -86,7 +123,8 @@ CustomDatePicker.propTypes = {
 	selectedDate: PropTypes.string,
 	onDateChange: PropTypes.func,
 	buttonSize: PropTypes.string,
-	size: PropTypes.object,
+	// size: PropTypes.object,
+	size: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 	disableFutureDates: PropTypes.bool,
 	minDate: PropTypes.instanceOf(Date),
 	maxDate: PropTypes.instanceOf(Date),

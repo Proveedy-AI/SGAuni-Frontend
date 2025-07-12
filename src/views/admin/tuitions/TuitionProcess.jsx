@@ -1,7 +1,9 @@
 import { ReactSelect } from '@/components';
-import { AddTuitionProcessModal } from '@/components/modals/tuition';
-import { TuitionProcessesTable } from '@/components/tables/tuition';
-import { Field, toaster } from '@/components/ui';
+import { UpdateTuitionProcessModal } from '@/components/modals/tuition';
+import { TuitionListTable } from '@/components/tables/tuition';
+import { Field } from '@/components/ui';
+import { useProvideAuth } from '@/hooks/auth';
+import { useReadEnrollments } from '@/hooks/enrollments_proccess';
 import {
 	Box,
 	Button,
@@ -13,58 +15,67 @@ import {
 import { useState } from 'react';
 import { FiPlus, FiSearch } from 'react-icons/fi';
 
-export const tuitionProcessesData = [
-	{
-		id: 1,
-		academicPeriod: 'Cycle 2026-2',
-		schedule: '13/08/26 - 20/12/26',
-		status: 'Pending Approval',
-		observation:
-			'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia, quae.',
-	},
-	{
-		id: 2,
-		academicPeriod: 'Cycle 2026-1',
-		schedule: '13/08/26 - 20/12/26',
-		status: 'Configuration',
-		observation: '',
-	},
-	{
-		id: 3,
-		academicPeriod: 'Cycle 2025-2',
-		schedule: '13/08/26 - 20/12/26',
-		status: 'Approved',
-		observation: '',
-	},
-];
+// export const tuitionProcessesData = [
+// 	{
+// 		id: 1,
+// 		academicPeriod: 'Cycle 2026-2',
+// 		schedule: '13/08/26 - 20/12/26',
+// 		status: 'Pending Approval',
+// 		observation:
+// 			'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia, quae.',
+// 	},
+// 	{
+// 		id: 2,
+// 		academicPeriod: 'Cycle 2026-1',
+// 		schedule: '13/08/26 - 20/12/26',
+// 		status: 'Configuration',
+// 		observation: '',
+// 	},
+// 	{
+// 		id: 3,
+// 		academicPeriod: 'Cycle 2025-2',
+// 		schedule: '13/08/26 - 20/12/26',
+// 		status: 'Approved',
+// 		observation: '',
+// 	},
+// ];
 
-export const Tuition = () => {
-	// const {
-	//     data: dataProgramsForEvaluator,
-	// } = useReadProgramsForEvaluator()
+export const TuitionProcess = () => {
+	const {
+		data: dataEnrollments,
+		refetch: fetchEnrollments,
+		isLoading,
+	} = useReadEnrollments();
+	const { getProfile } = useProvideAuth();
+	const profile = getProfile();
+	const roles = profile?.roles || [];
+	const permissions = roles
+		.flatMap((r) => r.permissions || [])
+		.map((p) => p.guard_name);
 
 	const [searchValue, setSearchValue] = useState('');
+	const [actionType, setActionType] = useState('create');
 	const [selectedStatus, setSelectedStatus] = useState(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [modalData, setModalData] = useState(null);
 
-	const statusOptions = Array.from(
-		new Set(tuitionProcessesData.map((item) => item.status))
-	).map((status) => ({
-		label: status,
-		value: status,
-	}));
+	// const statusOptions = Array.from(
+	// 	new Set(tuitionProcessesData.map((item) => item.status))
+	// ).map((status) => ({
+	// 	label: status,
+	// 	value: status,
+	// }));
 
-	const filteredTuitionProcesses = tuitionProcessesData.filter((item) => {
-		const matchesSearch = item.academicPeriod
+	const filteredTuitionProcesses = dataEnrollments?.results?.filter((item) => {
+		const matchesSearch = item.academic_period_name
 			?.toLowerCase()
 			.includes(searchValue.toLowerCase());
 
-		const matchesStatus = selectedStatus
-			? item.status === selectedStatus.value
-			: true;
+		// const matchesStatus = selectedStatus
+		// 	? item.status === selectedStatus.value
+		// 	: true;
 
-		return matchesSearch && matchesStatus;
+		return matchesSearch // && matchesStatus;
 	});
 
 	return (
@@ -102,7 +113,7 @@ export const Tuition = () => {
 						/>
 					</InputGroup>
 
-					<Field flex={1} minW={'200px'} maxW={'300px'}>
+					{/* <Field flex={1} minW={'200px'} maxW={'300px'}>
 						<ReactSelect
 							label='Estado'
 							placeholder='Filtrar por estado'
@@ -145,37 +156,46 @@ export const Tuition = () => {
 								},
 							}}
 						/>
-					</Field>
+					</Field> */}
 				</Stack>
 
-				<Button
-					bg='uni.secondary'
-					size='xs'
-					borderRadius='md'
-					onClick={() => {
-						setModalData(null);
-						setIsModalOpen(true);
-					}}
-				>
-					<FiPlus color='white' />
-					<div style={{ marginRight: 3, marginBottom: 2 }}>Crear período</div>
-				</Button>
+				{permissions?.includes('enrollments.proccess.create') && (
+					<Button
+						bg='uni.secondary'
+						size='xs'
+						borderRadius='md'
+						onClick={() => {
+							setModalData(null);
+							setIsModalOpen(true);
+							setActionType('create');
+						}}
+					>
+						<FiPlus color='white' />
+						<div style={{ marginRight: 3, marginBottom: 2 }}>Crear período</div>
+					</Button>
+				)}
 			</Stack>
 
-			<TuitionProcessesTable
+			<TuitionListTable
 				data={filteredTuitionProcesses}
-				isLoading={false}
+				fetchData={fetchEnrollments}
+				permissions={permissions}
+				isLoading={isLoading}
 				setIsModalOpen={setIsModalOpen}
 				setModalData={setModalData}
+				setActionType={setActionType}
 			/>
 
-			<AddTuitionProcessModal
+			<UpdateTuitionProcessModal
 				open={isModalOpen}
 				onClose={() => {
-					setIsModalOpen(false)
-					setModalData(null)
+					setIsModalOpen(false);
+					setModalData(null);
 				}}
 				data={modalData}
+				fetchData={fetchEnrollments}
+				actionType={actionType}
+				existingNames={filteredTuitionProcesses?.map(item => item?.academic_period_name?.toLowerCase())}
 			/>
 		</Box>
 	);
