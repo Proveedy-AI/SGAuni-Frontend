@@ -8,13 +8,14 @@ import {
 	Stack,
 	Text,
 	Flex,
+	Icon,
 } from '@chakra-ui/react';
 import { Link, Outlet, useLocation } from 'react-router';
+import { FiFileText, FiClipboard } from 'react-icons/fi';
 
 export const DebtsLayout = () => {
 	const { colorMode } = useColorMode();
 	const location = useLocation();
-
 	const { data: profile } = useReadUserLogged();
 
 	const hasPermission = (permission) => {
@@ -30,11 +31,13 @@ export const DebtsLayout = () => {
 		{
 			href: '/debts/payment-requests',
 			label: 'Solicitudes de Pago',
+			icon: FiClipboard,
 			permission: 'payment.requests.view',
 		},
 		{
 			href: '/debts/payment-orders',
 			label: 'Ordenes de Pago',
+			icon: FiFileText,
 			permission: 'payment.orders.view',
 		},
 	];
@@ -42,63 +45,49 @@ export const DebtsLayout = () => {
 	return (
 		<Box>
 			<Grid
-				templateColumns={{
-					base: '1fr',
-					md: '200px 1fr',
-				}}
-				templateRows={{
-					base: 'auto',
-					md: '1fr',
-				}}
+				templateColumns={{ base: '1fr', md: '240px 1fr' }}
+				templateRows={{ base: 'auto', md: '1fr' }}
 				h={{ base: 'auto', md: 'calc(100vh - 64px)' }}
 			>
 				<GridItem
 					bg={{ base: 'white', _dark: 'uni.gray.500' }}
 					py='6'
-					px={{ base: '2', md: '5' }}
+					px={{ base: 2, md: 4 }}
 					overflowY='auto'
 					boxShadow='md'
-					css={{
-						msOverflowStyle: 'none',
-						scrollbarWidth: 'none',
-					}}
+					borderRightWidth='1px'
 				>
-					<Stack spaceY={5}>
+					<Stack gap={6}>
 						<Heading
 							display={{ base: 'none', md: 'block' }}
-							size={{ base: 'xs', sm: 'sm', md: 'md', lg: 'lg' }}
+							size={{ base: 'sm', md: 'md' }}
+							px='2'
 						>
 							Cobranzas
 						</Heading>
-
-						<Stack direction={{ base: 'row', md: 'column' }} gap='1'>
+						<Stack gap={2}>
 							{settingsItems
 								.filter((item) => hasPermission(item.permission))
 								.map((item, index) => {
 									const isActive = location.pathname === item.href;
 									return (
-										<Link key={index} to={item.href} cursor='pointer'>
+										<Link key={index} to={item.href}>
 											<Flex
-												h={{ base: 'auto', md: '40px' }}
 												align='center'
-												px='2'
-												fontWeight='medium'
-												borderRadius='10px'
+												gap={3}
+												px={3}
+												py={2}
+												borderRadius='md'
 												bg={isActive ? activeBg : 'transparent'}
 												color={isActive ? 'uni.secondary' : 'inherit'}
 												_hover={{
 													bg:
 														colorMode === 'dark' ? 'uni.gray.400' : 'gray.300',
 												}}
+												transition='background 0.2s'
 											>
-												<Text
-													lineHeight='1.1'
-													fontSize={{
-														base: '10px',
-														xs: 'xs',
-														sm: 'sm',
-													}}
-												>
+												<Icon as={item.icon} boxSize={4} />
+												<Text fontSize='sm' fontWeight='medium'>
 													{item.label}
 												</Text>
 											</Flex>
@@ -109,7 +98,11 @@ export const DebtsLayout = () => {
 					</Stack>
 				</GridItem>
 
-				<GridItem p={{ base: '3', md: '6' }} overflowY='auto'>
+				<GridItem
+					p={{ base: 3, md: 6 }}
+					overflowY='auto'
+					bg={{ base: 'gray.50', _dark: 'uni.gray.600' }}
+				>
 					<Outlet />
 				</GridItem>
 			</Grid>

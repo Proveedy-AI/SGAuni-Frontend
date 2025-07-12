@@ -177,7 +177,7 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
                       size='sm'
                       bg='green'
                       loading={isSaving}
-                      disabled={(item?.payment_method !== 2 && !orderIdInput) || !dueDateInput}
+                      disabled={(item?.payment_method !== 2 && !orderIdInput) || !dueDateInput || item?.status === 3}
                       onClick={handleSubmit}
                       css={{ _icon: { width: '5', height: '5' } }}
                       >
