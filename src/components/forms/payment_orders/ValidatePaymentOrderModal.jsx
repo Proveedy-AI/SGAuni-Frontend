@@ -64,7 +64,7 @@ export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
             >
 
               <Text fontSize='md'>
-                ¿Estás seguro de que deseas <strong>validar/rechazar</strong> esta orden de pago <strong>{item?.id_orden}</strong> del postulante <strong>{item?.name?.toUpperCase()}</strong>? 
+                ¿Estás seguro de que deseas <strong>validar</strong> esta orden de pago <strong>{item?.id_orden}</strong> del postulante <strong>{item?.name?.toUpperCase()}</strong>? 
               </Text>
 
               <Flex justify='flex-end' gap={2} mt={2}>
