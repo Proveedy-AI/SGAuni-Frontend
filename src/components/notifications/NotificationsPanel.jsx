@@ -20,11 +20,10 @@ import { BsCheck2All } from 'react-icons/bs';
 import { MenuContent, MenuRoot, MenuTrigger, Modal } from '../ui';
 import {
 	useMarkReadNotifications,
-	useReadNotification,
+	useReadMyNotifications,
 } from '@/hooks/notifications';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { useTimeDifference } from '@/hooks';
-//import { useReadMyNotifications } from '@/hooks/notifications';
 
 export const NotificationsPanel = () => {
 	const [visibleCount, setVisibleCount] = useState(4);
@@ -35,14 +34,7 @@ export const NotificationsPanel = () => {
 	});
 	const { data: dataUser } = useReadUserLogged();
 	const socketRef = useRef(null);
-	/*const {
-		data: notifications,
-		isLoading,
-		refetch,
-	} = useReadMyNotifications({}, { enabled: true });
-	console.log('notifications', notifications);*/
-
-	const { data: notifications, refetch } = useReadNotification(
+	const { data: notifications, refetch } = useReadMyNotifications(
 		{},
 		{ enabled: true }
 	);
@@ -144,7 +136,6 @@ export const NotificationsPanel = () => {
 									colorPalette={'blue'}
 									variant='outline'
 									borderRadius={'md'}
-
 									//onClick={marcarTodosComoLeidos}
 								>
 									{' '}
@@ -156,14 +147,29 @@ export const NotificationsPanel = () => {
 
 						<Card.Body px={0} pt={0} pb={2}>
 							<Stack maxH='455px' overflowY='auto' spacing={0}>
-								{visibleNotifications?.map((item, index) => (
-									<Fragment key={item.id}>
-										<NotificationItem data={item} fetchData={refetch} />
-										{index !== visibleNotifications.length - 1 && (
-											<Separator mx={2} />
-										)}
-									</Fragment>
-								))}
+								{visibleNotifications && visibleNotifications.length > 0 ? (
+									visibleNotifications.map((item, index) => (
+										<Fragment key={item.id}>
+											<NotificationItem data={item} fetchData={refetch} />
+											{index !== visibleNotifications.length - 1 && (
+												<Separator mx={2} />
+											)}
+										</Fragment>
+									))
+								) : (
+									<Stack
+										minH='455px'
+										align='center'
+										justify='center'
+										w='full'
+										px='4'
+										py='6'
+									>
+										<Text fontSize='sm' color='gray.500'>
+											Sin notificaciones
+										</Text>
+									</Stack>
+								)}
 							</Stack>
 						</Card.Body>
 
