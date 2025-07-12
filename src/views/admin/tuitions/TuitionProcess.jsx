@@ -2,8 +2,8 @@ import { ReactSelect } from '@/components';
 import { UpdateTuitionProcessModal } from '@/components/modals/tuition';
 import { TuitionListTable } from '@/components/tables/tuition';
 import { Field } from '@/components/ui';
-import { useProvideAuth } from '@/hooks/auth';
 import { useReadEnrollments } from '@/hooks/enrollments_proccess';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import {
 	Box,
 	Button,
@@ -15,39 +15,13 @@ import {
 import { useState } from 'react';
 import { FiPlus, FiSearch } from 'react-icons/fi';
 
-// export const tuitionProcessesData = [
-// 	{
-// 		id: 1,
-// 		academicPeriod: 'Cycle 2026-2',
-// 		schedule: '13/08/26 - 20/12/26',
-// 		status: 'Pending Approval',
-// 		observation:
-// 			'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia, quae.',
-// 	},
-// 	{
-// 		id: 2,
-// 		academicPeriod: 'Cycle 2026-1',
-// 		schedule: '13/08/26 - 20/12/26',
-// 		status: 'Configuration',
-// 		observation: '',
-// 	},
-// 	{
-// 		id: 3,
-// 		academicPeriod: 'Cycle 2025-2',
-// 		schedule: '13/08/26 - 20/12/26',
-// 		status: 'Approved',
-// 		observation: '',
-// 	},
-// ];
-
 export const TuitionProcess = () => {
 	const {
 		data: dataEnrollments,
 		refetch: fetchEnrollments,
 		isLoading,
 	} = useReadEnrollments();
-	const { getProfile } = useProvideAuth();
-	const profile = getProfile();
+	const { data: profile } = useReadUserLogged();
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])
@@ -75,7 +49,7 @@ export const TuitionProcess = () => {
 		// 	? item.status === selectedStatus.value
 		// 	: true;
 
-		return matchesSearch // && matchesStatus;
+		return matchesSearch; // && matchesStatus;
 	});
 
 	return (
@@ -159,7 +133,7 @@ export const TuitionProcess = () => {
 					</Field> */}
 				</Stack>
 
-				{permissions?.includes('enrollments.proccess.create') && (
+				{permissions?.includes('enrollments.proccessEnrollments.create') && (
 					<Button
 						bg='uni.secondary'
 						size='xs'
@@ -195,7 +169,9 @@ export const TuitionProcess = () => {
 				data={modalData}
 				fetchData={fetchEnrollments}
 				actionType={actionType}
-				existingNames={filteredTuitionProcesses?.map(item => item?.academic_period_name?.toLowerCase())}
+				existingNames={filteredTuitionProcesses?.map((item) =>
+					item?.academic_period_name?.toLowerCase()
+				)}
 			/>
 		</Box>
 	);

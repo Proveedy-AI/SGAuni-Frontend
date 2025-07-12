@@ -157,7 +157,7 @@ function App() {
 							<Route path='enrollments'>
 								<Route
 									element={
-										<ProtectedRoute requiredPermission='enrollments.proccess.view' />
+										<ProtectedRoute requiredPermission='enrollments.proccessEnrollments.view' />
 									}
 								>
 									<Route path='proccess' element={<TuitionProcess />} />
@@ -165,7 +165,7 @@ function App() {
 								<Route
 									element={
 										// <ProtectedRoute requiredPermission='enrollments.programs.view' />
-										<ProtectedRoute requiredPermission='enrollments.proccess.view' />
+										<ProtectedRoute requiredPermission='enrollments.proccessEnrollments.view' />
 									}
 								>
 									<Route path='programs/:id' element={<TuitionPrograms />} />

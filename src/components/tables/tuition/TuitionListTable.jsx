@@ -116,7 +116,7 @@ const Row = memo(({
 							<IconButton 
 								size='xs' 
 								colorPalette='green'
-								disabled={!permissions?.includes('enrollments.proccess.edit')}
+								disabled={!permissions?.includes('enrollments.proccessEnrollments.edit')}
 								onClick={() => {
 									setModalData(item);
 									setIsModalOpen(true);
@@ -131,7 +131,7 @@ const Row = memo(({
 						{/* <ObservationTuitionProcessModal data={item} /> */}
 						{/* <ApproveTuitionProcessModal data={item} /> */}
 						{/* {item.status.toLowerCase() === 'approved' && 
-							permissions?.includes('enrollments.proccess.double') && (
+							permissions?.includes('enrollments.proccessEnrollments.double') && (
 								<Button
 									size='xs'
 									colorPalette='purple'

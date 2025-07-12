@@ -212,7 +212,7 @@ const groupTitles = {
 		mylist: 'Lista Personal',
 		myprograms: 'Mis Programas de Admisión',
 		programs: 'Programas de Admisión ',
-		processes: 'Procesos de Matricula',
+		proccessEnrollments: 'Procesos de Matricula (P. M.)',
 		evaluators: 'Evaluaciones',
 		studenprofile: 'Perfil de Estudiante',
 		myapplicants: 'Mis Postulaciones',

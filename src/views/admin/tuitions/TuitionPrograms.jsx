@@ -122,7 +122,7 @@ export const TuitionPrograms = () => {
 					/>
 				</InputGroup>
 
-				{permissions?.includes('enrollments.proccess.create') && (
+				{permissions?.includes('enrollments.proccessEnrollments.create') && (
 					<Button
 						bg='uni.secondary'
 						size='xs'

@@ -77,7 +77,7 @@ export const EditTuitionProcessModal = ({ data, permissions, fetchData }) => {
 						<IconButton 
 							size='xs' 
 							colorPalette='green'
-							disabled={!permissions?.includes('enrollments.proccess.edit')}
+							disabled={!permissions?.includes('enrollments.proccessEnrollments.edit')}
 						>
 							<FiEdit2 />
 						</IconButton>

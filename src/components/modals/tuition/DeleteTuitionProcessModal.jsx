@@ -52,7 +52,7 @@ export const DeleteTuitionProcessModal = ({ permissions, item, fetchData }) => {
 						<IconButton 
                             colorPalette='red' 
                             size='xs'
-                            disabled={!permissions?.includes('enrollments.proccess.delete')}
+                            disabled={!permissions?.includes('enrollments.proccessEnrollments.delete')}
                         >
 							<FiTrash2 />
 						</IconButton>

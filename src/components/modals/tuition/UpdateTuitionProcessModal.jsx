@@ -22,13 +22,13 @@ export const UpdateTuitionProcessModal = ({
 	data,
 	fetchData,
 	actionType,
-	existingNames = []
+	existingNames = [],
 }) => {
 	const { mutate: createEnrollments, isPending: isCreating } =
 		useCreateEnrollments();
 	const { mutate: updateEnrollments, isPending: isUpdating } =
 		useUpdateEnrollments();
-		
+
 	const [toasterShown, setToasterShown] = useState(false);
 	const [touched, setTouched] = useState({ academicPeriod: false });
 	const [formData, setFormData] = useState({
@@ -54,7 +54,7 @@ export const UpdateTuitionProcessModal = ({
 	const isFilled = Object.values(formData).every(([_, val]) => {
 		if (typeof val === 'string') return val.trim() !== '';
 		return val !== null && val !== undefined;
-	})
+	});
 
 	const isDuplicatedValid = data
 		? formData.academicPeriod.toLowerCase().includes('-copia')
@@ -99,8 +99,9 @@ export const UpdateTuitionProcessModal = ({
 	}, [open, data, actionType]);
 
 	const handleChange = (key, value) => {
-		const formatted = value instanceof Date ? format(value, 'yyyy-MM-dd') : value;
-		
+		const formatted =
+			value instanceof Date ? format(value, 'yyyy-MM-dd') : value;
+
 		setFormData((prev) => ({
 			...prev,
 			[key]: formatted,
@@ -131,7 +132,7 @@ export const UpdateTuitionProcessModal = ({
 					type: 'error',
 					onStatusChange({ status }) {
 						if (status === 'unmounted') setToasterShown(false);
-					}
+					},
 				});
 				setToasterShown(true);
 				return;
@@ -144,20 +145,20 @@ export const UpdateTuitionProcessModal = ({
 						type: 'success',
 						onStatusChange({ status }) {
 							if (status === 'unmounted') setToasterShown(false);
-						}
+						},
 					});
 					setToasterShown(true);
 					fetchData();
 					onClose();
 				},
 				onError: (error) => {
-					console.log(error)
+					console.log(error);
 					toaster.create({
 						title: error.message || 'Error al registrar el Proceso',
 						type: 'error',
 						onStatusChange({ status }) {
 							if (status === 'unmounted') setToasterShown(false);
-						}
+						},
 					});
 					setToasterShown(true);
 				},
@@ -170,7 +171,9 @@ export const UpdateTuitionProcessModal = ({
 				elective_period: data.elective_period,
 			};
 
-			const existingOtherNames = existingNames.filter((name) => name !== data.academic_period_name?.toLowerCase());
+			const existingOtherNames = existingNames.filter(
+				(name) => name !== data.academic_period_name?.toLowerCase()
+			);
 
 			if (existingOtherNames.includes(normalizedName)) {
 				toaster.create({
@@ -178,7 +181,7 @@ export const UpdateTuitionProcessModal = ({
 					type: 'error',
 					onStatusChange({ status }) {
 						if (status === 'unmounted') setToasterShown(false);
-					}
+					},
 				});
 				setToasterShown(true);
 				return;
@@ -193,7 +196,7 @@ export const UpdateTuitionProcessModal = ({
 							type: 'success',
 							onStatusChange({ status }) {
 								if (status === 'unmounted') setToasterShown(false);
-							}
+							},
 						});
 						setToasterShown(true);
 						fetchData();
@@ -205,7 +208,7 @@ export const UpdateTuitionProcessModal = ({
 							type: 'error',
 							onStatusChange({ status }) {
 								if (status === 'unmounted') setToasterShown(false);
-							}
+							},
 						});
 						setToasterShown(true);
 					},
@@ -253,9 +256,7 @@ export const UpdateTuitionProcessModal = ({
 							placeholder='2025-1'
 						/>
 						{touched.academicPeriod && !isAcademicPeriodValid && (
-							<FieldErrorText>
-								Formato inválido. Ej: 2025-1.
-							</FieldErrorText>
+							<FieldErrorText>Formato inválido. Ej: 2025-1.</FieldErrorText>
 						)}
 						{actionType === 'duplicate' &&
 							!formData.academicPeriod.toLowerCase().includes('-copia') && (
@@ -276,6 +277,7 @@ export const UpdateTuitionProcessModal = ({
 								selectedDate={formData.startDate}
 								onDateChange={(date) => handleChange('startDate', date)}
 								buttonSize='md'
+								minDate={new Date()}
 								size='100%'
 							/>
 						</Field>
@@ -284,6 +286,7 @@ export const UpdateTuitionProcessModal = ({
 								selectedDate={formData.endDate}
 								onDateChange={(date) => handleChange('endDate', date)}
 								buttonSize='md'
+								minDate={new Date()}
 								size='150px'
 							/>
 						</Field>
