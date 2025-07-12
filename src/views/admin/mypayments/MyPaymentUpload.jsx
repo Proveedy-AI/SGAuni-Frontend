@@ -33,12 +33,13 @@ export const MyPaymentUpload = () => {
 	const [notes, setNotes] = useState('');
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [errors, setErrors] = useState({});
+	const [resetFileKey, setResetFileKey] = useState(0);
 
 	const { data: paymentRequests, isLoading: isLoadingRequests } =
 		useReadMyPaymentRequest();
 	const { data: paymentOrders, isLoading: isLoadingOrders } =
 		useReadPaymentOrders(
-			{ request: selectedRequests },
+			{ request: selectedRequests?.value },
 			{
 				enabled: !!selectedRequests,
 			}
@@ -106,6 +107,7 @@ export const MyPaymentUpload = () => {
 			setSelectedFile(null);
 			setPaymentDate('');
 			setNotes('');
+			setResetFileKey(prev => prev + 1); // Forzar el reseteo del componente
 		} catch (error) {
 			toaster.create({
 				title: 'Error',
@@ -194,6 +196,7 @@ export const MyPaymentUpload = () => {
 											errorText={errors.selectedFile}
 										>
 											<CompactFileUpload
+												key={resetFileKey}
 												name='voucher_path'
 												accept='application/pdf,image/png,image/jpeg,image/jpg'
 												onChange={(file) => {

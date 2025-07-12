@@ -76,12 +76,15 @@ export const MyPaymentRequests = () => {
 		{ value: 1, label: 'Pendiente' },
 		{ value: 2, label: 'Generado' },
 		{ value: 3, label: 'Pagado' }, // puedes agregar más si aplica
+		{ value: 4, label: 'Expirado' },
 	];
 	const statusColorMap = {
 		1: 'red',
 		2: 'blue',
 		3: 'green',
+		4: 'yellow',
 	};
+
 	return (
 		<Stack gap={4}>
 			<Card.Root>

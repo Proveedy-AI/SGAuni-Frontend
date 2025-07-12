@@ -12,7 +12,7 @@ export const ViewPaymentOrderVoucherModal = ({ item, fetchPaymentOrders }) => {
 
   const handleValidate = () => {
     const payload = {
-      status: 5,
+      status: 3,
     }
 
     updatePaymentOrder({

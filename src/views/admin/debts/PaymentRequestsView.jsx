@@ -55,7 +55,7 @@ export const PaymentRequestsView = () => {
 
   const statusOptions = [
     { id: 1, label: 'Pendiente', value: 1},
-    { id: 2, label: 'Disponible', value: 2},
+    { id: 2, label: 'Generado', value: 2}, 
     { id: 3, label: 'Verificado', value: 3},
     { id: 4, label: 'Expirado', value: 4}
   ];

@@ -29,7 +29,7 @@ const Row = memo(({ item, startIndex, index, permissions, sortConfig, data }) =>
 
   const statusDisplay = [
     { id: 1, label: 'Pendiente', value: 'Pending', bg:'#AEAEAE', color:'#F5F5F5' },
-    { id: 2, label: 'Disponible', value: 'Available', bg:'#C6E7FC80', color:'#0661D8' },
+    { id: 2, label: 'Generado', value: 'Available', bg:'#C6E7FC80', color:'#0661D8' },
     { id: 3, label: 'Verificado', value: 'Verified', bg:'#D0EDD0', color:'#2D9F2D' },
     { id: 4, label: 'Expirado', value: 'Expired', bg:'#F7CDCE', color:'#E0383B' }
   ]  
@@ -128,7 +128,7 @@ export const PaymentRequestsTable = ({ isLoading, data, permissions }) => {
               </Table.ColumnHeader>
               <Table.ColumnHeader alignContent={'start'}>
                 <SortableHeader
-                  label='Fecha de vencimiento'
+                  label='Fecha de Solicitud'
                   columnKey='due_date'
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
