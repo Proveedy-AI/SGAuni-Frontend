@@ -5,6 +5,7 @@ import {
 } from '@/components/forms/payment_orders';
 import { PaymentOrdersTable } from '@/components/tables/payment_orders';
 import { Field } from '@/components/ui';
+import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { useReadPaymentOrders } from '@/hooks/payment_orders';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import {
@@ -15,9 +16,11 @@ import {
 	Input,
 	SimpleGrid,
 	Stack,
+	Button,
 } from '@chakra-ui/react';
+import { format } from 'date-fns';
 import { useState } from 'react';
-import { FiFileText } from 'react-icons/fi';
+import { FiFileText, FiTrash } from 'react-icons/fi';
 
 export const PaymentOrdersView = () => {
 	const [ordenId, setOrdenId] = useState('');
@@ -25,6 +28,17 @@ export const PaymentOrdersView = () => {
 	const [email, setEmail] = useState('');
 	const [dueDate, setDueDate] = useState(null);
 	const [selectedStatus, setSelectedStatus] = useState(null);
+
+	const hasActiveFilters =
+		ordenId || documentNum || email || dueDate || selectedStatus;
+
+	const clearFilters = () => {
+		setOrdenId('');
+		setDocumentNum('');
+		setEmail('');
+		setDueDate(null);
+		setSelectedStatus(null);
+	};
 
 	const { data: profile } = useReadUserLogged();
 	const roles = profile?.roles || [];
@@ -40,7 +54,7 @@ export const PaymentOrdersView = () => {
 		isLoading: loadingPaymentOrders,
 		refetch: fetchPaymentOrders,
 	} = useReadPaymentOrders({
-		status: selectedStatus?.value
+		status: selectedStatus?.value,
 	});
 
 	const allPaymentOrders =
@@ -70,8 +84,6 @@ export const PaymentOrdersView = () => {
 		{ id: 4, label: 'Expirado', value: 4 },
 	];
 
-
-
 	return (
 		<Stack gap={4}>
 			<Card.Root>
@@ -90,6 +102,17 @@ export const PaymentOrdersView = () => {
 
 						{/* Derecha */}
 						<Stack direction='row' spacing={2} align='center'>
+							{hasActiveFilters && (
+								<Button
+									variant='outline'
+									colorPalette='red'
+									size='sm'
+									onClick={clearFilters}
+								>
+									<FiTrash />
+									Limpiar Filtros
+								</Button>
+							)}
 							<LoadExcelValidationsModal />
 
 							<GeneratePaymentOrderModal fetchData={fetchPaymentOrders} />
@@ -133,12 +156,15 @@ export const PaymentOrdersView = () => {
 									onChange={(e) => setEmail(e.target.value)}
 								/>
 							</Field>
-							<Field label='Fecha de Vencimiento:'>
-								<Input
-									type='date'
-									placeholder='Buscar por fecha de vencimiento'
-									value={dueDate}
-									onChange={(e) => setDueDate(e.target.value)}
+							<Field label='Fecha de Vencimiento'>
+								<CustomDatePicker
+									selectedDate={dueDate}
+									onDateChange={(date) =>
+										setDueDate(format(date, 'yyyy-MM-dd'))
+									}
+									buttonSize='md'
+									asChild
+									size={{ base: '330px', md: '350px' }}
 								/>
 							</Field>
 						</SimpleGrid>
@@ -149,9 +175,9 @@ export const PaymentOrdersView = () => {
 			<PaymentOrdersTable
 				isLoading={loadingPaymentOrders}
 				data={sortedPaymentOrders}
-        fetchNextPage={fetchNextPagePaymentOrders}
-        hasNextPage={hasNextPagePaymentOrders}
-        isFetchingNext={isFetchingNextPagePaymentOrders}
+				fetchNextPage={fetchNextPagePaymentOrders}
+				hasNextPage={hasNextPagePaymentOrders}
+				isFetchingNext={isFetchingNextPagePaymentOrders}
 				refetch={fetchPaymentOrders}
 				permissions={permissions}
 			/>

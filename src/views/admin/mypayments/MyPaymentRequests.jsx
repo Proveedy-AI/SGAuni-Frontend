@@ -9,6 +9,7 @@ import { useReadPurposes } from '@/hooks/purposes';
 import {
 	Badge,
 	Box,
+	Button,
 	Card,
 	Flex,
 	Heading,
@@ -18,7 +19,7 @@ import {
 	Table,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { FiFileText } from 'react-icons/fi';
+import { FiFileText, FiTrash } from 'react-icons/fi';
 
 export const MyPaymentRequests = () => {
 	const [selectedProgram, setSelectedProgram] = useState(null);
@@ -26,6 +27,21 @@ export const MyPaymentRequests = () => {
 	const [selectedMethod, setSelectedMethod] = useState(null);
 	const [selectedPurpose, setSelectedPurpose] = useState(null);
 	const [selectedDocumentType, setSelectedDocumentType] = useState(null);
+
+	const hasActiveFilters =
+		selectedProgram ||
+		selectedStatus ||
+		selectedMethod ||
+		selectedPurpose ||
+		selectedDocumentType;
+
+	const clearFilters = () => {
+		setSelectedProgram(null);
+		setSelectedStatus(null);
+		setSelectedMethod(null);
+		setSelectedPurpose(null);
+		setSelectedDocumentType(null);
+	};
 
 	const { data: dataPaymentRequests } = useReadMyPaymentRequest();
 
@@ -89,9 +105,22 @@ export const MyPaymentRequests = () => {
 		<Stack gap={4}>
 			<Card.Root>
 				<Card.Header>
-					<Flex align='center' gap={2}>
-						<Icon as={FiFileText} boxSize={5} color='blue.600' />
-						<Heading fontSize='24px'>Mis Solicitudes de Pago</Heading>
+					<Flex justify='space-between' align='center'>
+						<Flex align='center' gap={2}>
+							<Icon as={FiFileText} boxSize={5} color='blue.600' />
+							<Heading fontSize='24px'>Mis Solicitudes de Pago</Heading>
+						</Flex>
+						{hasActiveFilters && (
+							<Button
+								variant='outline'
+								colorPalette='red'
+								size='sm'
+								onClick={clearFilters}
+							>
+								<FiTrash />
+								Limpiar Filtros
+							</Button>
+						)}
 					</Flex>
 				</Card.Header>
 				<Card.Body>
@@ -186,7 +215,9 @@ export const MyPaymentRequests = () => {
 									filteredRequests.map((item, index) => (
 										<Table.Row key={item.id}>
 											<Table.Cell>{index + 1}</Table.Cell>
-											<Table.Cell>{item.admission_process_program_name}</Table.Cell>
+											<Table.Cell>
+												{item.admission_process_program_name}
+											</Table.Cell>
 											<Table.Cell>{item.purpose_display}</Table.Cell>
 											<Table.Cell>S/ {item.amount}</Table.Cell>
 											<Table.Cell>

@@ -1,6 +1,7 @@
 import { PaymentRequestsTable } from '@/components/tables/payment_requests';
 import { useReadPaymentRequest } from '@/hooks/payment_requests/useReadPaymentRequest';
 import {
+	Button,
 	Heading,
 	InputGroup,
 	Input,
@@ -11,7 +12,7 @@ import {
 	SimpleGrid,
 } from '@chakra-ui/react';
 import { useState, useMemo } from 'react';
-import { FiFileText, FiSearch } from 'react-icons/fi';
+import { FiFileText, FiSearch, FiTrash } from 'react-icons/fi';
 import { Field } from '@/components/ui';
 import { ReactSelect } from '@/components';
 import { useReadMethodPayment } from '@/hooks/method_payments';
@@ -27,6 +28,18 @@ export const PaymentRequestsView = () => {
 	const [selectedDocumentType, setSelectedDocumentType] = useState(null);
 	const [selectedApplicantDocumentNumber, setSelectedApplicantDocumentNumber] =
 		useState('');
+
+	const hasActiveFilters = selectedProgram || selectedStatus || selectedMethod || 
+		selectedPurpose || selectedDocumentType || selectedApplicantDocumentNumber;
+
+	const clearFilters = () => {
+		setSelectedProgram(null);
+		setSelectedStatus(null);
+		setSelectedMethod(null);
+		setSelectedPurpose(null);
+		setSelectedDocumentType(null);
+		setSelectedApplicantDocumentNumber('');
+	};
 
 	// Construir los parámetros de filtro para el backend
 	const filterParams = useMemo(() => {
@@ -117,8 +130,20 @@ export const PaymentRequestsView = () => {
 							<Heading fontSize='24px'>Solicitudes de Pago</Heading>
 						</Flex>
 
-						{/* Derecha: botón 
-						<GenerateMasivePaymentOrders data={allPaymentRequests} />*/}
+						{/* Derecha */}
+						<Stack direction='row' spacing={2} align='center'>
+							{hasActiveFilters && (
+								<Button
+									variant='outline'
+									colorPalette='red'
+									size='sm'
+									onClick={clearFilters}
+									
+								>
+									<FiTrash/>Limpiar Filtros
+								</Button>
+							)}
+						</Stack>
 					</Flex>
 				</Card.Header>
 				<Card.Body>
