@@ -45,7 +45,7 @@ export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
                 showArrow
                 openDelay={0}
               >
-                <IconButton colorPalette='green' size='xs'>
+                <IconButton disabled={item.status === 3} colorPalette='green' size='xs'>
                   <HiCheck />
                 </IconButton>
               </Tooltip>
