@@ -17,7 +17,7 @@ export const ApplicantHasDebts = ({ data }) => {
         <Text>
           Por favor, regulariza tus deudas para continuar con el proceso.
         </Text>
-        <Button colorScheme="red" onClick={() => navigate('/debts')}>
+        <Button colorScheme="red" onClick={() => navigate('/mypaymentsdebts/debts')}>
           Ver deudas
         </Button>
       </Stack>

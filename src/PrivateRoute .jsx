@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router';
 import { useProvideAuth } from './hooks/auth';
 import { useReadUserLogged } from './hooks/users/useReadUserLogged';
-import { ApplicantHasDebts } from './components/control';
+//import { ApplicantHasDebts } from './components/control';
 
 export const PrivateRoute = () => {
 	const { getUser, getUserCookie, refresh, loading, getRefreshToken } =
@@ -148,19 +148,20 @@ export const ProtectedRoute = ({ requiredPermission, requiredDebt=false }) => {
 
   if (requiredDebt) {
     //const { data: dataCondition } = useCheckUserHasDebts();
-    const dataCondition = {
-      results: {
-        total: 100, // Simulación de deuda
-        has_debts: true, // Simulación de estado de deuda
-        user: {
-          firstname: 'USUARIO LOGUEADO',
-        }
-      }
-    }
-    const userHasDebts = dataCondition?.results?.has_debts || false;
-    if (userHasDebts) {
-      return <ApplicantHasDebts data={dataCondition?.results} />;
-    }
+    // const dataCondition = {
+    //   results: {
+    //     total: 100, // Simulación de deuda
+    //     has_debts: true, // Simulación de estado de deuda
+    //     user: {
+    //       firstname: 'USUARIO LOGUEADO',
+    //     }
+    //   }
+    // }
+    // const userHasDebts = dataCondition?.results?.has_debts || false;
+    // if (userHasDebts) {
+    //   return <ApplicantHasDebts data={dataCondition?.results} />;
+    // }
+    console.log('Verificando deudas del usuario...');
   }
 
 	return <Outlet />;
