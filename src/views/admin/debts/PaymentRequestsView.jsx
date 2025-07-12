@@ -10,10 +10,8 @@ import {
 	Icon,
 	SimpleGrid,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { FiFileText, FiSearch } from 'react-icons/fi';
-//import { format, parseISO } from 'date-fns';
-import { GenerateMasivePaymentOrders } from '@/components/forms/payment_requests';
 import { Field } from '@/components/ui';
 import { ReactSelect } from '@/components';
 import { useReadMethodPayment } from '@/hooks/method_payments';
@@ -27,12 +25,40 @@ export const PaymentRequestsView = () => {
 	const [selectedMethod, setSelectedMethod] = useState(null);
 	const [selectedPurpose, setSelectedPurpose] = useState(null);
 	const [selectedDocumentType, setSelectedDocumentType] = useState(null);
-	//const [selectedRequestedAt, setSelectedRequestedAt] = useState(null);
 	const [selectedApplicantDocumentNumber, setSelectedApplicantDocumentNumber] =
 		useState('');
 
-	const { data: dataPaymentRequests, isLoading: isPaymentRequestsLoading } =
-		useReadPaymentRequest();
+	// Construir los parámetros de filtro para el backend
+	const filterParams = useMemo(() => {
+		const params = {};
+		if (selectedProgram) params.program = selectedProgram.value;
+		if (selectedStatus) params.status = selectedStatus.value;
+		if (selectedMethod) params.payment_method = selectedMethod.value;
+		if (selectedPurpose) params.purpose = selectedPurpose.value;
+		if (selectedDocumentType) params.document_type = selectedDocumentType.value;
+		if (selectedApplicantDocumentNumber)
+			params.num_document = selectedApplicantDocumentNumber;
+		return params;
+	}, [
+		selectedProgram,
+		selectedStatus,
+		selectedMethod,
+		selectedPurpose,
+		selectedDocumentType,
+		selectedApplicantDocumentNumber,
+	]);
+
+	const {
+		data: dataPaymentRequests,
+		fetchNextPage: fetchNextPagePaymentRequests,
+		hasNextPage: hasNextPagePaymentRequests,
+		isFetchingNextPage: isFetchingNextPagePaymentRequests,
+		isLoading: isPaymentRequestsLoading,
+		refetch: refetchPaymentRequests,
+	} = useReadPaymentRequest(filterParams);
+
+	const allPaymentRequests =
+		dataPaymentRequests?.pages?.flatMap((page) => page.results) ?? [];
 
 	const { data: profile } = useReadUserLogged();
 	const roles = profile?.roles || [];
@@ -77,48 +103,8 @@ export const PaymentRequestsView = () => {
 		{ id: 4, label: 'Expirado', value: 4 },
 	];
 
-	const filteredPaymentRequests = dataPaymentRequests?.results?.filter(
-		(item) => {
-			const matchProgram = selectedProgram
-				? item.admission_process_program === selectedProgram.value
-				: true;
-
-			const matchStatus = selectedStatus
-				? item.status === selectedStatus.value
-				: true;
-
-			const matchMethod = selectedMethod
-				? item.payment_method === selectedMethod.value
-				: true;
-
-			const matchPurpose = selectedPurpose
-				? item.purpose === selectedPurpose.value
-				: true;
-
-			const matchDocumentType = selectedDocumentType
-				? item.document_type === selectedDocumentType.value
-				: true;
-
-			// const matchRequestedAt = selectedRequestedAt
-			//   ? format(parseISO(item.requested_at), 'yyyy-MM-dd') === format(selectedRequestedAt, 'yyyy-MM-dd')
-			//   : true;
-
-			const matchApplicantDocumentNumber = selectedApplicantDocumentNumber
-				? item.num_document
-						.toLowerCase()
-						.includes(selectedApplicantDocumentNumber.toLowerCase())
-				: true;
-
-			return (
-				matchProgram &&
-				matchStatus &&
-				matchMethod &&
-				matchPurpose &&
-				matchDocumentType /*&& matchRequestedAt*/ &&
-				matchApplicantDocumentNumber
-			);
-		}
-	);
+	// Ya no necesitamos filtrar aquí porque el backend lo hace
+	const totalCount = dataPaymentRequests?.pages?.[0]?.count ?? 0;
 
 	return (
 		<Stack gap={4}>
@@ -131,8 +117,8 @@ export const PaymentRequestsView = () => {
 							<Heading fontSize='24px'>Solicitudes de Pago</Heading>
 						</Flex>
 
-						{/* Derecha: botón */}
-						<GenerateMasivePaymentOrders data={dataPaymentRequests?.results} />
+						{/* Derecha: botón 
+						<GenerateMasivePaymentOrders data={allPaymentRequests} />*/}
 					</Flex>
 				</Card.Header>
 				<Card.Body>
@@ -163,7 +149,7 @@ export const PaymentRequestsView = () => {
 									options={statusOptions}
 								/>
 							</Field>
-							<Field label='Métodos de Pago:'>
+							<Field label='Método de Pago:'>
 								<ReactSelect
 									placeholder='Seleccionar'
 									value={selectedMethod}
@@ -218,14 +204,6 @@ export const PaymentRequestsView = () => {
 									/>
 								</InputGroup>
 							</Field>
-							{/* <Field label='Fecha de Solicitud:'>
-                <CustomDatePicker
-                  selectedDate={selectedRequestedAt}
-                  onDateChange={setSelectedRequestedAt}
-                  buttonSize='xs'
-                  size={{ base: '330px', md: '470px' }}
-                />
-              </Field> */}
 						</SimpleGrid>
 					</Stack>
 				</Card.Body>
@@ -233,7 +211,12 @@ export const PaymentRequestsView = () => {
 
 			<PaymentRequestsTable
 				isLoading={isPaymentRequestsLoading}
-				data={filteredPaymentRequests}
+				data={allPaymentRequests}
+				fetchNextPage={fetchNextPagePaymentRequests}
+				fetchData={refetchPaymentRequests}
+				totalCount={totalCount}
+				hasNextPage={hasNextPagePaymentRequests}
+				isFetchingNext={isFetchingNextPagePaymentRequests}
 				permissions={permissions}
 			/>
 		</Stack>
