@@ -1,3 +1,4 @@
+import { ReactSelect } from '@/components';
 import {
 	GeneratePaymentOrderModal,
 	LoadExcelValidationsModal,
@@ -5,7 +6,6 @@ import {
 import { PaymentOrdersTable } from '@/components/tables/payment_orders';
 import { Field } from '@/components/ui';
 import { useReadPaymentOrders } from '@/hooks/payment_orders';
-import { useReadPaymentRequest } from '@/hooks/payment_requests';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import {
 	Card,
@@ -14,7 +14,6 @@ import {
 	Icon,
 	Input,
 	SimpleGrid,
-	Spinner,
 	Stack,
 } from '@chakra-ui/react';
 import { useState } from 'react';
@@ -25,6 +24,7 @@ export const PaymentOrdersView = () => {
 	const [documentNum, setDocumentNum] = useState('');
 	const [email, setEmail] = useState('');
 	const [dueDate, setDueDate] = useState(null);
+	const [selectedStatus, setSelectedStatus] = useState(null);
 
 	const { data: profile } = useReadUserLogged();
 	const roles = profile?.roles || [];
@@ -32,33 +32,45 @@ export const PaymentOrdersView = () => {
 		.flatMap((r) => r.permissions || [])
 		.map((p) => p.guard_name);
 
-	const { data: dataPaymentRequests, isLoading: isPaymentRequestsLoading } =
-		useReadPaymentRequest();
-
 	const {
 		data: dataPaymentOrders,
+		fetchNextPage: fetchNextPagePaymentOrders,
+		hasNextPage: hasNextPagePaymentOrders,
+		isFetchingNextPage: isFetchingNextPagePaymentOrders,
 		isLoading: loadingPaymentOrders,
 		refetch: fetchPaymentOrders,
-	} = useReadPaymentOrders();
+	} = useReadPaymentOrders({
+		status: selectedStatus?.value
+	});
 
-	const filteredPaymentOrders = dataPaymentOrders?.results?.filter(
-		(request) => {
-			const matchOrdenId = ordenId
-				? request?.id_orden.toString().includes(ordenId)
-				: true;
-			const matchDocumentNum = documentNum
-				? request.document_num.toString().includes(documentNum)
-				: true;
-			const matchEmail = email ? request.email.includes(email) : true;
-			const matchDueDate = dueDate ? request.due_date === dueDate : true;
+	const allPaymentOrders =
+		dataPaymentOrders?.pages?.flatMap((page) => page.results) ?? [];
 
-			return matchOrdenId && matchDocumentNum && matchEmail && matchDueDate;
-		}
-	);
+	const filteredPaymentOrders = allPaymentOrders?.filter((request) => {
+		const matchOrdenId = ordenId
+			? request?.id_orden.toString().includes(ordenId)
+			: true;
+		const matchDocumentNum = documentNum
+			? request.document_num.toString().includes(documentNum)
+			: true;
+		const matchEmail = email ? request.email.includes(email) : true;
+		const matchDueDate = dueDate ? request.due_date === dueDate : true;
+
+		return matchOrdenId && matchDocumentNum && matchEmail && matchDueDate;
+	});
 
 	const sortedPaymentOrders = filteredPaymentOrders?.sort(
 		(a, b) => a.status - b.status
 	);
+
+	const statusOptions = [
+		{ id: 1, label: 'Pendiente', value: 1 },
+		{ id: 2, label: 'Generado', value: 2 },
+		{ id: 3, label: 'Verificado', value: 3 },
+		{ id: 4, label: 'Expirado', value: 4 },
+	];
+
+
 
 	return (
 		<Stack gap={4}>
@@ -79,25 +91,18 @@ export const PaymentOrdersView = () => {
 						{/* Derecha */}
 						<Stack direction='row' spacing={2} align='center'>
 							<LoadExcelValidationsModal />
-							{isPaymentRequestsLoading ? (
-								<Spinner />
-							) : (
-								<GeneratePaymentOrderModal
-									requests={dataPaymentRequests?.results || []}
-									fetchData={fetchPaymentOrders}
-								/>
-							)}
+
+							<GeneratePaymentOrderModal fetchData={fetchPaymentOrders} />
 						</Stack>
 					</Flex>
 				</Card.Header>
 
 				<Card.Body>
 					<Stack gap={4} mb={4}>
-						<SimpleGrid columns={{ base: 1, sm: 2 }} gap={6}>
+						<SimpleGrid columns={{ base: 1, sm: 3 }} gap={6}>
 							<Field label='Id de orden:'>
 								<Input
 									placeholder='Buscar por id de orden'
-									size='xs'
 									value={ordenId}
 									onChange={(e) => setOrdenId(e.target.value)}
 								/>
@@ -105,15 +110,25 @@ export const PaymentOrdersView = () => {
 							<Field label='Documento de identidad:'>
 								<Input
 									placeholder='Buscar por documento de identidad'
-									size='xs'
 									value={documentNum}
 									onChange={(e) => setDocumentNum(e.target.value)}
+								/>
+							</Field>
+							<Field label='Estado:'>
+								<ReactSelect
+									placeholder='Seleccionar'
+									value={selectedStatus}
+									onChange={setSelectedStatus}
+									variant='flushed'
+									size='xs'
+									isSearchable
+									isClearable
+									options={statusOptions}
 								/>
 							</Field>
 							<Field label='Correo Electrónico:'>
 								<Input
 									placeholder='Buscar por correo electrónico'
-									size='xs'
 									value={email}
 									onChange={(e) => setEmail(e.target.value)}
 								/>
@@ -122,7 +137,6 @@ export const PaymentOrdersView = () => {
 								<Input
 									type='date'
 									placeholder='Buscar por fecha de vencimiento'
-									size='xs'
 									value={dueDate}
 									onChange={(e) => setDueDate(e.target.value)}
 								/>
@@ -135,6 +149,9 @@ export const PaymentOrdersView = () => {
 			<PaymentOrdersTable
 				isLoading={loadingPaymentOrders}
 				data={sortedPaymentOrders}
+        fetchNextPage={fetchNextPagePaymentOrders}
+        hasNextPage={hasNextPagePaymentOrders}
+        isFetchingNext={isFetchingNextPagePaymentOrders}
 				refetch={fetchPaymentOrders}
 				permissions={permissions}
 			/>

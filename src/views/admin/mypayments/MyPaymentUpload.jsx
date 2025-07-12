@@ -39,7 +39,7 @@ export const MyPaymentUpload = () => {
 		useReadMyPaymentRequest();
 	const { data: paymentOrders, isLoading: isLoadingOrders } =
 		useReadPaymentOrders(
-			{ request: selectedRequests?.value },
+			{ request: selectedRequests?.value, status: 1 },
 			{
 				enabled: !!selectedRequests,
 			}
@@ -66,14 +66,15 @@ export const MyPaymentUpload = () => {
 			label: `Solicitud #${request.id} - ${request.purpose_display} - ${request.admission_process_program_name}`,
 			name: `${request.purpose_display} - ${request.num_document}`,
 		}));
-	const orderOptions = paymentOrders?.results
-		? paymentOrders.results
-				.filter((order) => order.status === 1)
-				.map((order) => ({
-					value: order.id,
-					label: `Orden #${order.id_orden} - S/ ${order.total_amount} - ${order.document_type_display}`,
-					amount: order.total_amount,
-				}))
+
+	const allPaymentOrders =
+		paymentOrders?.pages?.flatMap((page) => page.results) ?? [];
+	const orderOptions = allPaymentOrders
+		? allPaymentOrders.map((order) => ({
+				value: order.id,
+				label: `Orden #${order.id_orden} - S/ ${order.total_amount} - ${order.document_type_display}`,
+				amount: order.total_amount,
+			}))
 		: [];
 
 	const handleSubmit = async () => {
@@ -107,7 +108,7 @@ export const MyPaymentUpload = () => {
 			setSelectedFile(null);
 			setPaymentDate('');
 			setNotes('');
-			setResetFileKey(prev => prev + 1); // Forzar el reseteo del componente
+			setResetFileKey((prev) => prev + 1); // Forzar el reseteo del componente
 		} catch (error) {
 			toaster.create({
 				title: 'Error',

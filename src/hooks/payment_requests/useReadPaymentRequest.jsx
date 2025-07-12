@@ -2,11 +2,11 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useReadPaymentRequest = (params = {}) => {
+export const useReadPaymentRequest = (params = {}, options = {}) => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useInfiniteQuery({
-		queryKey: ['payment-requests', params], // <- importante para que el query se actualice si cambian los filtros
+		queryKey: ['payment-requests', params],
 		queryFn: async ({ pageParam = 1 }) => {
 			const res = await axiosPrivate.get('/api/v1/payment-requests/', {
 				params: { page: pageParam, ...params },
@@ -20,5 +20,6 @@ export const useReadPaymentRequest = (params = {}) => {
 			}
 			return undefined;
 		},
+		...options,
 	});
 };

@@ -38,7 +38,6 @@ export const PaymentApplicant = ({ onValidationChange }) => {
 	);
 	const item = EncryptedStorage.load('selectedApplicant');
 	const isPreMaestria = !hasStudentRole && item?.modality_id === 1;
-	const { data: PaymentOrder } = useReadPaymentOrders();
 	const { data: PaymentRules } = useReadPaymentRules();
 
 	const statusDisplay = [
@@ -79,13 +78,17 @@ export const PaymentApplicant = ({ onValidationChange }) => {
 		(req) => req.application === item?.id && req.purpose === 1
 	);
 
-	// Buscar órdenes existentes
-	const carpetaOrder = PaymentOrder?.results?.find(
-		(order) => order.request === carpetaRequest?.id
-	);
-	const admisionOrder = PaymentOrder?.results?.find(
-		(order) => order.request === admisionRequest?.id
-	);
+	// Obtener órdenes usando filtros del backend
+	const { data: carpetaOrderData } = useReadPaymentOrders({
+		request: carpetaRequest?.id
+	});
+	const { data: admisionOrderData } = useReadPaymentOrders({
+		request: admisionRequest?.id
+	});
+
+	// Extraer la primera orden encontrada (si existe)
+	const carpetaOrder = carpetaOrderData?.pages?.[0]?.results?.[0];
+	const admisionOrder = admisionOrderData?.pages?.[0]?.results?.[0];
 
 	const paymentRules = PaymentRules?.results?.filter(
 		(req) => req.applies_to_applicants === true
@@ -102,6 +105,7 @@ export const PaymentApplicant = ({ onValidationChange }) => {
 	// Construir mapa de propósitos enriquecidos
 	const purposes = {};
 
+	// Procesar cada propósito
 	dataPurposes?.results?.forEach((purposeItem) => {
 		const id = purposeItem.id;
 		const existingRequest =
@@ -109,16 +113,11 @@ export const PaymentApplicant = ({ onValidationChange }) => {
 				(req) => req.application === item?.id && req.purpose === id
 			) ?? null;
 
-		const correspondingOrder =
-			PaymentOrder?.results?.find(
-				(order) => existingRequest && order.request === existingRequest.id
-			) ?? null;
-
 		purposes[id] = {
 			name: item.name,
 			rule: paymentRules?.find((rule) => rule.payment_purpose === id) ?? null,
 			existingRequest,
-			existingOrder: correspondingOrder,
+			existingOrder: null, // Se manejará en el render
 		};
 	});
 

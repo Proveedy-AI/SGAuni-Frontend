@@ -44,7 +44,10 @@ export const PaymentOrdersByRequest = () => {
 		refetch: fetchPaymentOrders,
 	} = useReadPaymentOrders();
 
-	const filteredPaymentOrdersByRequest = dataPaymentOrders?.results?.filter(
+	const allPaymentOrders =
+		dataPaymentOrders?.pages?.flatMap((page) => page.results) ?? [];
+
+	const filteredPaymentOrdersByRequest = allPaymentOrders?.filter(
 		(order) => order.request === decrypted
 	);
 

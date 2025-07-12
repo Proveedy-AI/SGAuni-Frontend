@@ -39,8 +39,11 @@ export const PreviewMyOrdenDetailsModal = ({ data }) => {
 		}
 	);
 
+	const allPaymentRequests =
+		PaymentOrder?.pages?.flatMap((page) => page.results) ?? [];
+
 	const totalPayments =
-		PaymentOrder?.results?.reduce((sum, item) => sum + item.vacancies, 0) || 0;
+		allPaymentRequests?.reduce((sum, item) => sum + item.vacancies, 0) || 0;
 
 	const StatusOptions = [
 		{ value: 1, label: 'Pendiente' },
@@ -265,7 +268,7 @@ export const PreviewMyOrdenDetailsModal = ({ data }) => {
 								</Table.Header>
 
 								<Table.Body>
-									{PaymentOrder?.results?.map((item, index) => (
+									{allPaymentRequests?.map((item, index) => (
 										<Table.Row
 											key={item.id}
 											bg={{ base: 'white', _dark: 'its.gray.500' }}
@@ -304,7 +307,7 @@ export const PreviewMyOrdenDetailsModal = ({ data }) => {
 											</Table.Cell>
 										</Table.Row>
 									))}
-									{PaymentOrder?.results?.length === 0 && (
+									{allPaymentRequests?.length === 0 && (
 										<Table.Row>
 											<Table.Cell colSpan={9} textAlign='center'>
 												Sin datos disponibles
