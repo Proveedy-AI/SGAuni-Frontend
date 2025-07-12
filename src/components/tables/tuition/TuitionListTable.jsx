@@ -32,8 +32,9 @@ const Row = memo(
 		const handleRowClick = () => {
 			if (permissions?.includes('enrollments.myprogramsEnrollments.view')) {
 				navigate(`/enrollments/myprograms/${encoded}`);
-			}
-			if (permissions?.includes('enrollments.proccessEnrollments.view')) {
+			} else if (
+				permissions?.includes('enrollments.proccessEnrollments.view')
+			) {
 				navigate(`/enrollments/programs/${encoded}`);
 			}
 		};
@@ -97,9 +98,10 @@ const Row = memo(
 								size='xs'
 								colorPalette='purple'
 								borderRadius='md'
-								onClick={() => {                                    setModalData(item);
-                                    setActionType('duplicate');
-                                    setIsModalOpen(true);
+								onClick={() => {
+									setModalData(item);
+									setActionType('duplicate');
+									setIsModalOpen(true);
 								}}
 							>
 								<FiCopy /> Duplicar
