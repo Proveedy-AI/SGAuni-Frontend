@@ -190,7 +190,8 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 										onDateChange={(date) =>
 											setDueDateInput(format(date, 'yyyy-MM-dd'))
 										}
-										buttonSize='xs'
+										buttonSize='md'
+										minDate={new Date()}
 										size={{ base: '330px', md: '420px' }}
 									/>
 								</Field>

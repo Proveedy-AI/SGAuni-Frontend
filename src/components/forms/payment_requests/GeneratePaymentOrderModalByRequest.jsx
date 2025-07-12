@@ -18,6 +18,7 @@ import {
 } from '@/hooks/payment_orders';
 import { FiArrowUp, FiDollarSign, FiPlus } from 'react-icons/fi';
 import { PaymentOrdersTable } from '@/components/tables/payment_orders';
+import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 
 export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 	const contentRef = useRef();
@@ -175,13 +176,16 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 										label='Fecha de Vencimiento'
 										required
 										invalid={!!errors.dueDate}
-										errorMessage={errors.dueDate}
+										errorText={errors.dueDate} // usamos errorText para mantener la consistencia con tu otro código
 									>
-										<Input
-											type='date'
-											placeholder='Ingresar fecha de vencimiento'
-											value={dueDateInput}
-											onChange={(e) => setDueDateInput(e.target.value)}
+										<CustomDatePicker
+											selectedDate={
+												dueDateInput ? new Date(dueDateInput) : null
+											}
+											onDateChange={(date) => setDueDateInput(date)}
+											buttonSize='md'
+											size='150px'
+											minDate={new Date()}
 										/>
 									</Field>
 									<Flex gap={2}>
