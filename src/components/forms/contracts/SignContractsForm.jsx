@@ -113,7 +113,7 @@ export const SignContractsForm = ({ data, fetchData }) => {
 								},
 							}}
 						>
-							<FaSignature />
+							<FaSignature /> Firmar
 						</IconButton>
 					</Tooltip>
 				</Box>
