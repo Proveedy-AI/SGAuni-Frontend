@@ -2,35 +2,43 @@ import { FractionateDebt } from '@/components/forms/mypayments';
 import { PreviewMypaymentDetailsModal } from '@/components/modals';
 import { Alert } from '@/components/ui';
 import { CustomSelect } from '@/components/ui/CustomSelect';
+import { useReadMyApplicants } from '@/hooks';
+import { useReadMyDebtsPayment } from '@/hooks/payment_orders';
 import {
 	Badge,
 	Box,
 	Button,
 	Card,
+	Center,
 	Flex,
 	Heading,
+	Icon,
+	Spinner,
 	Stack,
 	Table,
 	Text,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { FiAlertTriangle } from 'react-icons/fi';
+import { FiAlertTriangle, FiCheckCircle } from 'react-icons/fi';
 
 export const MyPaymentDebt = () => {
 	// Datos de ejemplo - Usuario con múltiples programas
-	const userPrograms = [
-		{ id: 'ING-SIS', name: 'Ingeniería de Sistemas', active: true },
-		{ id: 'ING-IND', name: 'Ingeniería Industrial', active: true },
-		{ id: 'ADM-EMP', name: 'Administración de Empresas', active: false },
-	];
+	const { data: dataMyApplicants } = useReadMyApplicants();
+	const userPrograms = dataMyApplicants?.map((programs) => ({
+		label: programs.postgraduate_name,
+		value: programs.id,
+	}));
 
 	const [selectedProgram, setSelectedProgram] = useState(
-		userPrograms.filter((p) => p.active).length === 1
-			? userPrograms.id
+		userPrograms?.filter((p) => p.active).length === 1
+			? userPrograms?.id
 			: 'TODOS'
 	);
 
-	const debtsByPurpose = [
+	const { data: debtsByPurpose, isLoading: isLoadingDebts } =
+		useReadMyDebtsPayment();
+
+	/*const debtsByPurpose = [
 		{
 			purpose: 'MATRICULA',
 			description: 'Matrícula Semestre 2024-I',
@@ -81,23 +89,37 @@ export const MyPaymentDebt = () => {
 			programId: 'ING-IND',
 			orderId: 'OP-2024-002',
 		},
-	];
+	];*/
 	const getFilteredDebts = () => {
-		return debtsByPurpose.filter((debt) => debt.programId === selectedProgram);
+		if (!debtsByPurpose?.results) return [];
+		return debtsByPurpose.results.filter(
+			(debt) => debt.programId === selectedProgram
+		);
 	};
 
-	const activePrograms = userPrograms.filter((p) => p.active === true);
+	const activePrograms = userPrograms?.filter((p) => p.active === true);
 	const description =
-		activePrograms.length === 1
-			? 'Vista automática de tu único programa académico'
+		activePrograms?.length === 1
+			? `Mostrando deudas de tu único programa activo: ${activePrograms[0].name}`
 			: selectedProgram === 'TODOS'
-				? 'Resumen de todos tus programas académicos'
-				: `Filtrado por: ${userPrograms.find((p) => p.id === selectedProgram)?.name}`;
+				? 'Mostrando deudas de todos tus programas activos'
+				: `Mostrando deudas de: ${userPrograms?.find((p) => p.id === selectedProgram)?.name ?? 'Todo los programas'}`;
+
+	// Mejorar filtro: solo mostrar programas activos en el selector
+	const programOptions = [
+		{ value: 'TODOS', label: 'Todos los programas activos' },
+		...(activePrograms || []).map((program) => ({
+			value: program.id,
+			label: program.name,
+		})),
+	];
 
 	const getConsolidatedDebtsByPurpose = () => {
 		const consolidated = {};
 
-		debtsByPurpose.forEach((debt) => {
+		if (!debtsByPurpose?.results) return [];
+
+		debtsByPurpose.results.forEach((debt) => {
 			if (!consolidated[debt.purpose]) {
 				consolidated[debt.purpose] = {
 					purpose: debt.purpose,
@@ -122,26 +144,52 @@ export const MyPaymentDebt = () => {
 		return Object.values(consolidated);
 	};
 	const getConsolidatedTotals = () => {
-		if (selectedProgram === 'TODOS') {
+		if (!debtsByPurpose?.results) {
 			return {
-				pendingDebts: debtsByPurpose
-					.filter((d) => d.status === 'PENDIENTE')
-					.reduce((sum, d) => sum + d.amount, 0),
-				pendingCount: debtsByPurpose.filter((d) => d.status === 'PENDIENTE')
-					.length,
+				pendingDebts: 0,
+				pendingCount: 0,
+			};
+		}
+
+		if (selectedProgram === 'TODOS') {
+			const pendingDebts = debtsByPurpose.results
+				.filter((d) => d.status === 'PENDIENTE')
+				.reduce((sum, d) => sum + d.amount, 0);
+
+			const pendingCount = debtsByPurpose.results.filter(
+				(d) => d.status === 'PENDIENTE'
+			).length;
+
+			return {
+				pendingDebts,
+				pendingCount,
 			};
 		} else {
+			const filteredDebts = getFilteredDebts();
+			const pendingDebts = filteredDebts
+				.filter((d) => d.status === 'PENDIENTE')
+				.reduce((sum, d) => sum + d.amount, 0);
+
+			const pendingCount = filteredDebts.filter(
+				(d) => d.status === 'PENDIENTE'
+			).length;
+
 			return {
-				pendingDebts: getFilteredDebts()
-					.filter((d) => d.status === 'PENDIENTE')
-					.reduce((sum, d) => sum + d.amount, 0),
-				pendingCount: getFilteredDebts().filter((d) => d.status === 'PENDIENTE')
-					.length,
+				pendingDebts,
+				pendingCount,
 			};
 		}
 	};
 
 	const totals = getConsolidatedTotals();
+
+	if (isLoadingDebts) {
+		return (
+			<Center minH='50vh'>
+				<Spinner size='xl' thickness='4px' speed='0.65s' color='uni.primary' />
+			</Center>
+		);
+	}
 
 	return (
 		<Box>
@@ -157,20 +205,14 @@ export const MyPaymentDebt = () => {
 				</Text>
 
 				<Flex align='center' gap={3}>
-					{userPrograms.length > 1 && (
+					{userPrograms?.length > 1 && (
 						<CustomSelect
 							value={selectedProgram}
 							onChange={(val) => setSelectedProgram(val)}
 							placeholder='Filtrar por programa'
 							w={{ base: '100%', md: '250px' }}
 							size='sm'
-							items={[
-								{ value: 'TODOS', label: 'Todos los programas' },
-								...userPrograms.map((program) => ({
-									value: program.id,
-									label: program.name,
-								})),
-							]}
+							items={programOptions}
 						></CustomSelect>
 					)}
 				</Flex>
@@ -193,15 +235,15 @@ export const MyPaymentDebt = () => {
 			)}
 			<Card.Root borderRadius={'lg'}>
 				<Card.Header>
-					<Flex justify='space-between' align='center'>
-            <Box>
-              <Card.Title fontSize={'24px'}>
-						  Deudas Consolidadas por Propósito
-					    </Card.Title>
-					    <Card.Description>{description}</Card.Description>
-            </Box>
-            <FractionateDebt />
-          </Flex>
+					<Flex justify='space-between' gap={3} align='center'>
+						<Box>
+							<Card.Title fontSize={'24px'}>
+								Deudas Consolidadas por Propósito
+							</Card.Title>
+							<Card.Description>{description}</Card.Description>
+						</Box>
+						<FractionateDebt />
+					</Flex>
 				</Card.Header>
 
 				<Card.Body>
@@ -354,7 +396,12 @@ export const MyPaymentDebt = () => {
 									</Card.Root>
 								))
 							) : (
-								<Text>No hay deudas pendientes</Text>
+								<Flex direction='column' align='center' gap={2}>
+									<Icon as={FiCheckCircle} w={8} h={8} color='green.400' />
+									<Text fontWeight='semibold' color='green.700' fontSize='lg'>
+										No hay deudas pendientes
+									</Text>
+								</Flex>
 							);
 						})()}
 					</Stack>

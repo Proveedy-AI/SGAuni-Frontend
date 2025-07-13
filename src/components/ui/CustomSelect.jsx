@@ -117,7 +117,7 @@ export const CustomSelect = ({
 };
 
 CustomSelect.propTypes = {
-	label: PropTypes.string.isRequired,
+	label: PropTypes.string,
 	placeholder: PropTypes.string,
 	error: PropTypes.string,
 	invalid: PropTypes.bool,
