@@ -1,6 +1,6 @@
 //import { UpdateSettingsCountryForm } from '@/components/forms';
 import { HistoryStatusEnrollmentProgramsView } from '@/components/forms/enrollment_proccess/HistoryStatusEnrollmentProgramsView';
-import { DeleteTuitionProgramsModal } from '@/components/modals/tuition';
+import { DeleteTuitionProgramsModal, ScheduleEnrollmentProgramsModal } from '@/components/modals/tuition';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { Pagination, toaster, Tooltip } from '@/components/ui';
 import { formatDateString } from '@/components/ui/dateHelpers';
@@ -81,6 +81,7 @@ const Row = memo(
 				</Table.Cell>
 				<Table.Cell>
 					<HStack>
+						<ScheduleEnrollmentProgramsModal />
 						<SendConfirmationModal
 							item={item}
 							onConfirm={handleSend}
