@@ -2,7 +2,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useReadPaymentOrders = (params = {}) => {
+export const useReadPaymentOrders = (params = {}, options = {}) => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useInfiniteQuery({
@@ -20,5 +20,6 @@ export const useReadPaymentOrders = (params = {}) => {
 			}
 			return undefined;
 		},
+		...options,
 	});
 };
