@@ -178,11 +178,46 @@ export const EnrollmentsMyProgramsTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader>Programa</Table.ColumnHeader>
-							<Table.ColumnHeader>Inicio Semestre</Table.ColumnHeader>
-							<Table.ColumnHeader>Inicio de Inscripciones</Table.ColumnHeader>
-							<Table.ColumnHeader>Fin de Inscripciones</Table.ColumnHeader>
-							<Table.ColumnHeader>Estado</Table.ColumnHeader>
+							<Table.ColumnHeader>
+								<SortableHeader
+									label='Programa'
+									columnKey='program_name'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader>
+								<SortableHeader
+									label='Inicio Semestre'
+									columnKey='semester_start_date'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader>
+								<SortableHeader
+									label='Inicio de Inscripciones'
+									columnKey='registration_start_date'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader>
+								<SortableHeader
+									label='Fin de Inscripciones'
+									columnKey='registration_end_date'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader>
+								<SortableHeader
+									label='Estado'
+									columnKey='status'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
 							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>

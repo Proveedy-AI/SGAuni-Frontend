@@ -53,7 +53,7 @@ export const SendConfirmationModal = ({
 				<IconButton
 					onClick={() => setOpenSend(true)}
 					colorPalette='green'
-					size='sm'
+					size='xs'
 					disabled={item.status === 4 || item.status === 2}
 				>
 					<FiSend />
