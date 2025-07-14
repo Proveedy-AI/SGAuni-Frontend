@@ -6,74 +6,102 @@ import {
 	IconButton,
 	Input,
 	Stack,
-	Table,
 	Text,
+  Card
 } from '@chakra-ui/react';
-import { FiCheckSquare, FiTrash2 } from 'react-icons/fi';
-import { useRef, useState } from 'react';
+import { FiCheckSquare, FiTrash2, FiCreditCard, FiInfo } from 'react-icons/fi';
+import { useEffect, useRef, useState } from 'react';
 import {
 	useAssignDebtConditionProgram,
 	useDeleteDebtConditionProgram,
+  useUpdateDebtConditionProgram,
 } from '@/hooks';
 import { FaSave } from 'react-icons/fa';
 import { useReadDebtConditionProgram } from '@/hooks/programs/useReadDebtConditionProgram';
+import { BsFillPencilFill } from 'react-icons/bs';
 
 export const AssignDebtConditionProgram = ({ item, fetchData }) => {
-	/*Solicitar que a los programas se le añade un array de condiciones de deuda
-    {
-      ...las demás propiedades del programa,
-      debt_conditions: [
-        {
-          id: 1,
-          min_payment_percentage: 10,
-          max_installments: 12,
-          created_at: "2023-10-01T12:00:00Z",
-          updated_at: "2023-10-01T12:00:00Z",
-        },
-      ]
+	/*Agregar condición de deuda a un programa existente (item)
+    ...demás campos,
+    has_debt_condition: boolean,
+    debt_condition: { // En caso has_debt_condition = true
+      id: number,
+      min_payment_percentage: number,
+      max_installments: number,
+      postgraduate_program: number,
     }
   */
 
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
+  const [isEditable, setIsEditable] = useState(false);
 	const [minPaymentPercentage, setMinPaymentPercentage] = useState(0);
 	const [maxInstallments, setMaxInstallments] = useState(0);
 
 	const { mutateAsync: assignDebtCondition, isPending: isSaving } =
 		useAssignDebtConditionProgram();
 
-	const { data: dataDebts, refetch: fetchDebts } = useReadDebtConditionProgram(
+	const { refetch: fetchDebts } = useReadDebtConditionProgram(
 		{},
-		{ enabled: open }
+		{ enabled: false }
 	);
 
-	const { mutate: deleteDebtCondition } = useDeleteDebtConditionProgram();
+	const { mutateAsync: updateDebtCondition, isPending: isUpdating } = useUpdateDebtConditionProgram();
+  const { mutateAsync: deleteDebtCondition, isPending: isDeleting } = useDeleteDebtConditionProgram();
 
-	const handleSubmit = async () => {
-		const payload = {
-			min_payment_percentage: minPaymentPercentage,
-			max_installments: maxInstallments,
-			postgraduate_program: item.id,
-		};
+  useEffect(() => {
+    if (isEditable) {
+      setMinPaymentPercentage(item?.debt_condition?.min_payment_percentage);
+      setMaxInstallments(item?.debt_condition?.max_installments);
+    } else {
+      setMinPaymentPercentage(0);
+      setMaxInstallments(0);
+    }
+  }, [isEditable, item])
 
-		assignDebtCondition(payload, {
-			onSuccess: () => {
-				toaster.create({
-					title: 'Condicion de deuda asignada correctamente',
-					type: 'success',
-				});
-				fetchData();
-				fetchDebts();
-			},
-			onError: (error) => {
-				toaster.create({
-					title:
-						error?.response?.data?.detail ||
-						'Error al asignar condicion de deuda',
-					type: 'error',
-				});
-			},
-		});
+  const onSuccess = () => {
+    toaster.create({
+      title: `Condición de deuda ${isEditable ? 'actualizada' : 'asignada'} correctamente`,
+      type: 'success',
+    });
+    fetchData();
+    fetchDebts();
+  }
+
+  const onError = (error) => {
+    toaster.create({
+      title: error || `Error al ${isEditable ? 'actualizar' : 'asignar'} condición de deuda`,
+      type: 'error',
+    });
+  }
+
+  const handleEdit = (id) => {
+    const payload = {
+      min_payment_percentage: minPaymentPercentage,
+      max_installments: maxInstallments,
+      postgraduate_program: item.id,
+    }
+
+    updateDebtCondition({ id, payload }, { onSuccess, onError })
+  }
+
+  const handleAssign = () => {
+    const payload = {
+      min_payment_percentage: minPaymentPercentage,
+      max_installments: maxInstallments,
+      postgraduate_program: item.id,
+    };
+
+    assignDebtCondition(payload, { onSuccess, onError });
+  }
+
+	const handleSubmit = () => {
+		if (isEditable) handleEdit(item?.debt_condition?.id);
+    else handleAssign();
+
+    setOpen(false);
+    setMinPaymentPercentage(0);
+    setMaxInstallments(0);
 	};
 
 	const handleDelete = (id) => {
@@ -91,114 +119,114 @@ export const AssignDebtConditionProgram = ({ item, fetchData }) => {
 		});
 	};
 
-	return (
-		<Modal
-			title='Asignar condiciones de deuda'
-			placement='center'
-			trigger={
-				<Box>
-					<Tooltip
-						content='Asignar condiciones de deuda'
-						positioning={{ placement: 'bottom-center' }}
-						showArrow
-						openDelay={0}
-					>
-						<IconButton colorPalette='purple' size='xs'>
-							<FiCheckSquare />
-						</IconButton>
-					</Tooltip>
-				</Box>
-			}
-			size='4xl'
-			open={open}
-			hiddenFooter={true}
-			onOpenChange={(e) => setOpen(e.open)}
-			contentRef={contentRef}
-		>
-			<Stack spacing={4} css={{ '--field-label-width': '150px' }}>
-				<Flex
-					direction={{ base: 'column', md: 'row' }}
-					justify='flex-start'
-					align={'end'}
-					gap={2}
-					mt={2}
-				>
-					<Field label='Porcentaje mínimo de deuda'>
-						<Input
-							type='number'
-							value={minPaymentPercentage}
-							onChange={(e) => setMinPaymentPercentage(e.target.value)}
-						/>
-					</Field>
-					<Field label='Máximo de cuotas'>
-						<Input
-							type='number'
-							value={maxInstallments}
-							onChange={(e) => setMaxInstallments(e.target.value)}
-						/>
-					</Field>
-					<IconButton
-						size='sm'
-						bg='uni.secondary'
-						loading={isSaving}
-						disabled={!minPaymentPercentage || !maxInstallments}
-						onClick={handleSubmit}
-						css={{ _icon: { width: '5', height: '5' } }}
-					>
-						<FaSave />
-					</IconButton>
-				</Flex>
-				<Box mt={6}>
-					<Text fontWeight='semibold' mb={2}>
-						Condiciones de deuda asignadas:
-					</Text>
-					<Table.Root size='sm' striped>
-						<Table.Header>
-							<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
-								<Table.ColumnHeader>N°</Table.ColumnHeader>
-								<Table.ColumnHeader>% min de Deuda</Table.ColumnHeader>
-								<Table.ColumnHeader># máx de Cuotas</Table.ColumnHeader>
-								<Table.ColumnHeader>Acciones</Table.ColumnHeader>
-							</Table.Row>
-						</Table.Header>
-
-						<Table.Body>
-							{dataDebts?.results?.map((item, index) => (
-								<Table.Row
-									key={item.id}
-									bg={{ base: 'white', _dark: 'its.gray.500' }}
-								>
-									<Table.Cell>{index + 1}</Table.Cell>
-									<Table.Cell>{item.min_payment_percentage}</Table.Cell>
-									<Table.Cell>{item.max_installments}</Table.Cell>
-
-									<Table.Cell>
-										<Flex gap={2}>
-											<IconButton
-												size='xs'
-												colorPalette='red'
-												onClick={() => handleDelete(item.id)}
-												aria-label='Eliminar'
-											>
-												<FiTrash2 />
-											</IconButton>
-										</Flex>
-									</Table.Cell>
-								</Table.Row>
-							))}
-							{item?.debt_conditions?.length === 0 && (
-								<Table.Row>
-									<Table.Cell colSpan={7} textAlign='center'>
-										Sin datos disponibles
-									</Table.Cell>
-								</Table.Row>
-							)}
-						</Table.Body>
-					</Table.Root>
-				</Box>
-			</Stack>
-		</Modal>
-	);
+  return (
+    <Modal
+      title='Asignar condiciones de deuda'
+      placement='center'
+      trigger={
+        <Box>
+          <Tooltip
+            content='Asignar condiciones de deuda'
+            positioning={{ placement: 'bottom-center' }}
+            showArrow
+            openDelay={0}
+          >
+            <IconButton disabled={item.has_debt_condition} colorPalette='purple' size='xs'>
+              <FiCheckSquare />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      }
+      size='4xl'
+      open={open}
+      hiddenFooter={true}
+      onOpenChange={(e) => setOpen(e.open)}
+      contentRef={contentRef}
+    >
+      <Card.Root>
+        <Card.Header display={'flex'} flexDirection={'row'} gap={2} alignItems='center' color='blue.500'>
+          <FiCreditCard size={24} />
+          <Text fontSize='lg' fontWeight='semibold'>Condiciones de deuda</Text>
+        </Card.Header>
+        <Card.Body spacing={4} css={{ '--field-label-width': '150px' }}>
+          <Flex
+            direction={{ base: 'column', md: 'row' }}
+            justify='flex-start'
+            align={'end'}
+            gap={2}
+            px={4}
+          >
+            <Field label='Porcentaje mínimo de deuda'>
+              <Input
+                type='number'
+                value={minPaymentPercentage}
+                onChange={(e) => setMinPaymentPercentage(e.target.value)}
+              />
+            </Field>
+            <Field label='Máximo de cuotas'>
+              <Input
+                type='number'
+                value={maxInstallments}
+                onChange={(e) => setMaxInstallments(e.target.value)}
+              />
+            </Field>
+            <IconButton
+              size='sm'
+              bg='uni.secondary'
+              loading={isSaving}
+              disabled={!minPaymentPercentage || !maxInstallments}
+              onClick={handleSubmit}
+              css={{ _icon: { width: '5', height: '5' } }}
+            >
+              <FaSave />
+            </IconButton>
+          </Flex>
+        </Card.Body>
+      </Card.Root>
+      <Card.Root mt={4}>
+        <Card.Header display={'flex'} flexDirection={'row'} gap={2} alignItems='center' color='green.500'>
+          <FiInfo size={24} />
+          <Text fontSize='lg' fontWeight='semibold'>Condiciones asignada</Text>
+        </Card.Header>
+        <Card.Body spacing={4} css={{ '--field-label-width': '150px' }}>
+          {item?.debt_condition ? (
+            <Stack spacing={3} px={4}>
+              <Text>
+                <strong>Porcentaje mínimo de deuda:</strong> {item?.debt_condition?.min_payment_percentage}%
+              </Text>
+              <Text>
+                <strong>Máximo de cuotas:</strong> {item?.debt_condition?.max_installments}
+              </Text>
+              <Flex gap={2} mt={2} justify='flex-end'>
+                <IconButton
+                  size='xs'
+                  loading={isUpdating}
+                  colorPalette='yellow'
+                  onClick={() => setIsEditable(true)}
+                  aria-label='Editar'
+                  px={4}
+                >
+                  <BsFillPencilFill /> Editar
+                </IconButton>
+                <IconButton
+                  size='xs'
+                  loading={isDeleting}
+                  colorPalette='red'
+                  onClick={() => handleDelete(item?.debt_condition?.id)}
+                  aria-label='Eliminar'
+                  px={4}
+                >
+                  <FiTrash2 /> Eliminar
+                </IconButton>
+              </Flex>
+            </Stack>
+          ) : (
+            <Text color='gray.500'>No hay condición de deuda asignada.</Text>
+          )}
+        </Card.Body>
+      </Card.Root>
+    </Modal>
+  );
 };
 
 AssignDebtConditionProgram.propTypes = {
