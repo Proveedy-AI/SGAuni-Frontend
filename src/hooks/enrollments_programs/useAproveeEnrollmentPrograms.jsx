@@ -8,7 +8,7 @@ export const useAproveeEnrollmentPrograms = () => {
 	return useMutation({
 		mutationFn: async ({ id, payload }) => {
 			const res = await axiosPrivate.patch(
-				`/api/v1/enrollment-programs/${id}/decision/`,
+				`/api/v1/enrollment-programs/${id}/review/decision/`,
 				payload
 			);
 			return res.data;

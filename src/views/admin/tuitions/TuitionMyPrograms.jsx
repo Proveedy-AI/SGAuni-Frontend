@@ -24,13 +24,17 @@ export const TuitionMyPrograms = () => {
 	const decoded = decodeURIComponent(id);
 	const decrypted = Encryptor.decrypt(decoded);
 	const { data } = useReadEnrollmentById(decrypted);
+	const { data: profile } = useReadUserLogged();
 	const {
 		data: dataEnrollmentsPrograms,
 		refetch: fetchEnrollmentsPrograms,
 		isLoading,
-	} = useReadEnrollmentsPrograms();
+	} = useReadEnrollmentsPrograms({
+		enrollment_period: Number(decrypted),
+		coordinator: profile?.id,
+	});
 
-	const { data: profile } = useReadUserLogged();
+	
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])

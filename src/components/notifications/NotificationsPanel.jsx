@@ -23,6 +23,7 @@ import {
 	useReadMyNotifications,
 } from '@/hooks/notifications';
 import { useTimeDifference } from '@/hooks';
+import { useMarkAllReadNotifications } from '@/hooks/notifications/useMarkAllReadNotifications';
 
 export const NotificationsPanel = ({ dataUser }) => {
 	const [visibleCount, setVisibleCount] = useState(4);
@@ -36,6 +37,17 @@ export const NotificationsPanel = ({ dataUser }) => {
 		{},
 		{ enabled: true }
 	);
+
+	const { mutateAsync: markAllRead } = useMarkAllReadNotifications();
+
+	const handleMarkAllAsRead = async () => {
+		try {
+			await markAllRead();
+			refetch();
+		} catch (error) {
+			console.error('Error marking all notifications as read:', error);
+		}
+	};
 
 	const handleCloseToast = () => {
 		setToastData((prev) => ({ ...prev, open: false }));
@@ -134,7 +146,7 @@ export const NotificationsPanel = ({ dataUser }) => {
 									colorPalette={'blue'}
 									variant='outline'
 									borderRadius={'md'}
-									//onClick={marcarTodosComoLeidos}
+									onClick={handleMarkAllAsRead}
 								>
 									{' '}
 									<BsCheck2All />
