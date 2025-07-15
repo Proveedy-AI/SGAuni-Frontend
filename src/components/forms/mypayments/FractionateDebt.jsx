@@ -3,42 +3,68 @@ import { ReactSelect } from "@/components/select";
 import { Button, Checkbox, Field, Modal, toaster } from "@/components/ui";
 import { CompactFileUpload } from "@/components/ui/CompactFileInput";
 import { Stack, Text, Card, Input, HStack, VStack, SimpleGrid } from "@chakra-ui/react";
-import { useRef, useState } from "react";
-import { FiDollarSign, FiDownload } from "react-icons/fi";
+import { useEffect, useRef, useState } from "react";
+import { FiDollarSign, FiDownload, FiInfo } from "react-icons/fi";
+import { useReadPaymentDebts } from '@/hooks/admission_debts';
+import { useReadMyApplicants } from '@/hooks';
 
 export const FractionateDebt = ({ totalAmount }) => {
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
+  
+  const [program, setProgram] = useState(null);
+  const [fractionateDebtPath, setFractionateDebtPath] = useState("");
+  const [planType, setPlanType] = useState(null);
+  const [amountToPay, setAmountToPay] = useState(null);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  
+  const {
+    data: dataMyApplicants,
+    isLoading: isLoadingMyApplicants,
+  } = useReadMyApplicants();
+
+  const {
+      data: dataPaymentDebt,
+      //isLoading: isLoadingPaymentDebt,
+  } = useReadPaymentDebts(
+    { /* program_id: program?.value */ },
+    { enabled: open && program !== null }
+  )
+
+  const paymentDebtLocal = {
+    max_installments: 24,
+    min_payment_percentage: "20.00",
+    postgraduate_program: program?.value || null,
+  }
+
+  useEffect(() => {
+    if (dataMyApplicants.length === 1) {
+      setProgram({ value: dataMyApplicants[0].id, label: dataMyApplicants[0].postgraduate_name });
+    }
+  }, [dataMyApplicants])
+
+  const programOptions = dataMyApplicants?.map(applicant => ({
+    value: applicant.id,
+    label: applicant.postgraduate_name
+  })) || [];
 
   //const { mutateAsync: fractionateDebt, isSaving } = useFractionateDebt();
 
   // Según base de datos
   const planOptions = [
-    { value: 1, label: "Creditos" },
-    { value: 2, label: "Cuotas" },
-    { value: 3, label: "Pagos Mensuales" },
+    { value: 1, label: "Cuotas" },
   ]
-
-  const [fractionateDebtPath, setFractionateDebtPath] = useState("");
-  const [planType, setPlanType] = useState(null);
-  const [amountToPay, setAmountToPay] = useState(null);
-  const [upFrontPercentage, setUpFrontPercentage] = useState(null);
-  const [installments, setInstallments] = useState(null);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const [errors, setErrors] = useState({})
 
   const validate = () => {
     const newErrors = {};
+    if (!program) newErrors.program = 'El programa es requerido'
     if (!fractionateDebtPath) newErrors.fractionateDebtPath = "El archivo es requerido";
     if (!planType) newErrors.planType = "El tipo de plan es requerido";
     if (!amountToPay) newErrors.amountToPay = "El monto a pagar es requerido";
     if (amountToPay <= 0) newErrors.amountToPay = "El monto a pagar debe ser mayor a 0";
     if (amountToPay >= totalAmount) newErrors.amountToPay = "El monto a pagar no puede ser mayor o igual al total de la deuda";
-    if (!upFrontPercentage) newErrors.upFrontPercentage = "El porcentaje inicial es requerido";
-    if (upFrontPercentage < 0 || upFrontPercentage > 100) newErrors.upFrontPercentage = "El porcentaje inicial debe estar entre 0 y 100";
-    if (!installments) newErrors.installments = "El número de cuotas es requerido";
-    if (installments <= 0) newErrors.installments = "El número de cuotas debe ser mayor a 0";
     if (!acceptedTerms) newErrors.acceptedTerms = "Debes aceptar los términos y condiciones";
 
     setErrors(newErrors);
@@ -49,8 +75,6 @@ export const FractionateDebt = ({ totalAmount }) => {
     setFractionateDebtPath("");
     setPlanType(null);
     setAmountToPay(0);
-    setUpFrontPercentage(0);
-    setInstallments(0);
     setAcceptedTerms(false);
   }
 
@@ -70,8 +94,6 @@ export const FractionateDebt = ({ totalAmount }) => {
       document_path: fractionateDebtPath,
       plan_type: planType?.value,
       amount_to_pay: amountToPay,
-      up_front_percentage: Number(upFrontPercentage/100),
-      installments: installments
     }
     console.log(payload)
     /*
@@ -128,10 +150,8 @@ export const FractionateDebt = ({ totalAmount }) => {
     >
       <Stack gap={3}>
         <Card.Root>
-          <Card.Header>
-            <Text fontSize="lg" fontWeight="bold">
-              <FiDollarSign /> Solicitud de Fraccionamiento
-            </Text>
+          <Card.Header flexDirection={'row'} alignItems={'center'} fontSize="lg" fontWeight="bold">
+            <FiDollarSign /> Solicitud de Fraccionamiento
           </Card.Header>
           <Card.Body>
             <Stack css={{ "--field-label-width": "150px" }}>
@@ -165,14 +185,26 @@ export const FractionateDebt = ({ totalAmount }) => {
           </Card.Body>
         </Card.Root>
         <Card.Root>
-          <Card.Header>
-            <Text fontSize="lg" fontWeight="bold">
-              Detalles de Fraccionamiento
-            </Text>
+          <Card.Header flexDirection={'row'} alignItems={'center'} fontSize="lg" fontWeight="bold">
+            <FiInfo /> Detalles de Fraccionamiento
           </Card.Header>
           <Card.Body>
             <Stack css={{ "--field-label-width": "150px" }}>
               <SimpleGrid columns={2} gap={2} >
+                <Field
+                  label="Programa"
+                  required
+                  invalid={!!errors.program}
+                  error={errors.program}
+                >
+                  <ReactSelect
+                    options={programOptions}
+                    value={program}
+                    isLoading={isLoadingMyApplicants}
+                    onChange={opt => setProgram(opt?.value)}
+                    placeholder="Selecciona un programa"
+                  />
+                </Field>
                 <Field
                   label="Tipo de plan"
                   required
@@ -186,13 +218,33 @@ export const FractionateDebt = ({ totalAmount }) => {
                     placeholder="Selecciona el tipo de plan"
                   />
                 </Field>
-                <Field
-                  label="Monto a pagar"
-                  required
-                  invalid={!!errors.amountToPay}
-                  error={errors.amountToPay}
-                >
+                <Field label="Porcentaje inicial (%)">
                   <Input
+                    readOnly
+                    placeholder='Seleccione programa'
+                    type="number"
+                    variant='flushed'
+                    min={0}
+                    max={100}
+                    value={dataPaymentDebt?.min_payment_percentage || paymentDebtLocal.min_payment_percentage}
+                    style={{ width: "100%" }}
+                  />
+                </Field>
+                <Field label="Número de cuotas">
+                  <Input
+                    readOnly
+                    placeholder='Seleccione programa'
+                    type="number"
+                    variant='flushed'
+                    min={1}
+                    value={dataPaymentDebt?.max_installments || paymentDebtLocal.max_installments}
+                    style={{ width: "100%" }}
+                  />
+                </Field>
+              </SimpleGrid>
+              <Field label="Monto a pagar" >
+                  <Input
+                    placeholder='Seleccione programa'
                     type="number"
                     min={1}
                     max={totalAmount - 1}
@@ -201,36 +253,6 @@ export const FractionateDebt = ({ totalAmount }) => {
                     style={{ width: "100%" }}
                   />
                 </Field>
-                <Field
-                  label="Porcentaje inicial (%)"
-                  required
-                  invalid={!!errors.upFrontPercentage}
-                  error={errors.upFrontPercentage}
-                >
-                  <Input
-                    type="number"
-                    min={0}
-                    max={100}
-                    value={upFrontPercentage}
-                    onChange={e => setUpFrontPercentage(Number(e.target.value))}
-                    style={{ width: "100%" }}
-                  />
-                </Field>
-                <Field
-                  label="Número de cuotas"
-                  required
-                  invalid={!!errors.installments}
-                  error={errors.installments}
-                >
-                  <Input
-                    type="number"
-                    min={1}
-                    value={installments}
-                    onChange={e => setInstallments(Number(e.target.value))}
-                    style={{ width: "100%" }}
-                  />
-                </Field>
-              </SimpleGrid>
               <HStack>
                 <Checkbox
                   checked={acceptedTerms}
