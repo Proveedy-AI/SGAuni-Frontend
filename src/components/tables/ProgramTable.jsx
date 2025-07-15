@@ -5,7 +5,6 @@ import { Pagination } from '@/components/ui';
 import { ViewProgram } from '../forms/management/programs/ViewProgram';
 import { DeleteProgram } from '../forms/management/programs/DeleteProgram';
 import { EditProgram } from '../forms/management/programs/EditProgram';
-import { AssignDebtConditionProgram } from '../forms/management/programs';
 import { SortableHeader } from '../ui/SortableHeader';
 import { usePaginationSettings } from '../navigation/usePaginationSettings';
 import useSortedData from '@/utils/useSortedData';
@@ -49,7 +48,6 @@ const Row = memo(
 								loadingProgramTypes={loadingProgramTypes}
 								loadingCoordinators={loadingCoordinators}
 							/>
-							<AssignDebtConditionProgram item={item} fetchData={fetchData} />
 							<DeleteProgram item={item} fetchData={fetchData} />
 						</Group>
 					</HStack>

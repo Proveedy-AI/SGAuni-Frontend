@@ -59,6 +59,20 @@ export const AssignDebtConditionProgram = ({ item, fetchData }) => {
     }
   }, [isEditable, item])
 
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const newErrors = {};
+    if (minPaymentPercentage < 0 || minPaymentPercentage > 100) {
+      newErrors.minPaymentPercentage = 'El porcentaje mínimo debe estar entre 0 y 100';
+    }
+    if (maxInstallments <= 0) {
+      newErrors.maxInstallments = 'El máximo de cuotas debe ser un número positivo';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }
+
   const onSuccess = () => {
     toaster.create({
       title: `Condición de deuda ${isEditable ? 'actualizada' : 'asignada'} correctamente`,
@@ -96,6 +110,14 @@ export const AssignDebtConditionProgram = ({ item, fetchData }) => {
   }
 
 	const handleSubmit = () => {
+    if (!validate()) {
+      toaster.create({
+        title: 'Campos incompletos',
+        description: 'Por favor, corrige los errores antes de continuar',
+        type: 'warning',
+      });
+      return;
+    }
 		if (isEditable) handleEdit(item?.debt_condition?.id);
     else handleAssign();
 
@@ -156,14 +178,22 @@ export const AssignDebtConditionProgram = ({ item, fetchData }) => {
             gap={2}
             px={4}
           >
-            <Field label='Porcentaje mínimo de deuda'>
+            <Field 
+              label='Porcentaje mínimo de deuda'
+              invalid={!!errors.minPaymentPercentage}
+              errorMessage={errors.minPaymentPercentage}
+            >
               <Input
                 type='number'
                 value={minPaymentPercentage}
                 onChange={(e) => setMinPaymentPercentage(e.target.value)}
               />
             </Field>
-            <Field label='Máximo de cuotas'>
+            <Field
+              label='Máximo de cuotas'
+              invalid={!!errors.maxInstallments}
+              errorMessage={errors.maxInstallments}
+            >
               <Input
                 type='number'
                 value={maxInstallments}
