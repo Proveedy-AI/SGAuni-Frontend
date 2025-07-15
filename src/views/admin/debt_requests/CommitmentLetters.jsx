@@ -22,7 +22,7 @@ export const CommitmentLetters = () => {
     fetchNextPage: fetchNextPageFractionationRequests,
 		hasNextPage: hasNextPageFractionationRequests,
 		isFetchingNextPage: isFetchingNextPageFractionationRequests,
-  } = useReadDebtRequests();
+  } = useReadFractionationRequests();
   */
   const dataFractionationRequests = {
      results: [

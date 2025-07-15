@@ -8,6 +8,7 @@ import { format, parseISO } from 'date-fns';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
 import { usePaginatedInfiniteData } from '@/components/navigation';
+import { ViewFractionationRequestsModal } from '@/components/forms/commitment_letters';
 
 const Row = memo(
 	({ item, startIndex, index, refetch, permissions, sortConfig, data }) => {
@@ -17,6 +18,8 @@ const Row = memo(
 			{ id: 3, label: 'Verificado', bg: '#D0EDD0', color: '#2D9F2D' },
 			{ id: 4, label: 'Expirado', bg: '#F7CDCE', color: '#E0383B' },
 		];
+
+    const matchStatus = statusDisplay.find((status) => status.id === item.status);
 
 		return (
 			<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
@@ -31,19 +34,24 @@ const Row = memo(
 				<Table.Cell>{item.applicant_name}</Table.Cell>
 				<Table.Cell>
 					<Badge
-						bg={statusDisplay.find((status) => status.id === item.status)?.bg}
-						color={
-							statusDisplay.find((status) => status.id === item.status)?.color
-						}
+						bg={matchStatus?.bg}
+						color={matchStatus?.color}
 					>
-						{statusDisplay.find((status) => status.id === item.status)?.label ||
-							'N/A'}
+						{matchStatus?.label || 'N/A'}
 					</Badge>
 				</Table.Cell>
 				<Table.Cell>
 					<HStack justify='space-between'>
 						<Group gap={1}>
-              
+              {permissions?.includes('commitment.letters.view') && (
+                <ViewFractionationRequestsModal item={item} matchStatus={matchStatus} />
+              )}
+              {/* {permissions?.includes('commitment.letters.approve') && (
+                <ViewDocumentRequestModal item={item} />
+              )} */}
+              {/* {permissions?.includes('commitment.letters.approve') && (
+                <ApproveFractionationRequestsModal item={item} fetchData={refetch} />
+              )} */}
 						</Group>
 					</HStack>
 				</Table.Cell>
