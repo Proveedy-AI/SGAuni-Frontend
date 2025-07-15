@@ -10,8 +10,6 @@ export const useCreateProgramsReview = () => {
             const res = await axiosPrivate.patch(
                 `/api/v1/enrollment-programs/${id}/review/`
             );
-
-            console.log(res.data)
             return res.data;
         },
     });

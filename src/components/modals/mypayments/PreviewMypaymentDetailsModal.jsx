@@ -21,7 +21,7 @@ import {
 } from 'react-icons/fi';
 import { useState } from 'react';
 
-export const PreviewMypaymentDetailsModal = ({ data, statusMap }) => {
+export const PreviewMypaymentDetailsModal = ({ data }) => {
 	const [open, setOpen] = useState(false);
 
 	const debtStatusUI = {
@@ -47,7 +47,6 @@ export const PreviewMypaymentDetailsModal = ({ data, statusMap }) => {
 		color: 'gray.600',
 		bg: 'gray.100',
 	};
-	console.log(statusMap);
 	return (
 		<Modal
 			placement='center'

@@ -33,8 +33,6 @@ export const ApproveDirectorTuitionProcessModal = ({ status }) => {
 			size='sm'
 			hiddenFooter={false}
 			onSave={() => {
-				console.log('Acción:', action);
-				console.log('Observaciones:', observation);
 				setOpen(false);
 				toaster.create({
 					title: 'Se enviaron los resultados de validación correctamente',

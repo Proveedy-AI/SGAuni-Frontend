@@ -30,7 +30,6 @@ const Row = memo(
 			Rechazado: { label: 'Rechazado', color: 'red' },
 		};
 
-		console.log(enrollment)
 		return (
 			<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
 				<Table.Cell>

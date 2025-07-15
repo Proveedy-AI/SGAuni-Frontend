@@ -33,7 +33,6 @@ export const HistoryStatusEnrollmentProgramsView = ({ data, statusMap }) => {
 		{ enrollment_period_program: data.id },
 		{ enabled: open } // Evita llamada automática
 	);
-	console.log(data)
 
 	const getStatusIcon = (status) => {
 		switch (status) {
@@ -58,7 +57,6 @@ export const HistoryStatusEnrollmentProgramsView = ({ data, statusMap }) => {
 	const totalEvaluations =
 		admissionReviews?.results?.filter((review) => review.review_at !== null)
 			.length || 0;
-			console.log(admissionReviews)
 
 	return (
 		<Modal
