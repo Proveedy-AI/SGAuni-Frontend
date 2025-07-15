@@ -11,6 +11,7 @@ import {
 	FiFileText,
 	FiBookOpen,
 	FiCreditCard,
+  FiFile,
 } from 'react-icons/fi';
 import { FaFileContract, FaRegFile } from 'react-icons/fa';
 import { HiOutlineClipboardList } from 'react-icons/hi';
@@ -122,6 +123,12 @@ export const useDataSidebar = () => {
 			label: 'Cursos y Horarios',
 			permission: 'courses.schedules.view',
 		},
+    {
+      href: '/commitment-letters',
+      icon: FiFile,
+      label: 'Solicitudes',
+      permission: 'commitment.letters.view',
+    },
 		{
 			href: '/users',
 			icon: FiUsers,

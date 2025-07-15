@@ -42,6 +42,7 @@ import { MyPaymentRequests } from './views/admin/mypayments/MyPaymentRequests';
 import { MyPaymentAddRequests } from './views/admin/mypayments/MyPaymentAddRequests';
 import { MyPaymentUpload } from './views/admin/mypayments/MyPaymentUpload';
 import { MyPaymentHistories } from './views/admin/mypayments/MyPaymentHistories';
+import { CommitmentLetters } from './views/admin/debt_requests';
 
 function App() {
 	return (
@@ -191,6 +192,17 @@ function App() {
 									<Route index element={<CoursesAndSchedules />} />
 								</Route>
 							</Route>
+              
+              <Route path='commitment-letters'>
+                <Route
+                  element={
+                    <ProtectedRoute requiredPermission='commitment.letters.view' />
+                  }
+                >
+                  <Route index element={<CommitmentLetters />} />
+                </Route>
+              </Route>
+
 							<Route path='mypaymentsdebts' element={<MyPaymentsLayout />}>
 								<Route>
 									<Route
