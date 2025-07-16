@@ -161,7 +161,7 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 											/>
 										</Field>
 									)}
-									<Field label='Descuento'>
+									<Field label='Descuento (0 - 100)%'>
 										<Input
 											type='number'
 											min={0}

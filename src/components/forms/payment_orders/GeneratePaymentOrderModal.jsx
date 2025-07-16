@@ -168,7 +168,7 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 							)}
 							<SimpleGrid columns={{ base: 1, sm: 2 }} gap={4} w='100%'>
 								<Field
-									label='Descuento'
+									label='Descuento (0 - 100)%'
 									invalid={!!errors.discountInput}
 									errorText={errors.discountInput}
 								>
