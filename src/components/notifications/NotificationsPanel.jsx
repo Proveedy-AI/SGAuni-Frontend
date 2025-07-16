@@ -55,7 +55,7 @@ export const NotificationsPanel = ({ dataUser }) => {
 
 	const counter = useMemo(() => {
 		return (
-			notifications?.results?.filter((notification) => !notification.is_read)
+			notifications?.notifications?.filter((notification) => !notification.is_read)
 				.length || 0
 		);
 	}, [notifications]);
@@ -70,6 +70,7 @@ export const NotificationsPanel = ({ dataUser }) => {
 		socketRef.current.onmessage = (event) => {
 			try {
 				const data = JSON.parse(event.data);
+				console.log('Mensaje recibido del WebSocket:', data);
 				if (data?.id === dataUser.id) {
 					refetch({ user_id: dataUser.id });
 
@@ -103,8 +104,8 @@ export const NotificationsPanel = ({ dataUser }) => {
 		};
 	}, [dataUser?.id, refetch]);
 
-	const visibleNotifications = notifications?.results?.slice(0, visibleCount);
-	const hasMore = visibleCount < notifications?.results?.length;
+	const visibleNotifications = notifications?.notifications?.slice(0, visibleCount);
+	const hasMore = visibleCount < notifications?.notifications?.length;
 
 	return (
 		<>

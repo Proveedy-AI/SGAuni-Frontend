@@ -1,4 +1,4 @@
-import { Field, ModalSimple, toaster } from '@/components/ui';
+import { Field, Modal, toaster } from '@/components/ui';
 import {
 	Badge,
 	Card,
@@ -19,6 +19,7 @@ import {
 import { FiArrowUp, FiDollarSign, FiPlus } from 'react-icons/fi';
 import { PaymentOrdersTable } from '@/components/tables/payment_orders';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
+import { format } from 'date-fns';
 
 export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 	const contentRef = useRef();
@@ -104,7 +105,7 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 	return (
 		<Stack css={{ '--field-label-width': '180px' }}>
 			<Field orientation={{ base: 'vertical', sm: 'horizontal' }}>
-				<ModalSimple
+				<Modal
 					title='Generar Orden de Pago'
 					placement='center'
 					trigger={
@@ -179,13 +180,14 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 										errorText={errors.dueDate} // usamos errorText para mantener la consistencia con tu otro código
 									>
 										<CustomDatePicker
-											selectedDate={
-												dueDateInput ? new Date(dueDateInput) : null
-											}
-											onDateChange={(date) => setDueDateInput(date)}
+											selectedDate={dueDateInput}
+											onDateChange={(date) => {
+												const formatted = format(date, 'yyyy-MM-dd');
+												setDueDateInput(formatted);
+											}}
 											buttonSize='md'
-											size='150px'
 											minDate={new Date()}
+											size={{ base: '230px', md: '300px' }}
 										/>
 									</Field>
 									<Flex gap={2}>
@@ -251,7 +253,7 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 							</Card.Body>
 						</Card.Root>
 					</Stack>
-				</ModalSimple>
+				</Modal>
 			</Field>
 		</Stack>
 	);

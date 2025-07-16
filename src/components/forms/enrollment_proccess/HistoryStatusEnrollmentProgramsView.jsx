@@ -30,7 +30,7 @@ export const HistoryStatusEnrollmentProgramsView = ({ data, statusMap }) => {
 	const [open, setOpen] = useState(false);
 
 	const { data: admissionReviews } = useReadEnrollmentsProgramsReview(
-		{ enrollment_period_program: data.id },
+		{ program_id: data.id },
 		{ enabled: open } // Evita llamada automática
 	);
 

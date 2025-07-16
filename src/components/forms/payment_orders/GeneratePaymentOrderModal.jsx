@@ -1,4 +1,4 @@
-import { Button, Field, ModalSimple, toaster } from '@/components/ui';
+import { Button, Field, Modal, toaster } from '@/components/ui';
 import { Flex, IconButton, Input, SimpleGrid, Stack } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
@@ -6,9 +6,10 @@ import { FaSave, FaTimes } from 'react-icons/fa';
 import { useCreatePaymentOrder } from '@/hooks/payment_orders';
 import { FiPlus } from 'react-icons/fi';
 import { ReactSelect } from '@/components/select';
-import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
+
 import { format } from 'date-fns';
 import { useReadPaymentRequest } from '@/hooks/payment_requests';
+import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 
 export const GeneratePaymentOrderModal = ({ fetchData }) => {
 	const contentRef = useRef();
@@ -25,7 +26,7 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 		dataPaymentRequests?.pages?.flatMap((page) => page.results) ?? [];
 
 	const [orderIdInput, setOrderIdInput] = useState('');
-	const [discountInput, setDiscountInput] = useState('');
+	const [discountInput, setDiscountInput] = useState(0);
 	const [dueDateInput, setDueDateInput] = useState('');
 	const [selectedRequest, setSelectedRequest] = useState(null);
 
@@ -119,7 +120,7 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 	return (
 		<Stack css={{ '--field-label-width': '180px' }}>
 			<Field orientation={{ base: 'vertical', sm: 'horizontal' }}>
-				<ModalSimple
+				<Modal
 					title='Generar Orden de Pago'
 					placement='center'
 					trigger={
@@ -184,12 +185,14 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 									label='Fecha de Vencimiento'
 									invalid={!!errors.dueDateInput}
 									errorText={errors.dueDateInput}
+									required
 								>
 									<CustomDatePicker
 										selectedDate={dueDateInput}
-										onDateChange={(date) =>
-											setDueDateInput(format(date, 'yyyy-MM-dd'))
-										}
+										onDateChange={(date) => {
+											const formatted = format(date, 'yyyy-MM-dd');
+											setDueDateInput(formatted);
+										}}
 										buttonSize='md'
 										minDate={new Date()}
 										size={{ base: '330px', md: '420px' }}
@@ -224,7 +227,7 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 							</Flex>
 						</Flex>
 					</Stack>
-				</ModalSimple>
+				</Modal>
 			</Field>
 		</Stack>
 	);
