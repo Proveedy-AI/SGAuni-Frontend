@@ -40,9 +40,9 @@ export const SendConfirmationModal = ({
 		return (
 			<Tooltip
 				content={
-					item.status === 2
+					item.status === 2 || item.status_review === 2
 						? 'Ya fue enviado para aprobación'
-						: item.status === 4
+						: item.status === 4 || item.status_review === 4
 							? 'Aprobado'
 							: 'Enviar para aprobación'
 				}
@@ -159,17 +159,33 @@ export const SendConfirmationModal = ({
 							<Text fontWeight='semibold'>Programa a enviar:</Text>
 						</Card.Header>
 						<Card.Body pt={2}>
-							<Box
-								bg='green.50'
-								border='1px solid'
-								borderColor='green.200'
-								borderRadius='md'
-								p={3}
-								fontWeight='bold'
-								color='green.700'
-							>
-								{item.program_name}
-							</Box>
+							{item.program_name && (
+								<Box
+									bg='green.50'
+									border='1px solid'
+									borderColor='green.200'
+									borderRadius='md'
+									p={3}
+									fontWeight='bold'
+									color='green.700'
+								>
+									{item.program_name}
+								</Box>
+							)}
+
+							{item.course_name && (
+								<Box
+									bg='green.50'
+									border='1px solid'
+									borderColor='green.200'
+									borderRadius='md'
+									p={3}
+									fontWeight='bold'
+									color='green.700'
+								>
+									{item.course_name}
+								</Box>
+							)}
 
 							<VStack
 								spacing={3}

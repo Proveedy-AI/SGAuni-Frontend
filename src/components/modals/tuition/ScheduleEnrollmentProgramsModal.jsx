@@ -14,6 +14,9 @@ import {
 	Heading,
 	IconButton,
 	Flex,
+	FileUpload,
+	Icon,
+	Span,
 } from '@chakra-ui/react';
 
 import PropTypes from 'prop-types';
@@ -21,17 +24,27 @@ import {
 	FiBookOpen,
 	FiCalendar,
 	FiClock,
+	FiDownload,
+	FiFileText,
 	FiGrid,
 	FiList,
-	FiUpload,
+	FiTrash2,
 	FiUsers,
 } from 'react-icons/fi';
-import { Field, Modal } from '@/components/ui';
+import { Alert, ConfirmModal, Field, Modal, toaster } from '@/components/ui';
 import { ReactSelect } from '@/components/select';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { useReadCourseSchedule } from '@/hooks/enrollments_programs/schedule/useReadCourseSchedule';
+import { LuUpload } from 'react-icons/lu';
+import { useUploadCourseScheduleExcel } from '@/hooks/enrollments_programs/schedule/useUploadCourseScheduleExcel';
+import { uploadToS3 } from '@/utils/uploadToS3';
+import { useProccessCourseScheduleExcel } from '@/hooks/enrollments_programs/schedule/useProccessCourseScheduleExcel';
+import { SendConfirmationModal } from '@/components/ui/SendConfirmationModal';
+import { useCreateCourseScheduleReview } from '@/hooks/enrollments_programs/schedule/useCreateCourseScheduleReview';
+import { useDeleteCourseSchedule } from '@/hooks/enrollments_programs/schedule/useDeleteCourseSchedule';
 
 // Datos de ejemplo basados en la estructura proporcionada
-const scheduleData = [
+/*const scheduleData = [
 	{
 		id: 1,
 		course_schedule: 1,
@@ -135,7 +148,7 @@ const scheduleData = [
 		credits: 3,
 	},
 	{
-		id: 6,
+		id: 9,
 		course_schedule: 6,
 		course_name: 'Física',
 		course_group_code: 'FIS-201-A',
@@ -152,7 +165,7 @@ const scheduleData = [
 		credits: 3,
 	},
 	{
-		id: 6,
+		id: 8,
 		course_schedule: 6,
 		course_name: 'Física',
 		course_group_code: 'FIS-201-A',
@@ -169,7 +182,7 @@ const scheduleData = [
 		credits: 3,
 	},
 	{
-		id: 6,
+		id: 7,
 		course_schedule: 6,
 		course_name: 'Física',
 		course_group_code: 'FIS-201-A',
@@ -185,7 +198,7 @@ const scheduleData = [
 		cycle: 'II',
 		credits: 3,
 	},
-];
+];*/
 
 const timeSlots = [
 	'07:00',
@@ -400,9 +413,15 @@ AddCourseModal.propTypes = {
 	setOpen: PropTypes.func,
 };
 
-const AddExcelScheduleModal = ({ open, setOpen }) => {
+const AddExcelScheduleModal = ({ open, setOpen, data }) => {
 	const [file, setFile] = useState(null);
+	const fileInputRef = useRef(null);
+	const [loading, setLoading] = useState(false);
 
+	const { mutate: uploadCourseScheduleExcel } = useUploadCourseScheduleExcel();
+
+	const { mutate: processCourseScheduleExcel } =
+		useProccessCourseScheduleExcel();
 	const handleFileChange = (e) => {
 		const selectedFile = e.target.files[0];
 		if (selectedFile) {
@@ -421,6 +440,99 @@ const AddExcelScheduleModal = ({ open, setOpen }) => {
 		}
 	};
 
+	const handleSubmit = async () => {
+		if (!file) {
+			toaster.create({
+				title: 'Error',
+				description: 'Por favor, selecciona un archivo antes de guardar.',
+				type: 'error',
+			});
+			return;
+		}
+		setLoading(true);
+
+		let uploadedFileUrl;
+
+		try {
+			// Subir el archivo a S3
+			uploadedFileUrl = await uploadToS3(
+				file,
+				'sga_uni/schedule',
+				'schedule_excel'
+			);
+
+			const payload = {
+				schedule_excel_url: uploadedFileUrl,
+			};
+
+			// Consumir primera API: registrar URL del Excel
+			uploadCourseScheduleExcel(
+				{ id: data.id, payload },
+				{
+					onSuccess: () => {
+						// Ejecutar segunda API automáticamente después
+						processCourseScheduleExcel(
+							{ id: data.id },
+							{
+								onSuccess: () => {
+									toaster.create({
+										title: 'Éxito',
+										description:
+											'El cronograma se ha importado y procesado correctamente.',
+										type: 'success',
+									});
+									setOpen(false);
+									setLoading(false);
+									setFile(null);
+								},
+								onError: (error) => {
+									toaster.create({
+										title: 'Error al procesar',
+										description:
+											error.message || 'No se pudo procesar el cronograma.',
+										type: 'error',
+									});
+									setLoading(false);
+								},
+							}
+						);
+					},
+					onError: (error) => {
+						toaster.create({
+							title: 'Error',
+							description: error.message || 'Error al importar el cronograma.',
+							type: 'error',
+						});
+						setLoading(false);
+					},
+				}
+			);
+		} catch (error) {
+			toaster.create({
+				title: 'Error',
+				description: error.message || 'Error al subir el archivo.',
+				type: 'error',
+			});
+			setLoading(false);
+		}
+	};
+	const handleDownloadGuide = () => {
+		// Crear un enlace temporal para descargar el archivo
+		const link = document.createElement('a');
+		link.href = '/templates/Carga-de-Horarios.xlsx'; // Archivo en la carpeta public
+		link.download = 'Carga-de-Horarios.xlsx';
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+
+		toaster.create({
+			title: 'Descarga completa',
+			description: 'La guía del cronograma se descargó correctamente.',
+			type: 'success',
+			duration: 3000,
+			isClosable: true,
+		});
+	};
 	return (
 		<Modal
 			open={open}
@@ -446,42 +558,89 @@ const AddExcelScheduleModal = ({ open, setOpen }) => {
 				</Box>
 			}
 			description='Suba un archivo Excel con el cronograma de cursos'
-			size='md'
+			size='xl'
+			loading={loading}
+			loadingText='Subiendo...'
+			onSave={handleSubmit}
 		>
 			<VStack spacing={4}>
 				<Field label='Archivo Excel'>
-					<Input
-						type='file'
-						onChange={handleFileChange}
-						accept='.xlsx,.xls'
-						size='xs'
-					/>
+					<FileUpload.Root required maxW='xl' alignItems='stretch' maxFiles={1}>
+						<FileUpload.HiddenInput
+							ref={fileInputRef}
+							onChange={handleFileChange}
+						/>
+						<FileUpload.Dropzone>
+							<Icon size='md' color='fg.muted'>
+								<LuUpload />
+							</Icon>
+							<FileUpload.DropzoneContent>
+								<Box>Arrastra y suelta tu archivo Excel aquí</Box>
+								<Box color='fg.muted'>.xlsx o .xls</Box>
+							</FileUpload.DropzoneContent>
+						</FileUpload.Dropzone>
+						<FileUpload.List />
+					</FileUpload.Root>
 				</Field>
 
-				<Box
-					w='full'
-					border='2px'
-					borderStyle='dashed'
-					borderColor='gray.300'
-					rounded='lg'
-					p={6}
-					textAlign='center'
+				<Alert
+					status='info'
+					borderRadius='lg'
+					bg='blue.50'
+					borderColor='blue.200'
+					borderWidth={1}
+					title='Requisitos del archivo:'
 				>
-					<FiUpload className='mx-auto h-12 w-12' color='gray.400' />
-					<Text mt={2} fontSize='sm' color='gray.600'>
-						Arrastra y suelta tu archivo Excel aquí, o haz clic para seleccionar
-					</Text>
-				</Box>
+					<VStack align='start' spacing={1}>
+						<Text>• Formato requerido: .xlsx o .xls</Text>
+						<Text>
+							• Columnas: Descargar Guía de formato correcto
+						</Text>
+						<Text>• Primera fila debe contener los encabezados</Text>
+					</VStack>
+				</Alert>
 
-				<VStack spacing={1} alignItems='start' w='full'>
-					<Text fontSize='xs' color='gray.500'>
-						Formato requerido: .xlsx o .xls
-					</Text>
-					<Text fontSize='xs' color='gray.500'>
-						El archivo debe contener las columnas: Nombre del Curso, Código,
-						Profesor, Día, Horario, etc.
-					</Text>
-				</VStack>
+				<Box
+					bg='gray.50'
+					p={4}
+					w={'full'}
+					borderRadius='lg'
+					border='1px solid'
+					borderColor='gray.200'
+				>
+					<HStack justify='space-between' align='center'>
+						<HStack gap={3}>
+							<Box
+								w={8}
+								h={8}
+								bg='green.100'
+								borderRadius='full'
+								display='flex'
+								alignItems='center'
+								justifyContent='center'
+							>
+								<FiFileText color='green.600' size={16} />
+							</Box>
+							<Box>
+								<Text fontSize='sm' fontWeight='medium' color='gray.800'>
+									Plantilla de ejemplo
+								</Text>
+								<Text fontSize='xs' color='gray.600'>
+									Descarga la guía con formato correcto
+								</Text>
+							</Box>
+						</HStack>
+
+						<Button
+							colorPalette='green'
+							variant='solid'
+							onClick={handleDownloadGuide}
+							borderRadius='lg'
+						>
+							<FiDownload /> Descargar guía
+						</Button>
+					</HStack>
+				</Box>
 			</VStack>
 		</Modal>
 	);
@@ -490,14 +649,34 @@ const AddExcelScheduleModal = ({ open, setOpen }) => {
 AddExcelScheduleModal.propTypes = {
 	open: PropTypes.bool.isRequired,
 	setOpen: PropTypes.func.isRequired,
+	data: PropTypes.shape({
+		id: PropTypes.number.isRequired,
+	}).isRequired,
 };
 
 const CalendarView = ({ data }) => {
 	const headerBg = 'gray.50';
-	const bgApproved = 'green.100';
+	const bgDraft = 'blue.100';
 	const bgPending = 'yellow.100';
-	const borderApproved = 'green.500';
+	const bgApproved = 'green.100';
+
+	const borderDraft = 'blue.500';
 	const borderPending = 'yellow.500';
+	const borderApproved = 'green.500';
+
+	const getBgColor = (status) => {
+		if (status === 1) return bgDraft;
+		if (status === 2) return bgPending;
+		if (status === 4) return bgApproved;
+		return 'gray.100'; // fallback
+	};
+
+	const getBorderColor = (status) => {
+		if (status === 1) return borderDraft;
+		if (status === 2) return borderPending;
+		if (status === 4) return borderApproved;
+		return 'gray.300'; // fallback
+	};
 
 	const getCourseForTimeSlot = (day, time) => {
 		return data.filter((course) => {
@@ -583,13 +762,9 @@ const CalendarView = ({ data }) => {
 												p={1}
 												rounded='md'
 												overflow='hidden'
-												bg={course.status_review === 1 ? bgApproved : bgPending}
+												bg={getBgColor(course.status_review)}
+												borderLeftColor={getBorderColor(course.status_review)}
 												borderLeft='4px solid'
-												borderLeftColor={
-													course.status_review === 1
-														? borderApproved
-														: borderPending
-												}
 												height={`${getCourseHeight(course)}px`}
 												transition='all 0.2s ease-in-out'
 												cursor='pointer'
@@ -600,10 +775,10 @@ const CalendarView = ({ data }) => {
 													width: '100%',
 													left: index === totalCourses - 1 ? 'auto' : left,
 													right: index === totalCourses - 1 ? '0' : 'auto',
-													bg:
-														course.status_review === 1
-															? 'green.200'
-															: 'yellow.200',
+													bg: getBgColor(course.status_review).replace(
+														'.100',
+														'.200'
+													),
 												}}
 											>
 												<Text fontWeight='medium' fontSize='xs' noOfLines={1}>
@@ -618,17 +793,13 @@ const CalendarView = ({ data }) => {
 												<Text fontSize='xs' color='gray.500' noOfLines={1}>
 													{course.start_time} - {course.end_time}
 												</Text>
-												<HStack
-													spacing={1}
-													mt={1}
-													justifyContent={'space-between'}
-												>
-													<HStack>
+												<HStack gap={1} mt={1} justifyContent={'space-between'}>
+													{/*<HStack>
 														<FiUsers size={12} />
 														<Text fontSize='xs'>{course.capacity}</Text>
-													</HStack>
+													</HStack>*/}
 													<HStack>
-														<Text fontSize='xs'>{course.cycle}</Text>
+														<Text fontSize='xs'>Ciclo: {course.cycle}</Text>
 														{course.is_mandatory && (
 															<Badge
 																colorPalette='red'
@@ -671,17 +842,96 @@ CalendarView.propTypes = {
 	).isRequired,
 };
 
-export const ScheduleEnrollmentProgramsModal = () => {
+export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 	const [open, setOpen] = useState(false);
+	const [openDelete, setOpenDelete] = useState(false);
+	const [openSend, setOpenSend] = useState(false);
 	const [addCourseOpen, setAddCourseOpen] = useState(false);
 	const [addExcelOpen, setAddExcelOpen] = useState(false);
 	const [tab, setTab] = useState(1);
+
+	const {
+		data: dataCourseSchedule,
+		//isLoading: loadingPaymentOrders,
+		refetch: fetchDataCourseSchedule,
+	} = useReadCourseSchedule(
+		{ enrollment_period_program_course: data.id },
+		{ enabled: open }
+	);
+
+	const scheduleData = dataCourseSchedule?.results || [];
+
+	const dayNames = [
+		'Domingo',
+		'Lunes',
+		'Martes',
+		'Miércoles',
+		'Jueves',
+		'Viernes',
+		'Sábado',
+	];
+
+	const normalizedData = scheduleData.map((item) => ({
+		...item,
+		day_of_week: dayNames[item.day_of_week],
+	}));
+
 	const getStatusBadge = (status, statusDisplay) => {
-		return (
-			<Badge colorPalette={status === 1 ? 'green' : 'gray'}>
-				{statusDisplay}
-			</Badge>
-		);
+		let colorScheme = 'gray';
+
+		if (status === 1)
+			colorScheme = 'blue'; // Borrador
+		else if (status === 2)
+			colorScheme = 'yellow'; // Pendiente
+		else if (status === 3)
+			colorScheme = 'red'; // Rechazado
+		else if (status === 4) colorScheme = 'green'; // Aprobado
+
+		return <Badge colorPalette={colorScheme}>{statusDisplay}</Badge>;
+	};
+
+	const { mutate: createCourseReview, isPending: LoadingProgramsReview } =
+		useCreateCourseScheduleReview();
+
+	const handleSend = (course) => {
+		createCourseReview(course.id, {
+			onSuccess: () => {
+				toaster.create({
+					title: 'Horario enviado correctamente',
+					type: 'success',
+				});
+				fetchDataCourseSchedule();
+				setOpenSend(false);
+			},
+			onError: (error) => {
+				console.log(error);
+				toaster.create({
+					title: error.message,
+					type: 'error',
+				});
+			},
+		});
+	};
+
+	const { mutate: deleteCourseSchedule, isPending } = useDeleteCourseSchedule();
+
+	const handleDelete = (course) => {
+		deleteCourseSchedule(course.id, {
+			onSuccess: () => {
+				toaster.create({
+					title: 'Curso eliminado correctamente',
+					type: 'success',
+				});
+				fetchDataCourseSchedule();
+				setOpenDelete(false);
+			},
+			onError: (error) => {
+				toaster.create({
+					title: error.message,
+					type: 'error',
+				});
+			},
+		});
 	};
 
 	return (
@@ -706,11 +956,15 @@ export const ScheduleEnrollmentProgramsModal = () => {
 			{/* Botones de Acción */}
 			<HStack gap={3} borderBottomWidth={1} justifyContent={'end'}>
 				<AddCourseModal open={addCourseOpen} setOpen={setAddCourseOpen} />
-				<AddExcelScheduleModal open={addExcelOpen} setOpen={setAddExcelOpen} />
+				<AddExcelScheduleModal
+					data={data}
+					open={addExcelOpen}
+					setOpen={setAddExcelOpen}
+				/>
 			</HStack>
 
 			<Grid
-				templateColumns={{ base: '1fr', md: 'repeat(4, 1fr)' }}
+				templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }}
 				gap={4}
 				py={2}
 			>
@@ -725,7 +979,7 @@ export const ScheduleEnrollmentProgramsModal = () => {
 						<Heading size='lg'>{scheduleData.length}</Heading>
 					</Card.Body>
 				</Card.Root>
-				<Card.Root>
+				{/*<Card.Root>
 					<Card.Header>
 						<Flex justify='space-between' align='center'>
 							<Heading size='sm'>Capacidad Total</Heading>
@@ -737,7 +991,7 @@ export const ScheduleEnrollmentProgramsModal = () => {
 							{scheduleData.reduce((sum, course) => sum + course.capacity, 0)}
 						</Heading>
 					</Card.Body>
-				</Card.Root>
+				</Card.Root>*/}
 				<Card.Root>
 					<Card.Header>
 						<Flex justify='space-between' align='center'>
@@ -748,7 +1002,7 @@ export const ScheduleEnrollmentProgramsModal = () => {
 					<Card.Body>
 						<Heading size='lg'>
 							{
-								scheduleData.filter((course) => course.status_review === 1)
+								scheduleData.filter((course) => course.status_review === 4)
 									.length
 							}
 						</Heading>
@@ -787,7 +1041,7 @@ export const ScheduleEnrollmentProgramsModal = () => {
 				</Tabs.List>
 
 				<Tabs.Content value={1}>
-					<CalendarView data={scheduleData} />
+					<CalendarView data={normalizedData} />
 				</Tabs.Content>
 
 				<Tabs.Content value={2}>
@@ -805,48 +1059,98 @@ export const ScheduleEnrollmentProgramsModal = () => {
 									<Table.Cell>Créditos</Table.Cell>
 									<Table.Cell>Estado</Table.Cell>
 									<Table.Cell>Obligatorio</Table.Cell>
+									<Table.Cell>Acciones</Table.Cell>
 								</Table.Row>
 							</Table.Header>
 							<Table.Body>
-								{scheduleData.map((course) => (
-									<Table.Row key={course.id}>
-										<Table.Cell fontWeight='medium'>
-											{course.course_name}
-										</Table.Cell>
-										<Table.Cell>{course.course_group_code}</Table.Cell>
-										<Table.Cell>{course.teacher_name}</Table.Cell>
-										<Table.Cell>{course.day_of_week}</Table.Cell>
-										<Table.Cell>
-											<HStack>
-												<FiClock size={12} />
-												<Text fontSize='sm'>
-													{course.start_time} - {course.end_time}
-												</Text>
-											</HStack>
-										</Table.Cell>
-										<Table.Cell>
-											<HStack>
-												<FiUsers size={12} />
-												<Text>{course.capacity}</Text>
-											</HStack>
-										</Table.Cell>
-										<Table.Cell>
-											<Badge variant='outline'>{course.cycle}</Badge>
-										</Table.Cell>
-										<Table.Cell>{course.credits}</Table.Cell>
-										<Table.Cell>
-											{getStatusBadge(
-												course.status_review,
-												course.status_review_display
-											)}
-										</Table.Cell>
-										<Table.Cell>
-											<Badge colorScheme={course.is_mandatory ? 'red' : 'gray'}>
-												{course.is_mandatory ? 'Obligatorio' : 'Electivo'}
-											</Badge>
+								{scheduleData?.length > 0 ? (
+									scheduleData.map((course) => (
+										<Table.Row key={course.id}>
+											<Table.Cell fontWeight='medium'>
+												{course.course_name}
+											</Table.Cell>
+											<Table.Cell>{course.course_group_code}</Table.Cell>
+											<Table.Cell>{course.teacher_name}</Table.Cell>
+											<Table.Cell>{course.day_of_week}</Table.Cell>
+											<Table.Cell>
+												<HStack>
+													<FiClock size={12} />
+													<Text fontSize='sm'>
+														{course.start_time} - {course.end_time}
+													</Text>
+												</HStack>
+											</Table.Cell>
+											<Table.Cell>
+												<HStack>
+													<FiUsers size={12} />
+													<Text>{course.capacity}</Text>
+												</HStack>
+											</Table.Cell>
+											<Table.Cell>
+												<Badge variant='outline'>{course.cycle}</Badge>
+											</Table.Cell>
+											<Table.Cell>{course.credits}</Table.Cell>
+											<Table.Cell>
+												{getStatusBadge(
+													course.status_review,
+													course.status_review_display
+												)}
+											</Table.Cell>
+											<Table.Cell>
+												<Badge
+													colorPalette={course.is_mandatory ? 'red' : 'gray'}
+												>
+													{course.is_mandatory ? 'Obligatorio' : 'Electivo'}
+												</Badge>
+											</Table.Cell>
+											<Table.Cell>
+												<HStack>
+													<SendConfirmationModal
+														item={course}
+														onConfirm={() => handleSend(course)}
+														openSend={openSend}
+														setOpenSend={setOpenSend}
+														loading={LoadingProgramsReview}
+													/>
+
+													<ConfirmModal
+														placement='center'
+														trigger={
+															<IconButton
+																disabled={
+																	course.status_review === 2 ||
+																	course.status_review === 4
+																}
+																colorPalette='red'
+																size='xs'
+															>
+																<FiTrash2 />
+															</IconButton>
+														}
+														open={openDelete}
+														onOpenChange={(e) => setOpenDelete(e.open)}
+														onConfirm={() => handleDelete(course)}
+														loading={isPending}
+													>
+														<Text>
+															¿Estás seguro que quieres eliminar a
+															<Span fontWeight='semibold' px='1'>
+																{course.course_name}
+															</Span>
+															de la lista de ubigeos?
+														</Text>
+													</ConfirmModal>
+												</HStack>
+											</Table.Cell>
+										</Table.Row>
+									))
+								) : (
+									<Table.Row>
+										<Table.Cell colSpan={11} textAlign='center' py={2}>
+											No hay datos disponibles.
 										</Table.Cell>
 									</Table.Row>
-								))}
+								)}
 							</Table.Body>
 						</Table.Root>
 					</Box>
@@ -855,4 +1159,10 @@ export const ScheduleEnrollmentProgramsModal = () => {
 			{/* Modales Secundarios */}
 		</Modal>
 	);
+};
+
+ScheduleEnrollmentProgramsModal.propTypes = {
+	data: PropTypes.shape({
+		id: PropTypes.number.isRequired,
+	}).isRequired,
 };
