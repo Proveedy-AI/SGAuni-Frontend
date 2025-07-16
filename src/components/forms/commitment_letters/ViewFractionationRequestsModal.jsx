@@ -19,7 +19,7 @@ export const ViewFractionationRequestsModal = ({ item, matchStatus }) => {
       trigger={
         <Box>
           <Tooltip
-            content='Vista previa de curso'
+            content='Vista previa de la solicitud'
             positioning={{ placement: 'bottom-center' }}
             showArrow
             openDelay={0}

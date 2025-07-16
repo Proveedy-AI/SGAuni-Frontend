@@ -8,15 +8,14 @@ import { format, parseISO } from 'date-fns';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
 import { usePaginatedInfiniteData } from '@/components/navigation';
-import { ViewFractionationRequestsModal } from '@/components/forms/commitment_letters';
+import { ApproveFractionationRequestsModal, ViewDocumentRequestModal, ViewFractionationRequestsModal } from '@/components/forms/commitment_letters';
 
 const Row = memo(
 	({ item, startIndex, index, refetch, permissions, sortConfig, data }) => {
 		const statusDisplay = [
 			{ id: 1, label: 'Pendiente', bg: '#AEAEAE', color: '#F5F5F5' },
-			{ id: 2, label: 'Generado', bg: '#C6E7FC', color: '#0661D8' },
-			{ id: 3, label: 'Verificado', bg: '#D0EDD0', color: '#2D9F2D' },
-			{ id: 4, label: 'Expirado', bg: '#F7CDCE', color: '#E0383B' },
+			{ id: 2, label: 'Validado', bg: '#D0EDD0', color: '#2D9F2D' },
+			{ id: 3, label: 'Expirado', bg: '#F7CDCE', color: '#E0383B' },
 		];
 
     const matchStatus = statusDisplay.find((status) => status.id === item.status);
@@ -46,12 +45,12 @@ const Row = memo(
               {permissions?.includes('commitment.letters.view') && (
                 <ViewFractionationRequestsModal item={item} matchStatus={matchStatus} />
               )}
-              {/* {permissions?.includes('commitment.letters.approve') && (
+              {permissions?.includes('commitment.letters.view') && (
                 <ViewDocumentRequestModal item={item} />
-              )} */}
-              {/* {permissions?.includes('commitment.letters.approve') && (
+              )}
+              {permissions?.includes('commitment.letters.approve') && (
                 <ApproveFractionationRequestsModal item={item} fetchData={refetch} />
-              )} */}
+              )}
 						</Group>
 					</HStack>
 				</Table.Cell>

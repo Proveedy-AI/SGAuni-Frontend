@@ -2,6 +2,7 @@ import { ReactSelect } from "@/components";
 import { CommitmentLettersTable } from "@/components/tables/commitment_letters";
 import { Field } from "@/components/ui";
 import { useReadPrograms } from "@/hooks";
+import { useReadFractionationRequests } from "@/hooks/fractionation_requests";
 import { useReadUserLogged } from "@/hooks/users/useReadUserLogged";
 import { Button, Card, Flex, Heading, Icon, Input, SimpleGrid, Stack } from "@chakra-ui/react";
 import { useState } from "react";
@@ -14,16 +15,16 @@ export const CommitmentLetters = () => {
     .flatMap((r) => r.permissions || [])
     .map((p) => p.guard_name);
   
-  /*
+  
   const {
-    data: dataFractionationRequests,
+    //data: dataFractionationRequests,
     refetch: fetchFractionationRequests,
-    isLoading: loadingFractionationRequests,
+    //isLoading: loadingFractionationRequests,
     fetchNextPage: fetchNextPageFractionationRequests,
 		hasNextPage: hasNextPageFractionationRequests,
 		isFetchingNextPage: isFetchingNextPageFractionationRequests,
   } = useReadFractionationRequests();
-  */
+  
   const dataFractionationRequests = {
      results: [
      {
@@ -176,11 +177,11 @@ export const CommitmentLetters = () => {
       <CommitmentLettersTable
         isLoading={false}
 	      data={filteredRequests}
-        refetch={() => {}}
+        refetch={fetchFractionationRequests}
         permissions={permissions}
-        fetchNextPage={() => {}}
-        hasNextPage={false}
-        isFetchingNextPage={false}
+        fetchNextPage={fetchNextPageFractionationRequests}
+        hasNextPage={hasNextPageFractionationRequests}
+        isFetchingNextPage={isFetchingNextPageFractionationRequests}
       />
 
     </Stack>
