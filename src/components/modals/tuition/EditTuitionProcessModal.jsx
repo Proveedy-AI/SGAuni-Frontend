@@ -57,7 +57,6 @@ export const EditTuitionProcessModal = ({ data, permissions, fetchData }) => {
 			open={open}
 			onOpenChange={(e) => setOpen(e.open)}
 			onSave={() => {
-				console.log(formData);
 				toaster.create({
 					title: 'Se modificaron los datos correctamente',
 					type: 'success',

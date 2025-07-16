@@ -202,7 +202,7 @@ export const AddCourseModal = ({ data, fetchData }) => {
                   />
                 </Field>
                 <Field
-                  label='Nivel de curso:'
+                  label='Ciclo al que pertenece: (1-10)'
                   invalid={!!errors.level}
 								  errorText={errors.level}
 								  required

@@ -8,16 +8,18 @@ import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import { UrlActionsPopover } from '@/components/ui/UrlActionsPopover';
 import { useDeleteAdmissions } from '@/hooks/admissions_proccess';
+import { useCopyAdmissions } from '@/hooks/admissions_proccess/useCopyAdmissions';
 import useSortedData from '@/utils/useSortedData';
 import { Box, HStack, IconButton, Span, Table, Text } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
-import { FiTrash2 } from 'react-icons/fi';
+import { FiCopy, FiTrash2 } from 'react-icons/fi';
 import { useNavigate } from 'react-router';
 
 const Row = memo(
 	({ item, fetchData, startIndex, index, permissions, sortConfig, data }) => {
 		const [open, setOpen] = useState(false);
+		const [openCopy, setOpenCopy] = useState(false);
 		const navigate = useNavigate();
 		const encrypted = Encryptor.encrypt(item.id);
 		const encoded = encodeURIComponent(encrypted);
@@ -29,6 +31,9 @@ const Row = memo(
 				navigate(`/admissions/programs/${encoded}`);
 			}
 		};
+
+		const { mutate: copyAdmissions, isPending: LoadingcopyAdmissions } =
+			useCopyAdmissions();
 
 		const { mutate: deleteAdmisions, isPending } = useDeleteAdmissions();
 
@@ -50,6 +55,26 @@ const Row = memo(
 				},
 			});
 		};
+
+		const handleCopy = () => {
+			copyAdmissions(item.id, {
+				onSuccess: () => {
+					toaster.create({
+						title: 'Proceso copiado correctamente',
+						type: 'success',
+					});
+					fetchData();
+					setOpenCopy(false);
+				},
+				onError: (error) => {
+					toaster.create({
+						title: error.message,
+						type: 'error',
+					});
+				},
+			});
+		};
+
 		return (
 			<Table.Row
 				onClick={(e) => {
@@ -73,7 +98,8 @@ const Row = memo(
 				<Table.Cell>{formatDateString(item.start_date)}</Table.Cell>
 				<Table.Cell>{formatDateString(item.end_date)}</Table.Cell>
 				<Table.Cell>
-					<UrlActionsPopover approved_programs_count={item.approved_programs_count}
+					<UrlActionsPopover
+						approved_programs_count={item.approved_programs_count}
 						url={`${import.meta.env.VITE_DOMAIN_MAIN}${item.uri_url}`}
 					/>
 				</Table.Cell>
@@ -101,6 +127,28 @@ const Row = memo(
 										{item.admission_process_name}
 									</Span>
 									de la lista de Procesos?
+								</Text>
+							</ConfirmModal>
+						)}
+						{permissions?.includes('admissions.proccess.copy') && (
+							<ConfirmModal
+								placement='center'
+								trigger={
+									<IconButton px={2} colorPalette='blue' size='xs'>
+										<FiCopy /> Duplicar
+									</IconButton>
+								}
+								open={openCopy}
+								onOpenChange={(e) => setOpenCopy(e.open)}
+								onConfirm={() => handleCopy(item.id)}
+								loading={LoadingcopyAdmissions}
+							>
+								<Text>
+									¿Estás seguro que quieres duplicar el proceso
+									<Span fontWeight='semibold' px='1'>
+										{item.admission_process_name}
+									</Span>
+									?
 								</Text>
 							</ConfirmModal>
 						)}

@@ -29,8 +29,13 @@ export const PaymentRequestsView = () => {
 	const [selectedApplicantDocumentNumber, setSelectedApplicantDocumentNumber] =
 		useState('');
 
-	const hasActiveFilters = selectedProgram || selectedStatus || selectedMethod || 
-		selectedPurpose || selectedDocumentType || selectedApplicantDocumentNumber;
+	const hasActiveFilters =
+		selectedProgram ||
+		selectedStatus ||
+		selectedMethod ||
+		selectedPurpose ||
+		selectedDocumentType ||
+		selectedApplicantDocumentNumber;
 
 	const clearFilters = () => {
 		setSelectedProgram(null);
@@ -49,8 +54,9 @@ export const PaymentRequestsView = () => {
 		if (selectedMethod) params.payment_method = selectedMethod.value;
 		if (selectedPurpose) params.purpose = selectedPurpose.value;
 		if (selectedDocumentType) params.document_type = selectedDocumentType.value;
-		if (selectedApplicantDocumentNumber)
+		if (selectedApplicantDocumentNumber.length >= 8) {
 			params.num_document = selectedApplicantDocumentNumber;
+		}
 		return params;
 	}, [
 		selectedProgram,
@@ -138,9 +144,9 @@ export const PaymentRequestsView = () => {
 									colorPalette='red'
 									size='sm'
 									onClick={clearFilters}
-									
 								>
-									<FiTrash/>Limpiar Filtros
+									<FiTrash />
+									Limpiar Filtros
 								</Button>
 							)}
 						</Stack>

@@ -79,9 +79,9 @@ export const CoursesAndSchedules = () => {
             Cursos
           </Tabs.Trigger>
 
-          <Tabs.Trigger value={2} color={tab === 2 ? 'uni.secondary' : ''}>
+        {/** <Tabs.Trigger value={2} color={tab === 2 ? 'uni.secondary' : ''}>
             Horarios
-          </Tabs.Trigger>
+          </Tabs.Trigger> */} 
         </Tabs.List>
 
         <Tabs.Content value={1}>

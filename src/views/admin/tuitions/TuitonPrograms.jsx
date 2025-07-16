@@ -29,7 +29,7 @@ export const TuitonPrograms = () => {
 		refetch: fetchEnrollmentPrograms,
 		isLoading,
 	} = useReadEnrollmentsPrograms({
-		admission_process: Number(decrypted),
+		enrollment_period: Number(decrypted),
 		director: profile?.id,
 	});
 
@@ -39,16 +39,14 @@ export const TuitonPrograms = () => {
 		.map((p) => p.guard_name);
 
 	const [searchValue, setSearchValue] = useState('');
-	const allEnrollmentPrograms =
-		dataEnrollmentPrograms?.pages?.flatMap((page) => page.results) ?? [];
 
-	const filteredEnrollmentPrograms = allEnrollmentPrograms?.filter(
+	const filteredEnrollmentPrograms = dataEnrollmentPrograms?.results?.filter(
 		(item) =>
 			item.status === 2 &&
 			item.program_name.toLowerCase().includes(searchValue.toLowerCase())
 	);
 
-	const filteredApprovedPrograms = allEnrollmentPrograms?.filter(
+	const filteredApprovedPrograms = dataEnrollmentPrograms?.results?.filter(
 		(item) =>
 			item.status === 4 &&
 			item.program_name.toLowerCase().includes(searchValue.toLowerCase())
@@ -93,7 +91,7 @@ export const TuitonPrograms = () => {
 					}}
 					color={'uni.secondary'}
 				>
-					{allEnrollmentPrograms[0]?.admission_process_name ||
+					{dataEnrollmentPrograms?.results[0]?.admission_process_name ||
 						'No hay programas de matricula disponibles'}
 				</Heading>
 			</Stack>
@@ -147,6 +145,7 @@ export const TuitonPrograms = () => {
 						</Stack>
 
 						<AdmissionsProgramsTable
+							enrollment={true}
 							isLoading={isLoading}
 							data={filteredEnrollmentPrograms}
 							fetchData={fetchEnrollmentPrograms}

@@ -193,19 +193,6 @@ export const UpdateStatusEnrollmentProcessForm = ({ data, fetchData }) => {
 									{formatDateString(data?.semester_start_date)}
 								</Text>
 							</Box>
-
-							<Box>
-								<Badge
-									variant='subtle'
-									bg='blue.50'
-									color='blue.700'
-									border='1px solid'
-									borderColor='blue.200'
-									mt={1}
-								>
-									{data?.program_type_name}
-								</Badge>
-							</Box>
 						</SimpleGrid>
 					</Card.Body>
 				</Card.Root>

@@ -23,6 +23,7 @@ import {
 	useReadMyNotifications,
 } from '@/hooks/notifications';
 import { useTimeDifference } from '@/hooks';
+import { useMarkAllReadNotifications } from '@/hooks/notifications/useMarkAllReadNotifications';
 
 export const NotificationsPanel = ({ dataUser }) => {
 	const [visibleCount, setVisibleCount] = useState(4);
@@ -37,13 +38,24 @@ export const NotificationsPanel = ({ dataUser }) => {
 		{ enabled: true }
 	);
 
+	const { mutateAsync: markAllRead } = useMarkAllReadNotifications();
+
+	const handleMarkAllAsRead = async () => {
+		try {
+			await markAllRead();
+			refetch();
+		} catch (error) {
+			console.error('Error marking all notifications as read:', error);
+		}
+	};
+
 	const handleCloseToast = () => {
 		setToastData((prev) => ({ ...prev, open: false }));
 	};
 
 	const counter = useMemo(() => {
 		return (
-			notifications?.results?.filter((notification) => !notification.is_read)
+			notifications?.notifications?.filter((notification) => !notification.is_read)
 				.length || 0
 		);
 	}, [notifications]);
@@ -58,6 +70,7 @@ export const NotificationsPanel = ({ dataUser }) => {
 		socketRef.current.onmessage = (event) => {
 			try {
 				const data = JSON.parse(event.data);
+				console.log('Mensaje recibido del WebSocket:', data);
 				if (data?.id === dataUser.id) {
 					refetch({ user_id: dataUser.id });
 
@@ -91,8 +104,8 @@ export const NotificationsPanel = ({ dataUser }) => {
 		};
 	}, [dataUser?.id, refetch]);
 
-	const visibleNotifications = notifications?.results?.slice(0, visibleCount);
-	const hasMore = visibleCount < notifications?.results?.length;
+	const visibleNotifications = notifications?.notifications?.slice(0, visibleCount);
+	const hasMore = visibleCount < notifications?.notifications?.length;
 
 	return (
 		<>
@@ -134,7 +147,7 @@ export const NotificationsPanel = ({ dataUser }) => {
 									colorPalette={'blue'}
 									variant='outline'
 									borderRadius={'md'}
-									//onClick={marcarTodosComoLeidos}
+									onClick={handleMarkAllAsRead}
 								>
 									{' '}
 									<BsCheck2All />

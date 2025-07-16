@@ -125,8 +125,6 @@ export const AccountProfile = () => {
 			phone: profile.phone,
 		};
 
-    console.log(payload)
-
 		updateProfile(payload, {
       onSuccess: () => {
         setInitialProfile(profile);

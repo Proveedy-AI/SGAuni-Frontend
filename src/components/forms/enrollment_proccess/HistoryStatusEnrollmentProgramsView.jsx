@@ -13,7 +13,6 @@ import {
 	SimpleGrid,
 } from '@chakra-ui/react';
 import { Modal, Tooltip } from '@/components/ui';
-import { format } from 'date-fns';
 import { LuFileText, LuHistory } from 'react-icons/lu';
 import {
 	FiAlertCircle,
@@ -24,13 +23,14 @@ import {
 } from 'react-icons/fi';
 import { ObservationCell } from '../admissions/ObservationCell';
 import { useReadEnrollmentsProgramsReview } from '@/hooks/enrollments_review_programs';
+import { formatDateString } from '@/components/ui/dateHelpers';
 
 export const HistoryStatusEnrollmentProgramsView = ({ data, statusMap }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 
 	const { data: admissionReviews } = useReadEnrollmentsProgramsReview(
-		{ enrollment_period_program: data.id },
+		{ program_id: data.id },
 		{ enabled: open } // Evita llamada automática
 	);
 
@@ -208,10 +208,10 @@ export const HistoryStatusEnrollmentProgramsView = ({ data, statusMap }) => {
 
 								<Table.Body>
 									{admissionReviews?.results?.filter(
-										(review) => review.review_at !== null
+										(review) => review.reviewed_at !== null
 									).length > 0 ? (
 										admissionReviews?.results
-											?.filter((review) => review.review_at !== null)
+											
 											.map((item, index) => (
 												<Table.Row
 													key={item.id}
@@ -219,10 +219,7 @@ export const HistoryStatusEnrollmentProgramsView = ({ data, statusMap }) => {
 												>
 													<Table.Cell>{index + 1}</Table.Cell>
 													<Table.Cell>
-														{format(
-															new Date(item?.review_at),
-															'dd/MM/yyyy hh:mm a'
-														) || ''}
+														{formatDateString(item?.reviewed_at) || ''}
 													</Table.Cell>
 													<Table.Cell>
 														{(() => {
