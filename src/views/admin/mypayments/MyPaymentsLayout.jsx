@@ -12,6 +12,7 @@ import {
 } from '@chakra-ui/react';
 import {
 	FiAlertCircle,
+	FiCalendar,
 	FiFileText,
 	FiPlus,
 	FiUpload,
@@ -57,6 +58,12 @@ export const MyPaymentsLayout = () => {
 			icon: FiUpload,
 			permission: null,
 		},
+    {
+      href: '/mypaymentsdebts/schedule',
+      label: 'Cronograma de pagos',
+      icon: FiCalendar,
+      permission: null,
+    }
 		
 	];
 

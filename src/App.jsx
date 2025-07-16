@@ -43,6 +43,7 @@ import { MyPaymentAddRequests } from './views/admin/mypayments/MyPaymentAddReque
 import { MyPaymentUpload } from './views/admin/mypayments/MyPaymentUpload';
 import { MyPaymentHistories } from './views/admin/mypayments/MyPaymentHistories';
 import { CommitmentLetters } from './views/admin/debt_requests';
+import { MyPaymentSchedule } from './views/admin/mypayments/MyPaymentSchedule';
 
 function App() {
 	return (
@@ -224,6 +225,9 @@ function App() {
 										</Route>
 										<Route path='history-requests'>
 											<Route index element={<MyPaymentHistories />} />
+										</Route>
+                    <Route path='schedule'>
+											<Route index element={<MyPaymentSchedule />} />
 										</Route>
 									</Route>
 								</Route>
