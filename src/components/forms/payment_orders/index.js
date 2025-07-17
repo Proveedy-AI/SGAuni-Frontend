@@ -4,3 +4,4 @@ export * from './ViewPaymentOrderVoucherModal';
 export * from './CancelPaymentOrderModal';
 export * from './LoadExcelValidationsModal';
 export * from './GeneratePaymentOrderModal';
+export * from './CancelSomePaymentOrders';

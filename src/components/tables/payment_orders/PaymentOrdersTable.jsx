@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
-import { Badge, Box, Group, HStack, Table } from '@chakra-ui/react';
-import { Pagination } from '@/components/ui';
+import { Badge, Box, Group, HStack, Icon, Table } from '@chakra-ui/react';
+import { Button, Checkbox, Pagination, Tooltip } from '@/components/ui';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import {
@@ -12,18 +12,33 @@ import { format, parseISO } from 'date-fns';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
 import { usePaginatedInfiniteData } from '@/components/navigation';
+import { HiCheck } from 'react-icons/hi2';
 
 const Row = memo(
-	({ item, startIndex, index, refetch, permissions, sortConfig, data }) => {
+	({ isSelected, selectedOrderIds, addOrderIdToCancel, item, startIndex, index, refetch, permissions, sortConfig, data }) => {
 		const statusDisplay = [
 			{ id: 1, label: 'Pendiente', bg: '#AEAEAE', color: '#F5F5F5' },
 			{ id: 2, label: 'Generado', bg: '#C6E7FC', color: '#0661D8' },
 			{ id: 3, label: 'Verificado', bg: '#D0EDD0', color: '#2D9F2D' },
 			{ id: 4, label: 'Expirado', bg: '#F7CDCE', color: '#E0383B' },
+      { id: 5, label: 'Cancelado', bg: '#F0E0E0', color: '#B0B0B0' },
 		];
 
+    const selectedStatus = statusDisplay.find((status) => status.id === item.status);
 		return (
 			<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
+        { isSelected &&  (
+          <Table.Cell>
+            {item.status !== 3 && (
+              <Checkbox
+                checked={selectedOrderIds?.includes(item.id)}
+                onChange={() => addOrderIdToCancel(item.id)}
+                colorScheme='blue'
+                size='sm'
+              />
+            )}
+          </Table.Cell>
+        )}
 				<Table.Cell>
 					{sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
 						? data.length - (startIndex + index)
@@ -36,13 +51,10 @@ const Row = memo(
 				<Table.Cell>{item.total_amount}</Table.Cell>
 				<Table.Cell>
 					<Badge
-						bg={statusDisplay.find((status) => status.id === item.status)?.bg}
-						color={
-							statusDisplay.find((status) => status.id === item.status)?.color
-						}
+						bg={selectedStatus?.bg}
+						color={selectedStatus?.color}
 					>
-						{statusDisplay.find((status) => status.id === item.status)?.label ||
-							'N/A'}
+						{selectedStatus?.label || 'N/A'}
 					</Badge>
 				</Table.Cell>
 				<Table.Cell>
@@ -71,6 +83,9 @@ const Row = memo(
 Row.displayName = 'Row';
 
 Row.propTypes = {
+  isSelected: PropTypes.bool,
+  selectedOrderIds: PropTypes.array,
+  addOrderIdToCancel: PropTypes.func,
 	item: PropTypes.object,
 	refetch: PropTypes.func,
 	permissions: PropTypes.array,
@@ -81,6 +96,9 @@ Row.propTypes = {
 };
 
 export const PaymentOrdersTable = ({
+  isSelected,
+  selectedOrderIds,
+  addOrderIdToCancel,
 	isLoading,
 	data,
 	refetch,
@@ -119,6 +137,9 @@ export const PaymentOrdersTable = ({
 				<Table.Root size='sm' w='full' striped>
 					<Table.Header>
 						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
+              { isSelected && (
+                <Table.ColumnHeader alignContent={'start'}></Table.ColumnHeader>
+              )}
 							<Table.ColumnHeader alignContent={'start'}>
 								<SortableHeader
 									label='N°'
@@ -187,7 +208,10 @@ export const PaymentOrdersTable = ({
 							visibleRows?.map((item, index) => (
 								<Row
 									key={item.id}
-									item={item}
+									isSelected={isSelected}
+                  selectedOrderIds={selectedOrderIds}
+                  addOrderIdToCancel={addOrderIdToCancel}
+                  item={item}
 									refetch={refetch}
 									startIndex={startIndex}
 									index={index}
@@ -223,6 +247,9 @@ export const PaymentOrdersTable = ({
 };
 
 PaymentOrdersTable.propTypes = {
+  isSelected: PropTypes.bool,
+  selectedOrderIds: PropTypes.array,
+  addOrderIdToCancel: PropTypes.func,
 	isLoading: PropTypes.bool,
 	data: PropTypes.array,
 	refetch: PropTypes.func,

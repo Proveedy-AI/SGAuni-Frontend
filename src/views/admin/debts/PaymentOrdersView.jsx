@@ -1,12 +1,13 @@
 import { ReactSelect } from '@/components';
 import {
+  CancelSomePaymentOrders,
 	GeneratePaymentOrderModal,
-	LoadExcelValidationsModal,
+	//LoadExcelValidationsModal,
 } from '@/components/forms/payment_orders';
 import { PaymentOrdersTable } from '@/components/tables/payment_orders';
-import { Field } from '@/components/ui';
+import { Field, toaster, Tooltip } from '@/components/ui';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
-import { useReadPaymentOrders } from '@/hooks/payment_orders';
+import { useCancelPaymentOrders, useReadPaymentOrders } from '@/hooks/payment_orders';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import {
 	Card,
@@ -17,10 +18,14 @@ import {
 	SimpleGrid,
 	Stack,
 	Button,
+  Box,
+  IconButton,
 } from '@chakra-ui/react';
 import { format } from 'date-fns';
 import { useState } from 'react';
+import { FaTimes } from 'react-icons/fa';
 import { FiFileText, FiTrash } from 'react-icons/fi';
+import { HiCheck } from 'react-icons/hi2';
 
 export const PaymentOrdersView = () => {
 	const [ordenId, setOrdenId] = useState('');
@@ -82,7 +87,49 @@ export const PaymentOrdersView = () => {
 		{ id: 2, label: 'Generado', value: 2 },
 		{ id: 3, label: 'Verificado', value: 3 },
 		{ id: 4, label: 'Expirado', value: 4 },
+    { id: 5, label: 'Cancelado', value: 5 },
 	];
+
+  const [isMassiveCancelOpen, setIsMassiveCancelOpen] = useState(false);
+  const [selectedOrderIds, setSelectedOrderIds] = useState([]);
+
+  const addOrderIdToCancel = (orderId) => {
+    setSelectedOrderIds((prev) => {
+      if (prev.includes(orderId)) {
+        return prev.filter((id) => id !== orderId);
+      } else {
+        return [...prev, orderId];
+      }
+    });
+  };
+
+  const { mutateAsync: cancelPaymentOrders } = useCancelPaymentOrders();
+
+  const handleMassiveCancel = () => {
+    const payload = {
+      payment_order_ids: selectedOrderIds
+    }
+
+    console.log(payload)
+
+    cancelPaymentOrders(payload, {
+      onSuccess: () => {
+        toaster.create({
+          title: 'Ordenes canceladas con éxito',
+          type: 'success'
+        })
+        fetchPaymentOrders();
+        setIsMassiveCancelOpen(false);
+        setSelectedOrderIds([])
+      },
+      onError: (error) => {
+        toaster.create({
+          title: error.message || 'Error al cancelar las ordenes',
+          type: 'error'
+        })
+      }
+    })
+  } 
 
 	return (
 		<Stack gap={4}>
@@ -113,8 +160,7 @@ export const PaymentOrdersView = () => {
 									Limpiar Filtros
 								</Button>
 							)}
-							<LoadExcelValidationsModal />
-
+							{/* <LoadExcelValidationsModal /> */}
 							<GeneratePaymentOrderModal fetchData={fetchPaymentOrders} />
 						</Stack>
 					</Flex>
@@ -172,7 +218,65 @@ export const PaymentOrdersView = () => {
 				</Card.Body>
 			</Card.Root>
 
+      <Box display='flex' justifyContent='flex-end' gap={2}>
+        {isMassiveCancelOpen && (
+          <>
+            <Tooltip
+              content='Seleccinar todos'
+              positioning={{ placement: 'bottom-center' }}
+              showArrow
+              openDelay={0}
+            >
+              <IconButton
+                colorPalette='green' size='xs'
+                onClick={() => setSelectedOrderIds(
+                  sortedPaymentOrders
+                    ?.filter((item) => item.status !== 3)
+                    .map((item) => item.id)
+                )}
+              >
+                <HiCheck />
+              </IconButton>
+            </Tooltip>
+            <Tooltip
+              content='Quitar todos'
+              positioning={{ placement: 'bottom-center' }}
+              showArrow
+              openDelay={0}
+            >
+              <IconButton
+                disabled={selectedOrderIds.length === 0}
+                colorPalette='red' size='xs'
+                onClick={() => setSelectedOrderIds([])}
+              >
+                <FaTimes />
+              </IconButton>
+            </Tooltip>
+            <CancelSomePaymentOrders
+              selectedOrderIds={selectedOrderIds}
+              onCancel={handleMassiveCancel}
+            />
+          </>
+        )}
+        <Button
+          bg={isMassiveCancelOpen ? 'red.500' : 'uni.secondary'}
+          color='white'
+          size='xs'
+          w={{ base: 'full', sm: 'auto' }}
+          onClick={
+            isMassiveCancelOpen
+              ? () => setIsMassiveCancelOpen(false)
+              : () => setIsMassiveCancelOpen(true)
+          }
+        >
+            { !isMassiveCancelOpen ? 'Cancelar varias ordenes' : 'Cancelar' }
+        </Button>
+      </Box>
+
 			<PaymentOrdersTable
+        isSelected={isMassiveCancelOpen}
+        selectedOrderIds={selectedOrderIds}
+        addOrderIdToCancel={addOrderIdToCancel}
 				isLoading={loadingPaymentOrders}
 				data={sortedPaymentOrders}
 				fetchNextPage={fetchNextPagePaymentOrders}
