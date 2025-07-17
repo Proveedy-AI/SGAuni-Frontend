@@ -36,6 +36,8 @@ export const CommitmentLetters = () => {
        program_name: 'Program A',
        applicant_name: 'John Doe',
        document_num: 'DOC12345',
+       email: 'john.doe@example.com',
+       phone_number: '987654321',
        request_path: '/path/to/request/1'
      },
      {
@@ -47,6 +49,8 @@ export const CommitmentLetters = () => {
        program_name: 'Program B',
        applicant_name: 'Jane Smith',
        document_num: 'DOC67890',
+       email: 'jane.smith@example.com',
+       phone_number: '999999999',
        request_path: '/path/to/request/2'
      },
      {
@@ -58,6 +62,8 @@ export const CommitmentLetters = () => {
        program_name: 'Program A',
        applicant_name: 'Alice Johnson',
        document_num: 'DOC54321',
+       email: 'alice.johnson@example.com',
+       phone_number: '987987987',
        request_path: '/path/to/request/3'
      }
     ]
