@@ -146,21 +146,21 @@ export const ProtectedRoute = ({ requiredPermission, requiredDebt=false }) => {
 	}
 
   if (requiredDebt) {
-    //const { data: dataCondition } = useCheckUserHasDebts();
-    // const dataCondition = {
-    //   results: {
-    //     total: 100, // Simulación de deuda
-    //     has_debts: true, // Simulación de estado de deuda
-    //     user: {
-    //       firstname: 'USUARIO LOGUEADO',
-    //     }
-    //   }
-    // }
-    // const userHasDebts = dataCondition?.results?.has_debts || false;
-    // if (userHasDebts) {
-    //   return <ApplicantHasDebts data={dataCondition?.results} />;
-    // }
-    console.log('Verificando deudas del usuario...');
+    //  //const { data: dataCondition } = useCheckUserHasDebts();
+    //  const dataCondition = {
+    //    results: {
+    //      total: 100, // Simulación de deuda
+    //      has_debts: true, // Simulación de estado de deuda
+    //      user: {
+    //        firstname: 'USUARIO LOGUEADO',
+    //      }
+    //    }
+    //  }
+    //  const userHasDebts = dataCondition?.results?.has_debts || false;
+    //  if (userHasDebts) {
+    //    return <ApplicantHasDebts data={dataCondition?.results} />;
+    //  }
+    // console.log('Verificando deudas del usuario...');
   }
 
 	return <Outlet />;

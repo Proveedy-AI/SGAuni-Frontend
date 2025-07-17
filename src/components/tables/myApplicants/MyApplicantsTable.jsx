@@ -11,6 +11,7 @@ import { usePaginationSettings } from '@/components/navigation/usePaginationSett
 import { SortableHeader } from '@/components/ui/SortableHeader';
 
 const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
+  console.log(item)
 	const navigate = useNavigate();
 	const statusMap = {
 		1: { label: 'Incompleto', color: 'orange.500' },

@@ -8,7 +8,7 @@ import { FiDollarSign, FiDownload, FiInfo } from "react-icons/fi";
 import { useReadPaymentDebts } from '@/hooks/admission_debts';
 import { useReadMyApplicants } from '@/hooks';
 
-export const FractionateDebt = ({ totalAmount }) => {
+export const FractionateDebt = () => {
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
   
@@ -23,13 +23,17 @@ export const FractionateDebt = ({ totalAmount }) => {
     isLoading: isLoadingMyApplicants,
   } = useReadMyApplicants();
 
+  console.log(dataMyApplicants)
+
   const {
       data: dataPaymentDebt,
       //isLoading: isLoadingPaymentDebt,
   } = useReadPaymentDebts(
     { /* program_id: program?.value */ },
-    { enabled: open && program !== null }
+    { enabled: open }
   )
+
+  console.log(dataPaymentDebt)
 
   const paymentDebtLocal = {
     max_installments: 24,
@@ -64,7 +68,6 @@ export const FractionateDebt = ({ totalAmount }) => {
     if (!planType) newErrors.planType = "El tipo de plan es requerido";
     if (!amountToPay) newErrors.amountToPay = "El monto a pagar es requerido";
     if (amountToPay <= 0) newErrors.amountToPay = "El monto a pagar debe ser mayor a 0";
-    if (amountToPay >= totalAmount) newErrors.amountToPay = "El monto a pagar no puede ser mayor o igual al total de la deuda";
     if (!acceptedTerms) newErrors.acceptedTerms = "Debes aceptar los términos y condiciones";
 
     setErrors(newErrors);
@@ -247,7 +250,6 @@ export const FractionateDebt = ({ totalAmount }) => {
                     placeholder='Seleccione programa'
                     type="number"
                     min={1}
-                    max={totalAmount - 1}
                     value={amountToPay}
                     onChange={e => setAmountToPay(Number(e.target.value))}
                     style={{ width: "100%" }}
@@ -285,8 +287,4 @@ export const FractionateDebt = ({ totalAmount }) => {
       </Stack>
     </Modal>
   );
-};
-
-FractionateDebt.propTypes = {
-  totalAmount: PropTypes.number,
 };
