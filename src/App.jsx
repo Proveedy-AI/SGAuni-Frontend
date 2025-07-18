@@ -203,16 +203,6 @@ function App() {
 								</Route>
 							</Route>
               
-              <Route path='commitment-letters'>
-                <Route
-                  element={
-                    <ProtectedRoute requiredPermission='commitment.letters.view' />
-                  }
-                >
-                  <Route index element={<CommitmentLetters />} />
-                </Route>
-              </Route>
-
 							<Route path='mypaymentsdebts' element={<MyPaymentsLayout />}>
 								<Route>
 									<Route
@@ -264,6 +254,7 @@ function App() {
 									</Route>
 									<Route index element={<PaymentRequestsView />} />
 									<Route path=':id' element={<PaymentOrdersByRequest />} />
+                  <Route path='commitment-letters' element={<CommitmentLetters />} />
 								</Route>
 								<Route
 									element={
