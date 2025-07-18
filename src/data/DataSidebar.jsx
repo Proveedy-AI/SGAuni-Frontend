@@ -79,6 +79,12 @@ export const useDataSidebar = () => {
 			label: 'Mis Pagos',
 			permission: 'payment.mypaymentsdebts.view',
 		},
+    {
+      href: '/myenrollments',
+      icon: FiBookOpen,
+      label: 'Mis Matrículas',
+      permission: 'enrollments.myenrollments.view',
+    },
 		{
 			href: '/contracts',
 			icon: FaFileContract,

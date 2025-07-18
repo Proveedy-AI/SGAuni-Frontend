@@ -44,6 +44,8 @@ import { MyPaymentUpload } from './views/admin/mypayments/MyPaymentUpload';
 import { MyPaymentHistories } from './views/admin/mypayments/MyPaymentHistories';
 import { CommitmentLetters } from './views/admin/debt_requests';
 import { MyPaymentSchedule } from './views/admin/mypayments/MyPaymentSchedule';
+import { MyEnrollmentsLayout } from './views/admin/myenrollments/MyEnrollmentsLayout';
+import { MyEnrollments } from './views/admin/myenrollments';
 
 function App() {
 	return (
@@ -111,10 +113,7 @@ function App() {
 								</Route>
 								<Route
 									element={
-										<ProtectedRoute
-											requiredPermission='applicants.myapplicants.view'
-											requiredDebt={true}
-										/>
+										<ProtectedRoute requiredPermission='applicants.myapplicants.view' />
 									}
 								>
 									<Route path='myapplicants'>
@@ -183,6 +182,16 @@ function App() {
 									/>
 								</Route>
 							</Route>
+              
+              <Route path='myenrollments' element={<MyEnrollmentsLayout />}>
+                <Route
+                  element={
+                    <ProtectedRoute requiredPermission='enrollments.myenrollments.view' />
+                  }
+                >
+                  <Route index element={<MyEnrollments />} />
+                </Route>
+              </Route>
 
 							<Route path='courses-schedules'>
 								<Route
