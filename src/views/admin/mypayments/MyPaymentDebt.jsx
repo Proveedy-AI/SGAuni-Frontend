@@ -191,6 +191,25 @@ export const MyPaymentDebt = () => {
 		);
 	}
 
+
+  /*
+  const {
+    data: dataHasDebts,
+    isLoading: isLoadingDebts,
+    isError: isErrorDebts,
+  } = useReadDebtStatus(
+    { program_uuid: dataEnrollment?.program_uuid },
+    { enabled: !!dataHasEnrollment }
+  );
+
+  se espera:
+    {
+      has_debt: boolean
+    }
+  */
+
+  const has_debt = true;
+
 	return (
 		<Box>
 			<Flex
@@ -242,7 +261,7 @@ export const MyPaymentDebt = () => {
 							</Card.Title>
 							<Card.Description>{description}</Card.Description>
 						</Box>
-						<FractionateDebt />
+						{ has_debt && <FractionateDebt /> }
 					</Flex>
 				</Card.Header>
 
