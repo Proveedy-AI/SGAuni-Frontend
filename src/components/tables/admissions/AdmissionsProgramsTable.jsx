@@ -1,6 +1,7 @@
 import { PreviewProgramsPendingModal } from '@/components/forms/admissions';
 import { UpdateStatusAdmissionsProccessForm } from '@/components/forms/admissions/UpdateStatusAdmissionsProccessForm';
 import { UpdateStatusEnrollmentProcessForm } from '@/components/forms/enrollment_proccess/UpdateStatusEnrollmentProcessForm';
+import { ScheduleEnrollmentProgramsReviewModal } from '@/components/modals/tuition';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { Pagination } from '@/components/ui';
 import { formatDateString } from '@/components/ui/dateHelpers';
@@ -59,6 +60,9 @@ const Row = memo(
 				</Table.Cell>
 				<Table.Cell>
 					<HStack>
+						{enrollment && (
+							<ScheduleEnrollmentProgramsReviewModal permissions={permissions}  data={item} />
+						)}
 						<PreviewProgramsPendingModal data={item} />
 						{permissions?.includes('admissions.programs.approve') &&
 							!enrollment && (
@@ -67,6 +71,7 @@ const Row = memo(
 									fetchData={fetchData}
 								/>
 							)}
+
 						{enrollment && (
 							<UpdateStatusEnrollmentProcessForm
 								data={item}

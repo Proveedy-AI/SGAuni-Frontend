@@ -23,21 +23,18 @@ import PropTypes from 'prop-types';
 import {
 	FiBookOpen,
 	FiCalendar,
-	FiCheckCircle,
 	FiClock,
 	FiDownload,
 	FiFileText,
 	FiGrid,
 	FiList,
 	FiPlus,
-	FiSend,
 	FiTrash2,
 	FiUsers,
-	FiXCircle,
 } from 'react-icons/fi';
 import {
 	Alert,
-	Checkbox,
+	//Checkbox,
 	ConfirmModal,
 	Field,
 	Modal,
@@ -53,18 +50,16 @@ import { LuUpload } from 'react-icons/lu';
 import { useUploadCourseScheduleExcel } from '@/hooks/enrollments_programs/schedule/useUploadCourseScheduleExcel';
 import { uploadToS3 } from '@/utils/uploadToS3';
 import { useProccessCourseScheduleExcel } from '@/hooks/enrollments_programs/schedule/useProccessCourseScheduleExcel';
-import { SendConfirmationModal } from '@/components/ui/SendConfirmationModal';
-import { useCreateCourseScheduleReview } from '@/hooks/enrollments_programs/schedule/useCreateCourseScheduleReview';
 import { useDeleteCourseSchedule } from '@/hooks/enrollments_programs/schedule/useDeleteCourseSchedule';
 import { FaClock, FaGraduationCap } from 'react-icons/fa';
 import { useReadCourses } from '@/hooks/courses';
 import { useReadUsers } from '@/hooks/users';
 import { useCreateCourseSchedule } from '@/hooks/enrollments_programs/schedule/useCreateCourseSchedule';
-import { HistoryStatusCourseSheduleView } from '@/components/forms/enrollment_proccess/HistoryStatusCourseSheduleView';
-import { usePaginatedInfiniteData } from '@/components/navigation';
-import useSortedData from '@/utils/useSortedData';
-import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
+import { UpdateStatusCourseScheduleForm } from '@/components/forms/enrollment_proccess/UpdateStatusCourseScheduleForm';
 import { SortableHeader } from '@/components/ui/SortableHeader';
+import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
+import useSortedData from '@/utils/useSortedData';
+import { usePaginatedInfiniteData } from '@/components/navigation';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 
 // Datos de ejemplo basados en la estructura proporcionada
@@ -238,6 +233,10 @@ const timeSlots = [
 	'17:00',
 	'18:00',
 	'19:00',
+	'20:00',
+	'21:00',
+	'22:00',
+	'23:00',
 ];
 
 const daysOfWeek = [
@@ -981,18 +980,15 @@ const CalendarView = ({ data }) => {
 	const headerBg = 'gray.50';
 	const bgDraft = 'blue.100';
 	const bgPending = 'yellow.100';
-	const bgRechazado = 'red.100';
 	const bgApproved = 'green.100';
 
 	const borderDraft = 'blue.500';
 	const borderPending = 'yellow.500';
-	const borderRechazado = 'red.500';
 	const borderApproved = 'green.500';
 
 	const getBgColor = (status) => {
 		if (status === 1) return bgDraft;
 		if (status === 2) return bgPending;
-		if (status === 3) return bgRechazado;
 		if (status === 4) return bgApproved;
 		return 'gray.100'; // fallback
 	};
@@ -1000,7 +996,6 @@ const CalendarView = ({ data }) => {
 	const getBorderColor = (status) => {
 		if (status === 1) return borderDraft;
 		if (status === 2) return borderPending;
-		if (status === 3) return borderRechazado;
 		if (status === 4) return borderApproved;
 		return 'gray.300'; // fallback
 	};
@@ -1008,6 +1003,7 @@ const CalendarView = ({ data }) => {
 	const getCourseForTimeSlot = (day, time) => {
 		return data.filter((course) => {
 			if (course.day_of_week !== day) return false;
+			if (course.status_review === 3) return false;
 			const courseStart = Number.parseInt(course.start_time.split(':')[0]);
 			const courseEnd = Number.parseInt(course.end_time.split(':')[0]);
 			const slotTime = Number.parseInt(time.split(':')[0]);
@@ -1169,10 +1165,13 @@ CalendarView.propTypes = {
 	).isRequired,
 };
 
-export const ScheduleEnrollmentProgramsModal = ({ data }) => {
+export const ScheduleEnrollmentProgramsReviewModal = ({
+	data,
+	permissions,
+}) => {
 	const [open, setOpen] = useState(false);
 	const [openDelete, setOpenDelete] = useState(false);
-	const [openSend, setOpenSend] = useState(false);
+	//const [openSend, setOpenSend] = useState(false);
 	const [addCourseOpen, setAddCourseOpen] = useState(false);
 	const [addExcelOpen, setAddExcelOpen] = useState(false);
 	const [tab, setTab] = useState(1);
@@ -1192,25 +1191,6 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 	const allCourseSchedules =
 		dataCourseSchedule?.pages?.flatMap((page) => page.results) ?? [];
 
-	const [selectedIds, setSelectedIds] = useState([]);
-	const scheduleData = dataCourseSchedule?.results || [];
-
-	const totalCount = dataCourseSchedule?.pages?.[0]?.count ?? 0;
-
-	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
-	const [sortConfig, setSortConfig] = useState(null);
-
-	const sortedData = useSortedData(allCourseSchedules, sortConfig);
-
-	const { currentPage, visibleRows, loadUntilPage, setCurrentPage } =
-		usePaginatedInfiniteData({
-			data: sortedData,
-			pageSize,
-			fetchNextPage,
-			hasNextPage,
-			isFetchingNextPage,
-		});
-
 	const dayNames = [
 		'Domingo',
 		'Lunes',
@@ -1220,34 +1200,47 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 		'Viernes',
 		'Sábado',
 	];
-
 	const normalizedData = allCourseSchedules.map((item) => ({
 		...item,
 		day_of_week: dayNames[item.day_of_week],
 	}));
 
-	const { mutate: createCourseReview, isPending: LoadingProgramsReview } =
-		useCreateCourseScheduleReview();
+	const getStatusBadge = (status, statusDisplay) => {
+		let colorScheme = 'gray';
 
-	const handleSend = (course) => {
-		createCourseReview(course.id, {
-			onSuccess: () => {
-				toaster.create({
-					title: 'Horario enviado correctamente',
-					type: 'success',
-				});
-				refetchCourseSchedule();
-				setOpenSend(false);
-			},
-			onError: (error) => {
-				console.log(error);
-				toaster.create({
-					title: error.message,
-					type: 'error',
-				});
-			},
-		});
+		if (status === 1)
+			colorScheme = 'blue'; // Borrador
+		else if (status === 2)
+			colorScheme = 'yellow'; // Pendiente
+		else if (status === 3)
+			colorScheme = 'red'; // Rechazado
+		else if (status === 4) colorScheme = 'green'; // Aprobado
+
+		return <Badge colorPalette={colorScheme}>{statusDisplay}</Badge>;
 	};
+
+	const totalCount = dataCourseSchedule?.pages?.[0]?.count ?? 0;
+
+	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
+	const [sortConfig, setSortConfig] = useState(null);
+
+	const sortedData = useSortedData(allCourseSchedules, sortConfig);
+
+	const {
+		currentPage,
+		visibleRows,
+		loadUntilPage,
+		setCurrentPage,
+	} = usePaginatedInfiniteData({
+		data: sortedData,
+		pageSize,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	});
+
+	/*const { mutate: createCourseReview, isPending: LoadingProgramsReview } =
+		useCreateCourseScheduleReview();
 
 	const handleSendMultiple = (courseIds = []) => {
 		if (!courseIds.length) return;
@@ -1287,10 +1280,10 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 				);
 			}
 
-			refetchCourseSchedule();
+			fetchDataCourseSchedule();
 			setOpenSend(false);
 		});
-	};
+	};*/
 
 	const { mutate: deleteCourseSchedule, isPending } = useDeleteCourseSchedule();
 
@@ -1313,13 +1306,6 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 		});
 	};
 
-	const statusMap = {
-		1: { label: 'Borrador', color: 'gray', icon: FiFileText },
-		2: { label: 'Pendiente', color: 'orange.500', icon: FiClock },
-		3: { label: 'Rechazado', color: 'red', icon: FiXCircle },
-		4: { label: 'Aprobado', color: 'green', icon: FiCheckCircle },
-	};
-
 	return (
 		<Modal
 			open={open}
@@ -1339,20 +1325,21 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 			}
 			hiddenFooter={true}
 		>
-			{/* Botones de Acción */}
-			<HStack gap={3} borderBottomWidth={1} justifyContent={'end'}>
-				<AddCourseModal
-					data={data}
-					open={addCourseOpen}
-					fetchData={refetchCourseSchedule}
-					setOpen={setAddCourseOpen}
-				/>
-				<AddExcelScheduleModal
-					data={data}
-					open={addExcelOpen}
-					setOpen={setAddExcelOpen}
-				/>
-			</HStack>
+			{permissions?.includes('enrollments.admin.course.create') && (
+				<HStack gap={3} borderBottomWidth={1} justifyContent={'end'}>
+					<AddCourseModal
+						data={data}
+						open={addCourseOpen}
+						fetchData={refetchCourseSchedule}
+						setOpen={setAddCourseOpen}
+					/>
+					<AddExcelScheduleModal
+						data={data}
+						open={addExcelOpen}
+						setOpen={setAddExcelOpen}
+					/>
+				</HStack>
+			)}
 
 			{/*<Grid
 				templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }}
@@ -1432,18 +1419,15 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 						</Tabs.Trigger>
 					</HStack>
 
-					{selectedIds.length > 0 && (
+					{/*selectedIds.length > 0 && (
 						<Button
 							colorPalette='green'
-							mt={2}
 							size='xs'
-							loading={LoadingProgramsReview}
-							loadingText='Enviando...'
 							onClick={() => handleSendMultiple(selectedIds)}
 						>
-							<FiSend /> Enviar {selectedIds.length} horario(s)
+							<FiSend /> Aprobar {selectedIds.length} horario(s)
 						</Button>
-					)}
+					)*/}
 				</Tabs.List>
 
 				<Tabs.Content value={1}>
@@ -1455,13 +1439,13 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 						<Table.Root variant='simple'>
 							<Table.Header>
 								<Table.Row>
-									<Table.Cell>
+									{/*<Table.Cell>
 										<Checkbox
 											checked={
 												selectedIds.length ===
 													scheduleData.filter(
 														(course) =>
-															course.status_review !== 2 &&
+															course.status_review !== 3 &&
 															course.status_review !== 4
 													).length && scheduleData.length > 0
 											}
@@ -1470,14 +1454,14 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 												selectedIds.length <
 													scheduleData.filter(
 														(course) =>
-															course.status_review !== 2 &&
+															course.status_review !== 3 &&
 															course.status_review !== 4
 													).length
 											}
 											onChange={(e) => {
 												const enabledCourses = scheduleData.filter(
 													(course) =>
-														course.status_review !== 2 &&
+														course.status_review !== 3 &&
 														course.status_review !== 4
 												);
 												if (e.target.checked) {
@@ -1489,7 +1473,7 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 												}
 											}}
 										/>
-									</Table.Cell>
+									</Table.Cell>*/}
 
 									<Table.Cell>
 										<SortableHeader
@@ -1581,7 +1565,7 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 								) : visibleRows?.length > 0 ? (
 									visibleRows.map((course) => (
 										<Table.Row key={course.id}>
-											<Table.Cell>
+											{/*<Table.Cell>
 												<Checkbox
 													checked={selectedIds.includes(course.id)}
 													onChange={(e) => {
@@ -1593,11 +1577,11 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 														);
 													}}
 													disabled={
-														course.status_review === 2 ||
+														course.status_review !== 3 &&
 														course.status_review === 4
 													}
 												/>
-											</Table.Cell>
+											</Table.Cell>*/}
 											<Table.Cell fontWeight='medium'>
 												{course.course_name}
 											</Table.Cell>
@@ -1627,11 +1611,10 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 											</Table.Cell>
 											<Table.Cell>{course.credits}</Table.Cell>
 											<Table.Cell>
-												<HistoryStatusCourseSheduleView
-													data={course}
-													statusMap={statusMap}
-													fetchData={refetchCourseSchedule}
-												/>
+												{getStatusBadge(
+													course.status_review,
+													course.status_review_display
+												)}
 											</Table.Cell>
 											<Table.Cell>
 												<Badge
@@ -1642,41 +1625,41 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 											</Table.Cell>
 											<Table.Cell>
 												<HStack>
-													<SendConfirmationModal
-														item={course}
-														onConfirm={() => handleSend(course)}
-														openSend={openSend}
-														setOpenSend={setOpenSend}
-														loading={LoadingProgramsReview}
+													<UpdateStatusCourseScheduleForm
+														data={course}
+														fetchData={refetchCourseSchedule}
 													/>
-
-													<ConfirmModal
-														placement='center'
-														trigger={
-															<IconButton
-																disabled={
-																	course.status_review === 2 ||
-																	course.status_review === 4
-																}
-																colorPalette='red'
-																size='xs'
-															>
-																<FiTrash2 />
-															</IconButton>
-														}
-														open={openDelete}
-														onOpenChange={(e) => setOpenDelete(e.open)}
-														onConfirm={() => handleDelete(course)}
-														loading={isPending}
-													>
-														<Text>
-															¿Estás seguro que quieres eliminar a
-															<Span fontWeight='semibold' px='1'>
-																{course.course_name}
-															</Span>
-															de la lista de ubigeos?
-														</Text>
-													</ConfirmModal>
+													{permissions?.includes(
+														'enrollments.admin.course.delete'
+													) && (
+														<ConfirmModal
+															placement='center'
+															trigger={
+																<IconButton
+																	disabled={
+																		course.status_review === 2 ||
+																		course.status_review === 4
+																	}
+																	colorPalette='red'
+																	size='xs'
+																>
+																	<FiTrash2 />
+																</IconButton>
+															}
+															open={openDelete}
+															onOpenChange={(e) => setOpenDelete(e.open)}
+															onConfirm={() => handleDelete(course)}
+															loading={isPending}
+														>
+															<Text>
+																¿Estás seguro que quieres eliminar a
+																<Span fontWeight='semibold' px='1'>
+																	{course.course_name}
+																</Span>
+																de la lista de ubigeos?
+															</Text>
+														</ConfirmModal>
+													)}
 												</HStack>
 											</Table.Cell>
 										</Table.Row>
@@ -1704,13 +1687,15 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 					</Box>
 				</Tabs.Content>
 			</Tabs.Root>
+
 			{/* Modales Secundarios */}
 		</Modal>
 	);
 };
 
-ScheduleEnrollmentProgramsModal.propTypes = {
+ScheduleEnrollmentProgramsReviewModal.propTypes = {
 	data: PropTypes.shape({
 		id: PropTypes.number.isRequired,
 	}).isRequired,
+	permissions: PropTypes.arrayOf(PropTypes.string),
 };

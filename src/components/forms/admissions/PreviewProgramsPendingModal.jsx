@@ -135,7 +135,10 @@ export const PreviewProgramsPendingModal = ({ data }) => {
 						</SimpleGrid>
 					</Card.Body>
 				</Card.Root>
-				<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+				<SimpleGrid
+					columns={{ base: 1, md: data.exam_date_start ? 2 : 1 }}
+					gap={4}
+				>
 					{/* Periodo de Inscripción */}
 					<Card.Root borderLeft='4px solid' borderLeftColor='orange.500'>
 						<Card.Header pb={1}>
@@ -167,86 +170,89 @@ export const PreviewProgramsPendingModal = ({ data }) => {
 						</Card.Body>
 					</Card.Root>
 
-					{/* Fechas de Examen */}
-					<Card.Root borderLeft='4px solid' borderLeftColor='red.500'>
-						<Card.Header pb={1}>
+					{data.exam_date_start && (
+						<Card.Root borderLeft='4px solid' borderLeftColor='red.500'>
+							<Card.Header pb={1}>
+								<Flex align='center' gap={2}>
+									<Icon as={FaMapPin} boxSize={5} color='red.600' />
+									<Heading fontSize='24px'>Fechas de evaluaciones</Heading>
+								</Flex>
+							</Card.Header>
+							<Card.Body>
+								<VStack align='start' gap={1}>
+									<Box>
+										<Text fontSize='sm' fontWeight='medium' color='gray.600'>
+											Fecha de Inicio
+										</Text>
+										<Text fontSize='lg' fontWeight='semibold' color='gray.900'>
+											{formatDateString(data.exam_date_start)}
+										</Text>
+									</Box>
+									<Separator />
+									<Box>
+										<Text fontSize='sm' fontWeight='medium' color='gray.600'>
+											Fecha de Finalización
+										</Text>
+										<Text fontSize='lg' fontWeight='semibold' color='gray.900'>
+											{formatDateString(data.exam_date_end)}
+										</Text>
+									</Box>
+								</VStack>
+							</Card.Body>
+						</Card.Root>
+					)}
+				</SimpleGrid>
+				{data.modalities && (
+					<Card.Root borderLeft='4px solid' borderLeftColor='purple.500'>
+						<Card.Header pb={3}>
 							<Flex align='center' gap={2}>
-								<Icon as={FaMapPin} boxSize={5} color='red.600' />
-								<Heading fontSize='24px'>Fechas de evaluaciones</Heading>
+								<Icon as={FaUsers} boxSize={5} color='purple.600' />
+								<Heading fontSize='lg'>Modalidades Asignadas</Heading>
+								<Badge
+									variant='outline'
+									bg='purple.50'
+									color='purple.700'
+									borderColor='purple.200'
+									ml={2}
+								>
+									{data.modalities?.length || 0} modalidades
+								</Badge>
 							</Flex>
 						</Card.Header>
+
 						<Card.Body>
-							<VStack align='start' gap={1}>
-								<Box>
-									<Text fontSize='sm' fontWeight='medium' color='gray.600'>
-										Fecha de Inicio
-									</Text>
-									<Text fontSize='lg' fontWeight='semibold' color='gray.900'>
-										{formatDateString(data.exam_date_start)}
-									</Text>
-								</Box>
-								<Separator />
-								<Box>
-									<Text fontSize='sm' fontWeight='medium' color='gray.600'>
-										Fecha de Finalización
-									</Text>
-									<Text fontSize='lg' fontWeight='semibold' color='gray.900'>
-										{formatDateString(data.exam_date_end)}
-									</Text>
-								</Box>
-							</VStack>
+							<Table.Root size='sm' striped>
+								<Table.Header>
+									<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
+										<Table.ColumnHeader>N°</Table.ColumnHeader>
+										<Table.ColumnHeader>Modalidad</Table.ColumnHeader>
+										<Table.ColumnHeader>Vacantes</Table.ColumnHeader>
+									</Table.Row>
+								</Table.Header>
+
+								<Table.Body>
+									{data?.modalities?.map((item, index) => (
+										<Table.Row
+											key={item.id}
+											bg={{ base: 'white', _dark: 'its.gray.500' }}
+										>
+											<Table.Cell>{index + 1}</Table.Cell>
+											<Table.Cell>{item.modality_name}</Table.Cell>
+											<Table.Cell>{item.vacancies}</Table.Cell>
+										</Table.Row>
+									))}
+									{data?.modalities?.length === 0 && (
+										<Table.Row>
+											<Table.Cell colSpan={7} textAlign='center'>
+												Sin datos disponibles
+											</Table.Cell>
+										</Table.Row>
+									)}
+								</Table.Body>
+							</Table.Root>
 						</Card.Body>
 					</Card.Root>
-				</SimpleGrid>
-				<Card.Root borderLeft='4px solid' borderLeftColor='purple.500'>
-					<Card.Header pb={3}>
-						<Flex align='center' gap={2}>
-							<Icon as={FaUsers} boxSize={5} color='purple.600' />
-							<Heading fontSize='lg'>Modalidades Asignadas</Heading>
-							<Badge
-								variant='outline'
-								bg='purple.50'
-								color='purple.700'
-								borderColor='purple.200'
-								ml={2}
-							>
-								{data.modalities?.length || 0} modalidades
-							</Badge>
-						</Flex>
-					</Card.Header>
-
-					<Card.Body>
-						<Table.Root size='sm' striped>
-							<Table.Header>
-								<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
-									<Table.ColumnHeader>N°</Table.ColumnHeader>
-									<Table.ColumnHeader>Modalidad</Table.ColumnHeader>
-									<Table.ColumnHeader>Vacantes</Table.ColumnHeader>
-								</Table.Row>
-							</Table.Header>
-
-							<Table.Body>
-								{data?.modalities?.map((item, index) => (
-									<Table.Row
-										key={item.id}
-										bg={{ base: 'white', _dark: 'its.gray.500' }}
-									>
-										<Table.Cell>{index + 1}</Table.Cell>
-										<Table.Cell>{item.modality_name}</Table.Cell>
-										<Table.Cell>{item.vacancies}</Table.Cell>
-									</Table.Row>
-								))}
-								{data?.modalities?.length === 0 && (
-									<Table.Row>
-										<Table.Cell colSpan={7} textAlign='center'>
-											Sin datos disponibles
-										</Table.Cell>
-									</Table.Row>
-								)}
-							</Table.Body>
-						</Table.Root>
-					</Card.Body>
-				</Card.Root>
+				)}
 			</Stack>
 		</Modal>
 	);

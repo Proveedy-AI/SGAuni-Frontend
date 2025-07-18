@@ -91,7 +91,7 @@ export const TuitonPrograms = () => {
 					}}
 					color={'uni.secondary'}
 				>
-					{dataEnrollmentPrograms?.results[0]?.admission_process_name ||
+					{dataEnrollmentPrograms?.results[0]?.enrollment_period_name ||
 						'No hay programas de matricula disponibles'}
 				</Heading>
 			</Stack>
