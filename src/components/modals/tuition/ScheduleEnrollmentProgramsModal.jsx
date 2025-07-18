@@ -3,7 +3,6 @@ import {
 	Box,
 	Text,
 	Grid,
-	GridItem,
 	VStack,
 	HStack,
 	Badge,
@@ -17,6 +16,7 @@ import {
 	FileUpload,
 	Icon,
 	Span,
+	SimpleGrid,
 } from '@chakra-ui/react';
 
 import PropTypes from 'prop-types';
@@ -28,12 +28,21 @@ import {
 	FiFileText,
 	FiGrid,
 	FiList,
+	FiPlus,
 	FiTrash2,
 	FiUsers,
 } from 'react-icons/fi';
-import { Alert, ConfirmModal, Field, Modal, toaster } from '@/components/ui';
+import {
+	Alert,
+	ConfirmModal,
+	Field,
+	Modal,
+	Radio,
+	RadioGroup,
+	toaster,
+} from '@/components/ui';
 import { ReactSelect } from '@/components/select';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useReadCourseSchedule } from '@/hooks/enrollments_programs/schedule/useReadCourseSchedule';
 import { LuUpload } from 'react-icons/lu';
 import { useUploadCourseScheduleExcel } from '@/hooks/enrollments_programs/schedule/useUploadCourseScheduleExcel';
@@ -42,6 +51,10 @@ import { useProccessCourseScheduleExcel } from '@/hooks/enrollments_programs/sch
 import { SendConfirmationModal } from '@/components/ui/SendConfirmationModal';
 import { useCreateCourseScheduleReview } from '@/hooks/enrollments_programs/schedule/useCreateCourseScheduleReview';
 import { useDeleteCourseSchedule } from '@/hooks/enrollments_programs/schedule/useDeleteCourseSchedule';
+import { FaClock, FaGraduationCap } from 'react-icons/fa';
+import { useReadCourses } from '@/hooks/courses';
+import { useReadUsers } from '@/hooks/users';
+import { useCreateCourseSchedule } from '@/hooks/enrollments_programs/schedule/useCreateCourseSchedule';
 
 // Datos de ejemplo basados en la estructura proporcionada
 /*const scheduleData = [
@@ -225,28 +238,78 @@ const daysOfWeek = [
 	'Sábado',
 ];
 
-const daysOfWeekOptions = daysOfWeek.map((day) => ({
-	value: day.toLowerCase(),
-	label: day,
-}));
+const daysOfWeek2 = [
+	{ label: 'L', fullName: 'Lunes', value: '1' },
+	{ label: 'M', fullName: 'Martes', value: '2' },
+	{ label: 'M', fullName: 'Miércoles', value: '3' },
+	{ label: 'J', fullName: 'Jueves', value: '4' },
+	{ label: 'V', fullName: 'Viernes', value: '5' },
+	{ label: 'S', fullName: 'Sábado', value: '6' },
+	{ label: 'D', fullName: 'Domingo', value: '7' },
+];
 
-const cycleOptions = ['I', 'II', 'III', 'IV', 'V'].map((cycle) => ({
-	value: cycle,
-	label: cycle,
-}));
-
-const AddCourseModal = ({ open, setOpen }) => {
+const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 	const [formData, setFormData] = useState({
-		courseName: '',
-		groupCode: '',
-		teacher: '',
-		dayOfWeek: null,
-		capacity: '',
-		startTime: '',
-		endTime: '',
-		cycle: null,
+		course_id: null,
+		prerequisite_ids: [],
+		is_mandatory: true,
+		cycle: '',
 		credits: '',
+		group_code: '',
+		teacher_id: '',
+		capacity: '',
+		schedules: [{ day_of_week: null, start_time: '', end_time: '' }],
 	});
+	const { data: dataCourses } = useReadCourses({}, { enabled: open });
+
+	const [errors, setErrors] = useState({});
+	const { data: dataUsers } = useReadUsers(
+		{},
+		{
+			enabled: open,
+		}
+	);
+
+	const [selectedPrerequisites, setSelectedPrerequisites] = useState([]);
+
+	useEffect(() => {
+		setFormData((prev) => ({
+			...prev,
+			prerequisite_ids: selectedPrerequisites.map((opt) => opt.value),
+		}));
+	}, [selectedPrerequisites]);
+
+	const validateFields = () => {
+		const newErrors = {};
+
+		if (!formData.course_id) newErrors.course_id = 'El curso es requerido';
+		if (!formData.group_code)
+			newErrors.group_code = 'El código de grupo es requerido';
+		if (!formData.teacher_id) newErrors.teacher_id = 'El docente es requerido';
+		if (!formData.credits) newErrors.credits = 'Los créditos son requeridos';
+		if (!formData.cycle) newErrors.cycle = 'El ciclo es requerido';
+		if (!formData.capacity) newErrors.capacity = 'La capacidad es requerida';
+		if (!formData.schedules?.length)
+			newErrors.schedules = 'Debe agregar al menos un horario';
+
+		if (formData.schedules?.[0]) {
+			if (!formData.schedules[0].day_of_week)
+				newErrors.day_of_week = 'El día es requerido';
+			if (!formData.schedules[0].start_time)
+				newErrors.start_time = 'La hora de inicio es requerida';
+			if (!formData.schedules[0].end_time)
+				newErrors.end_time = 'La hora de fin es requerida';
+		}
+
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
+
+	const coursesOptions =
+		dataCourses?.results?.map((course) => ({
+			value: course.id,
+			label: course.name,
+		})) || [];
 
 	const handleInputChange = (e) => {
 		const { name, value } = e.target;
@@ -262,6 +325,99 @@ const AddCourseModal = ({ open, setOpen }) => {
 			[name]: option?.value || null,
 		}));
 	};
+
+	const updateSchedule = (index, field, value) => {
+		const updated = [...formData.schedules];
+		updated[index][field] = value;
+		setFormData((prev) => ({
+			...prev,
+			schedules: updated,
+		}));
+	};
+
+	const addSchedule = () => {
+		setFormData((prev) => ({
+			...prev,
+			schedules: [
+				...prev.schedules,
+				{ day_of_week: null, start_time: '', end_time: '' },
+			],
+		}));
+	};
+
+	const removeSchedule = (index) => {
+		setFormData((prev) => ({
+			...prev,
+			schedules: prev.schedules.filter((_, i) => i !== index),
+		}));
+	};
+
+	const { mutate: createCourseSchedule, isPending } = useCreateCourseSchedule();
+
+	const handleSubmit = () => {
+		if (!validateFields()) {
+			return;
+		}
+
+		const payload = {
+			enrollment_period_id: data.enrollment_period,
+			enrollment_program_id: data.id,
+			course_id: formData.course_id,
+			prerequisite_ids: formData.prerequisite_ids,
+			is_mandatory: formData.is_mandatory,
+			cycle: formData.cycle,
+			credits: parseInt(formData.credits),
+			group_code: formData.group_code,
+			teacher_id: parseInt(formData.teacher_id),
+			capacity: parseInt(formData.capacity),
+			schedules: formData.schedules.map((schedule) => ({
+				day_of_week: parseInt(schedule.day_of_week),
+				start_time: schedule.start_time,
+				end_time: schedule.end_time,
+			})),
+		};
+
+		createCourseSchedule(payload, {
+			onSuccess: () => {
+				toaster.create({
+					title: 'Curso agregado correctamente',
+					type: 'success',
+				});
+				setOpen(false);
+				fetchData();
+			},
+			onError: (error) => {
+				toaster.create({
+					title: 'Error al agregar curso',
+					description: error.message,
+					type: 'error',
+				});
+			},
+		});
+	};
+
+	const DocenteOption = dataUsers?.results
+		?.filter(
+			(c) =>
+				c?.is_active === true &&
+				Array.isArray(c?.roles) &&
+				c.roles.some((role) => role?.name === 'Docente')
+		)
+		?.map((c) => ({
+			value: c.id.toString(),
+			label: c.full_name,
+		}));
+
+	// Estado para el campo "¿Es obligatorio?"
+	const [isMandatory, setIsMandatory] = useState(formData.is_mandatory);
+
+	// Actualiza el campo en formData cuando cambia isMandatory
+	useEffect(() => {
+		setFormData((prev) => ({
+			...prev,
+			is_mandatory: isMandatory,
+		}));
+	}, [isMandatory]);
 
 	return (
 		<Modal
@@ -287,122 +443,278 @@ const AddCourseModal = ({ open, setOpen }) => {
 				</Box>
 			}
 			title='Agregar Nuevo Curso'
-			description='Complete la información del nuevo curso para el cronograma'
-			size='md'
+			onSave={handleSubmit}
+			loading={isPending}
+			size='7xl'
 		>
-			<VStack spacing={4}>
-				<Field label='Nombre del Curso'>
-					<Input
-						name='courseName'
-						value={formData.courseName}
-						onChange={handleInputChange}
-						placeholder='Ej: Matemáticas Básicas'
-						size='xs'
-					/>
-				</Field>
+			<VStack gap={4}>
+				<Card.Root border='2px solid' borderColor='gray.200' w='full'>
+					<Card.Header>
+						<Heading size='md' display='flex' alignItems='center' gap={2}>
+							<Icon as={FaGraduationCap} boxSize={5} color='blue.600' />
+							Información Básica
+						</Heading>
+					</Card.Header>
+					<Card.Body>
+						<SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={4}>
+							<Field
+								label='Curso:'
+								required
+								invalid={!!errors.course_id}
+								errorText={errors.course_id}
+							>
+								<ReactSelect
+									value={
+										coursesOptions.find(
+											(opt) => opt.value === formData.course_id
+										) || null
+									}
+									onChange={(opt) => handleSelectChange('course_id')(opt)}
+									options={coursesOptions}
+									isClearable
+									isSearchable
+									placeholder='Selecciona un curso'
+								/>
+							</Field>
 
-				<Field label='Código del Grupo'>
-					<Input
-						name='groupCode'
-						value={formData.groupCode}
-						onChange={handleInputChange}
-						placeholder='Ej: MAT-101-A'
-						size='xs'
-					/>
-				</Field>
+							<Field
+								label='Código del grupo:'
+								required
+								invalid={!!errors.group_code}
+								errorText={errors.group_code}
+							>
+								<Input
+									name='group_code'
+									placeholder='Ej: A1, B2, etc.'
+									value={formData.group_code}
+									onChange={handleInputChange}
+								/>
+							</Field>
 
-				<Field label='Profesor'>
-					<Input
-						name='teacher'
-						value={formData.teacher}
-						onChange={handleInputChange}
-						placeholder='Nombre del profesor'
-						size='xs'
-					/>
-				</Field>
+							<Field
+								label='Docente:'
+								required
+								invalid={!!errors.teacher_id}
+								errorText={errors.teacher_id}
+							>
+								<ReactSelect
+									options={DocenteOption}
+									value={
+										DocenteOption?.find(
+											(opt) => opt.value === formData.teacher_id
+										) || null
+									}
+									onChange={(opt) => handleSelectChange('teacher_id')(opt)}
+									isClearable
+									isSearchable
+									placeholder='Selecciona un docente'
+								/>
+							</Field>
 
-				<Grid templateColumns='repeat(2, 1fr)' gap={4} w='full'>
-					<GridItem>
-						<Field label='Día de la Semana'>
+							<Field
+								label='Créditos:'
+								required
+								invalid={!!errors.credits}
+								errorText={errors.credits}
+							>
+								<Input
+									name='credits'
+									value={formData.credits}
+									onChange={handleInputChange}
+									type='number'
+									min={1}
+								/>
+							</Field>
+
+							<Field
+								label='Ciclo:'
+								required
+								invalid={!!errors.cycle}
+								errorText={errors.cycle}
+							>
+								<Input
+									name='cycle'
+									placeholder='Ej: 1, 2, etc.'
+									value={formData.cycle}
+									onChange={handleInputChange}
+									type='number'
+									min={1}
+									max={10}
+								/>
+							</Field>
+
+							<Field
+								label='Capacidad:'
+								required
+								invalid={!!errors.capacity}
+								errorText={errors.capacity}
+							>
+								<Input
+									name='capacity'
+									value={formData.capacity}
+									onChange={handleInputChange}
+									type='number'
+									min={1}
+								/>
+							</Field>
+							<Field label='¿Es obligatorio?'>
+								<RadioGroup
+									value={isMandatory ? 'yes' : 'no'}
+									onChange={(e) => {
+										const selected = e.target.value === 'yes';
+										setIsMandatory(selected);
+									}}
+									direction='row'
+									spaceX={4}
+								>
+									<Radio value='yes'>Sí</Radio>
+									<Radio value='no'>No</Radio>
+								</RadioGroup>
+							</Field>
+						</SimpleGrid>
+					</Card.Body>
+				</Card.Root>
+
+				<Card.Root border='2px solid' borderColor='gray.200' w='full'>
+					<Card.Header>
+						<Flex align='center' gap={2}>
+							<FiUsers size={20} className='text-green-600' />
+							<Heading size='sm'>Prerrequisitos</Heading>
+						</Flex>
+					</Card.Header>
+					<Card.Body>
+						<Flex gap={2} mb={2}>
 							<ReactSelect
-								value={daysOfWeekOptions.find(
-									(option) => option.value === formData.dayOfWeek
-								)}
-								onChange={handleSelectChange('dayOfWeek')}
-								options={daysOfWeekOptions}
+								value={selectedPrerequisites}
+								onChange={setSelectedPrerequisites}
+								options={coursesOptions}
+								isMulti
 								isClearable
-								placeholder='Seleccionar día'
-								size='xs'
+								isSearchable
+								placeholder='Selecciona uno o varios pre requisito'
 							/>
-						</Field>
-					</GridItem>
-					<GridItem>
-						<Field label='Capacidad'>
-							<Input
-								name='capacity'
-								value={formData.capacity}
-								onChange={handleInputChange}
-								type='number'
-								placeholder='30'
-								size='xs'
-							/>
-						</Field>
-					</GridItem>
-				</Grid>
+						</Flex>
+					</Card.Body>
+				</Card.Root>
 
-				<Grid templateColumns='repeat(2, 1fr)' gap={4} w='full'>
-					<GridItem>
-						<Field label='Hora Inicio'>
-							<Input
-								name='startTime'
-								value={formData.startTime}
-								onChange={handleInputChange}
-								type='time'
-								size='xs'
-							/>
-						</Field>
-					</GridItem>
-					<GridItem>
-						<Field label='Hora Fin'>
-							<Input
-								name='endTime'
-								value={formData.endTime}
-								onChange={handleInputChange}
-								type='time'
-								size='xs'
-							/>
-						</Field>
-					</GridItem>
-				</Grid>
+				<Card.Root border='2px solid' borderColor='gray.200' w='full'>
+					<Card.Header>
+						<Flex align='center' gap={2}>
+							<FaClock size={20} className='text-purple-600' />
+							<Heading size='sm'>Horarios</Heading>
+						</Flex>
+					</Card.Header>
+					<Card.Body>
+						{formData.schedules.map((schedule, index) => (
+							<Card.Root
+								key={index}
+								variant='outline'
+								borderColor='gray.200'
+								mb={4}
+							>
+								<Card.Body>
+									<Flex justify='space-between' align='center' mb={3}>
+										<Text fontWeight='medium'>Horario {index + 1}</Text>
+										{formData.schedules.length > 1 && (
+											<Button
+												size='sm'
+												colorScheme='red'
+												variant='ghost'
+												onClick={() => removeSchedule(index)}
+											>
+												<FiTrash2 size={16} />
+											</Button>
+										)}
+									</Flex>
 
-				<Grid templateColumns='repeat(2, 1fr)' gap={4} w='full'>
-					<GridItem>
-						<Field label='Ciclo'>
-							<ReactSelect
-								value={cycleOptions.find(
-									(option) => option.value === formData.cycle
-								)}
-								onChange={handleSelectChange('cycle')}
-								options={cycleOptions}
-								isClearable
-								placeholder='Seleccionar ciclo'
-								size='xs'
-							/>
-						</Field>
-					</GridItem>
-					<GridItem>
-						<Field label='Créditos'>
-							<Input
-								name='credits'
-								value={formData.credits}
-								onChange={handleInputChange}
-								type='number'
-								placeholder='4'
-								size='xs'
-							/>
-						</Field>
-					</GridItem>
-				</Grid>
+									<Box w='full' mb={3}>
+										<Text mb={1} fontWeight='medium' fontSize='sm'>
+											Día de la semana
+										</Text>
+										<Flex wrap='wrap' gap={2} w='full'>
+											{daysOfWeek2.map((day) => (
+												<Button
+													key={day.value}
+													size='sm'
+													variant={
+														schedule.day_of_week === day.value
+															? 'solid'
+															: 'outline'
+													}
+													colorScheme='purple'
+													onClick={() =>
+														updateSchedule(index, 'day_of_week', day.value)
+													}
+												>
+													{day.label}
+												</Button>
+											))}
+										</Flex>
+									</Box>
+
+									<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+										<Field label='Hora de inicio'>
+											<Input
+												type='time'
+												value={schedule.start_time}
+												onChange={(e) =>
+													updateSchedule(index, 'start_time', e.target.value)
+												}
+											/>
+										</Field>
+										<Field label='Hora de fin'>
+											<Input
+												type='time'
+												value={schedule.end_time}
+												onChange={(e) =>
+													updateSchedule(index, 'end_time', e.target.value)
+												}
+											/>
+										</Field>
+									</SimpleGrid>
+
+									{schedule.day_of_week &&
+										schedule.start_time &&
+										schedule.end_time && (
+											<Box
+												mt={3}
+												bg='purple.50'
+												border='1px solid'
+												borderColor='purple.200'
+												p={3}
+												borderRadius='md'
+											>
+												<Text
+													fontSize='sm'
+													color='purple.800'
+													fontWeight='medium'
+												>
+													📅{' '}
+													{
+														daysOfWeek2.find(
+															(d) => d.value === schedule.day_of_week
+														)?.fullName
+													}{' '}
+													de {schedule.start_time} a {schedule.end_time}
+												</Text>
+											</Box>
+										)}
+								</Card.Body>
+							</Card.Root>
+						))}
+						<Button
+							variant='outline'
+							colorPalette='purple'
+							onClick={addSchedule}
+							w='full'
+							borderStyle='dashed'
+							borderWidth='2px'
+							borderColor='purple.300'
+						>
+							<FiPlus size={16} /> Agregar otro horario
+						</Button>
+					</Card.Body>
+				</Card.Root>
 			</VStack>
 		</Modal>
 	);
@@ -411,6 +723,8 @@ const AddCourseModal = ({ open, setOpen }) => {
 AddCourseModal.propTypes = {
 	open: PropTypes.bool,
 	setOpen: PropTypes.func,
+	data: PropTypes.object,
+	fetchData: PropTypes.func,
 };
 
 const AddExcelScheduleModal = ({ open, setOpen, data }) => {
@@ -593,9 +907,7 @@ const AddExcelScheduleModal = ({ open, setOpen, data }) => {
 				>
 					<VStack align='start' spacing={1}>
 						<Text>• Formato requerido: .xlsx o .xls</Text>
-						<Text>
-							• Columnas: Descargar Guía de formato correcto
-						</Text>
+						<Text>• Columnas: Descargar Guía de formato correcto</Text>
 						<Text>• Primera fila debe contener los encabezados</Text>
 					</VStack>
 				</Alert>
@@ -850,14 +1162,11 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 	const [addExcelOpen, setAddExcelOpen] = useState(false);
 	const [tab, setTab] = useState(1);
 
-	const {
-		data: dataCourseSchedule,
-		//isLoading: loadingPaymentOrders,
-		refetch: fetchDataCourseSchedule,
-	} = useReadCourseSchedule(
-		{ enrollment_period_program_course: data.id },
-		{ enabled: open }
-	);
+	const { data: dataCourseSchedule, refetch: fetchDataCourseSchedule } =
+		useReadCourseSchedule(
+			{ enrollment_period_program_course: data.id },
+			{ enabled: open }
+		);
 
 	const scheduleData = dataCourseSchedule?.results || [];
 
@@ -955,7 +1264,12 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 		>
 			{/* Botones de Acción */}
 			<HStack gap={3} borderBottomWidth={1} justifyContent={'end'}>
-				<AddCourseModal open={addCourseOpen} setOpen={setAddCourseOpen} />
+				<AddCourseModal
+					data={data}
+					open={addCourseOpen}
+					fetchData={fetchDataCourseSchedule}
+					setOpen={setAddCourseOpen}
+				/>
 				<AddExcelScheduleModal
 					data={data}
 					open={addExcelOpen}
