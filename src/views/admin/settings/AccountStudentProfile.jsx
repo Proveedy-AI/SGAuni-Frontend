@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { toaster } from '@/components/ui';
-import { Box, Heading, VStack, Text } from '@chakra-ui/react';
+import { Box, Heading, Text } from '@chakra-ui/react';
 import { FiAlertCircle } from 'react-icons/fi';
 import { Link } from 'react-router';
 import { ChangeProfileControl } from '@/components/forms/acount/ChangeProfileControl';
@@ -189,28 +189,18 @@ export const AccountStudentProfile = () => {
 
 			{!isLoading && !error && dataUser && (
 				<>
-					<VStack
-						bg={{ base: 'white', _dark: 'uni.gray.500' }}
-						p='6'
-						align='start'
-						borderRadius='10px'
-						overflow='hidden'
-						boxShadow='md'
-						gap='6'
-					>
-						<ChangeProfileControl
-							profile={profile}
-							isChangesMade={isChangesMade}
-							handleUpdateProfile={handleUpdateProfile}
-							loadingUpdate={loadingUpdate}
-							disableUpload={disableUpload}
-						/>
+					<ChangeProfileControl
+						profile={profile}
+						isChangesMade={isChangesMade}
+						handleUpdateProfile={handleUpdateProfile}
+						loadingUpdate={loadingUpdate}
+						disableUpload={disableUpload}
+					/>
 
-						<ChangeDataStudentProfileForm
-							profile={profile}
-							updateProfileField={updateProfileField}
-						/>
-					</VStack>
+					<ChangeDataStudentProfileForm
+						profile={profile}
+						updateProfileField={updateProfileField}
+					/>
 				</>
 			)}
 		</Box>

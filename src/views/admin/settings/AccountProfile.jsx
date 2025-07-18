@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { toaster } from '@/components/ui';
-import { Box, Heading, VStack, Text } from '@chakra-ui/react';
+import { Box, Heading, Text } from '@chakra-ui/react';
 import { FiAlertCircle } from 'react-icons/fi';
 import { Link } from 'react-router';
 import { useUpdateProfile } from '@/hooks/users';
@@ -14,20 +14,20 @@ export const AccountProfile = () => {
 
 	const [disableUpload, setDisableUpload] = useState(false);
 
-  const { mutateAsync: updateProfile, loading: loadingProfile } = useUpdateProfile();
+	const { mutateAsync: updateProfile, loading: loadingProfile } =
+		useUpdateProfile();
 
-  const [errors, setErrors] = useState({});
+	const [errors, setErrors] = useState({});
 
-  
 	const [profile, setProfile] = useState({
-    id: '',
+		id: '',
 		user: {
-      id: '',
-      username: '',
-      first_name: '',
-      last_name: '',
-      password: '',
-    },
+			id: '',
+			username: '',
+			first_name: '',
+			last_name: '',
+			password: '',
+		},
 		full_name: '',
 		num_doc: '',
 		uni_email: '',
@@ -36,22 +36,24 @@ export const AccountProfile = () => {
 		category: '',
 		phone: '',
 		roles: [],
-    // para el icono
-    first_name: '',
-    last_name: '',
+		// para el icono
+		first_name: '',
+		last_name: '',
 	});
 
-  const validate = () => {
-    const newErrors = {};
-    if (!profile.first_name) newErrors.first_name = 'El nombre es obligatorio';
-    if (!profile.last_name) newErrors.last_name = 'El apellido es obligatorio';
-    if (!profile.num_doc) newErrors.num_doc = 'El número de documento es obligatorio';
-    if (!profile.category) newErrors.category = 'La categoría es obligatoria';
-    if (!profile.phone) newErrors.phone = 'El número de teléfono es obligatorio';
+	const validate = () => {
+		const newErrors = {};
+		if (!profile.first_name) newErrors.first_name = 'El nombre es obligatorio';
+		if (!profile.last_name) newErrors.last_name = 'El apellido es obligatorio';
+		if (!profile.num_doc)
+			newErrors.num_doc = 'El número de documento es obligatorio';
+		if (!profile.category) newErrors.category = 'La categoría es obligatoria';
+		if (!profile.phone)
+			newErrors.phone = 'El número de teléfono es obligatorio';
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
 
 	const [isChangesMade, setIsChangesMade] = useState(false);
 	const [initialProfile, setInitialProfile] = useState(null);
@@ -61,10 +63,10 @@ export const AccountProfile = () => {
 			const updatedProfile = {
 				first_name: dataUser.user.first_name,
 				last_name: dataUser.user.last_name,
-        user: {
-          username: dataUser.user.username,
-          ...dataUser.user,
-        },
+				user: {
+					username: dataUser.user.username,
+					...dataUser.user,
+				},
 				...dataUser,
 			};
 			setProfile(updatedProfile);
@@ -85,7 +87,7 @@ export const AccountProfile = () => {
 	};
 
 	const handleUpdateProfile = async (e) => {
-    if (!validate()) return;
+		if (!validate()) return;
 
 		e.preventDefault();
 		setDisableUpload(true);
@@ -126,21 +128,21 @@ export const AccountProfile = () => {
 		};
 
 		updateProfile(payload, {
-      onSuccess: () => {
-        setInitialProfile(profile);
-        setIsChangesMade(false);
-        toaster.create({
-          title: 'Perfil actualizado correctamente.',
-          type: 'success',
-        });
-        refetch();
-        setDisableUpload(false);
-      }, 
-      onError: (error) => {
-        setDisableUpload(false);
-        toaster.create({ title: error.message, type: 'error' });
-      }
-    });
+			onSuccess: () => {
+				setInitialProfile(profile);
+				setIsChangesMade(false);
+				toaster.create({
+					title: 'Perfil actualizado correctamente.',
+					type: 'success',
+				});
+				refetch();
+				setDisableUpload(false);
+			},
+			onError: (error) => {
+				setDisableUpload(false);
+				toaster.create({ title: error.message, type: 'error' });
+			},
+		});
 	};
 
 	return (
@@ -182,15 +184,7 @@ export const AccountProfile = () => {
 			{isLoading && <Box>Cargando contenido...</Box>}
 
 			{!isLoading && !error && dataUser && (
-				<VStack
-					bg={{ base: 'white', _dark: 'uni.gray.500' }}
-					p='6'
-					align='start'
-					borderRadius='10px'
-					overflow='hidden'
-					boxShadow='md'
-					gap='6'
-				>
+				<>
 					<ChangeProfileControl
 						profile={profile}
 						isChangesMade={isChangesMade}
@@ -200,7 +194,7 @@ export const AccountProfile = () => {
 					/>
 
 					<ChangeDataProfileForm
-            errors={errors}
+						errors={errors}
 						profile={profile}
 						updateProfileField={updateProfileField}
 					/>
@@ -213,7 +207,7 @@ export const AccountProfile = () => {
 						passwords={passwords}
 						updatePasswordField={updatePasswordField}
 					/>*/}
-				</VStack>
+				</>
 			)}
 		</Box>
 	);
