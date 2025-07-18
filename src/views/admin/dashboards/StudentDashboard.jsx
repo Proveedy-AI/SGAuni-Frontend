@@ -1,19 +1,33 @@
-import { useUpdateNotifications } from '@/hooks';
-import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
+import {
+	FiAlertTriangle,
+	FiCheckCircle,
+	FiClock,
+	FiInfo,
+} from 'react-icons/fi';
+
 import {
 	Box,
 	Heading,
 	Text,
-	SimpleGrid,
 	Flex,
-	IconButton,
+	Stack,
+	SimpleGrid,
+	Badge,
 	Button,
+	Spacer,
 	Collapsible,
 	Image,
+	IconButton,
 } from '@chakra-ui/react';
+import { useReadMyEnrollments } from '@/hooks/person/useReadMyEnrollments';
+import { Alert } from '@/components/ui';
+import { useNavigate } from 'react-router';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
+import { useUpdateNotifications } from '@/hooks';
 import { LuCheckCheck } from 'react-icons/lu';
 
 export const StudentDashboard = () => {
+	const { data: dataMyEnrollments } = useReadMyEnrollments();
 	const { data: profile } = useReadUserLogged();
 	const { mutate: updateNotifications } = useUpdateNotifications();
 
@@ -25,8 +39,33 @@ export const StudentDashboard = () => {
 		}
 	};
 
+	/*const dataMyEnrollments = [
+		{
+			id: 1,
+			student: 1,
+			enrollment_period_program: 1,
+			program_name: 'Ingeniería de Sistemas',
+			payment_verified: true,
+			is_first_enrollment: true,
+			status: 1,
+			status_display: 'Activo',
+			verified_at: '2024-01-15T10:30:00Z',
+		},
+	];*/
+
+	const activeEnrollments =
+		dataMyEnrollments?.filter((enrollment) => enrollment.status === 1) || [];
+	const firstTimeEnrollments =
+		dataMyEnrollments?.filter(
+			(enrollment) => enrollment.is_first_enrollment === true
+		) || [];
+	const navigate = useNavigate();
+	const handleGoRoute = () => {
+		navigate(`/mypaymentsdebts/addrequests`);
+	};
+
 	return (
-		<>
+		<Box maxW='90%' mx='auto'>
 			{profile && profile.admission_notification_uuid && (
 				<Collapsible.Root unmountOnExit defaultOpen={true}>
 					<Collapsible.Content>
@@ -38,7 +77,6 @@ export const StudentDashboard = () => {
 							bgSize='cover'
 							bgPosition='center'
 							mx='auto'
-							w={{ base: '100%', md: '95%' }}
 							color='white'
 							boxShadow='md'
 							position='relative'
@@ -123,6 +161,125 @@ export const StudentDashboard = () => {
 					</Collapsible.Trigger>
 				</Collapsible.Root>
 			)}
-		</>
+			<Stack gap={4} mb={8}>
+				{activeEnrollments.length > 0 && (
+					<Alert
+						status='success'
+						borderRadius='md'
+						px={4}
+						py={3}
+						alignItems='center'
+						title='¡Solicitud de matrícula disponible! 🎓'
+						icon={<FiCheckCircle />}
+					>
+						<Flex w='full' align='center'>
+							<Box>
+								<Box fontSize='sm'>
+									Ya puedes generar tu solicitud de matrícula. Tienes{' '}
+									{activeEnrollments.length}{' '}
+									{activeEnrollments.length === 1
+										? 'inscripción activa'
+										: 'inscripciones activas'}
+									.
+								</Box>
+							</Box>
+
+							<Spacer />
+
+							<Button
+								colorPalette='green'
+								size='sm'
+								onClick={() => handleGoRoute()}
+							>
+								Ir a matrícula
+							</Button>
+						</Flex>
+					</Alert>
+				)}
+
+				{firstTimeEnrollments.length > 0 && (
+					<Alert
+						status='info'
+						variant='left-accent'
+						borderRadius='md'
+						icon={<FiInfo />}
+						title='Recordatorio importante 💡'
+					>
+						Como es tu primera inscripción, recuerda que el siguiente mes
+						deberás realizar el pago por concepto de derecho de admisión.
+					</Alert>
+				)}
+
+				{dataMyEnrollments && dataMyEnrollments.length === 0 && (
+					<Alert
+						status='warning'
+						borderRadius='md'
+						icon={<FiAlertTriangle />}
+						title='Sin inscripciones activas'
+					>
+						<Box>
+							No tienes inscripciones registradas en este momento. Contacta al
+							área académica para más información.
+						</Box>
+					</Alert>
+				)}
+			</Stack>
+
+			{dataMyEnrollments && dataMyEnrollments.length > 0 && (
+				<Box>
+					<Heading size='md' mb={4}>
+						Mis Inscripciones ({dataMyEnrollments.length})
+					</Heading>
+					<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+						{dataMyEnrollments.map((enrollment) => (
+							<Box
+								key={enrollment.id}
+								p={4}
+								borderWidth={2}
+								borderRadius='lg'
+								bg={enrollment.status === 1 ? 'green.50' : 'gray.50'}
+								borderColor={enrollment.status === 1 ? 'green.200' : 'gray.200'}
+								_hover={{
+									borderColor:
+										enrollment.status === 1 ? 'green.300' : 'gray.300',
+									boxShadow: 'md',
+								}}
+							>
+								<Flex justify='space-between' align='start' mb={3}>
+									<Text fontWeight='semibold'>
+										{enrollment.program_name || `Programa ${enrollment.id}`}
+									</Text>
+									<Badge
+										colorPalette={enrollment.status === 1 ? 'green' : 'yellow'}
+										variant='subtle'
+									>
+										{enrollment.status === 1 ? 'Activo' : 'En proceso'}
+									</Badge>
+								</Flex>
+
+								<Stack spacing={1} fontSize='sm' color='gray.600'>
+									<Text>ID: {enrollment.id}</Text>
+									<Text>
+										Pago verificado:{' '}
+										{enrollment.payment_verified ? '✅ Sí' : '❌ No'}
+									</Text>
+									<Text>
+										Primera inscripción:{' '}
+										{enrollment.is_first_enrollment ? '✅ Sí' : '❌ No'}
+									</Text>
+									{enrollment.verified_at && (
+										<Flex align='center'>
+											<Box as={FiClock} w={4} h={4} mr={2} color='gray.400' />
+											Verificado:{' '}
+											{new Date(enrollment.verified_at).toLocaleDateString()}
+										</Flex>
+									)}
+								</Stack>
+							</Box>
+						))}
+					</SimpleGrid>
+				</Box>
+			)}
+		</Box>
 	);
 };
