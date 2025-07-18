@@ -29,8 +29,6 @@ export const FractionateDebt = () => {
 	const { data: dataMyApplicants, isLoading: isLoadingMyApplicants } =
 		useReadMyApplicants();
 
-	console.log(dataMyApplicants);
-
 	const {
 		data: dataPaymentDebt,
 		//isLoading: isLoadingPaymentDebt,
@@ -40,8 +38,6 @@ export const FractionateDebt = () => {
 		},
 		{ enabled: open }
 	);
-
-	console.log(dataPaymentDebt);
 
 	const paymentDebtLocal = {
 		max_installments: 24,
