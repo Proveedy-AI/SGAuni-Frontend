@@ -164,7 +164,7 @@ export const PaymentOrdersView = () => {
 									Limpiar Filtros
 								</Button>
 							)}
-							<LoadExcelValidationsModal />
+							<LoadExcelValidationsModal fetchData={fetchPaymentOrders} />
 							<GeneratePaymentOrderModal fetchData={fetchPaymentOrders} />
 						</Stack>
 					</Flex>

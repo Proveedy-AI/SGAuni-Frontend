@@ -5,8 +5,9 @@ import { uploadToS3 } from '@/utils/uploadToS3';
 import { Box, HStack, Stack, Text, VStack } from '@chakra-ui/react';
 import { useState } from 'react';
 import { FiDownload, FiFileText } from 'react-icons/fi';
+import PropTypes from 'prop-types';
 
-export const LoadExcelValidationsModal = () => {
+export const LoadExcelValidationsModal = ({ fetchData }) => {
 	const [open, setOpen] = useState(false);
 	const [excelPath, setExcelPath] = useState(null);
 	const { mutate: validate } = useValidateOcefExcel();
@@ -14,49 +15,60 @@ export const LoadExcelValidationsModal = () => {
 
 	const handleValidate = async () => {
 		setIsLoading(true);
+
 		if (!excelPath) {
 			toaster.create({
 				title: 'Excel no subido',
 				description: 'Compartir el excel OCEF para validar ordenes de pago',
 				type: 'warning',
 			});
+			setIsLoading(false);
+			return;
 		}
 
 		let pathDocUrl = excelPath;
 
-		// Solo subir a S3 si hay un archivo nuevo
-		if (excelPath instanceof File) {
-			pathDocUrl = await uploadToS3(
-				excelPath,
-				'sga_uni/vouchers/validation',
-				'excel_ocef'
-			);
+		try {
+			// Subir a S3 si es nuevo
+			if (excelPath instanceof File) {
+				pathDocUrl = await uploadToS3(
+					excelPath,
+					'sga_uni/vouchers/validation',
+					'excel_ocef'
+				);
+			}
+
+			if (!pathDocUrl) {
+				throw new Error('Error al subir el archivo a S3.');
+			}
+
+			const payload = { excel_url: pathDocUrl };
+
+			validate(payload, {
+				onSuccess: () => {
+					toaster.create({
+						title: 'Validación exitosa',
+						description: 'El archivo Excel ha sido validado correctamente.',
+						type: 'success',
+					});
+					setOpen(false);
+					fetchData();
+					setExcelPath(null);
+					setIsLoading(false);
+				},
+			});
+		} catch (err) {
+			toaster.create({
+				title: 'Error inesperado',
+				description: err.message || 'No se pudo completar la validación.',
+				type: 'error',
+			});
+			setIsLoading(false);
+		} finally {
+			// Limpiar el estado del archivo después de la validación
+			setExcelPath(null);
+			setIsLoading(false);
 		}
-
-		const payload = {
-			excel_url: pathDocUrl,
-		};
-
-		validate(payload, {
-			onSuccess: () => {
-				toaster.create({
-					title: 'Validación exitosa',
-					description: 'El archivo Excel ha sido validado correctamente.',
-					type: 'success',
-				});
-				setOpen(false);
-				setExcelPath(null);
-				setIsLoading(false);
-			},
-			onError: () => {
-				toaster.create({
-					title: 'Error en la validación',
-					description: 'El archivo Excel no ha sido validado correctamente.',
-					type: 'error',
-				});
-				setIsLoading(false);
-			},
-		});
 	};
 
 	const handleDownloadGuide = () => {
@@ -171,4 +183,8 @@ export const LoadExcelValidationsModal = () => {
 			</Stack>
 		</Modal>
 	);
+};
+
+LoadExcelValidationsModal.propTypes = {
+	fetchData: PropTypes.func.isRequired,
 };

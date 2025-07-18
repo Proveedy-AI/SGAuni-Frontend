@@ -50,12 +50,14 @@ export const PreviewMyOrdenDetailsModal = ({ data }) => {
 		{ value: 2, label: 'Generado' },
 		{ value: 3, label: 'Verificado' }, // puedes agregar más si aplica
 		{ value: 4, label: 'Expirado' },
+		{ value: 5, label: 'Cancelado' },
 	];
 	const statusColorMap = {
 		1: 'yellow',
 		2: 'blue',
 		3: 'green',
 		4: 'red',
+		5: 'red',
 	};
 
 	const handleRowClick = () => {

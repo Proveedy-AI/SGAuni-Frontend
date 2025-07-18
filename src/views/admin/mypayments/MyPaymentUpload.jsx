@@ -39,7 +39,7 @@ export const MyPaymentUpload = () => {
 		useReadMyPaymentRequest();
 	const { data: paymentOrders, isLoading: isLoadingOrders } =
 		useReadPaymentOrders(
-			{ request: selectedRequests?.value, status: 1 },
+			{ request: selectedRequests?.value, status: 2 },
 			{
 				enabled: !!selectedRequests,
 			}
@@ -60,7 +60,7 @@ export const MyPaymentUpload = () => {
 	};
 
 	const requestOptions = paymentRequests
-		?.filter((request) => request.status === 1)
+		?.filter((request) => request.status === 2)
 		.map((request) => ({
 			value: request.id,
 			label: `Solicitud #${request.id} - ${request.purpose_display} - ${request.admission_process_program_name}`,
@@ -92,7 +92,7 @@ export const MyPaymentUpload = () => {
 			await createVoucher({
 				order: selectedOrders.value,
 				file_path: s3Url,
-				payment_date: new Date(paymentDate).toISOString(),
+				payment_date: paymentDate,
 				description: notes,
 			});
 
