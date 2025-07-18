@@ -1,4 +1,17 @@
-import { Box, Grid, Input, Stack, Switch, Text } from '@chakra-ui/react';
+import {
+	Box,
+	Card,
+	Grid,
+	Heading,
+	HStack,
+	Icon,
+	Input,
+	Separator,
+	Stack,
+	Switch,
+	Text,
+	VStack,
+} from '@chakra-ui/react';
 import { Field } from '@/components/ui';
 import PropTypes from 'prop-types';
 import { ReactSelect } from '@/components/select';
@@ -13,6 +26,7 @@ import { CompactFileUpload } from '@/components/ui/CompactFileInput';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { format } from 'date-fns';
 import { useReadDisabilities } from '@/hooks/disabilities';
+import { FiMapPin, FiUser } from 'react-icons/fi';
 
 const FieldWithInputText = ({
 	placeholder,
@@ -22,20 +36,12 @@ const FieldWithInputText = ({
 	updateProfileField,
 }) => {
 	return (
-		<Field
-			orientation={{
-				base: 'vertical',
-				sm: 'horizontal',
-			}}
-			label={label}
-		>
+		<Field label={label}>
 			<Input
 				value={value}
 				onChange={(e) => updateProfileField(field, e.target.value)}
 				variant='flushed'
 				placeholder={placeholder}
-				flex='1'
-				size='sm'
 			/>
 		</Field>
 	);
@@ -157,117 +163,171 @@ export const ChangeDataStudentProfileForm = ({
 				gap='6'
 			>
 				<Box minW='50%'>
-					<Text color='uni.secondary' mb={5}>
-						Datos Personales:
-					</Text>
-					<Stack css={{ '--field-label-width': '140px' }}>
-						<FieldWithInputText
-							label='Nombres:'
-							field='first_name'
-							value={profile.first_name}
-							updateProfileField={updateProfileField}
-						/>
+					<Card.Root>
+						<Card.Header pb={0}>
+							<HStack gap={2}>
+								<Icon as={FiUser} boxSize={5} />
+								<Heading size='md'>Información Personal</Heading>
+							</HStack>
+						</Card.Header>
 
-						<Field label='¿Cuenta solo con un apellido?'>
-							<Switch.Root
-								checked={profile.has_one_surname}
-								onCheckedChange={(checked) =>
-									updateProfileField('has_one_surname', checked.checked)
-								}
-								display='flex'
-								justifyContent='space-between'
-							>
-								<Switch.Label>
-									{profile.has_one_surname ? 'Sí' : 'No'}
-								</Switch.Label>
-								<Switch.HiddenInput />
-								<Switch.Control
-									_checked={{ bg: 'uni.secondary' }}
-									bg='uni.gray.400'
-								/>
-							</Switch.Root>
-						</Field>
+						<Card.Body>
+							<VStack align='stretch' gap={4}>
+								<Box>
+									<FieldWithInputText
+										label='Nombres:'
+										field='first_name'
+										value={profile.first_name}
+										updateProfileField={updateProfileField}
+									/>
+								</Box>
+								<Box>
+									<Field label='¿Cuenta solo con un apellido?'>
+										<Switch.Root
+											checked={profile.has_one_surname}
+											onCheckedChange={(checked) =>
+												updateProfileField('has_one_surname', checked.checked)
+											}
+											display='flex'
+											justifyContent='space-between'
+										>
+											<Switch.Label>
+												{profile.has_one_surname ? 'Sí' : 'No'}
+											</Switch.Label>
+											<Switch.HiddenInput />
+											<Switch.Control
+												_checked={{ bg: 'uni.secondary' }}
+												bg='uni.gray.400'
+											/>
+										</Switch.Root>
+									</Field>
+								</Box>
+								<Box>
+									<FieldWithInputText
+										label='Apelido Paterno:'
+										field='paternal_surname'
+										value={profile.paternal_surname}
+										updateProfileField={updateProfileField}
+									/>
+								</Box>
+								<Box>
+									{!profile.has_one_surname && (
+										<FieldWithInputText
+											label='Apellido Materno:'
+											field='maternal_surname'
+											value={profile.maternal_surname}
+											updateProfileField={updateProfileField}
+										/>
+									)}
+								</Box>
 
-						<FieldWithInputText
-							label='Apelido Paterno:'
-							field='paternal_surname'
-							value={profile.paternal_surname}
-							updateProfileField={updateProfileField}
-						/>
-						{!profile.has_one_surname && (
-							<FieldWithInputText
-								label='Apellido Materno:'
-								field='maternal_surname'
-								value={profile.maternal_surname}
-								updateProfileField={updateProfileField}
-							/>
-						)}
-						<Field
-							orientation={{ base: 'vertical', sm: 'horizontal' }}
-							label='Tipo de Documento:'
-						>
-							<ReactSelect
-								options={documentTypeOptions}
-								value={documentTypeOptions.find(
-									(opt) => opt.value === profile.document_type
-								)}
-								onChange={(option) =>
-									updateProfileField('document_type', option?.value)
-								}
-								placeholder='Seleccione un tipo de documento'
-							/>
-						</Field>
-						<FieldWithInputText
-							label='N° Identidad:'
-							field='document_number'
-							value={profile.document_number}
-							updateProfileField={updateProfileField}
-						/>
-						<Field
-							orientation={{ base: 'vertical', sm: 'horizontal' }}
-							label='Fecha de nacimiento:'
-						>
-							<Box w={'full'}>
-								<CustomDatePicker
-									selectedDate={profile.birth_date ? profile.birth_date : null}
-									onDateChange={(date) =>
-										updateProfileField('birth_date', format(date, 'yyyy-MM-dd'))
-									}
-									buttonSize='md'
-									size={{ base: '240px', md: '410px' }}
-								/>
-							</Box>
-						</Field>
-						<Field
-							orientation={{ base: 'vertical', sm: 'horizontal' }}
-							label='País de Nacimiento:'
-						>
-							<ReactSelect
-								label='País'
-								options={countryOptions}
-								value={profile.country}
-								onChange={(value) => updateProfileField('country', value)}
-								isLoading={isLoadingCountries}
-								placeholder='Seleccione un país'
-							/>
-						</Field>
-						<Field
-							orientation={{ base: 'vertical', sm: 'horizontal' }}
-							label='Nacionalidad:'
-						>
-							<ReactSelect
-								label='Nacionalidad'
-								options={nationalityOptions}
-								value={profile.nationality}
-								onChange={(value) => updateProfileField('nationality', value)}
-								isLoading={loadingNationalities}
-								placeholder='Seleccione una nacionalidad'
-							/>
-						</Field>
-					</Stack>
+								<Box>
+									<Field label='Fecha de nacimiento:'>
+										<Box w={'full'}>
+											<CustomDatePicker
+												selectedDate={
+													profile.birth_date ? profile.birth_date : null
+												}
+												onDateChange={(date) =>
+													updateProfileField(
+														'birth_date',
+														format(date, 'yyyy-MM-dd')
+													)
+												}
+												buttonSize='md'
+												size={{ base: '240px', md: '410px' }}
+											/>
+										</Box>
+									</Field>
+								</Box>
+								<Box>
+									<Field label='Tipo de Documento:'>
+										<ReactSelect
+											options={documentTypeOptions}
+											value={documentTypeOptions.find(
+												(opt) => opt.value === profile.document_type
+											)}
+											onChange={(option) =>
+												updateProfileField('document_type', option?.value)
+											}
+											placeholder='Seleccione un tipo de documento'
+										/>
+									</Field>
+								</Box>
+								<Box>
+									<FieldWithInputText
+										label='N° Identidad:'
+										field='document_number'
+										value={profile.document_number}
+										updateProfileField={updateProfileField}
+									/>
+								</Box>
+
+								{/* Género */}
+								<Box>
+									<Text fontSize='sm' color='gray.500' fontWeight='medium'>
+										Género
+									</Text>
+									<Text mt={1}>{profile.gender || 'No especificado'}</Text>
+								</Box>
+
+								<Separator />
+
+								{/* Usuario */}
+								<Box>
+									<Text fontSize='sm' color='gray.500' fontWeight='medium'>
+										Usuario del Sistema
+									</Text>
+									<Text mt={1}>{profile.user.username}</Text>
+								</Box>
+							</VStack>
+						</Card.Body>
+					</Card.Root>
+
+					<Stack css={{ '--field-label-width': '140px' }}></Stack>
 				</Box>
 
-				<Box minW='50%' mt={10}>
+				<Box minW='50%'>
+					<Card.Root>
+						<Card.Header pb={0}>
+							<HStack gap={2}>
+								<Icon as={FiMapPin} boxSize={5} />
+								<Heading size='md'>Información de Ubicación</Heading>
+							</HStack>
+						</Card.Header>
+
+						<Card.Body>
+							<VStack align='stretch' gap={4}>
+								<Box>
+									<Field label='País de Nacimiento:'>
+										<ReactSelect
+											label='País'
+											options={countryOptions}
+											value={profile.country}
+											onChange={(value) => updateProfileField('country', value)}
+											isLoading={isLoadingCountries}
+											placeholder='Seleccione un país'
+										/>
+									</Field>
+								</Box>
+
+								<Box>
+									<Field label='Nacionalidad:'>
+										<ReactSelect
+											label='Nacionalidad'
+											options={nationalityOptions}
+											value={profile.nationality}
+											onChange={(value) =>
+												updateProfileField('nationality', value)
+											}
+											isLoading={loadingNationalities}
+											placeholder='Seleccione una nacionalidad'
+										/>
+									</Field>
+								</Box>
+							</VStack>
+						</Card.Body>
+					</Card.Root>
 					<Stack css={{ '--field-label-width': '140px' }}>
 						<FieldWithInputText
 							label='Teléfono:'
