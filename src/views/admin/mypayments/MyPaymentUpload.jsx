@@ -4,6 +4,7 @@ import { CompactFileUpload } from '@/components/ui/CompactFileInput';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { useReadPaymentOrders } from '@/hooks/payment_orders';
 import { useReadMyPaymentRequest } from '@/hooks/payment_requests';
+import { useReadMyPaymentVouchers } from '@/hooks/payment_vouchers/useReadMyPaymentVouchers';
 import { useCreateVouchers } from '@/hooks/vouchers';
 import { uploadToS3 } from '@/utils/uploadToS3';
 
@@ -37,6 +38,8 @@ export const MyPaymentUpload = () => {
 
 	const { data: paymentRequests, isLoading: isLoadingRequests } =
 		useReadMyPaymentRequest();
+	const { data: paymentVouchers } = useReadMyPaymentVouchers();
+
 	const { data: paymentOrders, isLoading: isLoadingOrders } =
 		useReadPaymentOrders(
 			{ request: selectedRequests?.value, status: 2 },
@@ -120,6 +123,14 @@ export const MyPaymentUpload = () => {
 		}
 	};
 
+	const StatusOptions = [
+		{ value: 'Pendiente', color: 'yellow' },
+		{ value: 'Generado', color: 'blue' },
+		{ value: 'Verificado', color: 'green' }, // puedes agregar más si aplica
+		{ value: 'Expirado', color: 'red' },
+		{ value: 'Cancelado', color: 'red' },
+	];
+
 	return (
 		<Stack gap={4}>
 			<Card.Root>
@@ -199,6 +210,7 @@ export const MyPaymentUpload = () => {
 											<CompactFileUpload
 												key={resetFileKey}
 												name='voucher_path'
+												placeholder=''
 												accept='application/pdf,image/png,image/jpeg,image/jpg'
 												onChange={(file) => {
 													const allowedTypes = [
@@ -305,11 +317,61 @@ export const MyPaymentUpload = () => {
 						</Table.Header>
 
 						<Table.Body>
-							<Table.Row>
-								<Table.Cell colSpan={6} textAlign='center'>
-									Sin datos disponibles
-								</Table.Cell>
-							</Table.Row>
+							{paymentVouchers?.length > 0 &&
+								paymentVouchers.map((voucher, idx) => {
+									const statusObj =
+										StatusOptions.find(
+											(opt) =>
+												opt.value.toLowerCase() ===
+												(voucher.order_status || '').toLowerCase()
+										) || { color: 'gray', value: voucher.order_status || '-' };
+									return (
+										<Table.Row key={voucher.id}>
+											<Table.Cell>{idx + 1}</Table.Cell>
+											<Table.Cell>
+												{voucher.created_at ? voucher.created_at : '-'}
+											</Table.Cell>
+											<Table.Cell>
+												{voucher.num_order ? `${voucher.num_order}` : '-'}
+											</Table.Cell>
+											<Table.Cell>
+												{voucher.file_path ? (
+													<a
+														href={voucher.file_path}
+														target='_blank'
+														rel='noopener noreferrer'
+														style={{
+															color: '#3182ce',
+															textDecoration: 'underline',
+														}}
+													>
+														Ver archivo
+													</a>
+												) : (
+													'-'
+												)}
+											</Table.Cell>
+											<Table.Cell>
+												{voucher?.amount ? `S/ ${voucher.amount}` : '-'}
+											</Table.Cell>
+											<Table.Cell>
+												<Box
+													as='span'
+													px={2}
+													py={1}
+													borderRadius='md'
+													bg={`${statusObj.color}.100`}
+													color={`${statusObj.color}.700`}
+													fontWeight='semibold'
+													fontSize='sm'
+													display='inline-block'
+												>
+													{statusObj.value}
+												</Box>
+											</Table.Cell>
+										</Table.Row>
+									);
+								})}
 						</Table.Body>
 					</Table.Root>
 				</Card.Body>
