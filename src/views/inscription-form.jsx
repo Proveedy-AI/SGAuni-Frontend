@@ -845,9 +845,9 @@ export default function ChakraInscriptionForm() {
 																}
 																spaceX={4}
 															>
-																<Radio value='masculino'>Masculino</Radio>
-																<Radio value='femenino'>Femenino</Radio>
-																<Radio value='otro'>Otro</Radio>
+																<Radio value='1'>Masculino</Radio>
+																<Radio value='2'>Femenino</Radio>
+																<Radio value='3'>Otro</Radio>
 															</RadioGroup>
 														</Field>
 													</VStack>

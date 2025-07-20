@@ -20,6 +20,7 @@ export const AccountStudentProfile = () => {
 		username: '',
 		first_name: '',
 		password: '',
+		personal_email: '',
 		confirmPassword: '',
 		paternal_surname: '',
 		maternal_surname: '',
@@ -27,11 +28,15 @@ export const AccountStudentProfile = () => {
 		document_number: '',
 		birth_date: '',
 		district: '',
+		department: '',
+		province: '',
 		phone: '',
 		nationality: null,
 		address: '',
 		has_one_surname: false,
-		country: null,
+		birth_country: null,
+		residenceCountry: null,
+		gender: null,
 		birth_ubigeo: null,
 		address_ubigeo: null,
 		uni_email: '',
@@ -48,7 +53,7 @@ export const AccountStudentProfile = () => {
 
 	const [isChangesMade, setIsChangesMade] = useState(false);
 	const [initialProfile, setInitialProfile] = useState(null);
-
+	console.log(dataUser);
 	useEffect(() => {
 		if (!isLoading && dataUser) {
 			setProfile(dataUser);
@@ -91,11 +96,13 @@ export const AccountStudentProfile = () => {
 			maternal_surname: profile.maternal_surname,
 			document_type: profile.document_type,
 			document_number: profile.document_number,
+			department: profile.department?.value,
+			province: profile.province,
 			birth_date: profile.birth_date,
 			district: profile.district?.value,
 			address: profile.address,
 			has_one_surname: profile.has_one_surname,
-			country: profile.country?.value,
+			birth_country: profile.birth_country?.value,
 			birth_ubigeo: profile.birth_ubigeo?.value,
 			address_ubigeo: profile.address_ubigeo?.value,
 			phone: profile.phone,
@@ -109,6 +116,9 @@ export const AccountStudentProfile = () => {
 			license_number: profile.license_number,
 			orcid_code: profile.orcid_code,
 			document_path: pathDocUrl,
+			gender: profile.gender,
+			personal_email: profile.personal_email,
+			residenceCountry: profile.residenceCountry?.value,
 		};
 
 		update(

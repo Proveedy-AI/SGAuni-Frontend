@@ -7,18 +7,19 @@ import {
 	Icon,
 	Input,
 	Separator,
-	Stack,
 	Switch,
 	Text,
 	VStack,
 } from '@chakra-ui/react';
-import { Field } from '@/components/ui';
+import { Field, PasswordInput, Radio, RadioGroup } from '@/components/ui';
 import PropTypes from 'prop-types';
 import { ReactSelect } from '@/components/select';
 import {
 	useReadCountries,
+	useReadDepartments,
 	useReadDistrict,
 	useReadNacionalities,
+	useReadProvince,
 } from '@/hooks';
 import { useEffect } from 'react';
 import { useReadUbigeos } from '@/hooks/ubigeos';
@@ -26,7 +27,8 @@ import { CompactFileUpload } from '@/components/ui/CompactFileInput';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { format } from 'date-fns';
 import { useReadDisabilities } from '@/hooks/disabilities';
-import { FiMapPin, FiUser } from 'react-icons/fi';
+import { FiFileText, FiMapPin, FiPhone, FiUser } from 'react-icons/fi';
+import { LuGraduationCap } from 'react-icons/lu';
 
 const FieldWithInputText = ({
 	placeholder,
@@ -72,6 +74,23 @@ export const ChangeDataStudentProfileForm = ({
 			value: country.id,
 			label: country.name,
 		})) || [];
+	const { data: dataDepartments, isLoading: isLoadingDepartments } =
+		useReadDepartments();
+
+	const departmentOptions =
+		dataDepartments?.results?.map((department) => ({
+			value: department.id,
+			label: department.name,
+		})) || [];
+
+	const { data: dataProvinces, isLoading: isLoadingProvinces } =
+		useReadProvince();
+
+	const provinceOptions =
+		dataProvinces?.results?.map((province) => ({
+			value: province.id,
+			label: province.name,
+		})) || [];
 
 	const { data: dataNacionalities, isLoading: loadingNationalities } =
 		useReadNacionalities();
@@ -85,7 +104,7 @@ export const ChangeDataStudentProfileForm = ({
 	const UbigeosOptions =
 		dataUbigeo?.results?.map((ubigeo) => ({
 			value: ubigeo.id,
-			label: ubigeo.code,
+			label: ubigeo.code + ' - ' + ubigeo.district_name,
 		})) || [];
 
 	const { data: dataDisabilites, isLoading: loadingDisabilites } =
@@ -113,9 +132,27 @@ export const ChangeDataStudentProfileForm = ({
 	useEffect(() => {
 		preloadSelectValue(
 			dataCountries,
-			profile.country,
+			profile.birth_country,
 			countryOptions,
-			'country'
+			'birth_country'
+		);
+	}, [dataCountries, profile]);
+
+	useEffect(() => {
+		preloadSelectValue(
+			dataDepartments,
+			profile.department,
+			departmentOptions,
+			'department'
+		);
+	}, [dataCountries, profile]);
+
+	useEffect(() => {
+		preloadSelectValue(
+			dataCountries,
+			profile.residenceCountry,
+			countryOptions,
+			'residenceCountry'
 		);
 	}, [dataCountries, profile]);
 
@@ -162,7 +199,7 @@ export const ChangeDataStudentProfileForm = ({
 				templateColumns={{ base: '1fr', lg: 'repeat(2, 1fr)' }}
 				gap='6'
 			>
-				<Box minW='50%'>
+				<Box spaceY={4} minW='50%'>
 					<Card.Root>
 						<Card.Header pb={0}>
 							<HStack gap={2}>
@@ -264,30 +301,135 @@ export const ChangeDataStudentProfileForm = ({
 								</Box>
 
 								{/* Género */}
-								<Box>
-									<Text fontSize='sm' color='gray.500' fontWeight='medium'>
-										Género
-									</Text>
-									<Text mt={1}>{profile.gender || 'No especificado'}</Text>
-								</Box>
+								<Field label='Género' required>
+									<RadioGroup
+										value={profile.gender?.toString() || ''}
+										onChange={(e) =>
+											updateProfileField('gender', e.target.value)
+										}
+										spaceX={4}
+									>
+										<Radio value='1'>Masculino</Radio>
+										<Radio value='2'>Femenino</Radio>
+										<Radio value='3'>Otro</Radio>
+									</RadioGroup>
+								</Field>
 
 								<Separator />
-
-								{/* Usuario */}
 								<Box>
-									<Text fontSize='sm' color='gray.500' fontWeight='medium'>
-										Usuario del Sistema
-									</Text>
-									<Text mt={1}>{profile.user.username}</Text>
+									<Field label='Foto de Documento:'>
+										<CompactFileUpload
+											name='document_path'
+											onChange={(file) =>
+												updateProfileField('document_path', file)
+											}
+											defaultFile={
+												typeof profile.document_path === 'string'
+													? profile.document_path
+													: undefined
+											}
+											onClear={() => updateProfileField('document_path', null)}
+										/>
+									</Field>
 								</Box>
 							</VStack>
 						</Card.Body>
 					</Card.Root>
 
-					<Stack css={{ '--field-label-width': '140px' }}></Stack>
+					<Card.Root>
+						<Card.Header pb={0}>
+							<HStack gap={2}>
+								<Icon as={FiPhone} boxSize={5} />
+								<Heading size='md'>Información de Contacto</Heading>
+							</HStack>
+						</Card.Header>
+
+						<Card.Body>
+							<VStack align='stretch' gap={4}>
+								<Box>
+									<FieldWithInputText
+										label='Teléfono:'
+										field='phone'
+										value={profile.phone}
+										updateProfileField={updateProfileField}
+									/>
+								</Box>
+								<Box>
+									<FieldWithInputText
+										label='Correo Personal:'
+										placeholder='Correo Personal'
+										field='personal_email'
+										value={profile.personal_email}
+										updateProfileField={updateProfileField}
+									/>
+								</Box>
+							</VStack>
+						</Card.Body>
+					</Card.Root>
+					<Card.Root>
+						<Card.Header pb={0}>
+							<HStack gap={2}>
+								<Icon as={FiFileText} boxSize={5} />
+								<Heading size='md'>Datos Adicionales</Heading>
+							</HStack>
+						</Card.Header>
+
+						<Card.Body>
+							<VStack align='stretch' gap={4}>
+								<Box>
+									<Field label='¿Tienes alguna discapacidad?'>
+										<Switch.Root
+											checked={profile.has_disability}
+											onCheckedChange={(checked) =>
+												updateProfileField('has_disability', checked.checked)
+											}
+											display='flex'
+											justifyContent='space-between'
+										>
+											<Switch.Label>
+												{profile.has_disability ? 'Sí' : 'No'}
+											</Switch.Label>
+											<Switch.HiddenInput />
+											<Switch.Control
+												_checked={{ bg: 'uni.secondary' }}
+												bg='uni.gray.400'
+											/>
+										</Switch.Root>
+									</Field>
+								</Box>
+								{profile.has_disability && (
+									<Box>
+										<Field label='Tipo de Discapacidad:'>
+											<ReactSelect
+												label='Discapacidad'
+												options={DisabilitesOptions}
+												value={profile.type_disability}
+												onChange={(value) =>
+													updateProfileField('type_disability', value)
+												}
+												isLoading={loadingDisabilites}
+												placeholder='Seleccione Discapacidad'
+											/>
+										</Field>
+									</Box>
+								)}
+								{profile.has_disability && (
+									<Box>
+										<FieldWithInputText
+											label='Otros:'
+											field='other_disability'
+											placeholder='Ingresar discapacidad'
+											value={profile.other_disability}
+											updateProfileField={updateProfileField}
+										/>
+									</Box>
+								)}
+							</VStack>
+						</Card.Body>
+					</Card.Root>
 				</Box>
 
-				<Box minW='50%'>
+				<Box minW='50%' spaceY={4}>
 					<Card.Root>
 						<Card.Header pb={0}>
 							<HStack gap={2}>
@@ -303,10 +445,27 @@ export const ChangeDataStudentProfileForm = ({
 										<ReactSelect
 											label='País'
 											options={countryOptions}
-											value={profile.country}
-											onChange={(value) => updateProfileField('country', value)}
+											value={profile.birth_country}
+											onChange={(value) =>
+												updateProfileField('birth_country', value)
+											}
 											isLoading={isLoadingCountries}
 											placeholder='Seleccione un país'
+										/>
+									</Field>
+								</Box>
+
+								<Box>
+									<Field label='Ubigeo Nacimiento:'>
+										<ReactSelect
+											label='Ubigeo'
+											options={UbigeosOptions}
+											value={profile.birth_ubigeo}
+											onChange={(value) =>
+												updateProfileField('birth_ubigeo', value)
+											}
+											isLoading={loadingUbigeo}
+											placeholder='Seleccione Ubigeo'
 										/>
 									</Field>
 								</Box>
@@ -325,256 +484,220 @@ export const ChangeDataStudentProfileForm = ({
 										/>
 									</Field>
 								</Box>
+
+								<Box>
+									<Field label='País de Residencia:'>
+										<ReactSelect
+											label='País'
+											options={countryOptions}
+											value={profile.residenceCountry}
+											onChange={(value) =>
+												updateProfileField('residenceCountry', value)
+											}
+											isLoading={isLoadingCountries}
+											placeholder='Seleccione un país'
+										/>
+									</Field>
+								</Box>
+
+								<Box>
+									<Field label='Departamento de Residencia:'>
+										<ReactSelect
+											label='Departamento'
+											options={departmentOptions}
+											value={profile.department}
+											onChange={(value) =>
+												updateProfileField('department', value)
+											}
+											isLoading={isLoadingDepartments}
+											placeholder='Seleccione un departamento'
+										/>
+									</Field>
+								</Box>
+
+								<Box>
+									<Field label='Provincia de Residencia:'>
+										<ReactSelect
+											label='Provincia'
+											options={provinceOptions}
+											value={profile.province}
+											onChange={(value) =>
+												updateProfileField('province', value)
+											}
+											isLoading={isLoadingProvinces}
+											placeholder='Seleccione una provincia'
+										/>
+									</Field>
+								</Box>
+
+								<Box>
+									<Field label='Distrito de Residencia:'>
+										<ReactSelect
+											label='Distrito'
+											options={DistrictOptions}
+											value={profile.district}
+											onChange={(value) =>
+												updateProfileField('district', value)
+											}
+											isLoading={loadingDisctrict}
+											placeholder='Seleccione Distrito'
+										/>
+									</Field>
+								</Box>
+								<Box>
+									<FieldWithInputText
+										label='Dirección:'
+										field='address'
+										value={profile.address}
+										updateProfileField={updateProfileField}
+									/>
+								</Box>
+								<Box>
+									<Field label='Ubigeo Domicilio:'>
+										<ReactSelect
+											label='Ubigeo Domicilio'
+											options={UbigeosOptions}
+											value={profile.address_ubigeo}
+											onChange={(value) =>
+												updateProfileField('address_ubigeo', value)
+											}
+											isLoading={loadingUbigeo}
+											placeholder='Seleccione Ubigeo'
+										/>
+									</Field>
+								</Box>
 							</VStack>
 						</Card.Body>
 					</Card.Root>
-					<Stack css={{ '--field-label-width': '140px' }}>
-						<FieldWithInputText
-							label='Teléfono:'
-							field='phone'
-							value={profile.phone}
-							updateProfileField={updateProfileField}
-						/>
+					<Card.Root>
+						<Card.Header pb={0}>
+							<HStack gap={2}>
+								<Icon as={LuGraduationCap} boxSize={5} />
+								<Heading size='md'>Información Académica</Heading>
+							</HStack>
+						</Card.Header>
 
-						<FieldWithInputText
-							label='Dirección:'
-							field='address'
-							value={profile.address}
-							updateProfileField={updateProfileField}
-						/>
+						<Card.Body>
+							<VStack align='stretch' gap={4}>
+								<Box>
+									<Field label='¿Eres egresado de la UNI?'>
+										<Switch.Root
+											checked={profile.is_uni_graduate}
+											onCheckedChange={(checked) =>
+												updateProfileField('is_uni_graduate', checked.checked)
+											}
+											display='flex'
+											justifyContent='space-between'
+										>
+											<Switch.Label>
+												{profile.is_uni_graduate ? 'Sí' : 'No'}
+											</Switch.Label>
+											<Switch.HiddenInput />
+											<Switch.Control
+												_checked={{ bg: 'uni.secondary' }}
+												bg='uni.gray.400'
+											/>
+										</Switch.Root>
+									</Field>
+								</Box>
+								<Separator />
+								{profile.is_uni_graduate && (
+									<Box>
+										<FieldWithInputText
+											label='Correo institucional:'
+											field='uni_email'
+											placeholder='Ingresar correo'
+											value={profile.uni_email}
+											updateProfileField={updateProfileField}
+										/>
+									</Box>
+								)}
+								{profile.is_uni_graduate && (
+									<Box>
+										<FieldWithInputText
+											label='Código UNI:'
+											field='uni_code'
+											placeholder='Ingresar código'
+											value={profile.uni_code}
+											updateProfileField={updateProfileField}
+										/>
+									</Box>
+								)}
 
-						<Field
-							orientation={{ base: 'vertical', sm: 'horizontal' }}
-							label='Ubigeo Nacimiento:'
-						>
-							<ReactSelect
-								label='Ubigeo'
-								options={UbigeosOptions}
-								value={profile.birth_ubigeo}
-								onChange={(value) => updateProfileField('birth_ubigeo', value)}
-								isLoading={loadingUbigeo}
-								placeholder='Seleccione Ubigeo'
-							/>
-						</Field>
+								<Box>
+									<FieldWithInputText
+										label='Colegiatura:'
+										placeholder='Numero de colegiatura'
+										field='license_number'
+										value={profile.license_number}
+										updateProfileField={updateProfileField}
+									/>
+								</Box>
+							</VStack>
+						</Card.Body>
+					</Card.Root>
+					<Card.Root>
+						<Card.Header pb={0}>
+							<HStack gap={2}>
+								<Icon as={LuGraduationCap} boxSize={5} />
+								<Heading size='md'>Datos de la cuenta</Heading>
+							</HStack>
+						</Card.Header>
 
-						<Field
-							orientation={{ base: 'vertical', sm: 'horizontal' }}
-							label='Ubigeo Domicilio:'
-						>
-							<ReactSelect
-								label='Ubigeo Domicilio'
-								options={UbigeosOptions}
-								value={profile.address_ubigeo}
-								onChange={(value) =>
-									updateProfileField('address_ubigeo', value)
-								}
-								isLoading={loadingUbigeo}
-								placeholder='Seleccione Ubigeo'
-							/>
-						</Field>
+						<Card.Body>
+							<VStack align='stretch' gap={4}>
+								<Box>
+									<Text
+										fontSize='sm'
+										color='gray.500'
+										mt={2}
+										fontWeight='medium'
+									>
+										Usuario del Sistema
+									</Text>
+									<Text mt={1}>{profile.user.username}</Text>
+								</Box>
+								<Separator />
+								<Box>
+									<Field label='Contraseña'>
+										<PasswordInput
+											type='password'
+											value={profile.password}
+											onChange={(e) =>
+												updateProfileField('password', e.target.value)
+											}
+											variant='flushed'
+											flex='1'
+											size='sm'
+											autoComplete='new-password'
+										/>
+									</Field>
+								</Box>
+								<Box>
+									<Field label='Confirmar Contraseña'>
+										<PasswordInput
+											type='password'
+											value={profile.confirmPassword}
+											onChange={(e) =>
+												updateProfileField('confirmPassword', e.target.value)
+											}
+											variant='flushed'
+											flex='1'
+											size='sm'
+										/>
+									</Field>
 
-						<Field
-							orientation={{ base: 'vertical', sm: 'horizontal' }}
-							label='Distrito:'
-						>
-							<ReactSelect
-								label='Distrito'
-								options={DistrictOptions}
-								value={profile.district}
-								onChange={(value) => updateProfileField('district', value)}
-								isLoading={loadingDisctrict}
-								placeholder='Seleccione Distrito'
-							/>
-						</Field>
-						<FieldWithInputText
-							label='Colegiatura:'
-							placeholder='Numero de colegiatura'
-							field='license_number'
-							value={profile.license_number}
-							updateProfileField={updateProfileField}
-						/>
-
-						<Field
-							orientation={{ base: 'vertical', sm: 'horizontal' }}
-							label='Foto de Documento:'
-							mt={4}
-						>
-							<CompactFileUpload
-								name='document_path'
-								onChange={(file) => updateProfileField('document_path', file)}
-								defaultFile={
-									typeof profile.document_path === 'string'
-										? profile.document_path
-										: undefined
-								}
-								onClear={() => updateProfileField('document_path', null)}
-							/>
-						</Field>
-					</Stack>
-				</Box>
-			</Grid>
-			<Grid
-				w='full'
-				templateColumns={{ base: '1fr', lg: 'repeat(2, 1fr)' }}
-				gap='6'
-			>
-				<Box minW='50%'>
-					<Text color='uni.secondary' mb={5}>
-						Datos Institucionales:
-					</Text>
-					<Stack css={{ '--field-label-width': '140px' }}>
-						<Field label='¿Eres egresado de la UNI?'>
-							<Switch.Root
-								checked={profile.is_uni_graduate}
-								onCheckedChange={(checked) =>
-									updateProfileField('is_uni_graduate', checked.checked)
-								}
-								display='flex'
-								justifyContent='space-between'
-							>
-								<Switch.Label>
-									{profile.is_uni_graduate ? 'Sí' : 'No'}
-								</Switch.Label>
-								<Switch.HiddenInput />
-								<Switch.Control
-									_checked={{ bg: 'uni.secondary' }}
-									bg='uni.gray.400'
-								/>
-							</Switch.Root>
-						</Field>
-						{profile.is_uni_graduate && (
-							<FieldWithInputText
-								label='Correo institucional:'
-								field='uni_email'
-								placeholder='Ingresar correo'
-								value={profile.uni_email}
-								updateProfileField={updateProfileField}
-							/>
-						)}
-					</Stack>
-				</Box>
-				<Box minW='50%' mt={{ base: 0, md: '24' }}>
-					{profile.is_uni_graduate && (
-						<FieldWithInputText
-							label='Código UNI:'
-							field='uni_code'
-							placeholder='Ingresar código'
-							value={profile.uni_code}
-							updateProfileField={updateProfileField}
-						/>
-					)}
-				</Box>
-			</Grid>
-
-			<Grid
-				w='full'
-				templateColumns={{ base: '1fr', lg: 'repeat(2, 1fr)' }}
-				gap='6'
-			>
-				<Box minW='50%'>
-					<Text color='uni.secondary' mb={5}>
-						Datos adicionales:
-					</Text>
-					<Stack css={{ '--field-label-width': '140px' }}>
-						<Field label='¿Tienes alguna discapacidad?'>
-							<Switch.Root
-								checked={profile.has_disability}
-								onCheckedChange={(checked) =>
-									updateProfileField('has_disability', checked.checked)
-								}
-								display='flex'
-								justifyContent='space-between'
-							>
-								<Switch.Label>
-									{profile.has_disability ? 'Sí' : 'No'}
-								</Switch.Label>
-								<Switch.HiddenInput />
-								<Switch.Control
-									_checked={{ bg: 'uni.secondary' }}
-									bg='uni.gray.400'
-								/>
-							</Switch.Root>
-						</Field>
-						{profile.has_disability && (
-							<Field
-								orientation={{ base: 'vertical', sm: 'horizontal' }}
-								label='Tipo de Discapacidad:'
-							>
-								<ReactSelect
-									label='Discapacidad'
-									options={DisabilitesOptions}
-									value={profile.type_disability}
-									onChange={(value) =>
-										updateProfileField('type_disability', value)
-									}
-									isLoading={loadingDisabilites}
-									placeholder='Seleccione Discapacidad'
-								/>
-							</Field>
-						)}
-					</Stack>
-				</Box>
-				<Box minW='50%' mt={{ base: 0, md: '24' }}>
-					{profile.has_disability && (
-						<FieldWithInputText
-							label='Otros:'
-							field='other_disability'
-							placeholder='Ingresar discapacidad'
-							value={profile.other_disability}
-							updateProfileField={updateProfileField}
-						/>
-					)}
-				</Box>
-			</Grid>
-
-			<Grid
-				w='full'
-				templateColumns={{ base: '1fr', lg: 'repeat(2, 1fr)' }}
-				gap='6'
-			>
-				<Box minW='50%'>
-					<Text color='uni.secondary' mb={5}>
-						Datos de Cuenta:
-					</Text>
-					<Stack css={{ '--field-label-width': '140px' }}>
-						<Field
-							orientation={{ base: 'vertical', sm: 'horizontal' }}
-							label='Contraseña'
-						>
-							<Input
-								type='password'
-								value={profile.password}
-								onChange={(e) => updateProfileField('password', e.target.value)}
-								variant='flushed'
-								flex='1'
-								size='sm'
-							/>
-						</Field>
-
-						<Field
-							orientation={{ base: 'vertical', sm: 'horizontal' }}
-							label='Confirmar Contraseña'
-						>
-							<Input
-								type='password'
-								value={profile.confirmPassword}
-								onChange={(e) =>
-									updateProfileField('confirmPassword', e.target.value)
-								}
-								variant='flushed'
-								flex='1'
-								size='sm'
-							/>
-						</Field>
-
-						{profile.password &&
-							profile.confirmPassword &&
-							profile.password !== profile.confirmPassword && (
-								<Text color='red.500' fontSize='sm' mt={1}>
-									Las contraseñas no coinciden
-								</Text>
-							)}
-					</Stack>
+									{profile.password &&
+										profile.confirmPassword &&
+										profile.password !== profile.confirmPassword && (
+											<Text color='red.500' fontSize='sm' mt={1}>
+												Las contraseñas no coinciden
+											</Text>
+										)}
+								</Box>
+							</VStack>
+						</Card.Body>
+					</Card.Root>
 				</Box>
 			</Grid>
 		</>
