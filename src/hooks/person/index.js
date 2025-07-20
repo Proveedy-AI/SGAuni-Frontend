@@ -3,3 +3,5 @@ export * from './useReadPersonById';
 export * from './useUpdatePerson';
 export * from './useReadMyApplicants';
 export * from './useUpdateNotifications';
+export * from './useReadMyEnrollments';
+export * from './useReadDebtStatus'; 

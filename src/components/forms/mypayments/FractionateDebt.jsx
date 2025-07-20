@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { ReactSelect } from '@/components/select';
 import { Button, Checkbox, Field, Modal, toaster } from '@/components/ui';
 import { CompactFileUpload } from '@/components/ui/CompactFileInput';
@@ -23,7 +22,7 @@ export const FractionateDebt = () => {
 	const [program, setProgram] = useState(null);
 	const [fractionateDebtPath, setFractionateDebtPath] = useState('');
 	const [planType, setPlanType] = useState(null);
-	const [amountToPay, setAmountToPay] = useState(null);
+	const [installments, setInstallments] = useState(null);
 	const [acceptedTerms, setAcceptedTerms] = useState(false);
 
 	const { data: dataMyApplicants, isLoading: isLoadingMyApplicants } =
@@ -40,7 +39,7 @@ export const FractionateDebt = () => {
 	);
 
 	const paymentDebtLocal = {
-		max_installments: 24,
+		max_installments: 6,
 		min_payment_percentage: '20.00',
 		postgraduate_program: program?.value || null,
 	};
@@ -73,9 +72,9 @@ export const FractionateDebt = () => {
 		if (!fractionateDebtPath)
 			newErrors.fractionateDebtPath = 'El archivo es requerido';
 		if (!planType) newErrors.planType = 'El tipo de plan es requerido';
-		if (!amountToPay) newErrors.amountToPay = 'El monto a pagar es requerido';
-		if (amountToPay <= 0)
-			newErrors.amountToPay = 'El monto a pagar debe ser mayor a 0';
+		if (!installments) newErrors.installments = 'El número de cuotas es requerido';
+		if (installments <= 1 || installments > paymentDebtLocal?.max_installments)
+			newErrors.installments = `El número de cuotas debe ser entre 1 y ${paymentDebtLocal?.max_installments}`;
 		if (!acceptedTerms)
 			newErrors.acceptedTerms = 'Debes aceptar los términos y condiciones';
 
@@ -86,7 +85,7 @@ export const FractionateDebt = () => {
 	const reset = () => {
 		setFractionateDebtPath('');
 		setPlanType(null);
-		setAmountToPay(0);
+		setInstallments(0);
 		setAcceptedTerms(false);
 	};
 
@@ -105,7 +104,7 @@ export const FractionateDebt = () => {
 		const payload = {
 			document_path: fractionateDebtPath,
 			plan_type: planType?.value,
-			amount_to_pay: amountToPay,
+			installments: installments,
 		};
 		console.log(payload);
 		/*
@@ -272,13 +271,12 @@ export const FractionateDebt = () => {
 									/>
 								</Field>
 							</SimpleGrid>
-							<Field label='Monto a pagar'>
+							<Field label='Número de cuotas' required invalid={!!errors.installments} error={errors.installments}>
 								<Input
-									placeholder='Seleccione programa'
 									type='number'
 									min={1}
-									value={amountToPay}
-									onChange={(e) => setAmountToPay(Number(e.target.value))}
+									value={installments}
+									onChange={(e) => setInstallments(Number(e.target.value))}
 									style={{ width: '100%' }}
 								/>
 							</Field>
