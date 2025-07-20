@@ -22,13 +22,12 @@ import { useState } from 'react';
 import { FiAlertTriangle, FiCheckCircle } from 'react-icons/fi';
 
 export const MyPaymentDebt = () => {
-	// Datos de ejemplo - Usuario con múltiples programas
 	const { data: dataMyApplicants } = useReadMyApplicants();
 	const userPrograms = dataMyApplicants?.map((programs) => ({
 		label: programs.postgraduate_name,
 		value: programs.id,
 	}));
-
+	
 	const [selectedProgram, setSelectedProgram] = useState(
 		userPrograms?.filter((p) => p.active).length === 1
 			? userPrograms?.id
@@ -191,24 +190,7 @@ export const MyPaymentDebt = () => {
 		);
 	}
 
-
-  /*
-  const {
-    data: dataHasDebts,
-    isLoading: isLoadingDebts,
-    isError: isErrorDebts,
-  } = useReadDebtStatus(
-    { program_uuid: dataEnrollment?.program_uuid },
-    { enabled: !!dataHasEnrollment }
-  );
-
-  se espera:
-    {
-      has_debt: boolean
-    }
-  */
-
-  const has_debt = true;
+	const has_debt = totals.pendingDebts > 0;
 
 	return (
 		<Box>
@@ -261,7 +243,13 @@ export const MyPaymentDebt = () => {
 							</Card.Title>
 							<Card.Description>{description}</Card.Description>
 						</Box>
-						{ has_debt && <FractionateDebt /> }
+						{has_debt && (
+							<FractionateDebt
+								dataMyApplicants={dataMyApplicants}
+								countDebts={totals.pendingDebts}
+								debtsByPurpose={debtsByPurpose.results}
+							/>
+						)}
 					</Flex>
 				</Card.Header>
 
@@ -323,7 +311,7 @@ export const MyPaymentDebt = () => {
 												</Box>
 												<Box textAlign='right'>
 													<Text fontSize='2xl' fontWeight='bold'>
-														S/ {consolidated.totalAmount}
+														S/ {Number(consolidated.totalAmount)}
 													</Text>
 													<Text fontSize='sm' color='gray.500'>
 														Total {consolidated.purpose.toLowerCase()}
@@ -332,85 +320,90 @@ export const MyPaymentDebt = () => {
 											</Flex>
 										</Card.Header>
 										<Card.Body>
-											<Table.Root size='sm'>
-												<Table.Header></Table.Header>
-												<Table.Row>
-													<Table.ColumnHeader>N°</Table.ColumnHeader>
-													<Table.ColumnHeader>Programa</Table.ColumnHeader>
-													<Table.ColumnHeader>Descripción</Table.ColumnHeader>
-													<Table.ColumnHeader>Monto</Table.ColumnHeader>
-													<Table.ColumnHeader>Estado</Table.ColumnHeader>
-													<Table.ColumnHeader>
-														Fecha Vencimiento
-													</Table.ColumnHeader>
-													<Table.ColumnHeader>Acciones</Table.ColumnHeader>
-												</Table.Row>
+											<Box overflowX='auto'>
+												<Table.Root size='sm' variant='striped'>
+													<Table.Header>
+														<Table.Row>
+															<Table.ColumnHeader>N°</Table.ColumnHeader>
+															<Table.ColumnHeader>Programa</Table.ColumnHeader>
+															<Table.ColumnHeader>
+																Descripción
+															</Table.ColumnHeader>
+															<Table.ColumnHeader>Monto</Table.ColumnHeader>
+															<Table.ColumnHeader>Estado</Table.ColumnHeader>
+															<Table.ColumnHeader>
+																Fecha Vencimiento
+															</Table.ColumnHeader>
+															<Table.ColumnHeader>Acciones</Table.ColumnHeader>
+														</Table.Row>
+													</Table.Header>
 
-												<Table.Body>
-													{consolidated.items
-														.filter(
-															(item) =>
-																selectedProgram === 'TODOS' ||
-																item.programId === selectedProgram
-														)
-														.map((debt, itemIndex) => (
-															<Table.Row key={itemIndex}>
-																<Table.Cell>{itemIndex + 1}</Table.Cell>
-																<Table.Cell fontWeight='medium'>
-																	{debt.program}
-																</Table.Cell>
-																<Table.Cell>{debt.description}</Table.Cell>
-																<Table.Cell
-																	color={
-																		debt.status === 'PENDIENTE'
-																			? 'red.600'
-																			: 'inherit'
-																	}
-																	fontWeight={
-																		debt.status === 'PENDIENTE'
-																			? 'semibold'
-																			: 'normal'
-																	}
-																>
-																	S/ {debt.amount}
-																</Table.Cell>
-																<Table.Cell>
-																	<Badge
-																		colorPalette={
+													<Table.Body>
+														{consolidated.items
+															.filter(
+																(item) =>
+																	selectedProgram === 'TODOS' ||
+																	item.programId === selectedProgram
+															)
+															.map((debt, itemIndex) => (
+																<Table.Row key={itemIndex}>
+																	<Table.Cell>{itemIndex + 1}</Table.Cell>
+																	<Table.Cell fontWeight='medium'>
+																		{debt.program}
+																	</Table.Cell>
+																	<Table.Cell>{debt.description}</Table.Cell>
+																	<Table.Cell
+																		color={
 																			debt.status === 'PENDIENTE'
-																				? 'red'
-																				: debt.status === 'EN_PROCESO'
-																					? 'blue'
-																					: 'green'
+																				? 'red.600'
+																				: 'inherit'
+																		}
+																		fontWeight={
+																			debt.status === 'PENDIENTE'
+																				? 'semibold'
+																				: 'normal'
 																		}
 																	>
-																		{debt.status === 'PENDIENTE'
-																			? 'Pendiente'
-																			: debt.status === 'EN_PROCESO'
-																				? 'En Proceso'
-																				: 'Pagado'}
-																	</Badge>
-																</Table.Cell>
-																<Table.Cell>{debt.dueDate}</Table.Cell>
-																<Table.Cell>
-																	<Flex gap={2}>
-																		{debt.status === 'PENDIENTE' &&
-																			!debt.orderId && (
-																				<Button size='sm'>
-																					Solicitar Orden
-																				</Button>
+																		S/ {debt.amount}
+																	</Table.Cell>
+																	<Table.Cell>
+																		<Badge
+																			colorPalette={
+																				debt.status === 'PENDIENTE'
+																					? 'red'
+																					: debt.status === 'EN_PROCESO'
+																						? 'blue'
+																						: 'green'
+																			}
+																		>
+																			{debt.status === 'PENDIENTE'
+																				? 'Pendiente'
+																				: debt.status === 'EN_PROCESO'
+																					? 'En Proceso'
+																					: 'Pagado'}
+																		</Badge>
+																	</Table.Cell>
+																	<Table.Cell>{debt.dueDate}</Table.Cell>
+																	<Table.Cell>
+																		<Flex gap={2}>
+																			{debt.status === 'PENDIENTE' &&
+																				!debt.orderId && (
+																					<Button size='sm'>
+																						Solicitar Orden
+																					</Button>
+																				)}
+																			{debt.orderId && (
+																				<PreviewMypaymentDetailsModal
+																					data={debt}
+																				/>
 																			)}
-																		{debt.orderId && (
-																			<PreviewMypaymentDetailsModal
-																				data={debt}
-																			/>
-																		)}
-																	</Flex>
-																</Table.Cell>
-															</Table.Row>
-														))}
-												</Table.Body>
-											</Table.Root>
+																		</Flex>
+																	</Table.Cell>
+																</Table.Row>
+															))}
+													</Table.Body>
+												</Table.Root>
+											</Box>
 										</Card.Body>
 									</Card.Root>
 								))

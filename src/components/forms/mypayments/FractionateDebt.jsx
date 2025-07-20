@@ -12,31 +12,33 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
 import { FiDollarSign, FiDownload, FiInfo } from 'react-icons/fi';
-import { useReadPaymentDebts } from '@/hooks/admission_debts';
-import { useReadMyApplicants } from '@/hooks';
 
-export const FractionateDebt = () => {
+import PropTypes from 'prop-types';
+import { useReadMyEnrollments, useReadProgramsbyId } from '@/hooks';
+import { uploadToS3 } from '@/utils/uploadToS3';
+import { useCreatePaymentPlans } from '@/hooks/payments_plans/useCreatePaymentPlans';
+
+export const FractionateDebt = ({ countDebts }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 
 	const [program, setProgram] = useState(null);
 	const [fractionateDebtPath, setFractionateDebtPath] = useState('');
 	const [planType, setPlanType] = useState(null);
+	const [amount, setAmount] = useState(countDebts || 0);
 	const [installments, setInstallments] = useState(null);
+	const [selectedDocumentType, setSelectedDocumentType] = useState(null);
+	const [numDocCarpeta, setnumDocCarpeta] = useState('');
 	const [acceptedTerms, setAcceptedTerms] = useState(false);
-
-	const { data: dataMyApplicants, isLoading: isLoadingMyApplicants } =
-		useReadMyApplicants();
-
-	const {
-		data: dataPaymentDebt,
-		//isLoading: isLoadingPaymentDebt,
-	} = useReadPaymentDebts(
-		{
-			/* program_id: program?.value */
-		},
+	const [disableUpload, setDisableUpload] = useState(false);
+	const { data: dataMyEnrollment } = useReadMyEnrollments(
+		{},
 		{ enabled: open }
 	);
+
+	const { data: DataProgram } = useReadProgramsbyId(program?.value || null, {
+		enabled: open,
+	});
 
 	const paymentDebtLocal = {
 		max_installments: 6,
@@ -45,24 +47,26 @@ export const FractionateDebt = () => {
 	};
 
 	useEffect(() => {
-		if (dataMyApplicants?.length === 1) {
+		if (dataMyEnrollment?.length === 1) {
 			setProgram({
-				value: dataMyApplicants[0].id,
-				label: dataMyApplicants[0].postgraduate_name,
+				enrollment: dataMyEnrollment[0].id,
+				value: dataMyEnrollment[0].programId,
+				label: dataMyEnrollment[0].program_name,
 			});
 		}
-	}, [dataMyApplicants]);
+	}, [dataMyEnrollment]);
 
 	const programOptions =
-		dataMyApplicants?.map((applicant) => ({
-			value: applicant.id,
-			label: applicant.postgraduate_name,
+		dataMyEnrollment?.map((applicant) => ({
+			value: applicant.programId,
+			label: applicant.program_name,
+			enrollment: applicant.id,
 		})) || [];
 
-	//const { mutateAsync: fractionateDebt, isSaving } = useFractionateDebt();
+	const { mutate: fractionateDebt } = useCreatePaymentPlans();
 
 	// Según base de datos
-	const planOptions = [{ value: 1, label: 'Cuotas' }];
+	const planOptions = [{ value: 3, label: 'Cuotas' }];
 
 	const [errors, setErrors] = useState({});
 
@@ -72,12 +76,17 @@ export const FractionateDebt = () => {
 		if (!fractionateDebtPath)
 			newErrors.fractionateDebtPath = 'El archivo es requerido';
 		if (!planType) newErrors.planType = 'El tipo de plan es requerido';
-		if (!installments) newErrors.installments = 'El número de cuotas es requerido';
+		if (!installments)
+			newErrors.installments = 'El número de cuotas es requerido';
 		if (installments <= 1 || installments > paymentDebtLocal?.max_installments)
 			newErrors.installments = `El número de cuotas debe ser entre 1 y ${paymentDebtLocal?.max_installments}`;
 		if (!acceptedTerms)
 			newErrors.acceptedTerms = 'Debes aceptar los términos y condiciones';
-
+		if (!numDocCarpeta)
+			newErrors.numDocCarpeta = 'El número de documento es requerido';
+		if (selectedDocumentType?.value === 1 && !numDocCarpeta)
+			newErrors.numDocCarpeta =
+				'El número de documento es requerido para boleta	';
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
 	};
@@ -89,9 +98,14 @@ export const FractionateDebt = () => {
 		setAcceptedTerms(false);
 	};
 
-	const handleSubmit = (e) => {
-		e.preventDefault();
+	const TypeOptions = [
+		{ value: 1, label: 'Boleta' },
+		{ value: 2, label: 'Factura' },
+	];
 
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		setDisableUpload(true);
 		if (!validate()) {
 			toaster.create({
 				title: 'Campos incompletos',
@@ -101,39 +115,60 @@ export const FractionateDebt = () => {
 			return;
 		}
 
-		const payload = {
-			document_path: fractionateDebtPath,
-			plan_type: planType?.value,
-			installments: installments,
-		};
-		console.log(payload);
-		/*
-    fractionateDebt(payload, {
-      onSuccess: () => {
-        toaster.create({
-          title: 'Solicitud enviada con éxito',
-          type: 'success'
-        })
-        reset();
-        setOpen(false);
-      },
-      onError: () => {
-        toaster.create({
-          title: 'Error al enviar la solicitud',
-          type: 'error'
-        })
-      }
-    })
-    
-    */
-		reset();
-		setOpen(false);
+		let s3Url = fractionateDebtPath;
+		try {
+			// Solo subir a S3 si hay un archivo nuevo
+			if (fractionateDebtPath) {
+				s3Url = await uploadToS3(
+					fractionateDebtPath,
+					'sga_uni/fraccionar_deuda',
+					numDocCarpeta.replace(/\s+/g, '_') // evita espacios
+				);
+			}
+
+			const payload = {
+				enrollment: program?.enrollment,
+				payment_purpose: planType.value,
+				upfront_percentage: DataProgram?.min_payment_percentage,
+				number_of_installments: installments,
+				payment_document_type: selectedDocumentType?.value,
+				num_document_person: numDocCarpeta,
+				document_path: s3Url,
+			};
+
+			fractionateDebt(payload, {
+				onSuccess: () => {
+					toaster.create({
+						title: 'Solicitud enviada con éxito',
+						type: 'success',
+					});
+					reset();
+					setOpen(false);
+					setDisableUpload(false);
+				},
+				onError: () => {
+					toaster.create({
+						title: 'Error al enviar la solicitud',
+						type: 'error',
+					});
+				},
+			});
+
+			setDisableUpload(false);
+		} catch (error) {
+			console.error('Error al subir el archivo:', error);
+			setDisableUpload(false);
+			toaster.create({
+				title: 'Error al subir el contrato',
+				type: 'error',
+			});
+		}
 	};
 
 	const downloadSampleFile = () => {
 		const link = document.createElement('a');
-		link.href = '/SolicitudFraccionDeudaUni.docx';
-		link.download = 'SolicitudFraccionDeudaUni.docx';
+		link.href = '/templates/Compromiso-fraccionamiento.docx';
+		link.download = 'Compromiso-fraccionamiento.docx';
 		document.body.appendChild(link);
 		link.click();
 		document.body.removeChild(link);
@@ -154,6 +189,7 @@ export const FractionateDebt = () => {
 				</Button>
 			}
 			onSave={handleSubmit}
+			loading={disableUpload}
 			size='3xl'
 			open={open}
 			onOpenChange={(e) => setOpen(e.open)}
@@ -196,7 +232,7 @@ export const FractionateDebt = () => {
 								<CompactFileUpload
 									name='path_cv'
 									onChange={(file) => setFractionateDebtPath(file)}
-									onClear={() => setFractionateDebtPath(null)}
+									onClear={() => setFractionateDebtPath('')}
 								/>
 							</Field>
 						</Stack>
@@ -223,8 +259,7 @@ export const FractionateDebt = () => {
 									<ReactSelect
 										options={programOptions}
 										value={program}
-										isLoading={isLoadingMyApplicants}
-										onChange={(opt) => setProgram(opt?.value)}
+										onChange={(opt) => setProgram(opt)}
 										placeholder='Selecciona un programa'
 									/>
 								</Field>
@@ -250,34 +285,74 @@ export const FractionateDebt = () => {
 										min={0}
 										max={100}
 										value={
-											dataPaymentDebt?.min_payment_percentage ||
+											DataProgram?.min_payment_percentage ||
 											paymentDebtLocal.min_payment_percentage
 										}
 										style={{ width: '100%' }}
 									/>
 								</Field>
-								<Field label='Número de cuotas'>
+								<Field
+									label={`Número de cuotas (máximo ${DataProgram?.max_installments || paymentDebtLocal.max_installments})`}
+									invalid={!!errors.installments}
+									errorText={errors.installments}
+								>
 									<Input
-										readOnly
-										placeholder='Seleccione programa'
+										placeholder='Numero de cuotas'
 										type='number'
 										variant='flushed'
 										min={1}
-										value={
-											dataPaymentDebt?.max_installments ||
+										max={
+											DataProgram?.max_installments ||
 											paymentDebtLocal.max_installments
 										}
+										value={installments}
+										onChange={(e) => setInstallments(Number(e.target.value))}
 										style={{ width: '100%' }}
 									/>
 								</Field>
 							</SimpleGrid>
-							<Field label='Número de cuotas' required invalid={!!errors.installments} error={errors.installments}>
+							<Field label='Monto minimo a pagar'>
 								<Input
 									type='number'
+									disabled
 									min={1}
-									value={installments}
-									onChange={(e) => setInstallments(Number(e.target.value))}
+									value={
+										(amount * DataProgram?.min_payment_percentage) / 100 || 0
+									}
+									onChange={(e) => setAmount(Number(e.target.value))}
 									style={{ width: '100%' }}
+								/>
+							</Field>
+							<Field
+								label='Tipo de documento:'
+								invalid={!!errors.selectedDocumentType}
+								errorText={errors.selectedDocumentType}
+							>
+								<ReactSelect
+									value={selectedDocumentType}
+									onChange={setSelectedDocumentType}
+									variant='flushed'
+									size='xs'
+									isSearchable
+									isClearable
+									options={TypeOptions}
+								/>
+							</Field>
+
+							<Field
+								label='N° Doc'
+								invalid={!!errors.numDocCarpeta}
+								errorText={errors.numDocCarpeta}
+							>
+								<Input
+									value={numDocCarpeta}
+									onChange={(e) => setnumDocCarpeta(e.target.value)}
+									placeholder={
+										selectedDocumentType?.value === 1
+											? 'Ingrese número de documento'
+											: 'Ingrese número de RUC'
+									}
+									isReadOnly={selectedDocumentType?.value === 1}
 								/>
 							</Field>
 							<HStack>
@@ -312,4 +387,10 @@ export const FractionateDebt = () => {
 			</Stack>
 		</Modal>
 	);
+};
+
+FractionateDebt.propTypes = {
+	countDebts: PropTypes.any,
+	debtsByPurpose: PropTypes.array.isRequired,
+	dataMyApplicants: PropTypes.array.isRequired,
 };

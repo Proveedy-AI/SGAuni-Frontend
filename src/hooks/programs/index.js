@@ -5,3 +5,4 @@ export * from './useUpdateProgram';
 export * from './useAssignDebtConditionProgram';
 export * from './useDeleteDebtConditionProgram';
 export * from './useUpdateDebtConditionProgram';
+export * from './useReadProgramsbyId';
