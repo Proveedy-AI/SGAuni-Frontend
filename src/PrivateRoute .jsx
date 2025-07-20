@@ -125,7 +125,7 @@ export const ProtectedRoute = ({
 
 	// Always call hooks at the top level
 	const { data: dataCondition } = useCheckPersonHasDebts(profile?.uuid, {
-		enable: requiredDebt,
+		 enabled: requiredDebt && !!profile?.uuid,
 	});
 
 	const roles = profile?.roles || [];
