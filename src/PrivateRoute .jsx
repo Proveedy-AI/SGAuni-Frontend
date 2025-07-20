@@ -5,7 +5,9 @@ import { useEffect, useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router';
 import { useProvideAuth } from './hooks/auth';
 import { useReadUserLogged } from './hooks/users/useReadUserLogged';
-//import { ApplicantHasDebts } from './components/control';
+import { useCheckPersonHasDebts } from './hooks';
+
+import { ApplicantHasDebts } from './components/control';
 
 export const PrivateRoute = () => {
 	const { getUser, getUserCookie, refresh, loading, getRefreshToken } =
@@ -114,9 +116,17 @@ export const PrivateRoute = () => {
 	return <Outlet />;
 };
 
-export const ProtectedRoute = ({ requiredPermission, requiredDebt=false }) => {
+export const ProtectedRoute = ({
+	requiredPermission,
+	requiredDebt = false,
+}) => {
 	const { data: profile } = useReadUserLogged();
 	const location = useLocation();
+
+	// Always call hooks at the top level
+	const { data: dataCondition } = useCheckPersonHasDebts(profile?.uuid, {
+		enable: requiredDebt,
+	});
 
 	const roles = profile?.roles || [];
 	const permissions = roles
@@ -145,23 +155,15 @@ export const ProtectedRoute = ({ requiredPermission, requiredDebt=false }) => {
 		return <Navigate to='/' replace state={{ from: location }} />;
 	}
 
-  if (requiredDebt) {
-    //  //const { data: dataCondition } = useCheckUserHasDebts();
-    //  const dataCondition = {
-    //    results: {
-    //      total: 100, // Simulación de deuda
-    //      has_debts: true, // Simulación de estado de deuda
-    //      user: {
-    //        firstname: 'USUARIO LOGUEADO',
-    //      }
-    //    }
-    //  }
-    //  const userHasDebts = dataCondition?.results?.has_debts || false;
-    //  if (userHasDebts) {
-    //    return <ApplicantHasDebts data={dataCondition?.results} />;
-    //  }
-    // console.log('Verificando deudas del usuario...');
-  }
+	let userHasDebts = false;
+	if (requiredDebt) {
+		//const dataCondition = { has_debt: true, can_request_installment: true };
+		userHasDebts = dataCondition?.has_debt || false;
+		if (userHasDebts) {
+			return <ApplicantHasDebts data={dataCondition} />;
+		}
+		// console.log('Verificando deudas del usuario...');
+	}
 
 	return <Outlet />;
 };

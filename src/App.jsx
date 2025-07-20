@@ -27,7 +27,11 @@ import {
 import { Contracts, MyContracts } from './views/admin/contracts';
 import { AdmissionMyApplicants } from './views/admin/applicants/AdmissionMyApplicants';
 import { ApplicantsLayout } from './views/admin/applicants/ApplicantsLayout';
-import { TuitionMyPrograms, TuitionProcess, TuitonPrograms } from './views/admin/tuitions';
+import {
+	TuitionMyPrograms,
+	TuitionProcess,
+	TuitonPrograms,
+} from './views/admin/tuitions';
 import {
 	DebtsLayout,
 	PaymentOrdersByRequest,
@@ -168,7 +172,10 @@ function App() {
 										<ProtectedRoute requiredPermission='enrollments.myprogramsEnrollments.view' />
 									}
 								>
-									<Route path='myprograms/:id' element={<TuitionMyPrograms />} />
+									<Route
+										path='myprograms/:id'
+										element={<TuitionMyPrograms />}
+									/>
 								</Route>
 
 								<Route
@@ -176,22 +183,19 @@ function App() {
 										<ProtectedRoute requiredPermission='enrollments.programsEnrollments.view' />
 									}
 								>
-									<Route
-										path='programs/:id'
-										element={<TuitonPrograms />}
-									/>
+									<Route path='programs/:id' element={<TuitonPrograms />} />
 								</Route>
 							</Route>
-              
-              <Route path='myenrollments' element={<MyEnrollmentsLayout />}>
-                <Route
-                  element={
-                    <ProtectedRoute requiredPermission='enrollments.myenrollments.view' />
-                  }
-                >
-                  <Route index element={<MyEnrollments />} />
-                </Route>
-              </Route>
+
+							<Route path='myenrollments' element={<MyEnrollmentsLayout />}>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='enrollments.myenrollments.view' />
+									}
+								>
+									<Route index element={<MyEnrollments />} />
+								</Route>
+							</Route>
 
 							<Route path='courses-schedules'>
 								<Route
@@ -202,7 +206,7 @@ function App() {
 									<Route index element={<CoursesAndSchedules />} />
 								</Route>
 							</Route>
-              
+
 							<Route path='mypaymentsdebts' element={<MyPaymentsLayout />}>
 								<Route>
 									<Route
@@ -225,7 +229,7 @@ function App() {
 										<Route path='history-requests'>
 											<Route index element={<MyPaymentHistories />} />
 										</Route>
-                    <Route path='schedule'>
+										<Route path='schedule'>
 											<Route index element={<MyPaymentSchedule />} />
 										</Route>
 									</Route>
@@ -254,7 +258,10 @@ function App() {
 									</Route>
 									<Route index element={<PaymentRequestsView />} />
 									<Route path=':id' element={<PaymentOrdersByRequest />} />
-                  <Route path='commitment-letters' element={<CommitmentLetters />} />
+									<Route
+										path='commitment-letters'
+										element={<CommitmentLetters />}
+									/>
 								</Route>
 								<Route
 									element={
