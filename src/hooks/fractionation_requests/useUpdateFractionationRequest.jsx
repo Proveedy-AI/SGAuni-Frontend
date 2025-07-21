@@ -7,7 +7,7 @@ export const useUpdateFractionationRequest = () => {
 
 	return useMutation({
 		mutationFn: async ({ id, payload }) => {
-			const res = await axiosPrivate.patch(`/api/v1/fractionation-requests/${id}/`, payload);
+			const res = await axiosPrivate.patch(`/api/v1/payment-plans/${id}/decision/`, payload);
 			return res.data;
 		},
 	});

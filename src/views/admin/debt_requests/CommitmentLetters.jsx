@@ -1,7 +1,6 @@
 import { ReactSelect } from "@/components";
 import { CommitmentLettersTable } from "@/components/tables/commitment_letters";
 import { Field } from "@/components/ui";
-import { useReadPrograms } from "@/hooks";
 import { useReadFractionationRequests } from "@/hooks/fractionation_requests";
 import { useReadUserLogged } from "@/hooks/users/useReadUserLogged";
 import { Button, Card, Flex, Heading, Icon, Input, SimpleGrid, Stack } from "@chakra-ui/react";
@@ -17,13 +16,15 @@ export const CommitmentLetters = () => {
   
   
   const {
-    //data: dataFractionationRequests,
+    data: dataFractionationRequest2,
     refetch: fetchFractionationRequests,
-    //isLoading: loadingFractionationRequests,
+    isLoading: loadingFractionationRequests,
     fetchNextPage: fetchNextPageFractionationRequests,
 		hasNextPage: hasNextPageFractionationRequests,
 		isFetchingNextPage: isFetchingNextPageFractionationRequests,
   } = useReadFractionationRequests();
+
+  console.log(dataFractionationRequest2)
   
   const dataFractionationRequests = {
     results: [
@@ -102,15 +103,10 @@ export const CommitmentLetters = () => {
     ]
   };
 
-  const {
-    data: dataPrograms,
-    isLoading: loadingPrograms,
-  } = useReadPrograms();
-
-  const ProgramOptions = dataPrograms?.results?.map((program) => ({
-    value: program.id,
-    label: program.name,
-  })) || [];
+  const RecipeTypesOptions = [
+    { value: 1, label: 'Boleta' },
+    { value: 2, label: 'Factura' },
+  ]
 
   const StatusOptions = [
 		{ value: 1, label: 'En revisión' },
@@ -118,25 +114,25 @@ export const CommitmentLetters = () => {
 		{ value: 3, label: 'Rechazado' },
 	];
 
-  const [selectedProgram, setSelectedProgram] = useState(null);
+  const [selectedRecipeType, setSelectedRecipeType] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(null);
-  const [applicantName, setApplicantName] = useState('');
+  const [applicantDocNumber, setApplicantDocNumber] = useState('');
 
-  const hasActiveFilters = selectedProgram || selectedStatus || applicantName;
+  const hasActiveFilters = selectedRecipeType || selectedStatus || applicantDocNumber;
 
   const clearFilters = () => {
-		setSelectedProgram(null);
+		setSelectedRecipeType(null);
 		setSelectedStatus(null);
-		setApplicantName('');
+		setApplicantDocNumber('');
 	};
 
   const filteredRequests = dataFractionationRequests?.results?.filter((request) => {
-    const matchProgram = selectedProgram ? request.program === selectedProgram.value : true;
-    const matchStatus = selectedStatus ? request.status === selectedStatus.value : true;
-    const matchApplicantName = applicantName
-      ? request.applicant_name.toLowerCase().includes(applicantName.toLowerCase())
+    const matchRecipeType = selectedRecipeType ? request.payment_document_type === selectedRecipeType.value : true;
+    const matchStatus = selectedStatus ? request.status_review === selectedStatus.value : true;
+    const matchApplicantDocNumber = applicantDocNumber
+      ? request.num_document_person.includes(applicantDocNumber)
       : true;
-    return matchProgram && matchStatus && matchApplicantName;
+    return matchRecipeType && matchStatus && matchApplicantDocNumber;
   });
 
 
@@ -179,14 +175,13 @@ export const CommitmentLetters = () => {
               <Field label='Programa:'>
                 <ReactSelect
                   placeholder='Seleccionar programa'
-                  value={selectedProgram}
-                  onChange={setSelectedProgram}
+                  value={selectedRecipeType}
+                  onChange={setSelectedRecipeType}
                   variant='flushed'
                   size='xs'
                   isSearchable
                   isClearable
-                  options={ProgramOptions}
-                  isLoading={loadingPrograms}
+                  options={RecipeTypesOptions}
                 />
               </Field>
               <Field label='Estado:'>
@@ -201,11 +196,11 @@ export const CommitmentLetters = () => {
                   options={StatusOptions}
                 />
               </Field>
-              <Field label='Nombre del postulante:'>
+              <Field label='Número de documento del postulante:'>
                 <Input
-                  placeholder='Buscar por nombre del postulante'
-                  value={applicantName}
-                  onChange={(e) => setApplicantName(e.target.value)}
+                  placeholder='Buscar por número de documento'
+                  value={applicantDocNumber}
+                  onChange={(e) => setApplicantDocNumber(e.target.value)}
                 />
               </Field>
             </SimpleGrid>
@@ -214,7 +209,7 @@ export const CommitmentLetters = () => {
       </Card.Root>
       
       <CommitmentLettersTable
-        isLoading={false}
+        isLoading={loadingFractionationRequests}
 	      data={filteredRequests}
         refetch={fetchFractionationRequests}
         permissions={permissions}

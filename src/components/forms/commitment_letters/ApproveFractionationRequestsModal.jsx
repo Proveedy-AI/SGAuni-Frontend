@@ -1,21 +1,104 @@
 import { Field, ModalSimple, toaster, Tooltip } from "@/components/ui";
-import { Box, Button, Flex, IconButton, Stack, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, IconButton, Input, Stack, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { HiCheck } from "react-icons/hi2";
 import PropTypes from "prop-types";
 import { FaCheck, FaTimes } from "react-icons/fa";
 import { useUpdateFractionationRequest } from "@/hooks/fractionation_requests";
 
+export const RejectWithCommentModal = ({ item, fetchData }) => {
+  const [open, setOpen] = useState(false);
+  const [comment, setComment] = useState("");
+  const { mutateAsync: update, isSaving } = useUpdateFractionationRequest();
+  const [commentError, setError] = useState("");
+
+  const handleReject = async () => {
+    if (!comment) {
+      setError("Comentario es requerido");
+      toaster.create({
+        title: 'Comentario necesario',
+        description: 'Debe agregar un comentario para dar motivo del rechazo',
+        type: 'warning'
+      })
+      return;
+    }
+
+    const payload = {
+      status: 3,
+      comments: comment,
+    };
+    
+    update({ id: item.id, payload }, {
+      onSuccess: () => {
+        toaster.create({
+          title: "Solicitud rechazada correctamente",
+          type: 'success',
+        });
+        setOpen(false);
+        fetchData();
+        setComment("");
+      },
+      onError: (error) => {
+        toaster.create({
+          title: error ? error.message : "Error al rechazar la solicitud",
+          type: "error",
+        });
+      }
+    });
+  }
+
+  return (
+    <ModalSimple
+      title="Rechazar con comentario"
+      placement="center"
+      size="xl"
+      trigger={
+        <Button
+          bg={'uni.secondary'}
+          variant={'solid'}
+          size='sm'
+          onClick={() => setOpen(true)}
+        >
+          <FaTimes /> Rechazar
+        </Button>
+      }
+      open={open}
+      onOpenChange={(e) => setOpen(e.open)}
+      onSave={handleReject}
+      isLoading={isSaving}
+    >
+      <Stack spacing={4}>
+        <Field 
+          label="Comentario"
+          invalid={!!commentError}
+          errorText={commentError}
+          required
+        >
+          <Input 
+            placeholder="Escribe tu comentario aquí..."
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}  
+          />
+        </Field>
+      </Stack>
+    </ModalSimple>
+  )
+}
+
+RejectWithCommentModal.propTypes = {
+  item: PropTypes.object,
+  fetchData: PropTypes.func
+};
+
 export const ApproveFractionationRequestsModal = ({ item, fetchData }) => {
   const [open, setOpen] = useState(false);
 
   const { mutateAsync: update, isSaving } = useUpdateFractionationRequest();
 
-  const handleValidate = async (isApproved) => {
+  const handleValidate = async () => {
     const payload = {
-      status: isApproved ? 2 : 3
+      status: 2
     }
-    console.log(payload)
     update({ id: item.id, payload }, {
       onSuccess: () => {
         toaster.create({
@@ -74,19 +157,12 @@ export const ApproveFractionationRequestsModal = ({ item, fetchData }) => {
                   variant={'solid'}
                   isLoading={isSaving}
                   size='sm'
-                  onClick={() => handleValidate(true)}
+                  onClick={handleValidate}
                 >
                   <FaCheck />
                   Validar
                 </Button>
-                <Button
-                  bg={'uni.secondary'}
-                  variant={'solid'}
-                  size='sm'
-                  onClick={() => handleValidate(false)}
-                >
-                  <FaTimes /> Rechazar
-                </Button>
+                <RejectWithCommentModal item={item} fetchData={fetchData} />
               </Flex>
             </Stack>
           </Stack>
