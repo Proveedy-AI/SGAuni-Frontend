@@ -173,7 +173,7 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 
 					return {
 						type_document_id: docInfo.type_document,
-						description: 1, // CAMBIAR O BORRAR
+						description: null,
 						file_path: filePath,
 					};
 				}
