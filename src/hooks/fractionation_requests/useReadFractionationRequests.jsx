@@ -8,7 +8,7 @@ export const useReadFractionationRequests = (params = {}) => {
 	return useInfiniteQuery({
 		queryKey: ['fractionation-requests', params],
 		queryFn: async ({ pageParam = 1 }) => {
-			const res = await axiosPrivate.get('/api/v1/fractionation-requests/', { 
+			const res = await axiosPrivate.get('/api/v1/payment-plans/', { 
         params: {
           ...params,
           page: pageParam,

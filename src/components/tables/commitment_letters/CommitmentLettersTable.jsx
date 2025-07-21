@@ -4,7 +4,7 @@ import { Badge, Box, Group, HStack, Table } from '@chakra-ui/react';
 import { Pagination } from '@/components/ui';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { SortableHeader } from '@/components/ui/SortableHeader';
-import { format, parseISO } from 'date-fns';
+//import { format, parseISO } from 'date-fns';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
 import { usePaginatedInfiniteData } from '@/components/navigation';
@@ -13,12 +13,33 @@ import { ApproveFractionationRequestsModal, ViewDocumentRequestModal, ViewFracti
 const Row = memo(
 	({ item, startIndex, index, refetch, permissions, sortConfig, data }) => {
 		const statusDisplay = [
-			{ id: 1, label: 'Pendiente', bg: '#AEAEAE', color: '#F5F5F5' },
-			{ id: 2, label: 'Validado', bg: '#D0EDD0', color: '#2D9F2D' },
-			{ id: 3, label: 'Expirado', bg: '#F7CDCE', color: '#E0383B' },
+			{ id: 1, label: 'En revisión', bg: '#AEAEAE', color: '#F5F5F5' },
+			{ id: 2, label: 'Aprobado', bg: '#D0EDD0', color: '#2D9F2D' },
+			{ id: 3, label: 'Rechazado', bg: '#F7CDCE', color: '#E0383B' },
 		];
 
-    const matchStatus = statusDisplay.find((status) => status.id === item.status);
+    /*
+    {
+        id: 1,
+        enrollment: 1,
+        enrollment_name: '2024-I',
+        plan_type_display: 'Cuotas',
+        total_amount: '1200.00',
+        total_amortization: '400.00',
+        total_balance: '800.00',
+        upfront_percentage: '33%',
+        number_of_installments: 3,
+        approved_by: 2,
+        approved_at: '2024-05-10T10:00:00.000Z',
+        payment_document_type: 1,
+        payment_document_type_display: 'Boleta',
+        path_commitment_letter: 'https://example.com/doc/54asd6s4asdas4d89asd4as',
+        num_document_person: '12345678',
+        status_review: 1
+      },
+    */
+
+    const matchStatus = statusDisplay.find((status) => status.id === item.status_review);
 
 		return (
 			<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
@@ -27,10 +48,10 @@ const Row = memo(
 						? data.length - (startIndex + index)
 						: startIndex + index + 1}
 				</Table.Cell>
-				<Table.Cell>{format(parseISO(item.request_date), 'dd/MM/yyyy')}</Table.Cell>
-				<Table.Cell>{item.program_name}</Table.Cell>
-				<Table.Cell>{item.document_num}</Table.Cell>
-				<Table.Cell>{item.applicant_name}</Table.Cell>
+				<Table.Cell>{item.enrollment_name}</Table.Cell>
+				<Table.Cell>{item.num_document_person}</Table.Cell>
+				<Table.Cell>{item.number_of_installments}</Table.Cell>
+				<Table.Cell>{item.payment_document_type_display}</Table.Cell>
 				<Table.Cell>
 					<Badge
 						bg={matchStatus?.bg}
@@ -120,16 +141,8 @@ export const CommitmentLettersTable = ({
 							</Table.ColumnHeader>
 							<Table.ColumnHeader alignContent={'start'}>
 								<SortableHeader
-									label='Fecha de vencimiento'
-									columnKey='due_date'
-									sortConfig={sortConfig}
-									onSort={setSortConfig}
-								/>
-							</Table.ColumnHeader>
-							<Table.ColumnHeader alignContent={'start'}>
-								<SortableHeader
-									label='Id de Orden'
-									columnKey='id_orden'
+									label='Matrícula'
+									columnKey='enrollment_name'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
@@ -137,15 +150,23 @@ export const CommitmentLettersTable = ({
 							<Table.ColumnHeader alignContent={'start'}>
 								<SortableHeader
 									label='N° Documento'
-									columnKey='document_num'
+									columnKey='num_document_person'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
 							<Table.ColumnHeader alignContent={'start'}>
 								<SortableHeader
-									label='Correo'
-									columnKey='email'
+									label='N° Cuotas'
+									columnKey='number_of_installments'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+              <Table.ColumnHeader alignContent={'start'}>
+								<SortableHeader
+									label='Recibo'
+									columnKey='payment_document_type_display'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
@@ -165,7 +186,7 @@ export const CommitmentLettersTable = ({
 					</Table.Header>
 					<Table.Body>
 						{isLoading ? (
-							<SkeletonTable columns={8} />
+							<SkeletonTable columns={7} />
 						) : visibleRows?.length > 0 ? (
 							visibleRows?.map((item, index) => (
 								<Row
