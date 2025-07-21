@@ -64,26 +64,24 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 	};
 
 	const { mutate: create } = useCreateDocuments();
-	const { data: dataDocuments } = useReadDocuments();
+	const { data: dataDocuments } = useReadDocuments({ application: item.id });
 
 	useEffect(() => {
 		if (!dataDocuments?.results || !item) return;
 
 		const mappedDocs = {};
 
-		dataDocuments.results
-			.filter((doc) => doc.application === item.id)
-			.forEach((doc) => {
-				const key = typeDocumentToKeyMap[doc.type_document];
-				if (!key) return;
+		dataDocuments.results.forEach((doc) => {
+			const key = typeDocumentToKeyMap[doc.type_document];
+			if (!key) return;
 
-				mappedDocs[key] = {
-					file: doc.file_path,
-					initialFilePath: doc.file_path, // ✅ aquí
-					description: doc.description_display,
-					id: doc.id,
-				};
-			});
+			mappedDocs[key] = {
+				file: doc.file_path,
+				initialFilePath: doc.file_path, // ✅ aquí
+				description: doc.description_display,
+				id: doc.id,
+			};
+		});
 
 		setDocumentsData((prev) => ({
 			...prev,
@@ -173,7 +171,7 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 
 					return {
 						type_document_id: docInfo.type_document,
-						description: null,
+						description: 1,
 						file_path: filePath,
 					};
 				}
@@ -190,7 +188,8 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 					setIsLoading(false);
 					toaster.create({
 						title: 'Documentos guardados',
-						description: 'Los documentos fueron enviados correctamente. Puede continuar con el proceso.',
+						description:
+							'Los documentos fueron enviados correctamente. Puede continuar con el proceso.',
 						type: 'success',
 					});
 				},
