@@ -2,6 +2,7 @@ import { ReactSelect } from '@/components';
 import {
 	CancelSomePaymentOrders,
 	GeneratePaymentOrderModal,
+	LoadExcelGeneratePaymentOrderModal,
 	LoadExcelValidationsModal,
 	//LoadExcelValidationsModal,
 } from '@/components/forms/payment_orders';
@@ -164,6 +165,8 @@ export const PaymentOrdersView = () => {
 									Limpiar Filtros
 								</Button>
 							)}
+							<LoadExcelGeneratePaymentOrderModal fetchData={fetchPaymentOrders} />
+
 							<LoadExcelValidationsModal fetchData={fetchPaymentOrders} />
 							<GeneratePaymentOrderModal fetchData={fetchPaymentOrders} />
 						</Stack>
