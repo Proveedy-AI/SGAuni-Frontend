@@ -50,6 +50,7 @@ import { CommitmentLetters } from './views/admin/debt_requests';
 import { MyPaymentSchedule } from './views/admin/mypayments/MyPaymentSchedule';
 import { MyEnrollmentsLayout } from './views/admin/myenrollments/MyEnrollmentsLayout';
 import { MyEnrollments } from './views/admin/myenrollments';
+import { ClassMyProgramView, MyClassesLayout } from './views/admin/myclasses';
 
 function App() {
 	return (
@@ -206,6 +207,19 @@ function App() {
 									<Route index element={<CoursesAndSchedules />} />
 								</Route>
 							</Route>
+
+              <Route path='myclasses' element={<MyClassesLayout />}>
+                <Route
+                  element={
+                    <ProtectedRoute requiredPermission='classes.myprograms.view' />
+                  }
+                >
+                  <Route path='myprograms'>
+                    <Route index element={<ClassMyProgramView />} />
+                    <Route path=':id' element={<h1></h1>} />
+                  </Route>
+                </Route>
+              </Route>
 
 							<Route path='mypaymentsdebts' element={<MyPaymentsLayout />}>
 								<Route>
