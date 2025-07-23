@@ -109,7 +109,7 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 					title='Generar Orden de Pago'
 					placement='center'
 					trigger={
-						<IconButton colorPalette='purple' size='xs'>
+						<IconButton colorPalette='purple' size='xs' disabled={item?.status !== 1}>
 							<FiArrowUp />
 						</IconButton>
 					}

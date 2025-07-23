@@ -20,7 +20,6 @@ const Row = memo(
     data,
     permissions
   }) => {
-
     const statusDisplay = [
       { id: 1, label: 'Por Empezar', bg: '#AEAEAE', color: '#F5F5F5' },
       { id: 2, label: 'En Curso', bg: '#C6E7FC80', color: '#0661D8' },
@@ -29,7 +28,7 @@ const Row = memo(
     const status = statusDisplay.find(s => s.id === item.status);
 
     const navigate = useNavigate();
-	  const encrypted = Encryptor.encrypt(item.id);
+	  const encrypted = Encryptor.encrypt(item.program);
     const encoded = encodeURIComponent(encrypted);
     const handleRowClick = () => {
       if (permissions.includes('classes.myprograms.view')) navigate(`/myclasses/myprograms/${encoded}`);

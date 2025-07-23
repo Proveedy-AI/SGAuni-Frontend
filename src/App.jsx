@@ -50,7 +50,7 @@ import { CommitmentLetters } from './views/admin/debt_requests';
 import { MyPaymentSchedule } from './views/admin/mypayments/MyPaymentSchedule';
 import { MyEnrollmentsLayout } from './views/admin/myenrollments/MyEnrollmentsLayout';
 import { MyEnrollments } from './views/admin/myenrollments';
-import { ClassMyProgramView, MyClassesLayout } from './views/admin/myclasses';
+import { ClassMyCoursesByProgramView, ClassMyProgramView, MyClassesLayout } from './views/admin/myclasses';
 
 function App() {
 	return (
@@ -216,7 +216,7 @@ function App() {
                 >
                   <Route path='myprograms'>
                     <Route index element={<ClassMyProgramView />} />
-                    <Route path=':id' element={<h1></h1>} />
+                    <Route path=':id' element={<ClassMyCoursesByProgramView />} />
                   </Route>
                 </Route>
               </Route>

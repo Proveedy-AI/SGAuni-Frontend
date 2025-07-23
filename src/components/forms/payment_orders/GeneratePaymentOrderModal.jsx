@@ -91,6 +91,7 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 		const payload = {
 			request: selectedRequest.value,
 			id_orden: orderIdInput || null,
+      status: 2,
 			discount_value: (Number(discountInput) / 100).toString(),
 			due_date: dueDateInput,
 		};
