@@ -72,7 +72,7 @@ export const MyClassesLayout = () => {
               {settingsItems
                 .filter((item) => hasPermission(item.permission))
                 .map((item, index) => {
-                  const isActive = location.pathname === item.href;
+                  const isActive = location.pathname.includes(item.href);
                   return (
                     <Link key={index} to={item.href}>
                       <Flex

@@ -1,29 +1,76 @@
+import PropTypes from 'prop-types';
 import { Encryptor } from "@/components/CrytoJS/Encryptor";
 import { useReadEnrollmentById } from "@/hooks/enrollments_proccess";
-import { useReadUserLogged } from "@/hooks/users/useReadUserLogged";
-import { useParams } from "react-router";
-import { Card, Stack, Heading, Text, Flex } from "@chakra-ui/react";
+//import { useReadUserLogged } from "@/hooks/users/useReadUserLogged";
+import { useNavigate, useParams } from "react-router";
+import { Card, Stack, Heading, Text, Flex, SimpleGrid } from "@chakra-ui/react";
 import { MdSchool, MdDateRange, MdEventNote, MdListAlt } from "react-icons/md";
+import { useReadCourseGroups } from '@/hooks/course_groups';
+
+export const CourseCard = ({ course, goTo }) => {
+  const ColorsByEnrollmentPeriod = [
+    "blue.100",
+    "green.100",
+    "yellow.100",
+    "red.100",
+    "purple.100",
+    "orange.100",
+    "teal.100",
+    "pink.100",
+  ]
+
+  return (
+    <Card.Root 
+      boxShadow="md" 
+      borderRadius="lg" 
+      overflow="hidden"
+      onClick={() => goTo(course.id)}
+      cursor={"pointer"}
+    >
+      <Card.Header bg={ColorsByEnrollmentPeriod[course.enrollment_period_program_course]} minH={36}></Card.Header>
+      <Card.Body px={4} py={2}>
+        <Stack gap={1}>
+          <Heading size="sm" color="gray.800" fontWeight="bold" whiteSpace={"nowrap"} overflow={"hidden"} textOverflow={"ellipsis"}>
+            {course.course_name}
+          </Heading>
+          <Text fontSize="xs" color="gray.600" fontWeight="semibold">
+            {course.course_code}
+          </Text>
+        </Stack>
+      </Card.Body>
+    </Card.Root>
+  )
+}
+
+CourseCard.propTypes = {
+  course: PropTypes.object,
+  goTo: PropTypes.func
+} 
 
 export const ClassMyCoursesByProgramView = () => {
   const { id } = useParams();
 	const decoded = decodeURIComponent(id);
 	const decrypted = Encryptor.decrypt(decoded);
 	const { data } = useReadEnrollmentById(decrypted);
-  console.log(data);
 
-  /*
-  {
-    "id": 1,
-    "academic_period_name": "2025-1",
-    "start_date": "2025-07-10",
-    "end_date": "2025-07-11",
-    "elective_period": "1"
-}
-  */
+  const navigate = useNavigate();
+  const handleCardClick = (courseId) => {
+    const encrypted = Encryptor.encrypt(courseId);
+    const encoded = encodeURIComponent(encrypted);
+    navigate(`${window.location.pathname}/course/${encoded}`, { replace: false });
+  }
+
+  const { 
+    data: dataCourseGroups,
+    isLoading: loadingCourseGroups,
+  } = useReadCourseGroups(
+    {},
+    {}
+  );
 
   return (
     <Stack spacing={6} mx="auto">
+      <Heading size="lg">Gestión de cursos</Heading>
       <Card.Root>
         <Card.Header>
           <Flex align="center" gap={2}>
@@ -69,7 +116,17 @@ export const ClassMyCoursesByProgramView = () => {
           </Flex>
         </Card.Header>
         <Card.Body>
-          <Text color="gray.500">Aquí aparecerán los cursos asociados al programa.</Text>
+          <Stack spacing={4}>
+            {loadingCourseGroups ? (
+              <Text>Cargando cursos...</Text>
+            ) : (
+              <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} gap={4}>
+                {dataCourseGroups?.results?.map(course => (
+                  <CourseCard key={course.id} course={course} goTo={handleCardClick} />
+                ))}
+              </SimpleGrid>
+            )}
+          </Stack>
         </Card.Body>
       </Card.Root>
     </Stack>
