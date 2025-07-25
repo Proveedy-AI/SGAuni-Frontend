@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router';
 import { useProvideAuth } from './hooks/auth';
 import { useReadUserLogged } from './hooks/users/useReadUserLogged';
-import { useCheckPersonHasDebts } from './hooks';
 
 import { ApplicantHasDebts } from './components/control';
 
@@ -123,11 +122,6 @@ export const ProtectedRoute = ({
 	const { data: profile } = useReadUserLogged();
 	const location = useLocation();
 
-	// Always call hooks at the top level
-	const { data: dataCondition } = useCheckPersonHasDebts(profile?.uuid, {
-		 enabled: requiredDebt && !!profile?.uuid,
-	});
-
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])
@@ -158,9 +152,9 @@ export const ProtectedRoute = ({
 	let userHasDebts = false;
 	if (requiredDebt) {
 		//const dataCondition = { has_debt: true, can_request_installment: true };
-		userHasDebts = dataCondition?.has_debt || false;
+		userHasDebts = profile?.student?.status === 'Bloqueado' || false;
 		if (userHasDebts) {
-			return <ApplicantHasDebts data={dataCondition} />;
+			return <ApplicantHasDebts />;
 		}
 		// console.log('Verificando deudas del usuario...');
 	}
