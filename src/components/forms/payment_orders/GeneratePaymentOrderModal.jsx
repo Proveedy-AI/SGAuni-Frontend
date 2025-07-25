@@ -1,10 +1,10 @@
-import { Button, Field, Modal, toaster } from '@/components/ui';
+import { Alert, Button, Field, Modal, toaster } from '@/components/ui';
 import { Flex, IconButton, Input, SimpleGrid, Stack } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FaSave, FaTimes } from 'react-icons/fa';
 import { useCreatePaymentOrder } from '@/hooks/payment_orders';
-import { FiPlus } from 'react-icons/fi';
+import { FiAlertTriangle, FiPlus } from 'react-icons/fi';
 import { ReactSelect } from '@/components/select';
 
 import { format } from 'date-fns';
@@ -33,6 +33,7 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 	const requestOptions = requests.map((request) => ({
 		value: request.id,
 		label: `${request.purpose_display} - ${request.payment_method_display} - ${request.num_document}`,
+		description: request.description,
 	}));
 
 	const isUniPaymentMethod =
@@ -161,6 +162,15 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 										onChange={(e) => setOrderIdInput(e.target.value)}
 									/>
 								</Field>
+							)}
+							{selectedRequest?.description && (
+								<Alert
+									title='Información Importante'
+									status='info'
+									Icon={<FiAlertTriangle />}
+								>
+									{selectedRequest?.description}
+								</Alert>
 							)}
 							<SimpleGrid columns={{ base: 1, sm: 2 }} gap={4} w='100%'>
 								<Field

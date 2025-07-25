@@ -1,4 +1,4 @@
-import { Field, Modal, toaster } from '@/components/ui';
+import { Alert, Field, Modal, toaster } from '@/components/ui';
 import {
 	Badge,
 	Card,
@@ -16,7 +16,12 @@ import {
 	useCreatePaymentOrder,
 	useReadPaymentOrders,
 } from '@/hooks/payment_orders';
-import { FiArrowUp, FiDollarSign, FiPlus } from 'react-icons/fi';
+import {
+	FiAlertTriangle,
+	FiArrowUp,
+	FiDollarSign,
+	FiPlus,
+} from 'react-icons/fi';
 import { PaymentOrdersTable } from '@/components/tables/payment_orders';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { format } from 'date-fns';
@@ -138,6 +143,15 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 									<Icon as={FiPlus} w={5} h={5} color='purple.600' />
 									<Heading size='sm'>Generar Orden de Pago</Heading>
 								</Flex>
+								{item?.description && (
+									<Alert
+										title='Información Importante'
+										status='info'
+										Icon={<FiAlertTriangle />}
+									>
+										{item?.description}
+									</Alert>
+								)}
 							</Card.Header>
 							<Card.Body>
 								<Flex
