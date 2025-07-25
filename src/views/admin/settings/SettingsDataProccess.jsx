@@ -6,6 +6,9 @@ import { FiSearch } from 'react-icons/fi';
 
 import { useReadPurposes } from '@/hooks/purposes';
 import { SettingsPurposesTable } from '@/components/tables/settings/dataProccess/SettingsPurposesTable';
+import { useReadPaymentRules } from '@/hooks';
+import { SettingsPaymentRulesTable } from '@/components/tables/settings/dataProccess/SettingsPaymentRulesTable';
+import { AddPaymentRules } from '@/components/forms/management/dataProccess/AddPaymentRules';
 
 export const SettingsDataProccess = () => {
 	const [tab, setTab] = useState(1);
@@ -17,6 +20,17 @@ export const SettingsDataProccess = () => {
 		refetch: fetchPurposes,
 		isLoading,
 	} = useReadPurposes();
+
+	const {
+		data: dataPaymentRules,
+		refetch: fetchPaymentRules,
+		isLoading: isLoadingPaymentRules,
+	} = useReadPaymentRules();
+
+	const PurposeOptions = dataPurposes?.results?.map((item) => ({
+		value: item.id.toString(),
+		label: item.name,
+	}));
 
 	const filteredCountryList = dataPurposes?.results?.filter((item) =>
 		item?.name?.toLowerCase().includes(searchCountryValue.toLowerCase())
@@ -38,8 +52,14 @@ export const SettingsDataProccess = () => {
 				>
 					Gestión de Procesamiento de Datos
 				</Heading>
-
-				{tab === 1 && ''}
+				{tab === 1 && (
+					<AddPaymentRules
+						fetchData={fetchPaymentRules}
+						PurposeOptions={PurposeOptions}
+						loadingPurposeOptions={isLoading}
+					/>
+				)}
+				{tab === 2 && ''}
 			</Stack>
 			<Tabs.Root
 				value={tab}
@@ -60,12 +80,45 @@ export const SettingsDataProccess = () => {
 					>
 						<Tabs.List minW='max-content' colorPalette='cyan'>
 							<Tabs.Trigger value={1} color={tab === 1 ? 'uni.secondary' : ''}>
+								Reglas
+							</Tabs.Trigger>
+							<Tabs.Trigger value={2} color={tab === 2 ? 'uni.secondary' : ''}>
 								Propositos
 							</Tabs.Trigger>
 						</Tabs.List>
 					</Box>
 				</>
 				<Tabs.Content value={1}>
+					<Stack>
+						<Stack
+							direction={{ base: 'column', sm: 'row' }}
+							align={{ base: 'start', sm: 'center' }}
+							justify='space-between'
+						>
+							<Heading size='md'>Gestión Reglas de Pagos</Heading>
+
+							{/*<HStack>
+								<InputGroup flex='1' startElement={<FiSearch />}>
+									<Input
+										ml='1'
+										size='sm'
+										placeholder='Buscar por nombre'
+										value={searchPaymentRulesValue}
+										onChange={(e) => setSearchPaymentRulesValue(e.target.value)}
+									/>
+								</InputGroup>
+							</HStack>*/}
+						</Stack>
+
+						<SettingsPaymentRulesTable
+							PurposeOptions={PurposeOptions}
+							isLoading={isLoadingPaymentRules}
+							data={dataPaymentRules?.results}
+							fetchData={fetchPaymentRules}
+						/>
+					</Stack>
+				</Tabs.Content>
+				<Tabs.Content value={2}>
 					<Stack>
 						<Stack
 							direction={{ base: 'column', sm: 'row' }}
