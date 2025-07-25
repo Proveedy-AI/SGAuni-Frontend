@@ -40,11 +40,7 @@ export const DebtsLayout = () => {
 			icon: FiFileText,
 			permission: 'payment.orders.view',
 		},
-    {
-      href: '/debts/commitment-letters',
-      label: 'Cartas de Compromiso',
-      icon: FiFileText,
-    }
+   
 	];
 
 	return (

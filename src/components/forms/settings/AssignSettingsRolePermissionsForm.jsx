@@ -196,6 +196,7 @@ const groupTitles = {
 		enrollments: 'Matriculas',
 		applicants: 'Postulantes',
 		payment: 'Pagos y deudas',
+		commitment: 'Fraccionamientos',
 		courses: 'Cursos',
 		
 	},
@@ -225,6 +226,8 @@ const groupTitles = {
 		orders: 'Órdenes de Pago',
 		vouchers: 'Comprobantes de Pago',
 		requests: 'Solicitudes de Pago',
+		commitment: 'Fraccionamientos',
+		letters: 'Cartas de Compromiso',
 		schedules: 'Cursos',
 		mypaymentsdebts: 'Mis Pagos y Deudas',
 	},
