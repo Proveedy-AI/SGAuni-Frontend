@@ -10,6 +10,7 @@ import {
 	SettingsRoles,
 	SettingsModalities,
 	AccountStudentProfile,
+	SettingsDataProccess,
 } from './views/admin/settings';
 import { UserList } from './views/admin/UserList';
 import { PrivateRoute, ProtectedRoute } from './PrivateRoute ';
@@ -319,6 +320,16 @@ function App() {
 									}
 								>
 									<Route path='regional' element={<SettingsCountries />} />
+								</Route>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='settings.countries.view' />
+									}
+								>
+									<Route
+										path='data-processing'
+										element={<SettingsDataProccess />}
+									/>
 								</Route>
 							</Route>
 						</Route>

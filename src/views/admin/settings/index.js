@@ -5,4 +5,4 @@ export * from './SettingsCountries';
 export * from './SettingsPrograms';
 export * from './SettingsModalities';
 export * from './AccountStudentProfile';
-
+export * from './SettingsDataProccess';
