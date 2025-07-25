@@ -1,5 +1,5 @@
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
-import { ConfirmDownloadSuneduModal, GeneratePdfApliccationsModal } from '@/components/forms/admissions';
+import { ConfirmDownloadSuneduModal, ConfirmMasiveEvaluateApplicantsModal, GeneratePdfApliccationsModal } from '@/components/forms/admissions';
 import { AdmissionApplicantsByProgramTable } from '@/components/tables/admissions';
 import {
 	Button,
@@ -34,9 +34,12 @@ import { Link as RouterLink } from 'react-router';
 export const AdmissionApplicantsMenu = ({ applicants, data }) => {
   const [openGeneratePdfModal, setOpenGeneratePdfModal] = useState(false);
   const [openGenerateSuneduExcelModal, setOpenGenerateSuneduExcelModal] = useState(false);
+  const [openMasiveEvaluationModal, setOpenMasiveEvaluationModal] = useState(false);
   const admissionProcessId = data?.admission_process || null;
   const { data: dataAdmissionProcess, loading: isAdmissionProcessLoading } = useReadAdmissionById(admissionProcessId);
-  
+
+  const isAllEvaluated = applicants.every(applicant => applicant.status === 3);
+
   return (
     <Box>
       <MenuRoot>
@@ -66,6 +69,14 @@ export const AdmissionApplicantsMenu = ({ applicants, data }) => {
             >
               Descargar estudiantes (SUNEDU)
 		      </MenuItem>
+          <MenuItem
+            _hover={{ bg: 'gray.100', color: 'uni.secondary' }}
+            onClick={() => {
+              setOpenMasiveEvaluationModal(applicants.length > 0);
+            }}
+          >
+            Evaluar a todos los estudiantes
+          </MenuItem>
         </MenuContent>
       </MenuRoot>
 
@@ -73,6 +84,7 @@ export const AdmissionApplicantsMenu = ({ applicants, data }) => {
       {isAdmissionProcessLoading ? <Spinner /> : (
           dataAdmissionProcess && <ConfirmDownloadSuneduModal admissionProcess={dataAdmissionProcess} open={openGenerateSuneduExcelModal} setOpen={setOpenGenerateSuneduExcelModal} />
       )}
+      <ConfirmMasiveEvaluateApplicantsModal isAllEvaluated={isAllEvaluated} admissionProcess={dataAdmissionProcess} open={openMasiveEvaluationModal} setOpen={setOpenMasiveEvaluationModal} />
       </Box>
   )
 }
