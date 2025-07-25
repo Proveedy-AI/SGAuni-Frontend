@@ -25,7 +25,7 @@ import {
 	Textarea,
 	VStack,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
 	FiAlertCircle,
 	FiAlertTriangle,
@@ -48,13 +48,13 @@ export const MyPaymentAddRequests = () => {
 	const [selectedProcessType, setSelectedProcessType] = useState(null);
 	const { data: dataUser } = useReadUserLogged();
 	const { data: dataMyApplicants } = useReadMyApplicants();
-	const { data: dataPurposes } = useReadPurposes();
+	//const { data: dataPurposes } = useReadPurposes();
 	const { mutate: paymentRequests, isPending } = useCreatePaymentRequest();
 
-	const { data: PaymentRules } = useReadPaymentRules({
+	/*const { data: PaymentRules } = useReadPaymentRules({
 		payment_purpose: selectedPurpose?.value,
 		enabled: !!selectedPurpose?.value, // asegúrate de que solo se llame si hay propósito
-	});
+	});*/
 
 	const { data: MethodPayment, isLoading: isLoadingMethodPayment } =
 		useReadMethodPayment();
@@ -78,64 +78,25 @@ export const MyPaymentAddRequests = () => {
 	}, [selectedDocumentType, dataUser]);
 
 	const globalDiscounts = [
-		{ id: 1, label: 'Maestría completa', percentage: 0.16 },
-		{ id: 2, label: 'Semestre completo', percentage: 0.08 },
 		{
-			id: 3,
+			id: 1,
 			label: 'Descuento por ser egresado UNI',
 			percentage: 0.15,
 			requireGraduate: true,
+			purposeToGlobalDiscountId: [2, 4, 5, 6, 7],
 		},
 	];
 
-	const purposeToGlobalDiscountId = {
-		4: 2, // propósito 4 usa "Maestría completa"
-		5: 1, // propósito 5 usa "Semestre completo"
-	};
-
 	const studentScholarships = [
-		{ id: 10, label: 'Beca alto rendimiento', percentage: 0.25 },
+		{
+			id: 10,
+			label: 'Beca alto rendimiento',
+			percentage: 0.25,
+		},
 	];
 
-	const globalDiscountId = purposeToGlobalDiscountId[selectedPurpose?.value];
-	const applicableGlobalDiscount = globalDiscounts.find(
-		(d) => d.id === globalDiscountId
-	);
+	const validPurposeIds = [4, 5, 6];
 
-	const scholarshipDiscounts = studentScholarships.map((s) => ({
-		id: `scholarship-${s.id}`,
-		label: s.label,
-		percentage: s.percentage,
-	}));
-	const allowedGraduatePurposes = [2, 4, 5, 6, 7]; // Propósitos donde aplica el descuento de egresado UNI
-	const graduateDiscount = globalDiscounts.find(
-		(d) => d.id === 3 && d.requireGraduate
-	);
-	const discounts = [
-		...(applicableGlobalDiscount
-			? [
-					{
-						id: `global-${applicableGlobalDiscount.id}`,
-						label: applicableGlobalDiscount.label,
-						percentage: applicableGlobalDiscount.percentage,
-					},
-				]
-			: []),
-
-		...(dataUser?.is_uni_graduate &&
-		allowedGraduatePurposes.includes(selectedPurpose?.value) &&
-		graduateDiscount
-			? [
-					{
-						id: `global-${graduateDiscount.id}`,
-						label: graduateDiscount.label,
-						percentage: graduateDiscount.percentage,
-					},
-				]
-			: []),
-
-		...scholarshipDiscounts,
-	];
 	//--cambiar---//
 	const MyEnrollment = [
 		{
@@ -159,7 +120,7 @@ export const MyPaymentAddRequests = () => {
 	const hasStudentRole = dataUser.roles?.some(
 		(role) => role.name === 'Estudiante'
 	);
-	const ProcessTypeOptions = hasStudentRole
+	const ProcessTypeOptions = !hasStudentRole
 		? [
 				{ label: 'Admisión', value: 'admission' },
 				{ label: 'Matrícula', value: 'enrollment' },
@@ -182,29 +143,120 @@ export const MyPaymentAddRequests = () => {
 			label: method.name,
 		})) || [];
 
+	const paymentRules = useMemo(
+		() => [
+			{
+				payment_purpose: 1,
+				payment_purpose_name: 'Admisión ordinaria',
+				process_types: ['admission', 'enrollment'],
+				applies_to_students: false,
+				applies_to_applicants: true,
+				only_first_enrollment: false,
+				student_status: null,
+				amount_type: 'fijo', // No aplica
+				amount: '150',
+				use_credits_from: null,
+				discount_percentage: null,
+			},
+			{
+				payment_purpose: 4,
+				payment_purpose_name: 'Pago por semestre completo',
+				process_types: ['enrollment'],
+				applies_to_students: true,
+				applies_to_applicants: false,
+				only_first_enrollment: true,
+				student_status: null,
+				amount_type: 'calcular',
+				amount: null,
+				use_credits_from: 'enrollment_program',
+				discount_percentage: 0.08,
+			},
+			{
+				payment_purpose: 5,
+				payment_purpose_name: 'Pago por curso',
+				process_types: ['enrollment'],
+				applies_to_students: true,
+				applies_to_applicants: false,
+				only_first_enrollment: false,
+				student_status: null,
+				amount_type: 'calcular',
+				amount: null,
+				use_credits_from: 'program',
+				discount_percentage: 0.16,
+			},
+			{
+				payment_purpose: 6,
+				payment_purpose_name: 'Matrícula extraordinaria',
+				process_types: ['enrollment'],
+				applies_to_students: true,
+				applies_to_applicants: false,
+				only_first_enrollment: false,
+				student_status: null, // aplica solo para egresados, si deseas
+				amount_type: 'fijo',
+				amount: 150.0,
+				use_credits_from: null,
+				discount_percentage: null,
+			},
+		],
+		[]
+	);
+	const currentRule = paymentRules?.find(
+		(rule) => rule.payment_purpose === selectedPurpose?.value
+	);
+	const discounts = [
+		// 1. Global Discounts válidos para los propósitos seleccionados
+		...globalDiscounts
+			.filter(() => validPurposeIds.includes(selectedPurpose?.value))
+			.filter((d) => !d.requireGraduate || dataUser?.is_uni_graduate)
+			.map((d) => ({
+				id: `global-${d.id}`,
+				label: d.label,
+				percentage: d.percentage,
+			})),
+
+		// 2. Becas válidas para los propósitos seleccionados
+		...studentScholarships
+			.filter(() => validPurposeIds.includes(selectedPurpose?.value))
+			.map((s) => ({
+				id: `scholarship-${s.id}`,
+				label: s.label,
+				percentage: s.percentage,
+			})),
+
+		// 3. Descuento de la regla de pago
+		...(currentRule?.discount_percentage
+			? [
+					{
+						id: `rule-${currentRule.payment_purpose}`,
+						label: `Descuento por modalidad de pago`,
+						percentage: currentRule.discount_percentage,
+					},
+				]
+			: []),
+	];
+	const userRoles = dataUser.roles?.map((r) => r.name.toLowerCase());
+
 	const isFirstEnrollment = selectedProgram?.first;
 
-	const PurposesOptions =
-		dataPurposes?.results
-			?.filter((item) => {
-				if (item.id === 3 || item.id === 7) return false;
-				if (selectedProcessType?.value === 'enrollment') {
-					if (isFirstEnrollment) {
-						// Si es primera matrícula, solo mostrar propósito 4
-						return { ...item, id: 5 };
-					} else {
-						// Si no es primera matrícula, mostrar todos menos el 4
-						return item.id !== 5;
-					}
-				}
-				if (selectedProcessType?.value === 'admission') {
-					if (item.id === 1 || item.id === 2 || item.id === 6) return true;
-				}
-			})
-			.map((item) => ({
-				label: item.name,
-				value: item.id,
-			})) || [];
+	const filteredPurposes = paymentRules.filter((rule) => {
+		const matchesProcess = rule.process_types.includes(
+			selectedProcessType?.value
+		);
+		const matchesRole =
+			(rule.applies_to_students && !userRoles.includes('estudiante')) ||
+			(rule.applies_to_applicants && userRoles.includes('postulante'));
+
+		const matchesFirstEnrollment =
+			!rule.only_first_enrollment ||
+			(rule.only_first_enrollment && isFirstEnrollment);
+
+		return matchesProcess && matchesRole && matchesFirstEnrollment;
+	});
+
+	const PurposesOptions = filteredPurposes.map((rule) => ({
+		value: rule.payment_purpose,
+		label: rule.payment_purpose_name,
+	}));
 
 	const TypeOptions = [
 		{ value: 1, label: 'Boleta' },
@@ -294,45 +346,63 @@ export const MyPaymentAddRequests = () => {
 	};
 
 	useEffect(() => {
-		if (!selectedPurpose?.value) {
+		if (!selectedPurpose?.value || selectedPurpose?.value === 1) {
 			setAmountValue('');
 			setDescription('');
-			return;
-		}
-		if (selectedPurpose?.value === 1) {
-			setDescription('');
+
 			return;
 		}
 
-		const priceCredit = parseFloat(DataProgram?.price_credit);
-		const fixedAmount = PaymentRules?.results?.[0]?.amount;
+		console.log('aqui');
+		const priceCredit = parseFloat(DataProgram?.price_credit || '0');
 
-		// Si el propósito tiene monto fijo definido
-		if (fixedAmount) {
-			setAmountValue(fixedAmount);
+		// Obtener la regla correspondiente al propósito seleccionado
+		const currentRule = paymentRules?.find(
+			(rule) => rule.payment_purpose === selectedPurpose.value
+		);
 
+		// Si no hay regla, no se puede calcular
+		if (!currentRule) {
+			setAmountValue('');
+			setIsAmountReadOnly(false);
+			return;
+		}
+
+		// Si tiene monto fijo
+		if (currentRule?.amount_type === 'fijo' && currentRule.amount) {
+			setAmountValue(currentRule?.amount);
 			setIsAmountReadOnly(true);
 			return;
 		}
 
-		// Si el propósito no tiene monto fijo (y puede ser calculado)
-		let amount = '';
-		if (selectedPurpose.value === 4) {
-			const credits = DataEnrollmentProgram.credits;
-			amount = (credits * priceCredit).toFixed(2); // 8% descuento
-		} else if (selectedPurpose.value === 5) {
-			const credits = selectedProgram.total_credits;
-			amount = (credits * priceCredit).toFixed(2); // 16% descuento
+		// Si es monto calculado
+		if (currentRule.amount_type === 'calcular') {
+			let credits = 0;
+
+			if (currentRule.use_credits_from === 'enrollment_program') {
+				credits = parseFloat(DataEnrollmentProgram?.credits || '0');
+			} else if (currentRule.use_credits_from === 'program') {
+				credits = parseFloat(selectedProgram?.total_credits || '0');
+			}
+
+			const baseAmount = credits * priceCredit;
+			const discount = currentRule.discount_percentage || 0;
+			const finalAmount = (baseAmount * (1 - discount)).toFixed(2);
+
+			setAmountValue(finalAmount);
+			setIsAmountReadOnly(false);
+			return;
 		}
 
-		setAmountValue(amount);
-		setIsAmountReadOnly(false); // los propósitos 4 y 5 son calculados
+		// Default fallback
+		setAmountValue('');
+		setIsAmountReadOnly(false);
 	}, [
 		selectedPurpose?.value,
 		DataProgram,
 		DataEnrollmentProgram,
 		selectedProgram,
-		PaymentRules,
+		paymentRules,
 	]);
 
 	return (
