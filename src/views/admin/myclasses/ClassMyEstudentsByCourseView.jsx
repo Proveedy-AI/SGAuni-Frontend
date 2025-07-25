@@ -25,12 +25,13 @@ export const ClassMyEstudentsByCourseView = () => {
 
   // simular campos evaluations y has_configured de courseGroup
   const evaluations = [
-    { id: 1, name: "P1" },
-    { id: 2, name: "P2" },
-    { id: 3, name: "P3" },
-    { id: 4, name: "P4" }
+    { id: 1, name: "P1", weight: 0.3, date: "2023-10-01T00:00:00.000Z", createdAt: "2025-10-01T00:00:00.000Z", updatedAt: "2025-10-01T00:00:00.000Z" },
+    { id: 2, name: "P2", weight: 0.3, date: "2023-10-01T00:00:00.000Z", createdAt: "2025-10-01T00:00:00.000Z", updatedAt: "2025-10-01T00:00:00.000Z" },
+    { id: 3, name: "P3", weight: 0.2, date: "2023-10-01T00:00:00.000Z", createdAt: "2025-10-01T00:00:00.000Z", updatedAt: "2025-10-01T00:00:00.000Z" },
+    { id: 4, name: "P4", weight: 0.2, date: "2023-10-01T00:00:00.000Z", createdAt: "2025-10-01T00:00:00.000Z", updatedAt: "2025-10-01T00:00:00.000Z" },
   ];
-  const has_configured = false;
+  const has_configured = true;
+  const mode_calification = 2; // null: sin configuración ,1: Porcentaje, 2: Promedio simple, 3: Conceptual
 
   const {
     //data: studentsData,
@@ -186,6 +187,7 @@ export const ClassMyEstudentsByCourseView = () => {
                 </IconButton>
                 <ConfigurateCalificationCourseModal
                   evaluations={evaluations}
+                  mode_calification= {mode_calification}
                 />
               </SimpleGrid>
             </Flex>
