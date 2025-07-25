@@ -1,6 +1,6 @@
 import { ReactSelect } from '@/components';
 import TuitionSummaryCard from '@/components/modals/tuition/TuitionSummaryCard';
-import { Alert, Button, Field, toaster } from '@/components/ui';
+import { Alert, Button, Checkbox, Field, toaster } from '@/components/ui';
 import {
 	useReadMyApplicants,
 	useReadPaymentRules,
@@ -16,6 +16,7 @@ import {
 	Card,
 	Flex,
 	Heading,
+	HStack,
 	Icon,
 	Input,
 	List,
@@ -37,6 +38,7 @@ export const MyPaymentAddRequests = () => {
 	const [selectedMethod, setSelectedMethod] = useState(null);
 	const [selectedPurpose, setSelectedPurpose] = useState(null);
 	const [selectedDocumentType, setSelectedDocumentType] = useState(null);
+	const [acceptTerms, setAcceptTerms] = useState(false);
 	const [numDocCarpeta, setnumDocCarpeta] = useState('');
 	const [amountValue, setAmountValue] = useState('');
 	const [isAmountReadOnly, setIsAmountReadOnly] = useState(false);
@@ -157,7 +159,7 @@ export const MyPaymentAddRequests = () => {
 	const hasStudentRole = dataUser.roles?.some(
 		(role) => role.name === 'Estudiante'
 	);
-	const ProcessTypeOptions = !hasStudentRole
+	const ProcessTypeOptions = hasStudentRole
 		? [
 				{ label: 'Admisión', value: 'admission' },
 				{ label: 'Matrícula', value: 'enrollment' },
@@ -240,6 +242,7 @@ export const MyPaymentAddRequests = () => {
 						document_type: selectedDocumentType?.value,
 						num_document: numDocCarpeta,
 						description: description,
+						aceppt_terms: acceptTerms,
 					}
 				: {
 						payment_method: selectedMethod?.value,
@@ -249,6 +252,7 @@ export const MyPaymentAddRequests = () => {
 						document_type: selectedDocumentType?.value,
 						num_document: numDocCarpeta,
 						description: description,
+						accept_terms: acceptTerms,
 					};
 
 		paymentRequests(payload, {
@@ -560,11 +564,11 @@ export const MyPaymentAddRequests = () => {
 											setDescription={setDescription}
 										/>
 									)}
-								<Field label='Descripción Adicional'>
+								<Field label='Información Adicional adjunta'>
 									<Textarea
 										value={description}
 										disabled
-										placeholder='Proporciona detalles adicionales si el propósito lo requiere...'
+										placeholder='Se adjuntara informacion adicional automáticamente...'
 										rows={3}
 									/>
 								</Field>
@@ -593,10 +597,28 @@ export const MyPaymentAddRequests = () => {
 									generada.
 								</Alert>
 
+								<HStack align='start' gap={3}>
+									<Checkbox
+										checked={acceptTerms}
+										onChange={(e) => setAcceptTerms(e.target.checked)}
+									/>
+									<VStack align='start' gap={1}>
+										<Text fontSize='sm'>
+											Declaro que los{' '}
+											<Text as='a' color='blue.600'>
+												datos personales proporcionados
+											</Text>{' '}
+											son verídicos y completos. En caso contrario, los
+											beneficios y solicitudes podrán ser cancelados.
+										</Text>
+									</VStack>
+								</HStack>
+
 								<Button
 									loading={isPending}
 									colorPalette='blue'
 									leftIcon={<FiPlus />}
+									disabled={!acceptTerms}
 									width='full'
 									onClick={handleSubmitData}
 								>
