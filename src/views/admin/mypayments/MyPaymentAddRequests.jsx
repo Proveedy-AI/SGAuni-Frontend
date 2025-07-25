@@ -1,4 +1,5 @@
 import { ReactSelect } from '@/components';
+import TuitionSummaryCard from '@/components/modals/tuition/TuitionSummaryCard';
 import { Alert, Button, Field, toaster } from '@/components/ui';
 import {
 	useReadMyApplicants,
@@ -11,7 +12,6 @@ import { useCreatePaymentRequest } from '@/hooks/payment_requests';
 import { useReadPurposes } from '@/hooks/purposes';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import {
-	Badge,
 	Box,
 	Card,
 	Flex,
@@ -19,14 +19,12 @@ import {
 	Icon,
 	Input,
 	List,
-	Separator,
 	SimpleGrid,
 	Text,
 	Textarea,
 	VStack,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { FaCalculator, FaPercentage } from 'react-icons/fa';
 import {
 	FiAlertCircle,
 	FiAlertTriangle,
@@ -42,6 +40,7 @@ export const MyPaymentAddRequests = () => {
 	const [numDocCarpeta, setnumDocCarpeta] = useState('');
 	const [amountValue, setAmountValue] = useState('');
 	const [isAmountReadOnly, setIsAmountReadOnly] = useState(false);
+	const [description, setDescription] = useState('');
 	const [isSelectCaja, setisSelectCaja] = useState(false);
 	const [errors, setErrors] = useState({});
 	const [selectedProcessType, setSelectedProcessType] = useState(null);
@@ -62,7 +61,6 @@ export const MyPaymentAddRequests = () => {
 		selectedProgram?.programId || null,
 		{}
 	);
-
 	const { data: DataEnrollmentProgram } = useReadEnrollmentsProgramsbyId(
 		selectedProgram?.enrollment_program || null,
 		{}
@@ -77,16 +75,65 @@ export const MyPaymentAddRequests = () => {
 		}
 	}, [selectedDocumentType, dataUser]);
 
-	const benefits_students = {
-		id: 0,
-		student: 0,
-		student_full_name: 'string',
-		founding_source: 1,
-		founding_source_display: 'string',
-		other_founding_source: 'string',
-		discount_percentage: 'string',
+	const globalDiscounts = [
+		{ id: 1, label: 'Maestría completa', percentage: 0.16 },
+		{ id: 2, label: 'Semestre completo', percentage: 0.08 },
+		{
+			id: 3,
+			label: 'Descuento por ser egresado UNI',
+			percentage: 0.15,
+			requireGraduate: true,
+		},
+	];
+
+	const purposeToGlobalDiscountId = {
+		4: 2, // propósito 4 usa "Maestría completa"
+		5: 1, // propósito 5 usa "Semestre completo"
 	};
 
+	const studentScholarships = [
+		{ id: 10, label: 'Beca alto rendimiento', percentage: 0.25 },
+	];
+
+	const globalDiscountId = purposeToGlobalDiscountId[selectedPurpose?.value];
+	const applicableGlobalDiscount = globalDiscounts.find(
+		(d) => d.id === globalDiscountId
+	);
+
+	const scholarshipDiscounts = studentScholarships.map((s) => ({
+		id: `scholarship-${s.id}`,
+		label: s.label,
+		percentage: s.percentage,
+	}));
+	const allowedGraduatePurposes = [2, 4, 5, 6, 7]; // Propósitos donde aplica el descuento de egresado UNI
+	const graduateDiscount = globalDiscounts.find(
+		(d) => d.id === 3 && d.requireGraduate
+	);
+	const discounts = [
+		...(applicableGlobalDiscount
+			? [
+					{
+						id: `global-${applicableGlobalDiscount.id}`,
+						label: applicableGlobalDiscount.label,
+						percentage: applicableGlobalDiscount.percentage,
+					},
+				]
+			: []),
+
+		...(dataUser?.is_uni_graduate &&
+		allowedGraduatePurposes.includes(selectedPurpose?.value) &&
+		graduateDiscount
+			? [
+					{
+						id: `global-${graduateDiscount.id}`,
+						label: graduateDiscount.label,
+						percentage: graduateDiscount.percentage,
+					},
+				]
+			: []),
+
+		...scholarshipDiscounts,
+	];
 	//--cambiar---//
 	const MyEnrollment = [
 		{
@@ -96,7 +143,6 @@ export const MyPaymentAddRequests = () => {
 			student: 2,
 			enrollment_period_program: 1,
 			is_first_enrollment: true,
-			total_credits: 120,
 		},
 	];
 
@@ -106,7 +152,6 @@ export const MyPaymentAddRequests = () => {
 		programId: item.programId,
 		enrollment_program: item.enrollment_period_program,
 		first: item.is_first_enrollment,
-		total_credits: item.total_credits,
 	}));
 
 	const hasStudentRole = dataUser.roles?.some(
@@ -140,6 +185,7 @@ export const MyPaymentAddRequests = () => {
 	const PurposesOptions =
 		dataPurposes?.results
 			?.filter((item) => {
+				if (item.id === 3 || item.id === 7) return false;
 				if (selectedProcessType?.value === 'enrollment') {
 					if (isFirstEnrollment) {
 						// Si es primera matrícula, solo mostrar propósito 4
@@ -149,7 +195,9 @@ export const MyPaymentAddRequests = () => {
 						return item.id !== 5;
 					}
 				}
-				if (item.id === 1 || item.id === 2) return true;
+				if (selectedProcessType?.value === 'admission') {
+					if (item.id === 1 || item.id === 2 || item.id === 6) return true;
+				}
 			})
 			.map((item) => ({
 				label: item.name,
@@ -191,6 +239,7 @@ export const MyPaymentAddRequests = () => {
 						purpose: selectedPurpose?.value,
 						document_type: selectedDocumentType?.value,
 						num_document: numDocCarpeta,
+						description: description,
 					}
 				: {
 						payment_method: selectedMethod?.value,
@@ -199,6 +248,7 @@ export const MyPaymentAddRequests = () => {
 						purpose: selectedPurpose?.value,
 						document_type: selectedDocumentType?.value,
 						num_document: numDocCarpeta,
+						description: description,
 					};
 
 		paymentRequests(payload, {
@@ -242,23 +292,21 @@ export const MyPaymentAddRequests = () => {
 	useEffect(() => {
 		if (!selectedPurpose?.value) {
 			setAmountValue('');
-
+			setDescription('');
 			return;
 		}
-		if (
-			!selectedPurpose?.value ||
-			!DataProgram ||
-			!DataEnrollmentProgram ||
-			!selectedProgram
-		)
+		if (selectedPurpose?.value === 1) {
+			setDescription('');
 			return;
+		}
 
-		const priceCredit = parseFloat(DataProgram.price_credit);
+		const priceCredit = parseFloat(DataProgram?.price_credit);
 		const fixedAmount = PaymentRules?.results?.[0]?.amount;
 
 		// Si el propósito tiene monto fijo definido
 		if (fixedAmount) {
 			setAmountValue(fixedAmount);
+
 			setIsAmountReadOnly(true);
 			return;
 		}
@@ -267,10 +315,10 @@ export const MyPaymentAddRequests = () => {
 		let amount = '';
 		if (selectedPurpose.value === 4) {
 			const credits = DataEnrollmentProgram.credits;
-			amount = (credits * priceCredit * 0.92).toFixed(2); // 8% descuento
+			amount = (credits * priceCredit).toFixed(2); // 8% descuento
 		} else if (selectedPurpose.value === 5) {
 			const credits = selectedProgram.total_credits;
-			amount = (credits * priceCredit * 0.84).toFixed(2); // 16% descuento
+			amount = (credits * priceCredit).toFixed(2); // 16% descuento
 		}
 
 		setAmountValue(amount);
@@ -310,6 +358,21 @@ export const MyPaymentAddRequests = () => {
 									<List.Root pl='4' mt='2'>
 										<List.Item>Solicitud por Derecho de Carpeta</List.Item>
 										<List.Item>Solicitud por Carpeta de Admisión</List.Item>
+									</List.Root>
+								</Alert>
+							)}
+
+							{isFirstEnrollment && (
+								<Alert status='warning' Icon={<FiAlertTriangle />}>
+									<Text>
+										Si esta es tu primera matrícula, debes solicitar la
+									</Text>
+									<List.Root pl='4' mt='2'>
+										<List.Item>Solicitud por Derecho de Admisión</List.Item>
+										<List.Item>
+											Solicitud por Segundo Derecho de Admisión (se debe pagar
+											hasta el segundo mes)
+										</List.Item>
 									</List.Root>
 								</Alert>
 							)}
@@ -396,7 +459,7 @@ export const MyPaymentAddRequests = () => {
 											value={numDocCarpeta}
 											onChange={(e) => setnumDocCarpeta(e.target.value)}
 											placeholder='Ingrese número de documento'
-											isReadOnly={selectedDocumentType?.value === 1}
+											disabled={selectedDocumentType?.value === 1}
 										/>
 									</Field>
 
@@ -455,213 +518,52 @@ export const MyPaymentAddRequests = () => {
 										/>
 									</Field>
 								</SimpleGrid>
+
+								{selectedPurpose?.value === 6 && (
+									<TuitionSummaryCard
+										title='Cálculo de Matrícula'
+										discounts={discounts}
+										setDescription={setDescription}
+										baseAmount={Number(amountValue)}
+									/>
+								)}
+
+								{selectedPurpose?.value == 2 && (
+									<TuitionSummaryCard
+										title='Cálculo de Matrícula'
+										discounts={discounts}
+										setDescription={setDescription}
+										baseAmount={Number(amountValue)}
+									/>
+								)}
+
 								{selectedPurpose?.value === 4 &&
 									DataEnrollmentProgram &&
 									DataProgram && (
-										<>
-											<Card.Root
-												bg='green.50'
-												border='1px solid'
-												borderColor='green.200'
-												borderRadius='xl'
-											>
-												<Card.Header pb={2}>
-													<Flex align='center' gap={2} color='green.800'>
-														<Icon as={FaCalculator} boxSize={5} />
-														<Heading fontSize='lg'>
-															Cálculo de Matrícula
-														</Heading>
-													</Flex>
-												</Card.Header>
-
-												<Card.Body pt={0}>
-													<Flex justify='space-between' align='center' mb={2}>
-														<Text fontSize='sm' color='gray.600'>
-															Créditos
-														</Text>
-														<Badge variant='subtle' colorPalette='green'>
-															{DataEnrollmentProgram.credits}
-														</Badge>
-													</Flex>
-
-													<Flex justify='space-between' align='center' mb={2}>
-														<Text fontSize='sm' color='gray.600'>
-															Precio por crédito
-														</Text>
-														<Text fontWeight='medium'>
-															S/{' '}
-															{Number.parseFloat(
-																DataProgram.price_credit
-															).toFixed(2)}
-														</Text>
-													</Flex>
-
-													<Separator my={3} />
-
-													<Flex justify='space-between' align='center' mb={2}>
-														<Text fontSize='sm' color='gray.600'>
-															Subtotal
-														</Text>
-														<Text fontWeight='medium'>
-															S/{' '}
-															{(
-																DataEnrollmentProgram.credits *
-																parseFloat(DataProgram.price_credit)
-															).toFixed(2)}
-														</Text>
-													</Flex>
-
-													<Flex
-														justify='space-between'
-														align='center'
-														mb={2}
-														color='green.700'
-													>
-														<Flex align='center' gap={1} fontSize='sm'>
-															<Icon as={FaPercentage} boxSize={4} />
-															Descuento aplicado (8%)
-														</Flex>
-														<Text fontWeight='medium'>
-															-S/{' '}
-															{(
-																DataEnrollmentProgram.credits *
-																	parseFloat(DataProgram.price_credit) -
-																DataEnrollmentProgram.credits *
-																	parseFloat(DataProgram.price_credit) *
-																	0.92
-															).toFixed(2)}
-														</Text>
-													</Flex>
-
-													<Separator my={3} />
-
-													<Flex
-														justify='space-between'
-														align='center'
-														mt={2}
-														fontWeight='bold'
-														fontSize='lg'
-														color='green.800'
-													>
-														<Text>Monto Final</Text>
-														<Text>
-															S/{' '}
-															{(
-																DataEnrollmentProgram.credits *
-																parseFloat(DataProgram.price_credit) *
-																0.92
-															).toFixed(2)}
-														</Text>
-													</Flex>
-												</Card.Body>
-											</Card.Root>
-										</>
+										<TuitionSummaryCard
+											title='Cálculo de Matrícula'
+											credits={DataEnrollmentProgram.credits}
+											pricePerCredit={parseFloat(DataProgram.price_credit)}
+											discounts={discounts}
+											setDescription={setDescription}
+										/>
 									)}
 
 								{selectedPurpose?.value === 5 &&
 									selectedProgram &&
 									DataProgram && (
-										<>
-											<Card.Root
-												bg='green.50'
-												border='1px solid'
-												borderColor='green.200'
-												borderRadius='xl'
-											>
-												<Card.Header pb={2}>
-													<Flex align='center' gap={2} color='green.800'>
-														<Icon as={FaCalculator} boxSize={5} />
-														<Heading fontSize='lg'>
-															Cálculo de Matrícula
-														</Heading>
-													</Flex>
-												</Card.Header>
-
-												<Card.Body pt={0}>
-													<Flex justify='space-between' align='center' mb={2}>
-														<Text fontSize='sm' color='gray.600'>
-															Créditos
-														</Text>
-														<Badge variant='subtle' colorPalette='green'>
-															{selectedProgram.total_credits}
-														</Badge>
-													</Flex>
-
-													<Flex justify='space-between' align='center' mb={2}>
-														<Text fontSize='sm' color='gray.600'>
-															Precio por crédito
-														</Text>
-														<Text fontWeight='medium'>
-															S/{' '}
-															{Number.parseFloat(
-																DataProgram.price_credit
-															).toFixed(2)}
-														</Text>
-													</Flex>
-
-													<Separator my={3} />
-
-													<Flex justify='space-between' align='center' mb={2}>
-														<Text fontSize='sm' color='gray.600'>
-															Subtotal
-														</Text>
-														<Text fontWeight='medium'>
-															S/{' '}
-															{(
-																selectedProgram.total_credits *
-																parseFloat(DataProgram.price_credit)
-															).toFixed(2)}
-														</Text>
-													</Flex>
-
-													<Flex
-														justify='space-between'
-														align='center'
-														mb={2}
-														color='green.700'
-													>
-														<Flex align='center' gap={1} fontSize='sm'>
-															<Icon as={FaPercentage} boxSize={4} />
-															Descuento aplicado (16%)
-														</Flex>
-														<Text fontWeight='medium'>
-															-S/{' '}
-															{(
-																selectedProgram.total_credits *
-																	parseFloat(DataProgram.price_credit) -
-																selectedProgram.total_credits *
-																	parseFloat(DataProgram.price_credit) *
-																	0.84
-															).toFixed(2)}
-														</Text>
-													</Flex>
-
-													<Separator my={3} />
-
-													<Flex
-														justify='space-between'
-														align='center'
-														mt={2}
-														fontWeight='bold'
-														fontSize='lg'
-														color='green.800'
-													>
-														<Text>Monto Final</Text>
-														<Text>
-															S/{' '}
-															{(
-																selectedProgram.total_credits *
-																parseFloat(DataProgram.price_credit) *
-																0.84
-															).toFixed(2)}
-														</Text>
-													</Flex>
-												</Card.Body>
-											</Card.Root>
-										</>
+										<TuitionSummaryCard
+											title='Cálculo de Matrícula'
+											credits={DataProgram.total_program_credits}
+											pricePerCredit={parseFloat(DataProgram.price_credit)}
+											discounts={discounts}
+											setDescription={setDescription}
+										/>
 									)}
 								<Field label='Descripción Adicional'>
 									<Textarea
+										value={description}
+										disabled
 										placeholder='Proporciona detalles adicionales si el propósito lo requiere...'
 										rows={3}
 									/>
