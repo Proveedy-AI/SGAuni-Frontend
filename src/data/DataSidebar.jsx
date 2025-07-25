@@ -78,12 +78,12 @@ export const useDataSidebar = () => {
 			label: 'Mis Pagos',
 			permission: 'payment.mypaymentsdebts.view',
 		},
-    {
-      href: '/myenrollments',
-      icon: FiBookOpen,
-      label: 'Mis Matrículas',
-      permission: 'enrollments.myenrollments.view',
-    },
+		{
+			href: '/myenrollments',
+			icon: FiBookOpen,
+			label: 'Mis Matrículas',
+			permission: 'enrollments.myenrollments.view',
+		},
 		{
 			href: '/contracts',
 			icon: FaFileContract,
@@ -113,8 +113,8 @@ export const useDataSidebar = () => {
 					icon: FiCheck,
 					label: 'Procesos Matricula',
 					permission: 'enrollments.proccessEnrollments.view',
-				}
-			]
+				},
+			],
 		},
 		{
 			href: '/debts/payment-requests',
@@ -133,6 +133,12 @@ export const useDataSidebar = () => {
 			icon: FiUsers,
 			label: 'Usuarios',
 			permission: 'users.users.view',
+		},
+		{
+			href: '/commitment-letters',
+			label: 'Fraccionamientos',
+			icon: FiFileText,
+			permission: 'commitment.commitment.view',
 		},
 	];
 

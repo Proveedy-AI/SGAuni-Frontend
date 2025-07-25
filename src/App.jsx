@@ -258,10 +258,6 @@ function App() {
 									</Route>
 									<Route index element={<PaymentRequestsView />} />
 									<Route path=':id' element={<PaymentOrdersByRequest />} />
-									<Route
-										path='commitment-letters'
-										element={<CommitmentLetters />}
-									/>
 								</Route>
 								<Route
 									element={
@@ -274,6 +270,10 @@ function App() {
 									/>
 								</Route>
 							</Route>
+							<Route
+								path='commitment-letters'
+								element={<CommitmentLetters />}
+							/>
 							{/* SETTINGS */}
 							<Route path='settings' element={<SettingsLayout />}>
 								<Route
