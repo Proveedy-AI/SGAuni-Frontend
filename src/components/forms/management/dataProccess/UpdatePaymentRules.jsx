@@ -9,10 +9,11 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
 import { FiInfo } from 'react-icons/fi';
-import { useCreateProgram } from '@/hooks';
+
 import PropTypes from 'prop-types';
 import { ReactSelect } from '@/components/select';
 import { HiPencil } from 'react-icons/hi2';
+import { useUpdatePaymentRules } from '@/hooks/payment_rules/useUpdatePaymentRules';
 
 export const UpdatePaymentRules = ({
 	fetchData,
@@ -23,7 +24,7 @@ export const UpdatePaymentRules = ({
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 	const [errors, setErrors] = useState({});
-	const { mutate: register, isPending: loading } = useCreateProgram();
+	const { mutate: update, isPending: loading } = useUpdatePaymentRules();
 
 	const [purposeRequest, setPurposeRequest] = useState({
 		payment_purpose: null,
@@ -46,16 +47,23 @@ export const UpdatePaymentRules = ({
 				),
 				use_credits_from: item?.use_credits_from
 					? CreditsFromOptions.find(
-							(opt) => opt.value === item.use_credits_from?.toString()
+							(opt) => opt.value === item.use_credits_from
 						)
 					: null,
 				process_types: item?.process_types
-					? item.process_types
-							.split(',')
-							.map((type) =>
+					? Array.isArray(item.process_types)
+						? item.process_types.map((type) =>
 								ProcessTypesOptions.find((opt) => opt.value === type)
 							)
+						: item.process_types
+								.split(',')
+								.map((type) =>
+									ProcessTypesOptions.find((opt) => opt.value === type)
+								)
 					: [],
+				amount_type: item?.amount_type
+					? TypeAmountOptions.find((opt) => opt.value === item.amount_type)
+					: null,
 			}));
 		}
 	}, [PurposeOptions, item]);
@@ -104,55 +112,56 @@ export const UpdatePaymentRules = ({
 			applies_to_students: purposeRequest.applies_to_students,
 			applies_to_applicants: purposeRequest.applies_to_applicants,
 			only_first_enrollment: purposeRequest.only_first_enrollment,
-			process_types: purposeRequest.process_types
-				.map((type) => type.value)
-				.join(','),
-			admission_modality: null,
-			student_status: 1,
-			program: null,
-			in_installments: false,
+			process_types: purposeRequest.process_types.map((type) => type.value),
+			//admission_modality: null,
+			//student_status: 1,
+			//program: null,
+			//in_installments: false,
 		};
-
-		register(payload, {
-			onSuccess: () => {
-				toaster.create({
-					title: 'Regla creada correctamente',
-					type: 'success',
-				});
-				setOpen(false);
-				fetchData();
-				setPurposeRequest({
-					name: '',
-					type: null,
-					coordinator: null,
-					price_credit: '',
-				});
-			},
-			onError: (error) => {
-				toaster.create({
-					title: error.message,
-					type: 'error',
-				});
-			},
-		});
+		console.log(payload)
+		update(
+			{ id: item.id, payload },
+			{
+				onSuccess: () => {
+					toaster.create({
+						title: 'Regla actualizada correctamente',
+						type: 'success',
+					});
+					setOpen(false);
+					fetchData();
+					setPurposeRequest({
+						name: '',
+						type: null,
+						coordinator: null,
+						price_credit: '',
+					});
+				},
+				onError: (error) => {
+					toaster.create({
+						title: error.message,
+						type: 'error',
+					});
+				},
+			}
+		);
 	};
 
 	const TypeAmountOptions = [
-		{ value: 'fijo', label: 'Fijo' },
-		{ value: 'calcular', label: 'Calcular' },
+		{ value: 1, label: 'Fijo' },
+		{ value: 2, label: 'Calcular' },
 	];
 
 	const CreditsFromOptions = [
 		{
-			value: 'enrollment_program',
+			value: 1,
 			label: 'Creditos de la matricula del programa',
 		},
-		{ value: 'program', label: 'Creditos de Programa de postgrado' },
+		{ value: 2, label: 'Creditos de Programa de postgrado' },
 	];
-
+console.log(item)
 	return (
 		<Modal
-			title='Crear Reglas de Pago'
+			title='Actualizar Reglas de Pago'
 			placement='center'
 			size='5xl'
 			trigger={
@@ -247,7 +256,7 @@ export const UpdatePaymentRules = ({
 									options={TypeAmountOptions}
 								/>
 							</Field>
-							{purposeRequest.amount_type?.value === 'fijo' && (
+							{purposeRequest.amount_type?.value === 1 && (
 								<Field
 									label='Monto'
 									invalid={!!errors.amount}
@@ -269,7 +278,7 @@ export const UpdatePaymentRules = ({
 									/>
 								</Field>
 							)}
-							{purposeRequest.amount_type?.value === 'calcular' && (
+							{purposeRequest.amount_type?.value === 2 && (
 								<Field
 									label='Creditos a usar'
 									errorText={errors.use_credits_from}

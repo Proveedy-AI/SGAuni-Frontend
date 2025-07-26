@@ -9,7 +9,7 @@ import {
 import { Card, Flex, Input, SimpleGrid, Stack } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 import { FiInfo, FiPlus } from 'react-icons/fi';
-import { useCreateProgram } from '@/hooks';
+import { useCreatePaymentRules } from '@/hooks';
 import PropTypes from 'prop-types';
 import { ReactSelect } from '@/components/select';
 
@@ -21,7 +21,7 @@ export const AddPaymentRules = ({
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 	const [errors, setErrors] = useState({});
-	const { mutate: register, isPending: loading } = useCreateProgram();
+	const { mutate: register, isPending: loading } = useCreatePaymentRules();
 
 	const [purposeRequest, setPurposeRequest] = useState({
 		payment_purpose: null,
@@ -79,13 +79,8 @@ export const AddPaymentRules = ({
 			applies_to_students: purposeRequest.applies_to_students,
 			applies_to_applicants: purposeRequest.applies_to_applicants,
 			only_first_enrollment: purposeRequest.only_first_enrollment,
-			process_types: purposeRequest.process_types
-				.map((type) => type.value)
-				.join(','),
-			admission_modality: null,
+			process_types: purposeRequest.process_types.map((type) => type.value),
 			student_status: 1,
-			program: null,
-			in_installments: false,
 		};
 
 		register(payload, {
@@ -113,16 +108,16 @@ export const AddPaymentRules = ({
 	};
 
 	const TypeAmountOptions = [
-		{ value: 'fijo', label: 'Fijo' },
-		{ value: 'calcular', label: 'Calcular' },
+		{ value: 1, label: 'Fijo' },
+		{ value: 2, label: 'Calcular' },
 	];
 
 	const CreditsFromOptions = [
 		{
-			value: 'enrollment_program',
+			value: 1,
 			label: 'Creditos de la matricula del programa',
 		},
-		{ value: 'program', label: 'Creditos de Programa de postgrado' },
+		{ value: 2, label: 'Creditos de Programa de postgrado' },
 	];
 
 	return (
@@ -227,7 +222,7 @@ export const AddPaymentRules = ({
 									options={TypeAmountOptions}
 								/>
 							</Field>
-							{purposeRequest.amount_type?.value === 'fijo' && (
+							{purposeRequest.amount_type?.value === 1 && (
 								<Field
 									label='Monto'
 									invalid={!!errors.amount}
@@ -249,7 +244,7 @@ export const AddPaymentRules = ({
 									/>
 								</Field>
 							)}
-							{purposeRequest.amount_type?.value === 'calcular' && (
+							{purposeRequest.amount_type?.value === 2 && (
 								<Field
 									label='Creditos a usar'
 									errorText={errors.use_credits_from}

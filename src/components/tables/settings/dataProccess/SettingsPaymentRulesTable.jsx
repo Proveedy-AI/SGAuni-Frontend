@@ -1,14 +1,24 @@
 //import { UpdateSettingsCountryForm } from '@/components/forms';
 import { UpdatePaymentRules } from '@/components/forms/management/dataProccess/UpdatePaymentRules';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
-import { Pagination } from '@/components/ui';
+import { ConfirmModal, Pagination, toaster } from '@/components/ui';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
+import { useDeletePaymentRules } from '@/hooks';
 import useSortedData from '@/utils/useSortedData';
 
-import { Box, HStack, Table } from '@chakra-ui/react';
+import {
+	Badge,
+	Box,
+	HStack,
+	IconButton,
+	Span,
+	Table,
+	Text,
+} from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
+import { FiTrash2 } from 'react-icons/fi';
 
 const Row = memo(
 	({
@@ -20,6 +30,28 @@ const Row = memo(
 		data,
 		PurposeOptions,
 	}) => {
+		const [open, setOpen] = useState(false);
+
+		const { mutate: deletePaymentRule, isPending } = useDeletePaymentRules();
+
+		const handleDelete = () => {
+			deletePaymentRule(item.id, {
+				onSuccess: () => {
+					toaster.create({
+						title: 'Regla de pago eliminada correctamente',
+						type: 'success',
+					});
+					fetchData();
+					setOpen(false);
+				},
+				onError: (error) => {
+					toaster.create({
+						title: error.message,
+						type: 'error',
+					});
+				},
+			});
+		};
 		return (
 			<Table.Row key={item?.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
 				<Table.Cell>
@@ -29,9 +61,27 @@ const Row = memo(
 				</Table.Cell>
 				<Table.Cell>{item?.payment_purpose_name ?? ''}</Table.Cell>
 				<Table.Cell>
-					{Array.isArray(item?.process_types)
-						? item.process_types.join(', ')
-						: ''}
+					<HStack spacing={1} wrap='wrap'>
+						{Array.isArray(item?.process_types) &&
+							item.process_types.map((type) => (
+								<Badge
+									key={type}
+									colorPalette={
+										type === 'admission'
+											? 'blue'
+											: type === 'enrollment'
+												? 'green'
+												: 'gray'
+									}
+								>
+									{type === 'admission'
+										? 'Admisión'
+										: type === 'enrollment'
+											? 'Matrícula'
+											: type}
+								</Badge>
+							))}
+					</HStack>
 				</Table.Cell>
 				<Table.Cell>
 					{item?.applies_to_students === true ? 'Sí' : 'No'}
@@ -39,14 +89,19 @@ const Row = memo(
 				<Table.Cell>
 					{item?.applies_to_applicants === true ? 'Sí' : 'No'}
 				</Table.Cell>
-				<Table.Cell>{item?.amount_type ?? ''}</Table.Cell>
-				<Table.Cell>{item?.amount ?? ''}</Table.Cell>
+				<Table.Cell>{item?.amount_type_display ?? ''}</Table.Cell>
+				<Table.Cell>{item?.amount ?? '-'}</Table.Cell>
 				<Table.Cell>
-					{item?.use_credits_from === 'enrollment_program'
-						? 'Matrícula del programa'
-						: item?.use_credits_from === 'program'
-							? 'Programa'
-							: 'No aplica'}
+					{item?.only_first_enrollment === true ? 'Sí' : 'No'}
+				</Table.Cell>
+				<Table.Cell>
+					{item?.use_credits_from === 1 ? (
+						<Badge colorPalette='blue'>Matrícula del programa</Badge>
+					) : item?.use_credits_from === 2 ? (
+						<Badge colorPalette='green'>Programa</Badge>
+					) : (
+						<Badge colorPalette='gray'>No aplica</Badge>
+					)}
 				</Table.Cell>
 				<Table.Cell>{item?.discount_percentage ?? ''}</Table.Cell>
 				<Table.Cell>
@@ -56,6 +111,27 @@ const Row = memo(
 							PurposeOptions={PurposeOptions}
 							fetchData={fetchData}
 						/>
+						<ConfirmModal
+							placement='center'
+							trigger={
+								<IconButton colorPalette='red' size='xs'>
+									<FiTrash2 />
+								</IconButton>
+							}
+							open={open}
+							onOpenChange={(e) => setOpen(e.open)}
+							onConfirm={() => handleDelete(item.id)}
+							loading={isPending}
+							
+						>
+							<Text>
+								¿Estás seguro que quieres eliminar a
+								<Span fontWeight='semibold' px='1'>
+									{item.name}
+								</Span>
+								de la lista de reglas?
+							</Text>
+						</ConfirmModal>
 					</HStack>
 				</Table.Cell>
 			</Table.Row>
@@ -153,6 +229,14 @@ export const SettingsPaymentRulesTable = ({
 								<SortableHeader
 									label='Monto'
 									columnKey='amount'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader w='10%'>
+								<SortableHeader
+									label='1ra matrícula'
+									columnKey='only_first_enrollment'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
