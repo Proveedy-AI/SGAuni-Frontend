@@ -3,7 +3,7 @@ import { Field, InputGroup, ModalSimple, Tooltip } from "@/components/ui";
 import { useRef, useState } from "react";
 import { Badge, Box, Card, Icon, IconButton, Input, SimpleGrid, Stack } from '@chakra-ui/react';
 import { HiEye } from 'react-icons/hi2';
-import { FiFile, FiCalendar, FiDollarSign, FiBook, FiUser, FiHash, FiAtSign, FiPhone } from 'react-icons/fi';
+import { FiFile, FiCalendar, FiDollarSign, FiBook, FiUser, FiHash, FiPercent } from 'react-icons/fi';
 
 export const ViewFractionationRequestsModal = ({ item, matchStatus }) => {
   const contentRef = useRef();
@@ -13,7 +13,7 @@ export const ViewFractionationRequestsModal = ({ item, matchStatus }) => {
     <ModalSimple
       title='Vista previa de la solicitud'
       placement='center'
-      size='2xl'
+      size='5xl'
       trigger={
         <Box>
           <Tooltip
@@ -47,82 +47,106 @@ export const ViewFractionationRequestsModal = ({ item, matchStatus }) => {
         }}
       >
         <Card.Root>
-          <Card.Header>
+          <Card.Header pb={2}>
             <Card.Title
               display='flex'
               alignItems='center'
               gap={2}
-              fontSize='lg'
-              color='blue.600'
+              fontSize='xl'
+              color='blue.700'
+              fontWeight="bold"
             >
-              <Icon as={FiFile} boxSize={5} />
+              <Icon as={FiFile} boxSize={6} />
               Información de la solicitud
             </Card.Title>
           </Card.Header>
-          <Card.Body>
-            <SimpleGrid columns={{ base: 1, md: 2 }} gap={3}>
-              <Field label='Fecha de solicitud:'>
-                <InputGroup w='100%' flex='1' startElement={<FiCalendar />}>
-                  <Input readOnly  ml='1' variant='flushed' value={item.request_date} />
+          <Card.Body pt={4}>
+            <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} gap={3}>
+              <Field label='Periodo de matrícula:'>
+                <InputGroup w='100%' startElement={<FiCalendar color="#3182ce" />}>
+                  <Input readOnly ml='1' variant='filled' bg="gray.50" value={item.enrollment_name} />
+                </InputGroup>
+              </Field>
+              <Field label='Tipo de plan:'>
+                <InputGroup w='100%' startElement={<FiBook color="#3182ce" />}>
+                  <Input readOnly ml='1' variant='filled' bg="gray.50" value={item.plan_type_display} />
+                </InputGroup>
+              </Field>
+              <Field label='Monto total:'>
+                <InputGroup w='100%' startElement={<FiDollarSign color="#38a169" />}>
+                  <Input readOnly ml='1' variant='filled' bg="gray.50" value={item.total_amount} />
+                </InputGroup>
+              </Field>
+              <Field label='Amortización total:'>
+                <InputGroup w='100%' startElement={<FiDollarSign color="#38a169" />}>
+                  <Input readOnly ml='1' variant='filled' bg="gray.50" value={item.total_amortization} />
+                </InputGroup>
+              </Field>
+              <Field label='Saldo total:'>
+                <InputGroup w='100%' startElement={<FiDollarSign color="#e53e3e" />}>
+                  <Input readOnly ml='1' variant='filled' bg="gray.50" value={item.total_balance} />
+                </InputGroup>
+              </Field>
+              <Field label='Porcentaje de cuota inicial:'>
+                <InputGroup w='100%' startElement={<FiPercent color="#805ad5" />}>
+                  <Input readOnly ml='1' variant='filled' bg="gray.50" value={item.upfront_percentage} />
+                </InputGroup>
+              </Field>
+              <Field label='N° de cuotas:'>
+                <InputGroup w='100%' startElement={<FiHash color="#2b6cb0" />}>
+                  <Input readOnly ml='1' variant='filled' bg="gray.50" value={item.number_of_installments} />
+                </InputGroup>
+              </Field>
+              <Field label='Tipo de documento de pago:'>
+                <InputGroup w='100%' startElement={<FiFile color="#718096" />}>
+                  <Input readOnly ml='1' variant='filled' bg="gray.50" value={item.payment_document_type_display} />
                 </InputGroup>
               </Field>
               <Field label='Estado:'>
                 <Badge
-                  bg={matchStatus?.bg}
-                  color={matchStatus?.color}
+                  bg={matchStatus?.bg || 'gray.200'}
+                  color={matchStatus?.color || 'gray.800'}
+                  px={3}
+                  py={1}
+                  borderRadius="md"
+                  fontWeight="semibold"
+                  fontSize="md"
+                  boxShadow="sm"
                 >
                   {matchStatus?.label || 'N/A'}
                 </Badge>
               </Field>
-              <Field label='Monto:'>
-                <InputGroup w='100%' flex='1' startElement={<FiDollarSign />}>
-                  <Input readOnly  ml='1' variant='flushed' value={item.amount} />
-                </InputGroup>
-              </Field>
-              <Field label='Programa:'>
-                <InputGroup w='100%' flex='1' startElement={<FiBook />}>
-                  <Input readOnly  ml='1' variant='flushed' value={item.program_name} />
-                </InputGroup>
-              </Field>
             </SimpleGrid>
+            {/* <Field pt={4} label='Comentarios adicionales:' >
+              <InputGroup w='100%' startElement={<FiFile color="#718096" />}>
+                <Input readOnly ml='1' variant='filled' bg="gray.50" value={item.additional_comments} />
+              </InputGroup>
+            </Field> */}
           </Card.Body>
         </Card.Root>
 
         <Card.Root>
-           <Card.Header>
+          <Card.Header pb={2}>
             <Card.Title
               display='flex'
               alignItems='center'
               gap={2}
-              fontSize='lg'
-              color='green.600'
+              fontSize='xl'
+              color='green.700'
+              fontWeight="bold"
             >
-              <Icon as={FiUser} boxSize={5} />
+              <Icon as={FiUser} boxSize={6} />
               Información del solicitante
             </Card.Title>
           </Card.Header>
-          <Card.Body>
-            <SimpleGrid columns={{ base: 1, md: 2 }} gap={3}>
-              <Field label='Nombre completo:'>
-                <InputGroup w='100%' flex='1' startElement={<FiUser />}>
-                  <Input readOnly  ml='1' variant='flushed' value={item.applicant_name} />
-                </InputGroup>
-              </Field>
+          <Card.Body pt={4}>
+            <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} gap={5}>
               <Field label='Número de documento:'>
-                <InputGroup w='100%' flex='1' startElement={<FiHash />}>
-                  <Input readOnly  ml='1' variant='flushed' value={item.document_num} />
+                <InputGroup w='100%' flex='1' startElement={<FiHash color="#2b6cb0" />}>
+                  <Input readOnly ml='1' variant='filled' bg="gray.50" value={item.num_document_person} />
                 </InputGroup>
               </Field>
-              <Field label='Correo electrónico:'>
-                <InputGroup w='100%' flex='1' startElement={<FiAtSign />}>
-                  <Input readOnly  ml='1' variant='flushed' value={item.email} />
-                </InputGroup>
-              </Field>
-              <Field label='Número de teléfono:'>
-                <InputGroup w='100%' flex='1' startElement={<FiPhone />}>
-                  <Input readOnly  ml='1' variant='flushed' value={item.phone_number} />
-                </InputGroup>
-              </Field>
+              {/* Puedes agregar más campos de persona si están disponibles */}
             </SimpleGrid>
           </Card.Body>
         </Card.Root>

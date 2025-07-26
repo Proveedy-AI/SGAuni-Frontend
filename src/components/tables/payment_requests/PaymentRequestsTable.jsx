@@ -47,6 +47,7 @@ const Row = memo(
 				color: '#E0383B',
 			},
 		];
+    console.log(item)
 
 		return (
 			<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>

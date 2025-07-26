@@ -41,10 +41,10 @@ export const ViewDocumentRequestModal = ({ item }) => {
               spacing={4}
               w='full'
             >
-              {item?.file_path ? (
+              {item?.path_commitment_letter ? (
                 <Box w='full' h='600px'>
                   <iframe
-                    src={item?.file_path}
+                    src={item?.path_commitment_letter}
                     width='100%'
                     height='100%'
                     title='Payment Voucher'

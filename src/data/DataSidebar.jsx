@@ -128,6 +128,12 @@ export const useDataSidebar = () => {
 			label: 'Cursos y Horarios',
 			permission: 'courses.schedules.view',
 		},
+    {
+      href: '/myclasses/myprograms',
+      icon: FiBookOpen,
+      label: 'Mis Clases',
+      permission: 'classes.myprograms.view',
+    },
 		{
 			href: '/users',
 			icon: FiUsers,

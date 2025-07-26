@@ -307,6 +307,8 @@ export const MyPaymentAddRequests = () => {
 						accept_terms: acceptTerms,
 					};
 
+    console.log(payload)
+
 		paymentRequests(payload, {
 			onSuccess: () => {
 				toaster.create({
