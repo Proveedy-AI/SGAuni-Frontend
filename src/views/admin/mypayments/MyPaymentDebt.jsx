@@ -133,7 +133,7 @@ export const MyPaymentDebt = () => {
 			consolidated[debt.purpose].totalAmount += debt.amount;
 			consolidated[debt.purpose].items.push(debt);
 
-			if (debt.status === 'PENDIENTE')
+			if (debt.status === 2)
 				consolidated[debt.purpose].pendingCount++;
 			else if (debt.status === 'PAGADO') consolidated[debt.purpose].paidCount++;
 			else if (debt.status === 'EN_PROCESO')
@@ -152,11 +152,11 @@ export const MyPaymentDebt = () => {
 
 		if (selectedProgram === 'TODOS') {
 			const pendingDebts = debtsByPurpose.results
-				.filter((d) => d.status === 'PENDIENTE')
+				.filter((d) => d.status === 2)
 				.reduce((sum, d) => sum + d.amount, 0);
 
 			const pendingCount = debtsByPurpose.results.filter(
-				(d) => d.status === 'PENDIENTE'
+				(d) => d.status === 2
 			).length;
 
 			return {
@@ -166,11 +166,11 @@ export const MyPaymentDebt = () => {
 		} else {
 			const filteredDebts = getFilteredDebts();
 			const pendingDebts = filteredDebts
-				.filter((d) => d.status === 'PENDIENTE')
+				.filter((d) => d.status === 2)
 				.reduce((sum, d) => sum + d.amount, 0);
 
 			const pendingCount = filteredDebts.filter(
-				(d) => d.status === 'PENDIENTE'
+				(d) => d.status === 2
 			).length;
 
 			return {
@@ -190,8 +190,8 @@ export const MyPaymentDebt = () => {
 		);
 	}
 
-	const has_debt = totals.pendingDebts > 0;
-
+	const has_debt = totals.pendingDebts > 0 ;
+console.log(debtsByPurpose)
 	return (
 		<Box>
 			<Flex
@@ -229,7 +229,7 @@ export const MyPaymentDebt = () => {
 				>
 					<Box pl={2}>
 						<strong>
-							Tienes deudas pendientes por S/ {totals.pendingDebts}
+							Tienes deudas pendientes por S/ {Number(totals.pendingDebts)}
 						</strong>{' '}
 					</Box>
 				</Alert>
@@ -369,16 +369,16 @@ export const MyPaymentDebt = () => {
 																	<Table.Cell>
 																		<Badge
 																			colorPalette={
-																				debt.status === 'PENDIENTE'
+																				debt.status === 2
 																					? 'red'
-																					: debt.status === 'EN_PROCESO'
+																					: debt.status === 2
 																						? 'blue'
 																						: 'green'
 																			}
 																		>
-																			{debt.status === 'PENDIENTE'
+																			{debt.status === 2
 																				? 'Pendiente'
-																				: debt.status === 'EN_PROCESO'
+																				: debt.status === 2
 																					? 'En Proceso'
 																					: 'Pagado'}
 																		</Badge>
