@@ -5,23 +5,22 @@ import { Stack, Text } from "@chakra-ui/react";
 
 export const ConfirmMasiveEvaluateApplicantsModal = ({ isAllEvaluated, admissionProcess, open, setOpen }) => {
   const { mutate: masiveEvaluateApplicants, isSaving } = useMasiveEvaluateApplicants();
-
   const handleConfirm = () => {
-    if (!isAllEvaluated) {
-      toaster.create({
-        title: "Postuantes no evaluados",
-        description: "Hay postuantes que aún no han sido evaluados. Por favor, evalúelos antes de proceder.",
-        type: "warning",
-      });
-      return;
-    }
+    // if (!isAllEvaluated) {
+    //   toaster.create({
+    //     title: "Postuantes no evaluados",
+    //     description: "Hay postuantes que aún no han sido evaluados. Por favor, evalúelos antes de proceder.",
+    //     type: "warning",
+    //   });
+    //   return;
+    // }
 
 
-    masiveEvaluateApplicants(admissionProcess.uuid, {
+    masiveEvaluateApplicants(admissionProcess?.uuid, {
       onSuccess: () => {
         toaster.create({
           title: "Evaluación masiva exitosa",
-          description: "Todos los estudiantes han sido evaluados correctamente.",
+          description: "Todos los postulantes han sido evaluados correctamente.",
           type: "success",
         });
         setOpen(false);

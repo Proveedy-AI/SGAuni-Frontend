@@ -31,7 +31,7 @@ import { LiaSlashSolid } from 'react-icons/lia';
 import { useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router';
 
-export const AdmissionApplicantsMenu = ({ applicants, data }) => {
+export const AdmissionApplicantsMenu = ({ dataProgram, applicants, data }) => {
   const [openGeneratePdfModal, setOpenGeneratePdfModal] = useState(false);
   const [openGenerateSuneduExcelModal, setOpenGenerateSuneduExcelModal] = useState(false);
   const [openMasiveEvaluationModal, setOpenMasiveEvaluationModal] = useState(false);
@@ -84,12 +84,13 @@ export const AdmissionApplicantsMenu = ({ applicants, data }) => {
       {isAdmissionProcessLoading ? <Spinner /> : (
           dataAdmissionProcess && <ConfirmDownloadSuneduModal admissionProcess={dataAdmissionProcess} open={openGenerateSuneduExcelModal} setOpen={setOpenGenerateSuneduExcelModal} />
       )}
-      <ConfirmMasiveEvaluateApplicantsModal isAllEvaluated={isAllEvaluated} admissionProcess={dataAdmissionProcess} open={openMasiveEvaluationModal} setOpen={setOpenMasiveEvaluationModal} />
+      <ConfirmMasiveEvaluateApplicantsModal isAllEvaluated={isAllEvaluated} admissionProcess={dataProgram} open={openMasiveEvaluationModal} setOpen={setOpenMasiveEvaluationModal} />
       </Box>
   )
 }
 
 AdmissionApplicantsMenu.propTypes = {
+  dataProgram: PropTypes.object.isRequired,
 	applicants: PropTypes.array,
 	data: PropTypes.object,
 };
@@ -187,6 +188,7 @@ export const AdmissionApplicantsByProgram = () => {
 							</Span>
 						</Box>
 						<AdmissionApplicantsMenu
+              dataProgram={dataProgram}
 							applicants={allApplicants}
 							data={dataProgram}
 						/>
