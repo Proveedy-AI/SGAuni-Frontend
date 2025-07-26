@@ -17,13 +17,13 @@ import {
 } from './evaluations';
 
 export const ViewAdmissionProgramExams = ({ item }) => {
+	const contentRef = useRef();
+	const [open, setOpen] = useState(false);
 	const {
 		data: dataEvaluationsByApplication,
 		refetch: fetchExams,
 		isLoading,
-	} = useReadAdmissionEvaluationsByApplication(item.id);
-	const contentRef = useRef();
-	const [open, setOpen] = useState(false);
+	} = useReadAdmissionEvaluationsByApplication(item.id, open);
 
 	return (
 		<Modal

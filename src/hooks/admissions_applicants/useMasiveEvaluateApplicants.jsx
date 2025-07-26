@@ -8,7 +8,7 @@ export const useMasiveEvaluateApplicants = () => {
 		mutationFn: async (uuid) => {
       if (!uuid) throw new Error('ID requerido');
 			const res = await axiosPrivate.post(
-				`/api/v1/admission-process-prograns/process-applicants/${uuid}/`
+				`/api/v1/admission-process-programs/process-applications/${uuid}/`
 			);
 			return res.data;
 		},

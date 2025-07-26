@@ -1,5 +1,9 @@
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
-import { ConfirmDownloadSuneduModal, ConfirmMasiveEvaluateApplicantsModal, GeneratePdfApliccationsModal } from '@/components/forms/admissions';
+import {
+	ConfirmDownloadSuneduModal,
+	ConfirmMasiveEvaluateApplicantsModal,
+	GeneratePdfApliccationsModal,
+} from '@/components/forms/admissions';
 import { AdmissionApplicantsByProgramTable } from '@/components/tables/admissions';
 import {
 	Button,
@@ -32,62 +36,88 @@ import { useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router';
 
 export const AdmissionApplicantsMenu = ({ applicants, data }) => {
-  const [openGeneratePdfModal, setOpenGeneratePdfModal] = useState(false);
-  const [openGenerateSuneduExcelModal, setOpenGenerateSuneduExcelModal] = useState(false);
-  const [openMasiveEvaluationModal, setOpenMasiveEvaluationModal] = useState(false);
-  const admissionProcessId = data?.admission_process || null;
-  const { data: dataAdmissionProcess, loading: isAdmissionProcessLoading } = useReadAdmissionById(admissionProcessId);
+	const [openGeneratePdfModal, setOpenGeneratePdfModal] = useState(false);
+	const [openGenerateSuneduExcelModal, setOpenGenerateSuneduExcelModal] =
+		useState(false);
+	const [openMasiveEvaluationModal, setOpenMasiveEvaluationModal] =
+		useState(false);
 
-  const isAllEvaluated = applicants.every(applicant => applicant.status === 3);
+	const admissionProcessId = data?.admission_process || null;
+	const { data: dataAdmissionProcess, loading: isAdmissionProcessLoading } =
+		useReadAdmissionById(admissionProcessId);
 
-  return (
-    <Box>
-      <MenuRoot>
-        <MenuTrigger>
-          <Button 
-            size="sm" 
-            bg="white" 
-            color="black" 
-            border={'1px solid'}
-            _hover={{ bg: 'gray.100' }}
-          >
-            Más Acciones
-          </Button>
-        </MenuTrigger>
-        <MenuContent>
-          <MenuItem
-            _hover={{ bg: 'gray.100', color: 'uni.secondary' }} 
-            onClick={() => setOpenGeneratePdfModal(applicants.length > 0)}
-          >
-            Generar acta de notas
-          </MenuItem>
-          <MenuItem
-            _hover={{ bg: 'gray.100', color: 'uni.secondary' }}
-            onClick={() => {
-              setOpenGenerateSuneduExcelModal(applicants.length > 0);
-            }}
-            >
-              Descargar estudiantes (SUNEDU)
-		      </MenuItem>
-          <MenuItem
-            _hover={{ bg: 'gray.100', color: 'uni.secondary' }}
-            onClick={() => {
-              setOpenMasiveEvaluationModal(applicants.length > 0);
-            }}
-          >
-            Evaluar a todos los estudiantes
-          </MenuItem>
-        </MenuContent>
-      </MenuRoot>
+	const isAllEvaluated = applicants.every(
+		(applicant) => applicant.status_qualification_display === 'Completado'
+	);
 
-      <GeneratePdfApliccationsModal data={data} open={openGeneratePdfModal} setOpen={setOpenGeneratePdfModal} />
-      {isAdmissionProcessLoading ? <Spinner /> : (
-          dataAdmissionProcess && <ConfirmDownloadSuneduModal admissionProcess={dataAdmissionProcess} open={openGenerateSuneduExcelModal} setOpen={setOpenGenerateSuneduExcelModal} />
-      )}
-      <ConfirmMasiveEvaluateApplicantsModal isAllEvaluated={isAllEvaluated} admissionProcess={dataAdmissionProcess} open={openMasiveEvaluationModal} setOpen={setOpenMasiveEvaluationModal} />
-      </Box>
-  )
-}
+	return (
+		<Box>
+			<MenuRoot>
+				<MenuTrigger>
+					<Button
+						size='sm'
+						bg='white'
+						color='black'
+						border={'1px solid'}
+						_hover={{ bg: 'gray.100' }}
+					>
+						Más Acciones
+					</Button>
+				</MenuTrigger>
+				<MenuContent>
+					<MenuItem
+						_hover={{ bg: 'gray.100', color: 'uni.secondary' }}
+						cursor={'pointer'}
+						onClick={() => setOpenGeneratePdfModal(applicants.length > 0)}
+					>
+						Generar acta de notas
+					</MenuItem>
+					<MenuItem
+						_hover={{ bg: 'gray.100', color: 'uni.secondary' }}
+						cursor={'pointer'}
+						onClick={() => {
+							setOpenGenerateSuneduExcelModal(applicants.length > 0);
+						}}
+					>
+						Descargar estudiantes (SUNEDU)
+					</MenuItem>
+					<MenuItem
+						_hover={{ bg: 'gray.100', color: 'uni.secondary' }}
+						cursor={'pointer'}
+						onClick={() => {
+							setOpenMasiveEvaluationModal(applicants.length > 0);
+						}}
+					>
+						Convertir a estudiantes
+					</MenuItem>
+				</MenuContent>
+			</MenuRoot>
+
+			<GeneratePdfApliccationsModal
+				data={data}
+				open={openGeneratePdfModal}
+				setOpen={setOpenGeneratePdfModal}
+			/>
+			{isAdmissionProcessLoading ? (
+				<Spinner />
+			) : (
+				dataAdmissionProcess && (
+					<ConfirmDownloadSuneduModal
+						admissionProcess={dataAdmissionProcess}
+						open={openGenerateSuneduExcelModal}
+						setOpen={setOpenGenerateSuneduExcelModal}
+					/>
+				)
+			)}
+			<ConfirmMasiveEvaluateApplicantsModal
+				isAllEvaluated={isAllEvaluated}
+				uuid={data?.uuid}
+				open={openMasiveEvaluationModal}
+				setOpen={setOpenMasiveEvaluationModal}
+			/>
+		</Box>
+	);
+};
 
 AdmissionApplicantsMenu.propTypes = {
 	applicants: PropTypes.array,

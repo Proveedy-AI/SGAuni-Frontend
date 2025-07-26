@@ -51,7 +51,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 
 	const { data: dataModality } = useReadOneModality({
 		id: item?.modality_id,
-		open,
+		enabled: open,
 	});
 
 	const { data: dataUsers, isLoading: evaluatorsLoading } = useReadUsers(
