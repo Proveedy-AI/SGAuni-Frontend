@@ -151,12 +151,11 @@ export const ProtectedRoute = ({
 
 	let userHasDebts = false;
 	if (requiredDebt) {
-		//const dataCondition = { has_debt: true, can_request_installment: true };
 		userHasDebts = profile?.student?.status === 'Bloqueado' || false;
 		if (userHasDebts) {
 			return <ApplicantHasDebts />;
 		}
-		// console.log('Verificando deudas del usuario...');
+	
 	}
 
 	return <Outlet />;
