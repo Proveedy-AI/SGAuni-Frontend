@@ -4,27 +4,13 @@ import { Badge, Box, Group, HStack, Table } from '@chakra-ui/react';
 import { Pagination } from '@/components/ui';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { SortableHeader } from '@/components/ui/SortableHeader';
-import {
-	ValidatePaymentOrderModal,
-	ViewPaymentOrderVoucherModal,
-} from '@/components/forms/payment_orders';
-import { format, parseISO } from 'date-fns';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
 import { usePaginatedInfiniteData } from '@/components/navigation';
+import { ReviewBenefitsModal } from '@/components/forms/benefits/ReviewBenefitsModal';
+import { UpdateStatusBenefitsModal } from '@/components/forms/benefits/UpdateStatusBenefitsModal';
 
 const Row = memo(({ item, startIndex, index, refetch, sortConfig, data }) => {
-	const statusDisplay = [
-		{ id: 1, label: 'Pendiente', bg: '#AEAEAE', color: '#F5F5F5' },
-		{ id: 2, label: 'Generado', bg: '#C6E7FC', color: '#0661D8' },
-		{ id: 3, label: 'Verificado', bg: '#D0EDD0', color: '#2D9F2D' },
-		{ id: 4, label: 'Expirado', bg: '#F7CDCE', color: '#E0383B' },
-		{ id: 5, label: 'Cancelado', bg: '#F0E0E0', color: '#B0B0B0' },
-	];
-
-	const selectedStatus = statusDisplay.find(
-		(status) => status.id === item.status
-	);
 	return (
 		<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
 			<Table.Cell>
@@ -32,28 +18,35 @@ const Row = memo(({ item, startIndex, index, refetch, sortConfig, data }) => {
 					? data.length - (startIndex + index)
 					: startIndex + index + 1}
 			</Table.Cell>
-			<Table.Cell>{format(parseISO(item.due_date), 'dd/MM/yyyy')}</Table.Cell>
-			<Table.Cell>{item.id_orden}</Table.Cell>
-			<Table.Cell>{item.document_num}</Table.Cell>
-			<Table.Cell>{item.email}</Table.Cell>
-			<Table.Cell>{item.total_amount}</Table.Cell>
+			<Table.Cell>{item.student_name}</Table.Cell>
+
+			<Table.Cell>{item.type_display}</Table.Cell>
 			<Table.Cell>
-				<Badge bg={selectedStatus?.bg} color={selectedStatus?.color}>
-					{selectedStatus?.label || 'N/A'}
+				<Badge
+					colorPalette={
+						item.status_review_benefit === 2
+							? 'blue'
+							: item.status_review_benefit === 3
+								? 'red'
+								: item.status_review_benefit === 4
+									? 'green'
+									: 'gray'
+					}
+					variant='subtle'
+					px={2}
+					py={0.5}
+					borderRadius='md'
+					fontSize='sm'
+				>
+					{item.status_review_benefit_display || 'Sin estado'}
 				</Badge>
 			</Table.Cell>
+
 			<Table.Cell>
 				<HStack justify='space-between'>
 					<Group gap={1}>
-						<ViewPaymentOrderVoucherModal
-							item={item}
-							fetchPaymentOrders={refetch}
-						/>
-
-						<ValidatePaymentOrderModal
-							item={item}
-							fetchPaymentOrders={refetch}
-						/>
+						<ReviewBenefitsModal item={item} fetchPaymentOrders={refetch} />
+						<UpdateStatusBenefitsModal data={item} fetchData={refetch} />
 					</Group>
 				</HStack>
 			</Table.Cell>
@@ -72,7 +65,7 @@ Row.propTypes = {
 	data: PropTypes.array,
 };
 
-export const BenefitsTable = ({
+export const RequestBenefitsTable = ({
 	isLoading,
 	totalCount,
 	data,
@@ -122,19 +115,12 @@ export const BenefitsTable = ({
 							<Table.ColumnHeader alignContent={'start'}>
 								<SortableHeader
 									label='Nombre del estudiante'
-									columnKey='student_full_name'
+									columnKey='student_name'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader alignContent={'start'}>
-								<SortableHeader
-									label='Programa'
-									columnKey='enrollment_period_program'
-									sortConfig={sortConfig}
-									onSort={setSortConfig}
-								/>
-							</Table.ColumnHeader>
+
 							<Table.ColumnHeader alignContent={'start'}>
 								<SortableHeader
 									label='Tipo'
@@ -146,27 +132,12 @@ export const BenefitsTable = ({
 							<Table.ColumnHeader alignContent={'start'}>
 								<SortableHeader
 									label='Estado de Solicitud'
-									columnKey='status_benefit_display'
+									columnKey='status_review_benefit_display'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader alignContent={'start'}>
-								<SortableHeader
-									label='Monto Total'
-									columnKey='total_amount'
-									sortConfig={sortConfig}
-									onSort={setSortConfig}
-								/>
-							</Table.ColumnHeader>
-							<Table.ColumnHeader alignContent={'start'}>
-								<SortableHeader
-									label='Estado'
-									columnKey='status_display'
-									sortConfig={sortConfig}
-									onSort={setSortConfig}
-								/>
-							</Table.ColumnHeader>
+
 							<Table.ColumnHeader alignContent={'start'}>
 								Acciones
 							</Table.ColumnHeader>
@@ -213,7 +184,7 @@ export const BenefitsTable = ({
 	);
 };
 
-BenefitsTable.propTypes = {
+RequestBenefitsTable.propTypes = {
 	isLoading: PropTypes.bool,
 	data: PropTypes.array,
 	refetch: PropTypes.func,

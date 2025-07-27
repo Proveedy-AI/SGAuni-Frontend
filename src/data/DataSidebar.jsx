@@ -140,14 +140,22 @@ export const useDataSidebar = () => {
 			href: '/benefits',
 			icon: FiAward,
 			label: 'Becas y Beneficios',
-			permission: 'benefits.benefits.view',
+			subItems: [
+				{
+					href: '/benefits/list',
+					icon: FiCheck,
+					label: 'Lista de Beneficios',
+					permission: 'benefits.benefits.view',
+				},
+				{
+					href: '/benefits/request',
+					icon: FiShield,
+					label: 'Solicitudes',
+					permission: 'benefits.benefitsreviews.view',
+				},
+			],
 		},
-		{
-			href: '/benefitsreviews',
-			icon: FiShield ,
-			label: 'Solicitudes de Beneficios',
-			permission: 'benefits.benefitsreviews.view',
-		},
+
 		{
 			href: '/users',
 			icon: FiUsers,

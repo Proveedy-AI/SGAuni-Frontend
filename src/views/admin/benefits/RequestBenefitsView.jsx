@@ -1,11 +1,9 @@
-import { AddContractsForm } from '@/components/forms';
-import { MyBenefitsTable } from '@/components/tables/benefits/MyBenefitsTable';
-import { useReadListBenefits } from '@/hooks/benefits/useReadListBenefits';
+import { RequestBenefitsTable } from '@/components/tables/benefits/RequestBenefitsTable';
+import { useReadRequestBenefits } from '@/hooks/benefits';
 
 import {
 	Box,
 	Heading,
-	HStack,
 	InputGroup,
 	Input,
 	Flex,
@@ -15,7 +13,7 @@ import {
 import { useState } from 'react';
 import { FiAward, FiSearch } from 'react-icons/fi';
 
-export const BenefitsView = () => {
+export const RequestBenefitsView = () => {
 	const {
 		data: dataBenefits,
 		fetchNextPage: fetchNextPageBenefits,
@@ -23,7 +21,7 @@ export const BenefitsView = () => {
 		isFetchingNextPage: isFetchingNextPageBenefits,
 		isLoading: loadingBenefits,
 		refetch: fetchBenefits,
-	} = useReadListBenefits({});
+	} = useReadRequestBenefits({});
 	const [searchBenefitsValue, setSearchBenefitsValue] = useState('');
 
 	const allBenefits =
@@ -32,7 +30,9 @@ export const BenefitsView = () => {
 	const isFiltering = searchBenefitsValue.trim().length > 0;
 
 	const filteredBenefits = allBenefits?.filter((item) =>
-		item?.owner_name?.toLowerCase().includes(searchBenefitsValue.toLowerCase())
+		item?.student_name
+			?.toLowerCase()
+			.includes(searchBenefitsValue.toLowerCase())
 	);
 
 	const totalCount = isFiltering
@@ -46,7 +46,10 @@ export const BenefitsView = () => {
 					<Flex justify='space-between' align='center'>
 						<Flex align='center' gap={2}>
 							<Icon as={FiAward} boxSize={5} color='blue.600' />
-							<Heading fontSize='24px'> Gestionar Becas y Beneficios</Heading>
+							<Heading fontSize='24px'>
+								{' '}
+								Solicitudes de Becas y Beneficios
+							</Heading>
 						</Flex>
 					</Flex>
 				</Card.Header>
@@ -64,15 +67,11 @@ export const BenefitsView = () => {
 								onChange={(e) => setSearchBenefitsValue(e.target.value)}
 							/>
 						</InputGroup>
-
-						<HStack>
-							<AddContractsForm fetchData={fetchBenefits} />
-						</HStack>
 					</Flex>
 				</Card.Body>
 			</Card.Root>
 
-			<MyBenefitsTable
+			<RequestBenefitsTable
 				isLoading={loadingBenefits}
 				data={filteredBenefits}
 				fetchNextPage={fetchNextPageBenefits}

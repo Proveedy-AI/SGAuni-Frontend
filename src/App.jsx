@@ -59,6 +59,7 @@ import {
 } from './views/admin/myclasses';
 import { BenefitsView } from './views/admin/benefits/BenefitsView';
 import { MyBenefitsView } from './views/admin/mypayments/MyBenefitsView';
+import { RequestBenefitsView } from './views/admin/benefits/RequestBenefitsView';
 
 function App() {
 	return (
@@ -103,16 +104,14 @@ function App() {
 										<ProtectedRoute requiredPermission='benefits.benefits.view' />
 									}
 								>
-									<Route index element={<BenefitsView />} />
+									<Route path='list' element={<BenefitsView />} />
 								</Route>
-							</Route>
-							<Route path='benefitsreviews'>
 								<Route
 									element={
 										<ProtectedRoute requiredPermission='benefits.benefitsreviews.view' />
 									}
 								>
-									<Route index element={<BenefitsView />} />
+									<Route path='request' element={<RequestBenefitsView />} />
 								</Route>
 							</Route>
 
