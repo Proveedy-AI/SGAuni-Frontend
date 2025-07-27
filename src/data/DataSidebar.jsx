@@ -11,6 +11,8 @@ import {
 	FiFileText,
 	FiBookOpen,
 	FiCreditCard,
+	FiAward,
+	FiShield,
 } from 'react-icons/fi';
 import { FaFileContract, FaRegFile } from 'react-icons/fa';
 import { HiOutlineClipboardList } from 'react-icons/hi';
@@ -128,18 +130,31 @@ export const useDataSidebar = () => {
 			label: 'Cursos y Horarios',
 			permission: 'courses.schedules.view',
 		},
-    {
-      href: '/myclasses/myprograms',
-      icon: FiBookOpen,
-      label: 'Mis Clases',
-      permission: 'classes.myprograms.view',
-    },
+		{
+			href: '/myclasses/myprograms',
+			icon: FiBookOpen,
+			label: 'Mis Clases',
+			permission: 'classes.myprograms.view',
+		},
+		{
+			href: '/benefits',
+			icon: FiAward,
+			label: 'Becas y Beneficios',
+			permission: 'benefits.benefits.view',
+		},
+		{
+			href: '/benefitsreviews',
+			icon: FiShield ,
+			label: 'Solicitudes de Beneficios',
+			permission: 'benefits.benefitsreviews.view',
+		},
 		{
 			href: '/users',
 			icon: FiUsers,
 			label: 'Usuarios',
 			permission: 'users.users.view',
 		},
+
 		{
 			href: '/commitment-letters',
 			label: 'Fraccionamientos',

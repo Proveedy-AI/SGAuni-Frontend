@@ -6,3 +6,4 @@ export * from './useUpdateNotifications';
 export * from './useReadMyEnrollments';
 export * from './useReadDebtStatus'; 
 export * from './useCheckPersonHasDebts';
+export * from './useReadMyRequestBenefits';
