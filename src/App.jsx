@@ -51,6 +51,7 @@ import { MyPaymentSchedule } from './views/admin/mypayments/MyPaymentSchedule';
 import { MyEnrollmentsLayout } from './views/admin/myenrollments/MyEnrollmentsLayout';
 import { MyEnrollments } from './views/admin/myenrollments';
 import { ClassMyCoursesByProgramView, ClassMyEstudentsByCourseView, ClassMyProgramView, MyClassesLayout } from './views/admin/myclasses';
+import { MyCoursesByEnrollement, MyEnrollmentsToViewCourses } from './views/admin/mycourses';
 
 function App() {
 	return (
@@ -187,6 +188,19 @@ function App() {
 									<Route path='programs/:id' element={<TuitonPrograms />} />
 								</Route>
 							</Route>
+
+              <Route path='mycourses'>
+                <Route
+                  element={
+                    <ProtectedRoute requiredPermission='enrollments.mycourses.view' />
+                  }
+                >
+                  <Route index element={<MyEnrollmentsToViewCourses />} />
+                  <Route path='enrollment/:id'>
+                    <Route index element={<MyCoursesByEnrollement />} />
+                  </Route>
+                </Route>
+              </Route>
 
 							<Route path='myenrollments' element={<MyEnrollmentsLayout />}>
 								<Route

@@ -78,6 +78,12 @@ export const useDataSidebar = () => {
 			label: 'Mis Pagos',
 			permission: 'payment.mypaymentsdebts.view',
 		},
+    {
+      href: '/mycourses',
+      icon: FiBookOpen,
+      label: 'Mis cursos',
+      permission: 'enrollments.mycourses.view'
+    },
 		{
 			href: '/myenrollments',
 			icon: FiBookOpen,
