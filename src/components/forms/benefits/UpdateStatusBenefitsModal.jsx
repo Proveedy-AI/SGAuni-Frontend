@@ -13,72 +13,118 @@ import {
 	Heading,
 	SimpleGrid,
 	Badge,
+	HStack,
+	Input,
 } from '@chakra-ui/react';
-import { Alert, Modal, toaster, Tooltip } from '@/components/ui';
+import { Alert, Field, Modal, toaster, Tooltip } from '@/components/ui';
 import { LiaCheckCircleSolid } from 'react-icons/lia';
-import { useAproveeAdmissionsPrograms } from '@/hooks/admissions_programs';
 import {
 	FiAlertTriangle,
 	FiCheckCircle,
+	FiEdit3,
 	FiMessageSquare,
 	FiXCircle,
 } from 'react-icons/fi';
+import { ReactSelect } from '@/components/select';
+import { CompactFileUpload } from '@/components/ui/CompactFileInput';
+import { uploadToS3 } from '@/utils/uploadToS3';
+import { useAproveeBenefits } from '@/hooks/benefits';
 
 export const UpdateStatusBenefitsModal = ({ data, fetchData }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 	const [comments, setComments] = useState('');
+	const [type, setType] = useState(null);
+	const [other_founding_source, setOtherFoundingSource] = useState('');
+	const [discount_percentage, setDiscountPercentage] = useState('');
+	const [disableUpload, setDisableUpload] = useState(false);
+	const [review_document_url, setReviewDocumentUrl] = useState('');
 	const [selectedStatus, setSelectedStatus] = useState(null); // 4: Aprobado, 3: Rechazado
+	const [errors, setErrors] = useState({});
 
-	const { mutate: aproveePrograms, isPending } = useAproveeAdmissionsPrograms();
+	const { mutate: aproveeBenefits, isPending } = useAproveeBenefits();
 
-	const handleSubmitStatus = () => {
-		if (!selectedStatus) {
-			toaster.create({
-				title: 'Por favor selecciona una acción: aprobar o rechazar.',
-				type: 'warning',
-			});
-			return;
-		}
-
+	const validateFields = () => {
+		const newErrors = {};
 		if (selectedStatus === 3 && !comments.trim()) {
-			toaster.create({
-				title: 'Por favor ingresa un comentario para rechazar.',
-				type: 'warning',
-			});
-			return;
+			newErrors.comments = 'El comentario es requerido para rechazar.';
+		}
+		if (selectedStatus === 4 && !type) {
+			newErrors.type = 'El tipo de beneficio es requerido.';
+		}
+		if (selectedStatus === 4 && !discount_percentage) {
+			newErrors.discount_percentage =
+				'El porcentaje de descuento es requerido.';
 		}
 
-		const payload = {
-			comments: selectedStatus === 3 ? comments.trim() : '',
-			status: selectedStatus,
-		};
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
 
-		aproveePrograms(
-			{ id: data.id, payload },
-			{
-				onSuccess: () => {
-					toaster.create({
-						title:
-							selectedStatus === 4
-								? 'Proceso aprobado correctamente'
-								: 'Proceso rechazado correctamente',
-						type: 'success',
-					});
-					setOpen(false);
-					setComments('');
-					setSelectedStatus(null);
-					fetchData();
-				},
-				onError: (error) => {
-					console.error(error);
-					toaster.create({
-						title: error.response?.data?.[0] || 'Error al actualizar estado',
-						type: 'error',
-					});
-				},
+	const handleSubmitStatus = async () => {
+		if (!validateFields()) return;
+		setDisableUpload(true);
+		let s3Url = review_document_url;
+		try {
+			// Solo subir a S3 si hay un archivo nuevo
+			if (review_document_url) {
+				s3Url = await uploadToS3(
+					review_document_url,
+					'sga_uni/benefits_review_documents',
+					data?.student_name.replace(/\s+/g, '_') // evita espacios
+				);
 			}
-		);
+
+			const payload = {
+				comments: selectedStatus === 3 ? comments.trim() : '',
+				status: selectedStatus,
+				founding_source: selectedStatus === 4 ? type?.value : null,
+				other_founding_source:
+					selectedStatus === 4 ? other_founding_source : '',
+				discount_percentage:
+					selectedStatus === 4 ? discount_percentage / 100 : '',
+				review_document_url: selectedStatus === 4 ? s3Url : '',
+			};
+
+			aproveeBenefits(
+				{ id: data.request_benefit, payload },
+				{
+					onSuccess: () => {
+						toaster.create({
+							title:
+								selectedStatus === 4
+									? 'Beneficio aprobado correctamente'
+									: 'Beneficio rechazado correctamente',
+							type: 'success',
+						});
+						setOpen(false);
+						setComments('');
+						setType(null);
+						setOtherFoundingSource('');
+						setDiscountPercentage('');
+						setReviewDocumentUrl('');
+						setDisableUpload(false);
+						setSelectedStatus(null);
+						fetchData();
+					},
+					onError: (error) => {
+						console.error(error);
+						toaster.create({
+							title: error.response?.data?.[0] || 'Error al actualizar estado',
+							type: 'error',
+						});
+						setDisableUpload(false);
+					},
+				}
+			);
+		} catch (error) {
+			console.error('Error al subir el archivo:', error);
+			setDisableUpload(false);
+			toaster.create({
+				title: 'Error al subir el contrato',
+				type: 'error',
+			});
+		}
 	};
 
 	const handleOpenChange = (e) => {
@@ -88,9 +134,23 @@ export const UpdateStatusBenefitsModal = ({ data, fetchData }) => {
 			setComments('');
 		}
 	};
+
+	const TypeRequest = [
+		{ value: 1, label: 'Universidad' },
+		{ value: 2, label: 'Público Nacional' },
+		{ value: 3, label: 'Otro' },
+	];
 	return (
 		<Modal
 			placement='center'
+			title={
+				<>
+					<HStack>
+						<Icon as={FiCheckCircle} boxSize={5} />
+						<Text fontWeight='medium'>Aprobar o Rechazar Proceso</Text>
+					</HStack>
+				</>
+			}
 			trigger={
 				<Box>
 					<Tooltip
@@ -110,8 +170,8 @@ export const UpdateStatusBenefitsModal = ({ data, fetchData }) => {
 					</Tooltip>
 				</Box>
 			}
-			size='2xl'
-			loading={isPending}
+			size='3xl'
+			loading={disableUpload}
 			open={open}
 			onOpenChange={handleOpenChange}
 			contentRef={contentRef}
@@ -130,27 +190,6 @@ export const UpdateStatusBenefitsModal = ({ data, fetchData }) => {
 					},
 				}}
 			>
-				<Box
-					top='0'
-					bg='white'
-					borderBottom='1px solid'
-					borderColor='gray.200'
-					px={6}
-					pb={2}
-					zIndex={1}
-				>
-					<Flex justify='space-between' align='flex-start'>
-						<Box>
-							<Flex align='center' gap={2}>
-								<Icon as={FiCheckCircle} color='blue.600' boxSize={6} />
-								<Text fontSize='2xl' fontWeight='bold'>
-									Aprobar o Rechazar Beneficio
-								</Text>
-							</Flex>
-						</Box>
-					</Flex>
-				</Box>
-
 				<Card.Root>
 					<Card.Header>
 						<Heading fontSize='lg'>Selecciona una Acción</Heading>
@@ -224,6 +263,96 @@ export const UpdateStatusBenefitsModal = ({ data, fetchData }) => {
 						)}
 					</Card.Body>
 				</Card.Root>
+
+				{selectedStatus === 4 && (
+					<Card.Root borderLeft='4px solid' borderLeftColor='green.500'>
+						<Card.Header>
+							<Flex align='center' gap={2}>
+								<Icon as={FiEdit3} boxSize={5} color='green.700' />
+								<Heading fontSize='lg' color='gren.700'>
+									Completar Datos
+								</Heading>
+								<Badge colorPalette='green' variant='solid' ml={2}>
+									Requerido
+								</Badge>
+							</Flex>
+						</Card.Header>
+						<Card.Body>
+							<Stack gap={2}>
+								<Field
+									label='Fuente de Financiamiento'
+									errorText={errors.type}
+									invalid={!!errors.type}
+									required
+								>
+									<ReactSelect
+										value={type}
+										onChange={(select) => {
+											setType(select);
+										}}
+										variant='flushed'
+										size='xs'
+										isSearchable={true}
+										isClearable
+										name='Fuente de Financiamiento'
+										options={TypeRequest}
+									/>
+								</Field>
+								{type?.value === 3 && (
+									<Field label='Otra fuente de financiamiento'>
+										<Input
+											type='text'
+											name='other_founding_source'
+											placeholder='Ingrese la fuente de financiamiento'
+											value={other_founding_source}
+											onChange={(e) => setOtherFoundingSource(e.target.value)}
+										/>
+									</Field>
+								)}
+
+								<Field label='Porcentaje de descuento (1 -100%)' required>
+									<Input
+										type='text'
+										name='discount_percentage'
+										placeholder='Ingrese el porcentaje de descuento'
+										value={discount_percentage}
+										onChange={(e) => setDiscountPercentage(e.target.value)}
+									/>
+								</Field>
+								<Field label='Adjuntar documento del Beneficio (Opcional)'>
+									<CompactFileUpload
+										name='review_document_url'
+										accept='application/pdf,image/png,image/jpeg,image/jpg'
+										onChange={(file) => {
+											const allowedTypes = [
+												'application/pdf',
+												'image/png',
+												'image/jpeg',
+												'image/jpg',
+											];
+											if (!file) {
+												setReviewDocumentUrl(null);
+												return;
+											}
+
+											if (allowedTypes.includes(file.type)) {
+												setReviewDocumentUrl(file);
+											} else {
+												setReviewDocumentUrl(null);
+												toaster.create({
+													title:
+														'Solo se permiten archivos PDF o imágenes (JPG, PNG).',
+													type: 'error',
+												});
+											}
+										}}
+										onClear={() => setReviewDocumentUrl('')}
+									/>
+								</Field>
+							</Stack>
+						</Card.Body>
+					</Card.Root>
+				)}
 
 				{selectedStatus === 3 && (
 					<Card.Root borderLeft='4px solid' borderLeftColor='red.500'>

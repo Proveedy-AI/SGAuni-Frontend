@@ -1,11 +1,9 @@
-import { AddContractsForm } from '@/components/forms';
 import { MyBenefitsTable } from '@/components/tables/benefits/MyBenefitsTable';
 import { useReadListBenefits } from '@/hooks/benefits/useReadListBenefits';
 
 import {
 	Box,
 	Heading,
-	HStack,
 	InputGroup,
 	Input,
 	Flex,
@@ -25,7 +23,7 @@ export const BenefitsView = () => {
 		refetch: fetchBenefits,
 	} = useReadListBenefits({});
 	const [searchBenefitsValue, setSearchBenefitsValue] = useState('');
-
+	console.log(dataBenefits);
 	const allBenefits =
 		dataBenefits?.pages?.flatMap((page) => page.results) ?? [];
 
@@ -46,7 +44,7 @@ export const BenefitsView = () => {
 					<Flex justify='space-between' align='center'>
 						<Flex align='center' gap={2}>
 							<Icon as={FiAward} boxSize={5} color='blue.600' />
-							<Heading fontSize='24px'> Gestionar Becas y Beneficios</Heading>
+							<Heading fontSize='24px'> Becas y Beneficios</Heading>
 						</Flex>
 					</Flex>
 				</Card.Header>
@@ -64,10 +62,6 @@ export const BenefitsView = () => {
 								onChange={(e) => setSearchBenefitsValue(e.target.value)}
 							/>
 						</InputGroup>
-
-						<HStack>
-							<AddContractsForm fetchData={fetchBenefits} />
-						</HStack>
 					</Flex>
 				</Card.Body>
 			</Card.Root>

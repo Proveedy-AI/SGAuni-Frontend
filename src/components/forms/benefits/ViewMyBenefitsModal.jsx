@@ -254,7 +254,7 @@ export const ViewMyBenefitsModal = ({ item }) => {
 										px={2}
 										py={1}
 									>
-										{item.discount_percentage}%
+										{item.studentbenefit.discount_percentage * 100}%
 									</Badge>
 								</Box>
 							</SimpleGrid>
@@ -273,10 +273,7 @@ export const ViewMyBenefitsModal = ({ item }) => {
 									borderColor='gray.200'
 								>
 									<Text fontSize='sm' fontWeight='medium'>
-										{item.founding_source_display}
-									</Text>
-									<Text fontSize='xs' color='gray.500'>
-										Código: {item.founding_source}
+										{item.studentbenefit.founding_source_display}
 									</Text>
 								</Box>
 							</Box>
