@@ -2,13 +2,13 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useReadFractionationRequests = (params = {}) => {
+export const useReadFractionation = (params = {}) => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useInfiniteQuery({
 		queryKey: ['fractionation-requests', params],
 		queryFn: async ({ pageParam = 1 }) => {
-			const res = await axiosPrivate.get('/api/v1/payment-plans-reviews/reviews/', { 
+			const res = await axiosPrivate.get('/api/v1/payment-plans/', { 
         params: {
           ...params,
           page: pageParam,

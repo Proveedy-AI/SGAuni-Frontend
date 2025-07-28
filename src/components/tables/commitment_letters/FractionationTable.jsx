@@ -1,20 +1,16 @@
 import PropTypes from 'prop-types';
-import { memo, useState } from 'react';
-import { Badge, Box, Group, HStack, Table } from '@chakra-ui/react';
+import { memo, useEffect, useState } from 'react';
+import { Badge, Box, Table } from '@chakra-ui/react';
 import { Pagination } from '@/components/ui';
+
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { SortableHeader } from '@/components/ui/SortableHeader';
-//import { format, parseISO } from 'date-fns';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
 import { usePaginatedInfiniteData } from '@/components/navigation';
-import {
-	ViewDocumentRequestModal,
-	ViewFractionationRequestsModal,
-} from '@/components/forms/commitment_letters';
-import { UpdateStatusFractionatopmModal } from '@/components/forms/commitment_letters/UpdateStatusFractionatopmModal';
+import { ViewFractionationRequestsModal } from '@/components/forms/commitment_letters';
 
-const Row = memo(({ item, startIndex, index, refetch, sortConfig, data }) => {
+const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 	const statusDisplay = [
 		{ id: 1, label: 'Borrador', bg: '#AEAEAE', color: '#F5F5F5' },
 		{ id: 2, label: 'En revisión', bg: '#d0daedff', color: '#2d689fff' },
@@ -22,7 +18,9 @@ const Row = memo(({ item, startIndex, index, refetch, sortConfig, data }) => {
 		{ id: 4, label: 'Aprobado', bg: '#D0EDD0', color: '#2D9F2D' },
 	];
 
-	const matchStatus = statusDisplay.find((status) => status.id === item.status);
+	const matchStatus = statusDisplay.find(
+		(status) => status.id === item.status_review
+	);
 
 	return (
 		<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
@@ -31,28 +29,17 @@ const Row = memo(({ item, startIndex, index, refetch, sortConfig, data }) => {
 					? data.length - (startIndex + index)
 					: startIndex + index + 1}
 			</Table.Cell>
+			<Table.Cell>{item.student_full_name}</Table.Cell>
 			<Table.Cell>{item.enrollment_name}</Table.Cell>
-			<Table.Cell>{item.num_document_person}</Table.Cell>
-			<Table.Cell>{item.number_of_installments}</Table.Cell>
-			<Table.Cell>{item.payment_document_type_display}</Table.Cell>
+			<Table.Cell>{item.plan_type_display}</Table.Cell>
+			<Table.Cell>{item.upfront_percentage * 100}%</Table.Cell>
 			<Table.Cell>
 				<Badge bg={matchStatus?.bg} color={matchStatus?.color}>
 					{matchStatus?.label || 'N/A'}
 				</Badge>
 			</Table.Cell>
 			<Table.Cell>
-				<HStack justify='space-between'>
-					<Group gap={1}>
-						<ViewFractionationRequestsModal
-							item={item}
-							matchStatus={matchStatus}
-						/>
-
-						<ViewDocumentRequestModal item={item} />
-
-						<UpdateStatusFractionatopmModal data={item} fetchData={refetch} />
-					</Group>
-				</HStack>
+				<ViewFractionationRequestsModal item={item} matchStatus={matchStatus} />
 			</Table.Cell>
 		</Table.Row>
 	);
@@ -62,26 +49,28 @@ Row.displayName = 'Row';
 
 Row.propTypes = {
 	item: PropTypes.object,
-	refetch: PropTypes.func,
+	fetchData: PropTypes.func,
 	startIndex: PropTypes.number,
 	index: PropTypes.number,
 	sortConfig: PropTypes.object,
 	data: PropTypes.array,
 };
 
-export const CommitmentLettersTable = ({
-	isLoading,
+export const FractionationTable = ({
 	data,
+	fetchData,
+	isLoading,
+	isFetchingNextPage,
 	totalCount,
-	refetch,
 	fetchNextPage,
 	hasNextPage,
-	isFetchingNextPage,
+	resetPageTrigger,
 }) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [sortConfig, setSortConfig] = useState(null);
 
 	const sortedData = useSortedData(data, sortConfig);
+
 	const {
 		currentPage,
 		startIndex,
@@ -96,6 +85,10 @@ export const CommitmentLettersTable = ({
 		isFetchingNextPage,
 	});
 
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [resetPageTrigger]);
+
 	return (
 		<Box
 			bg={{ base: 'white', _dark: 'its.gray.500' }}
@@ -108,7 +101,7 @@ export const CommitmentLettersTable = ({
 				<Table.Root size='sm' w='full' striped>
 					<Table.Header>
 						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
-							<Table.ColumnHeader alignContent={'start'}>
+							<Table.ColumnHeader w='5%'>
 								<SortableHeader
 									label='N°'
 									columnKey='index'
@@ -116,7 +109,15 @@ export const CommitmentLettersTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader alignContent={'start'}>
+							<Table.ColumnHeader w='20%'>
+								<SortableHeader
+									label='Estudiante'
+									columnKey='student_full_name'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader w='20%'>
 								<SortableHeader
 									label='Matrícula'
 									columnKey='enrollment_name'
@@ -124,31 +125,23 @@ export const CommitmentLettersTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader alignContent={'start'}>
+							<Table.ColumnHeader w='20%'>
 								<SortableHeader
-									label='N° Documento'
-									columnKey='num_document_person'
+									label='Tipo'
+									columnKey='plan_type_display'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader alignContent={'start'}>
+							<Table.ColumnHeader w='20%'>
 								<SortableHeader
-									label='N° Cuotas'
-									columnKey='number_of_installments'
+									label='Min. Adelanto %'
+									columnKey='upfront_percentage'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader alignContent={'start'}>
-								<SortableHeader
-									label='Recibo'
-									columnKey='payment_document_type_display'
-									sortConfig={sortConfig}
-									onSort={setSortConfig}
-								/>
-							</Table.ColumnHeader>
-							<Table.ColumnHeader alignContent={'start'}>
+							<Table.ColumnHeader w='20%'>
 								<SortableHeader
 									label='Estado'
 									columnKey='status_display'
@@ -156,29 +149,26 @@ export const CommitmentLettersTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader alignContent={'start'}>
-								Acciones
-							</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{isLoading ? (
-							<SkeletonTable columns={7} />
+						{isLoading || (isFetchingNextPage && hasNextPage) ? (
+							<SkeletonTable columns={6} />
 						) : visibleRows?.length > 0 ? (
-							visibleRows?.map((item, index) => (
+							visibleRows.map((item, index) => (
 								<Row
 									key={item.id}
 									item={item}
-									refetch={refetch}
+									data={data}
+									sortConfig={sortConfig}
+									fetchData={fetchData}
 									startIndex={startIndex}
 									index={index}
-									sortConfig={sortConfig}
-									data={data}
 								/>
 							))
 						) : (
 							<Table.Row>
-								<Table.Cell colSpan={8} textAlign='center' py={2}>
+								<Table.Cell colSpan={6} textAlign='center' py={2}>
 									No hay datos disponibles.
 								</Table.Cell>
 							</Table.Row>
@@ -202,12 +192,13 @@ export const CommitmentLettersTable = ({
 	);
 };
 
-CommitmentLettersTable.propTypes = {
+FractionationTable.propTypes = {
+	data: PropTypes.array,
+	fetchData: PropTypes.func,
 	isLoading: PropTypes.bool,
 	totalCount: PropTypes.number,
-	data: PropTypes.array,
-	refetch: PropTypes.func,
 	fetchNextPage: PropTypes.func,
 	hasNextPage: PropTypes.bool,
 	isFetchingNextPage: PropTypes.bool,
+	resetPageTrigger: PropTypes.func,
 };

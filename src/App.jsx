@@ -60,6 +60,7 @@ import {
 import { BenefitsView } from './views/admin/benefits/BenefitsView';
 import { MyBenefitsView } from './views/admin/mypayments/MyBenefitsView';
 import { RequestBenefitsView } from './views/admin/benefits/RequestBenefitsView';
+import { FractionationsView } from './views/admin/debt_requests/FractionationsView';
 
 function App() {
 	return (
@@ -108,7 +109,7 @@ function App() {
 								</Route>
 								<Route
 									element={
-										<ProtectedRoute requiredPermission='benefits.benefitsreviews.view' />
+										<ProtectedRoute requiredPermission='benefits.benefits.view' />
 									}
 								>
 									<Route path='request' element={<RequestBenefitsView />} />
@@ -250,7 +251,7 @@ function App() {
 							<Route path='myclasses' element={<MyClassesLayout />}>
 								<Route
 									element={
-										<ProtectedRoute requiredPermission='classes.myprograms.view' />
+										<ProtectedRoute requiredPermission='classes.myclasses.view' />
 									}
 								>
 									<Route path='myprograms'>
@@ -334,11 +335,24 @@ function App() {
 									/>
 								</Route>
 							</Route>
-							<Route
-								path='commitment-letters'
-								element={<CommitmentLetters />}
-							/>
 
+							{/* ---------------------------- DEBTS REQUESTS ROUTES ---------------------------- */}
+							<Route path='commitment-letters'>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='commitment.commitment.view' />
+									}
+								>
+									<Route path='list' element={<FractionationsView />} />
+								</Route>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='commitment.commitment.review' />
+									}
+								>
+									<Route path='request' element={<CommitmentLetters />} />
+								</Route>
+							</Route>
 							{/* ---------------------------- SETTINGS ROUTES ---------------------------- */}
 
 							<Route path='settings' element={<SettingsLayout />}>

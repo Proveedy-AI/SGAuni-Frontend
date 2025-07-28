@@ -13,6 +13,9 @@ import {
 	FiCreditCard,
 	FiAward,
 	FiShield,
+	FiFolder,
+	FiEdit3,
+	FiClipboard,
 } from 'react-icons/fi';
 import { FaFileContract, FaRegFile } from 'react-icons/fa';
 import { HiOutlineClipboardList } from 'react-icons/hi';
@@ -134,7 +137,7 @@ export const useDataSidebar = () => {
 			href: '/myclasses/myprograms',
 			icon: FiBookOpen,
 			label: 'Mis Clases',
-			permission: 'classes.myprograms.view',
+			permission: 'classes.myclasses.view',
 		},
 		{
 			href: '/benefits',
@@ -151,7 +154,27 @@ export const useDataSidebar = () => {
 					href: '/benefits/request',
 					icon: FiShield,
 					label: 'Solicitudes',
-					permission: 'benefits.benefitsreviews.view',
+					permission: 'benefits.benefits.review',
+				},
+			],
+		},
+
+		{
+			href: '/commitment-letters',
+			label: 'Fraccionamientos',
+			icon: FiFolder,
+			subItems: [
+				{
+					href: '/commitment-letters/list',
+					icon: FiClipboard,
+					label: 'Lista general',
+					permission: 'commitment.commitment.view',
+				},
+				{
+					href: '/commitment-letters/request',
+					icon: FiEdit3,
+					label: 'Solicitudes',
+					permission: 'commitment.commitment.review',
 				},
 			],
 		},
@@ -161,13 +184,6 @@ export const useDataSidebar = () => {
 			icon: FiUsers,
 			label: 'Usuarios',
 			permission: 'users.users.view',
-		},
-
-		{
-			href: '/commitment-letters',
-			label: 'Fraccionamientos',
-			icon: FiFileText,
-			permission: 'commitment.commitment.view',
 		},
 	];
 
