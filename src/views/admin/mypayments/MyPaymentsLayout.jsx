@@ -71,6 +71,12 @@ export const MyPaymentsLayout = () => {
 			icon: FiCalendar,
 			permission: null,
 		},
+		{
+			href: '/mypaymentsdebts/mycommitmentLetters',
+			label: 'Mis Fraccionamientos',
+			icon: FiFileText,
+			permission: null,
+		},
 	];
 
 	return (

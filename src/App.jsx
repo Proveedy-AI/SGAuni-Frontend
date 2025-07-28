@@ -61,6 +61,7 @@ import { BenefitsView } from './views/admin/benefits/BenefitsView';
 import { MyBenefitsView } from './views/admin/mypayments/MyBenefitsView';
 import { RequestBenefitsView } from './views/admin/benefits/RequestBenefitsView';
 import { FractionationsView } from './views/admin/debt_requests/FractionationsView';
+import { MyFractionationsView } from './views/admin/mypayments/MyFractionationsView';
 
 function App() {
 	return (
@@ -294,6 +295,9 @@ function App() {
 										</Route>
 										<Route path='schedule'>
 											<Route index element={<MyPaymentSchedule />} />
+										</Route>
+										<Route path='mycommitmentLetters'>
+											<Route index element={<MyFractionationsView />} />
 										</Route>
 									</Route>
 								</Route>
