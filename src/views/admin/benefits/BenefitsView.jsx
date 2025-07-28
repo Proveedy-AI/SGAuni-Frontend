@@ -1,4 +1,4 @@
-import { MyBenefitsTable } from '@/components/tables/benefits/MyBenefitsTable';
+import { BenefitsTable } from '@/components/tables/benefits/BenefitsTable';
 import { useReadListBenefits } from '@/hooks/benefits/useReadListBenefits';
 
 import {
@@ -12,8 +12,11 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { FiAward, FiSearch } from 'react-icons/fi';
+import { useDebounce } from 'use-debounce';
 
 export const BenefitsView = () => {
+	const [searchBenefitsValue, setSearchBenefitsValue] = useState('');
+	const [debouncedSearch] = useDebounce(searchBenefitsValue.trim(), 1000);
 	const {
 		data: dataBenefits,
 		fetchNextPage: fetchNextPageBenefits,
@@ -21,22 +24,12 @@ export const BenefitsView = () => {
 		isFetchingNextPage: isFetchingNextPageBenefits,
 		isLoading: loadingBenefits,
 		refetch: fetchBenefits,
-	} = useReadListBenefits({});
-	const [searchBenefitsValue, setSearchBenefitsValue] = useState('');
-	console.log(dataBenefits);
+	} = useReadListBenefits({ search: debouncedSearch }, {});
+
 	const allBenefits =
 		dataBenefits?.pages?.flatMap((page) => page.results) ?? [];
 
-	const isFiltering = searchBenefitsValue.trim().length > 0;
-
-	const filteredBenefits = allBenefits?.filter((item) =>
-		item?.owner_name?.toLowerCase().includes(searchBenefitsValue.toLowerCase())
-	);
-
-	const totalCount = isFiltering
-		? filteredBenefits.length
-		: (dataBenefits?.pages?.[0]?.count ?? 0);
-
+	const totalCount = dataBenefits?.pages?.[0]?.count ?? 0;
 	return (
 		<Box spaceY='5'>
 			<Card.Root>
@@ -57,7 +50,7 @@ export const BenefitsView = () => {
 								bg={'white'}
 								size='sm'
 								variant='outline'
-								placeholder='Buscar por nombre'
+								placeholder='Buscar ...'
 								value={searchBenefitsValue}
 								onChange={(e) => setSearchBenefitsValue(e.target.value)}
 							/>
@@ -66,9 +59,9 @@ export const BenefitsView = () => {
 				</Card.Body>
 			</Card.Root>
 
-			<MyBenefitsTable
+			<BenefitsTable
 				isLoading={loadingBenefits}
-				data={filteredBenefits}
+				data={allBenefits}
 				fetchNextPage={fetchNextPageBenefits}
 				hasNextPage={hasNextPageBenefits}
 				totalCount={totalCount}
