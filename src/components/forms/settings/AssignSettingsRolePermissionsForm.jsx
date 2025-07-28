@@ -198,6 +198,9 @@ const groupTitles = {
 		payment: 'Pagos y deudas',
 		commitment: 'Fraccionamientos',
 		courses: 'Cursos',
+		benefits: 'Becas y Beneficios',
+		classes: 'Clases',
+
 		
 	},
 	subCategory: {
@@ -230,5 +233,10 @@ const groupTitles = {
 		letters: 'Cartas de Compromiso',
 		schedules: 'Cursos',
 		mypaymentsdebts: 'Mis Pagos y Deudas',
+		benefits: 'Beneficios',
+		myenrollments: 'Mi Matrícula (Estudiante)',
+		mycourses: 'Mis Cursos (Estudiante)',
+		'data-proccess': 'Procesamiento de Datos',
+		myclasses: 'Mis Clases (Docente)',
 	},
 };

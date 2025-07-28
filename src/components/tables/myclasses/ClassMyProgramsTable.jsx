@@ -31,7 +31,7 @@ const Row = memo(
 	  const encrypted = Encryptor.encrypt(item.program);
     const encoded = encodeURIComponent(encrypted);
     const handleRowClick = () => {
-      if (permissions.includes('classes.myprograms.view')) navigate(`/myclasses/myprograms/${encoded}`);
+      if (permissions.includes('classes.myclasses.view')) navigate(`/myclasses/myprograms/${encoded}`);
     };
 
     return (
