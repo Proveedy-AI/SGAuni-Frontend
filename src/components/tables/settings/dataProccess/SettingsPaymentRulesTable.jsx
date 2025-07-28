@@ -263,7 +263,7 @@ export const SettingsPaymentRulesTable = ({
 					</Table.Header>
 					<Table.Body>
 						{isLoading ? (
-							<SkeletonTable columns={6} />
+							<SkeletonTable columns={11} />
 						) : visibleRows?.length > 0 ? (
 							visibleRows.map((item, index) => (
 								<Row
@@ -279,7 +279,7 @@ export const SettingsPaymentRulesTable = ({
 							))
 						) : (
 							<Table.Row>
-								<Table.Cell colSpan={6} textAlign='center' py={2}>
+								<Table.Cell colSpan={11} textAlign='center' py={2}>
 									No hay datos disponibles.
 								</Table.Cell>
 							</Table.Row>
