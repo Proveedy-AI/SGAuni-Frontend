@@ -120,7 +120,7 @@ export const MyPaymentAddRequests = () => {
 	const hasStudentRole = dataUser.roles?.some(
 		(role) => role.name === 'Estudiante'
 	);
-	const ProcessTypeOptions = !hasStudentRole
+	const ProcessTypeOptions = hasStudentRole
 		? [
 				{ label: 'Admisión', value: 'admission' },
 				{ label: 'Matrícula', value: 'enrollment' },
