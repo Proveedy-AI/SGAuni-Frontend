@@ -16,15 +16,15 @@ import { FiDollarSign, FiDownload, FiInfo } from 'react-icons/fi';
 import PropTypes from 'prop-types';
 import { useReadMyEnrollments, useReadProgramsbyId } from '@/hooks';
 import { uploadToS3 } from '@/utils/uploadToS3';
-import { useCreatePaymentPlans } from '@/hooks/payments_plans/useCreatePaymentPlans';
+import { useReadMethodPayment } from '@/hooks/method_payments';
+import { useCreatePaymentPlansDebts } from '@/hooks/payments_plans/useCreatePaymentPlansDebts';
 
 export const FractionateDebt = ({ countDebts }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
-
 	const [program, setProgram] = useState(null);
 	const [fractionateDebtPath, setFractionateDebtPath] = useState('');
-	const [planType, setPlanType] = useState(null);
+	const [selectedMethod, setSelectedMethod] = useState(null);
 	const [amount, setAmount] = useState(countDebts || 0);
 	const [installments, setInstallments] = useState(null);
 	const [selectedDocumentType, setSelectedDocumentType] = useState(null);
@@ -40,6 +40,9 @@ export const FractionateDebt = ({ countDebts }) => {
 		enabled: open,
 	});
 
+	const { data: MethodPayment, isLoading: isLoadingMethodPayment } =
+		useReadMethodPayment();
+
 	const paymentDebtLocal = {
 		max_installments: 6,
 		min_payment_percentage: '20.00',
@@ -50,23 +53,27 @@ export const FractionateDebt = ({ countDebts }) => {
 		if (dataMyEnrollment?.length === 1) {
 			setProgram({
 				enrollment: dataMyEnrollment[0].id,
-				value: dataMyEnrollment[0].programId,
-				label: dataMyEnrollment[0].program_name,
+				value: dataMyEnrollment[0].program_id,
+				label: `${dataMyEnrollment[0].program_name} - ${dataMyEnrollment[0].program_period}`,
 			});
 		}
 	}, [dataMyEnrollment]);
 
 	const programOptions =
-		dataMyEnrollment?.map((applicant) => ({
-			value: applicant.programId,
-			label: applicant.program_name,
-			enrollment: applicant.id,
+		dataMyEnrollment?.map((enrollment) => ({
+			value: enrollment.program_id,
+			label: enrollment.program_name + ' - ' + enrollment.program_period,
+			enrollment: enrollment.id,
 		})) || [];
 
-	const { mutate: fractionateDebt } = useCreatePaymentPlans();
+	const { mutate: fractionateDebt } = useCreatePaymentPlansDebts();
 
 	// Según base de datos
-	const planOptions = [{ value: 3, label: 'Cuotas' }];
+	const methodOptions =
+		MethodPayment?.results?.map((method) => ({
+			value: method.id,
+			label: method.name,
+		})) || [];
 
 	const [errors, setErrors] = useState({});
 
@@ -75,7 +82,8 @@ export const FractionateDebt = ({ countDebts }) => {
 		if (!program) newErrors.program = 'El programa es requerido';
 		if (!fractionateDebtPath)
 			newErrors.fractionateDebtPath = 'El archivo es requerido';
-		if (!planType) newErrors.planType = 'El tipo de plan es requerido';
+		if (!selectedMethod)
+			newErrors.selectedMethod = 'El método de pago es requerido';
 		if (!installments)
 			newErrors.installments = 'El número de cuotas es requerido';
 		if (installments <= 1 || installments > paymentDebtLocal?.max_installments)
@@ -93,7 +101,7 @@ export const FractionateDebt = ({ countDebts }) => {
 
 	const reset = () => {
 		setFractionateDebtPath('');
-		setPlanType(null);
+		setSelectedMethod(null);
 		setInstallments(0);
 		setAcceptedTerms(false);
 	};
@@ -128,12 +136,12 @@ export const FractionateDebt = ({ countDebts }) => {
 
 			const payload = {
 				enrollment: program?.enrollment,
-				payment_purpose: planType.value,
+				plan_type: 2,
 				upfront_percentage: DataProgram?.min_payment_percentage,
 				number_of_installments: installments,
 				payment_document_type: selectedDocumentType?.value,
 				num_document_person: numDocCarpeta,
-				document_path: s3Url,
+				path_commitment_letter: s3Url,
 			};
 
 			fractionateDebt(payload, {
@@ -146,9 +154,23 @@ export const FractionateDebt = ({ countDebts }) => {
 					setOpen(false);
 					setDisableUpload(false);
 				},
-				onError: () => {
+				onError: (error) => {
+					let message = 'Error al enviar la solicitud';
+
+					// Manejo flexible del mensaje
+					if (Array.isArray(error?.error)) {
+						message = error.error[0];
+					} else if (typeof error?.error === 'string') {
+						message = error.error;
+					} else if (typeof error?.response?.data?.error === 'string') {
+						message = error.response.data.error;
+					} else if (Array.isArray(error?.response?.data?.error)) {
+						message = error.response.data.error[0];
+					}
+
 					toaster.create({
 						title: 'Error al enviar la solicitud',
+						description: message,
 						type: 'error',
 					});
 				},
@@ -159,7 +181,7 @@ export const FractionateDebt = ({ countDebts }) => {
 			console.error('Error al subir el archivo:', error);
 			setDisableUpload(false);
 			toaster.create({
-				title: 'Error al subir el contrato',
+				title: 'Error al subir el archivo',
 				type: 'error',
 			});
 		}
@@ -264,16 +286,21 @@ export const FractionateDebt = ({ countDebts }) => {
 									/>
 								</Field>
 								<Field
-									label='Tipo de plan'
-									required
-									invalid={!!errors.planType}
-									error={errors.planType}
+									label='Métodos de Pago:'
+									invalid={!!errors.selectedMethod}
+									errorText={errors.selectedMethod}
 								>
 									<ReactSelect
-										options={planOptions}
-										value={planOptions.find((opt) => opt.value === planType)}
-										onChange={(opt) => setPlanType(opt?.value)}
-										placeholder='Selecciona el tipo de plan'
+										value={selectedMethod}
+										onChange={(option) => {
+											setSelectedMethod(option);
+										}}
+										isLoading={isLoadingMethodPayment}
+										variant='flushed'
+										size='xs'
+										isSearchable
+										isClearable
+										options={methodOptions}
 									/>
 								</Field>
 								<Field label='Porcentaje inicial (%)'>
@@ -285,7 +312,7 @@ export const FractionateDebt = ({ countDebts }) => {
 										min={0}
 										max={100}
 										value={
-											DataProgram?.min_payment_percentage ||
+											DataProgram?.min_payment_percentage * 100 ||
 											paymentDebtLocal.min_payment_percentage
 										}
 										style={{ width: '100%' }}
@@ -311,15 +338,13 @@ export const FractionateDebt = ({ countDebts }) => {
 									/>
 								</Field>
 							</SimpleGrid>
-							<Field label='Monto minimo a pagar'>
+							<Field label='Monto minimo a pagar (S/.)'>
 								<Input
 									type='number'
 									disabled
 									min={1}
-									value={
-										(amount * DataProgram?.min_payment_percentage) / 100 || 0
-									}
-									onChange={(e) => setAmount(Number(e.target.value))}
+									value={amount * DataProgram?.min_payment_percentage || 0}
+									onChange={(e) => setAmount(e.target.value)}
 									style={{ width: '100%' }}
 								/>
 							</Field>
