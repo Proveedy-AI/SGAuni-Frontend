@@ -18,6 +18,9 @@ export const MyFractionationsView = () => {
 
 	const {
 		data: dataFractionation,
+		fetchNextPage: fetchNextFractionation,
+		hasNextPage: hasNextFractionation,
+		isFetchingNextPage: isFetchingNextFractionation,
 		isLoading: loadingFractionation,
 		refetch: fetchFractionation,
 	} = useReadFractionation({}, {});
@@ -45,7 +48,11 @@ export const MyFractionationsView = () => {
 		},
 	];*/
 
-	const filteredFractionations = dataFractionation?.filter((item) =>
+	const allFractionations = dataFractionation?.pages?.flatMap(
+		(page) => page.results ?? []
+	);
+
+	const filteredFractionations = allFractionations?.filter((item) =>
 		item?.student_name
 			?.toLowerCase()
 			.includes(searchBenefitsValue.toLowerCase())
@@ -82,6 +89,9 @@ export const MyFractionationsView = () => {
 
 			<MyFractionationTable
 				isLoading={loadingFractionation}
+				isFetchingNextPage={isFetchingNextFractionation}
+				hasNextPage={hasNextFractionation}
+				fetchNextPage={fetchNextFractionation}
 				data={filteredFractionations}
 				refetch={fetchFractionation}
 			/>
