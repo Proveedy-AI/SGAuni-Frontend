@@ -9,3 +9,4 @@ export * from './useCheckPersonHasDebts';
 export * from './useCreateStudentEnrollment';
 export * from './useReadMyEnrolledCourses';
 export * from './useReadMyRequestBenefits';
+export * from './useReadCoursesToEnroll';

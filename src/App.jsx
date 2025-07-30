@@ -65,7 +65,7 @@ import { MyFractionationsView } from './views/admin/mypayments/MyFractionationsV
 import { StudentsView } from './views/admin/student/StudentsView';
 import { StudentDetailView } from './views/admin/student/StudentDetailView';
 import { MyCoursesByEnrollement, MyEnrollmentsToViewCourses } from './views/admin/mycourses';
-import { MyEnrollmentProcessView, MyProceduresView } from './views/admin/procedures';
+import { MyEnrollmentProcessView, MyInscriptionFormView, MyProceduresView } from './views/admin/procedures';
 
 function App() {
 	return (
@@ -287,7 +287,13 @@ function App() {
                   }
                 >
                   <Route index element={<MyProceduresView />} />
-                  <Route path='enrollment-process' element={<MyEnrollmentProcessView />} />
+                  <Route path='enrollment-process'>
+                    <Route index element={<MyEnrollmentProcessView />} />
+                    <Route
+                      path=':id'
+                      element={<MyInscriptionFormView />}
+                    />
+                  </Route>
                 </Route>
               </Route>
 
