@@ -1,9 +1,11 @@
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
+import { StudentTuitionTable } from '@/components/tables/students/StudentTuitionTable';
 import { Avatar } from '@/components/ui';
 import ApplicantSkeleton from '@/components/ui/ApplicantSkeleton';
 import { formatDateString } from '@/components/ui/dateHelpers';
 import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
 import { useReadPersonById } from '@/hooks';
+import { useReadEnrollmentsList } from '@/hooks/enrollments/useReadEnrollmentsList';
 import { useReadStudentById } from '@/hooks/students';
 import {
 	Badge,
@@ -20,6 +22,7 @@ import {
 } from '@chakra-ui/react';
 import {
 	FiCheckCircle,
+	FiClipboard,
 	FiClock,
 	FiFileText,
 	FiLock,
@@ -43,6 +46,11 @@ export const StudentDetailView = () => {
 	const { data: dataPerson, isLoading: isPersonLoading } = useReadPersonById(
 		dataStudent?.person
 	);
+
+	const { data: dataEnrollments, isLoading: isLoadingEnrollment } =
+		useReadEnrollmentsList({ student: decrypted });
+
+	const myEnrollment = dataEnrollments?.results || [];
 
 	const statusEnum = [
 		{
@@ -856,6 +864,21 @@ export const StudentDetailView = () => {
 								</Card.Root>
 							</SimpleGrid>
 						</Box>
+						<Card.Root shadow={'md'}>
+							<Card.Header pb={0}>
+								<HStack gap={2}>
+									<Icon as={FiClipboard} boxSize={5} />
+									<Heading size='md'>Matrículas</Heading>
+								</HStack>
+							</Card.Header>
+
+							<Card.Body>
+								<StudentTuitionTable
+									data={myEnrollment}
+									isLoading={isLoadingEnrollment}
+								/>
+							</Card.Body>
+						</Card.Root>
 					</SimpleGrid>
 				</Stack>
 			) : (
