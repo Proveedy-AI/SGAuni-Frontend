@@ -65,7 +65,7 @@ import { MyFractionationsView } from './views/admin/mypayments/MyFractionationsV
 import { StudentsView } from './views/admin/student/StudentsView';
 import { StudentDetailView } from './views/admin/student/StudentDetailView';
 import { MyCoursesByEnrollement, MyEnrollmentsToViewCourses } from './views/admin/mycourses';
-import { MyProceduresView } from './views/admin/procedures';
+import { MyEnrollmentProcessView, MyProceduresView } from './views/admin/procedures';
 
 function App() {
 	return (
@@ -278,6 +278,8 @@ function App() {
 								</Route>
 							</Route>
 
+              {/* ---------------------------- PROCEDURES STUDENT ---------------------------- */}
+
               <Route path='myprocedures'>
                 <Route
                   element={
@@ -285,6 +287,7 @@ function App() {
                   }
                 >
                   <Route index element={<MyProceduresView />} />
+                  <Route path='enrollment-process' element={<MyEnrollmentProcessView />} />
                 </Route>
               </Route>
 

@@ -97,56 +97,56 @@ export const MyProceduresView = () => {
   {
     id: 1,
     label: "Proceso de matrícula",
-    href: "/procedures/enrollment-process",
+    href: "/myprocedures/enrollment-process",
     icon: FiFileText,
     description: "Gestiona tu proceso de matrícula académica"
   },
   {
     id: 2,
     label: "Constancia de matrícula",
-    href: "/procedures/enrollment-certificate",
+    href: "/myprocedures/enrollment-certificate",
     icon: FiCheckCircle,
     description: "Solicita tu constancia de matrícula"
   },
   {
     id: 3,
     label: "Constancia de ingreso",
-    href: "/procedures/admission-certificate",
+    href: "/myprocedures/admission-certificate",
     icon: FiLogIn,
     description: "Obtén tu constancia de ingreso"
   },
   {
     id: 4,
     label: "Retiro de curso",
-    href: "/procedures/course-withdrawal",
+    href: "/myprocedures/course-withdrawal",
     icon: FiBook,
     description: "Solicita el retiro de un curso"
   },
   {
     id: 5,
     label: "Constancia de promedio ponderado",
-    href: "/procedures/gpa-certificate",
+    href: "/myprocedures/gpa-certificate",
     icon: FiTrendingUp,
     description: "Constancia de tu promedio académico"
   },
   {
     id: 6,
     label: "Constancia de no adeudo",
-    href: "/procedures/no-debt-certificate",
+    href: "/myprocedures/no-debt-certificate",
     icon: FiCreditCard,
     description: "Certificado de no tener deudas pendientes"
   },
   {
     id: 7,
     label: "Postergar matrícula",
-    href: "/procedures/postpone-enrollment",
+    href: "/myprocedures/postpone-enrollment",
     icon: FiUserX,
     description: "Solicita postergar tu matrícula"
   },
   {
     id: 8,
     label: "Proceso de Tesis y Sustentación",
-    href: "/procedures/thesis-process",
+    href: "/myprocedures/thesis-process",
     icon: FiAward,
     description: "Gestiona tu proceso de tesis"
   }
