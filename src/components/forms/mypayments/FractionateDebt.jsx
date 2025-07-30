@@ -312,7 +312,7 @@ export const FractionateDebt = ({ countDebts }) => {
 										min={0}
 										max={100}
 										value={
-											DataProgram?.min_payment_percentage * 100 ||
+											DataProgram?.min_payment_percentage ||
 											paymentDebtLocal.min_payment_percentage
 										}
 										style={{ width: '100%' }}
@@ -343,7 +343,9 @@ export const FractionateDebt = ({ countDebts }) => {
 									type='number'
 									disabled
 									min={1}
-									value={amount * DataProgram?.min_payment_percentage || 0}
+									value={
+										(amount * DataProgram?.min_payment_percentage) / 100 || 0
+									}
 									onChange={(e) => setAmount(e.target.value)}
 									style={{ width: '100%' }}
 								/>

@@ -17,12 +17,12 @@ export const MyFractionationsView = () => {
 	const [searchBenefitsValue, setSearchBenefitsValue] = useState('');
 
 	const {
-		data: dataFractionation2,
+		data: dataFractionation,
 		isLoading: loadingFractionation,
 		refetch: fetchFractionation,
 	} = useReadFractionation({}, {});
 
-	const dataFractionation = [
+	/*const dataFractionation = [
 		{
 			id: 1,
 			plan_purpose: 'Fraccionamiento',
@@ -43,7 +43,7 @@ export const MyFractionationsView = () => {
 			path_commitment_letter: 'https://example.com/doc/54asd6s4asdas4d89asd4as',
 			num_document_person: '12345678',
 		},
-	];
+	];*/
 
 	const filteredFractionations = dataFractionation?.filter((item) =>
 		item?.student_name

@@ -324,7 +324,7 @@ export const AddProgram = ({
 					<Card.Body>
 						<SimpleGrid columns={2} gap={4}>
 							<Field
-								label='Porcentaje mínimo de deuda'
+								label='Porcentaje mínimo de deuda (0-100%)'
 								invalid={!!errors.minPaymentPercentage}
 								errorText={errors.minPaymentPercentage}
 								required
