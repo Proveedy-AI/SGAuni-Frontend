@@ -95,6 +95,12 @@ export const useDataSidebar = () => {
 			label: 'Mis Matrículas',
 			permission: 'enrollments.myenrollments.view',
 		},
+    {
+      href: '/myprocedures',
+      icon: FiAward,
+      label: 'Mis Trámites',
+      permission: 'procedures.myprocedures.view',
+    },
 		{
 			href: '/contracts',
 			icon: FaFileContract,

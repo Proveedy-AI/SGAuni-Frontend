@@ -65,6 +65,7 @@ import { MyFractionationsView } from './views/admin/mypayments/MyFractionationsV
 import { StudentsView } from './views/admin/student/StudentsView';
 import { StudentDetailView } from './views/admin/student/StudentDetailView';
 import { MyCoursesByEnrollement, MyEnrollmentsToViewCourses } from './views/admin/mycourses';
+import { MyProceduresView } from './views/admin/procedures';
 
 function App() {
 	return (
@@ -276,6 +277,16 @@ function App() {
 									<Route index element={<MyEnrollments />} />
 								</Route>
 							</Route>
+
+              <Route path='myprocedures'>
+                <Route
+                  element={
+                    <ProtectedRoute requiredPermission='procedures.myprocedures.view' />
+                  }
+                >
+                  <Route index element={<MyProceduresView />} />
+                </Route>
+              </Route>
 
 							<Route path='myclasses' element={<MyClassesLayout />}>
 								<Route
