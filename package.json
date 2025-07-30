@@ -48,6 +48,7 @@
     "recharts": "^2.15.0",
     "sgauni": "file:",
     "socket.io-client": "^4.8.1",
+    "use-debounce": "^10.0.5",
     "use-mask-input": "^3.4.2"
   },
   "devDependencies": {

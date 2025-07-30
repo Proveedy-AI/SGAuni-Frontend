@@ -17,6 +17,7 @@ import {
 	FiBookOpen,
 	FiShield,
 	FiGlobe,
+	FiSettings,
 } from 'react-icons/fi';
 import { Link, Outlet, useLocation } from 'react-router';
 
@@ -64,6 +65,12 @@ export const SettingsLayout = () => {
 			label: 'Programas',
 			icon: FiBookOpen,
 			permission: 'settings.program.view',
+		},
+		{
+			href: '/settings/data-processing',
+			label: 'Procesamiento de Datos',
+			icon: FiSettings,
+			permission: 'settings.data-proccess.view',
 		},
 		{
 			href: '/settings/roles',

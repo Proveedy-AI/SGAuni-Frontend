@@ -1184,7 +1184,7 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 		isLoading: isLoadingCourseSchedule,
 		refetch: refetchCourseSchedule,
 	} = useReadCourseSchedule(
-		{ enrollment_period_program_course: 2 },
+		{ enrollment_period_program_course: data.id },
 		{ enabled: open }
 	);
 	//const [selectedIds, setSelectedIds] = useState([]);

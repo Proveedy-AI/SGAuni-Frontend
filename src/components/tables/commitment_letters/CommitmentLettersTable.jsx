@@ -8,84 +8,61 @@ import { SortableHeader } from '@/components/ui/SortableHeader';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
 import { usePaginatedInfiniteData } from '@/components/navigation';
-import { ApproveFractionationRequestsModal, ViewDocumentRequestModal, ViewFractionationRequestsModal } from '@/components/forms/commitment_letters';
+import {
+	ViewDocumentRequestModal,
+	ViewFractionationRequestsModal,
+} from '@/components/forms/commitment_letters';
+import { UpdateStatusFractionatopmModal } from '@/components/forms/commitment_letters/UpdateStatusFractionatopmModal';
 
-const Row = memo(
-	({ item, startIndex, index, refetch, permissions, sortConfig, data }) => {
-		const statusDisplay = [
-			{ id: 1, label: 'En revisión', bg: '#AEAEAE', color: '#F5F5F5' },
-			{ id: 2, label: 'Aprobado', bg: '#D0EDD0', color: '#2D9F2D' },
-			{ id: 3, label: 'Rechazado', bg: '#F7CDCE', color: '#E0383B' },
-		];
+const Row = memo(({ item, startIndex, index, refetch, sortConfig, data }) => {
+	const statusDisplay = [
+		{ id: 1, label: 'Borrador', bg: '#AEAEAE', color: '#F5F5F5' },
+		{ id: 2, label: 'En revisión', bg: '#d0daedff', color: '#2d689fff' },
+		{ id: 3, label: 'Rechazado', bg: '#F7CDCE', color: '#E0383B' },
+		{ id: 4, label: 'Aprobado', bg: '#D0EDD0', color: '#2D9F2D' },
+	];
 
-    /*
-    {
-        id: 1,
-        enrollment: 1,
-        enrollment_name: '2024-I',
-        plan_type_display: 'Cuotas',
-        total_amount: '1200.00',
-        total_amortization: '400.00',
-        total_balance: '800.00',
-        upfront_percentage: '33%',
-        number_of_installments: 3,
-        approved_by: 2,
-        approved_at: '2024-05-10T10:00:00.000Z',
-        payment_document_type: 1,
-        payment_document_type_display: 'Boleta',
-        path_commitment_letter: 'https://example.com/doc/54asd6s4asdas4d89asd4as',
-        num_document_person: '12345678',
-        status_review: 1
-      },
-    */
+	const matchStatus = statusDisplay.find((status) => status.id === item.status);
 
-    const matchStatus = statusDisplay.find((status) => status.id === item.status_review);
+	return (
+		<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
+			<Table.Cell>
+				{sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
+					? data.length - (startIndex + index)
+					: startIndex + index + 1}
+			</Table.Cell>
+			<Table.Cell>{item.enrollment_name}</Table.Cell>
+			<Table.Cell>{item.num_document_person}</Table.Cell>
+			<Table.Cell>{item.number_of_installments}</Table.Cell>
+			<Table.Cell>{item.payment_document_type_display}</Table.Cell>
+			<Table.Cell>
+				<Badge bg={matchStatus?.bg} color={matchStatus?.color}>
+					{matchStatus?.label || 'N/A'}
+				</Badge>
+			</Table.Cell>
+			<Table.Cell>
+				<HStack justify='space-between'>
+					<Group gap={1}>
+						<ViewFractionationRequestsModal
+							item={item}
+							matchStatus={matchStatus}
+						/>
 
-		return (
-			<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
-				<Table.Cell>
-					{sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
-						? data.length - (startIndex + index)
-						: startIndex + index + 1}
-				</Table.Cell>
-				<Table.Cell>{item.enrollment_name}</Table.Cell>
-				<Table.Cell>{item.num_document_person}</Table.Cell>
-				<Table.Cell>{item.number_of_installments}</Table.Cell>
-				<Table.Cell>{item.payment_document_type_display}</Table.Cell>
-				<Table.Cell>
-					<Badge
-						bg={matchStatus?.bg}
-						color={matchStatus?.color}
-					>
-						{matchStatus?.label || 'N/A'}
-					</Badge>
-				</Table.Cell>
-				<Table.Cell>
-					<HStack justify='space-between'>
-						<Group gap={1}>
-              {permissions?.includes('commitment.letters.view') && (
-                <ViewFractionationRequestsModal item={item} matchStatus={matchStatus} />
-              )}
-              {permissions?.includes('commitment.letters.view') && (
-                <ViewDocumentRequestModal item={item} />
-              )}
-              {permissions?.includes('commitment.letters.approve') && (
-                <ApproveFractionationRequestsModal item={item} fetchData={refetch} />
-              )}
-						</Group>
-					</HStack>
-				</Table.Cell>
-			</Table.Row>
-		);
-	}
-);
+						<ViewDocumentRequestModal item={item} />
+
+						<UpdateStatusFractionatopmModal data={item} fetchData={refetch} />
+					</Group>
+				</HStack>
+			</Table.Cell>
+		</Table.Row>
+	);
+});
 
 Row.displayName = 'Row';
 
 Row.propTypes = {
 	item: PropTypes.object,
 	refetch: PropTypes.func,
-	permissions: PropTypes.array,
 	startIndex: PropTypes.number,
 	index: PropTypes.number,
 	sortConfig: PropTypes.object,
@@ -95,8 +72,8 @@ Row.propTypes = {
 export const CommitmentLettersTable = ({
 	isLoading,
 	data,
+	totalCount,
 	refetch,
-	permissions,
 	fetchNextPage,
 	hasNextPage,
 	isFetchingNextPage,
@@ -163,7 +140,7 @@ export const CommitmentLettersTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-              <Table.ColumnHeader alignContent={'start'}>
+							<Table.ColumnHeader alignContent={'start'}>
 								<SortableHeader
 									label='Recibo'
 									columnKey='payment_document_type_display'
@@ -195,7 +172,6 @@ export const CommitmentLettersTable = ({
 									refetch={refetch}
 									startIndex={startIndex}
 									index={index}
-									permissions={permissions}
 									sortConfig={sortConfig}
 									data={data}
 								/>
@@ -212,7 +188,7 @@ export const CommitmentLettersTable = ({
 			</Table.ScrollArea>
 
 			<Pagination
-				count={data?.length}
+				count={totalCount}
 				pageSize={pageSize}
 				currentPage={currentPage}
 				pageSizeOptions={pageSizeOptions}
@@ -228,10 +204,10 @@ export const CommitmentLettersTable = ({
 
 CommitmentLettersTable.propTypes = {
 	isLoading: PropTypes.bool,
+	totalCount: PropTypes.number,
 	data: PropTypes.array,
 	refetch: PropTypes.func,
-	permissions: PropTypes.array,
-  fetchNextPage: PropTypes.func,
-  hasNextPage: PropTypes.bool,
-  isFetchingNextPage: PropTypes.bool,
+	fetchNextPage: PropTypes.func,
+	hasNextPage: PropTypes.bool,
+	isFetchingNextPage: PropTypes.bool,
 };

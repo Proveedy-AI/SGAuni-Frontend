@@ -27,7 +27,7 @@ export const MyPaymentDebt = () => {
 		label: programs.postgraduate_name,
 		value: programs.id,
 	}));
-	
+
 	const [selectedProgram, setSelectedProgram] = useState(
 		userPrograms?.filter((p) => p.active).length === 1
 			? userPrograms?.id
@@ -133,8 +133,7 @@ export const MyPaymentDebt = () => {
 			consolidated[debt.purpose].totalAmount += debt.amount;
 			consolidated[debt.purpose].items.push(debt);
 
-			if (debt.status === 'PENDIENTE')
-				consolidated[debt.purpose].pendingCount++;
+			if (debt.status === 2) consolidated[debt.purpose].pendingCount++;
 			else if (debt.status === 'PAGADO') consolidated[debt.purpose].paidCount++;
 			else if (debt.status === 'EN_PROCESO')
 				consolidated[debt.purpose].inProcessCount++;
@@ -152,11 +151,11 @@ export const MyPaymentDebt = () => {
 
 		if (selectedProgram === 'TODOS') {
 			const pendingDebts = debtsByPurpose.results
-				.filter((d) => d.status === 'PENDIENTE')
+				.filter((d) => d.status === 2)
 				.reduce((sum, d) => sum + d.amount, 0);
 
 			const pendingCount = debtsByPurpose.results.filter(
-				(d) => d.status === 'PENDIENTE'
+				(d) => d.status === 2
 			).length;
 
 			return {
@@ -166,12 +165,10 @@ export const MyPaymentDebt = () => {
 		} else {
 			const filteredDebts = getFilteredDebts();
 			const pendingDebts = filteredDebts
-				.filter((d) => d.status === 'PENDIENTE')
+				.filter((d) => d.status === 2)
 				.reduce((sum, d) => sum + d.amount, 0);
 
-			const pendingCount = filteredDebts.filter(
-				(d) => d.status === 'PENDIENTE'
-			).length;
+			const pendingCount = filteredDebts.filter((d) => d.status === 2).length;
 
 			return {
 				pendingDebts,
@@ -191,6 +188,22 @@ export const MyPaymentDebt = () => {
 	}
 
 	const has_debt = totals.pendingDebts > 0;
+
+	const filteredConsolidated = getConsolidatedDebtsByPurpose().filter(
+		(consolidated) =>
+			// Filtra por programa
+			(selectedProgram === 'TODOS' ||
+				consolidated.items.some(
+					(item) => item.programId === selectedProgram
+				)) &&
+			// Filtra por propósito fraccionamiento o 8
+			consolidated.items.some(
+				(item) => item.purpose === 4 || item.purpose === 8
+			)
+	);
+
+	// Verifica si hay alguna deuda relevante
+	const showDebtsSection = has_debt && filteredConsolidated.length > 0;
 
 	return (
 		<Box>
@@ -229,7 +242,7 @@ export const MyPaymentDebt = () => {
 				>
 					<Box pl={2}>
 						<strong>
-							Tienes deudas pendientes por S/ {totals.pendingDebts}
+							Tienes deudas pendientes por S/ {Number(totals.pendingDebts)}
 						</strong>{' '}
 					</Box>
 				</Alert>
@@ -243,10 +256,10 @@ export const MyPaymentDebt = () => {
 							</Card.Title>
 							<Card.Description>{description}</Card.Description>
 						</Box>
-						{has_debt && (
+						{showDebtsSection && (
 							<FractionateDebt
 								dataMyApplicants={dataMyApplicants}
-								countDebts={totals.pendingDebts}
+								countDebts={Number(totals.pendingDebts)}
 								debtsByPurpose={debtsByPurpose.results}
 							/>
 						)}
@@ -369,16 +382,16 @@ export const MyPaymentDebt = () => {
 																	<Table.Cell>
 																		<Badge
 																			colorPalette={
-																				debt.status === 'PENDIENTE'
+																				debt.status === 2
 																					? 'red'
-																					: debt.status === 'EN_PROCESO'
+																					: debt.status === 2
 																						? 'blue'
 																						: 'green'
 																			}
 																		>
-																			{debt.status === 'PENDIENTE'
+																			{debt.status === 2
 																				? 'Pendiente'
-																				: debt.status === 'EN_PROCESO'
+																				: debt.status === 2
 																					? 'En Proceso'
 																					: 'Pagado'}
 																		</Badge>

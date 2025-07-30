@@ -209,7 +209,7 @@ export const UpdateStatusEnrollmentProcessForm = ({ data, fetchData }) => {
 								height='4rem'
 								flexDirection='column'
 								gap={2}
-								isDisabled={isPending}
+								disabled={isPending}
 								bg={selectedStatus === 4 ? 'green.600' : 'transparent'}
 								_hover={
 									selectedStatus === 4
@@ -234,7 +234,7 @@ export const UpdateStatusEnrollmentProcessForm = ({ data, fetchData }) => {
 								height='4rem'
 								flexDirection='column'
 								gap={2}
-								isDisabled={isPending}
+								disabled={isPending}
 								bg={selectedStatus === 3 ? 'red.600' : 'transparent'}
 								_hover={
 									selectedStatus === 3
@@ -295,7 +295,7 @@ export const UpdateStatusEnrollmentProcessForm = ({ data, fetchData }) => {
 									value={comments}
 									onChange={(e) => setComments(e.target.value)}
 									placeholder='Describe las razones por las cuales el proceso no puede ser aprobado...'
-									isDisabled={isPending}
+									disabled={isPending}
 								/>
 								<Text fontSize='xs' color='gray.500' mt={1}>
 									Este comentario será visible para el solicitante.

@@ -89,7 +89,7 @@ export const ViewFractionationRequestsModal = ({ item, matchStatus }) => {
               </Field>
               <Field label='Porcentaje de cuota inicial:'>
                 <InputGroup w='100%' startElement={<FiPercent color="#805ad5" />}>
-                  <Input readOnly ml='1' variant='filled' bg="gray.50" value={item.upfront_percentage} />
+                  <Input readOnly ml='1' variant='filled' bg="gray.50" value={item.upfront_percentage * 100} />
                 </InputGroup>
               </Field>
               <Field label='N° de cuotas:'>

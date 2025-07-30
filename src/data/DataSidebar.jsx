@@ -11,8 +11,13 @@ import {
 	FiFileText,
 	FiBookOpen,
 	FiCreditCard,
+	FiAward,
+	FiShield,
+	FiFolder,
+	FiEdit3,
+	FiClipboard,
 } from 'react-icons/fi';
-import { FaFileContract, FaRegFile } from 'react-icons/fa';
+import { FaFileContract, FaRegFile, FaUserGraduate } from 'react-icons/fa';
 import { HiOutlineClipboardList } from 'react-icons/hi';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 
@@ -134,23 +139,64 @@ export const useDataSidebar = () => {
 			label: 'Cursos y Horarios',
 			permission: 'courses.schedules.view',
 		},
-    {
-      href: '/myclasses/myprograms',
-      icon: FiBookOpen,
-      label: 'Mis Clases',
-      permission: 'classes.myprograms.view',
-    },
+		{
+			href: '/myclasses/myprograms',
+			icon: FiBookOpen,
+			label: 'Mis Clases',
+			permission: 'classes.myclasses.view',
+		},
+		{
+			href: '/benefits',
+			icon: FiAward,
+			label: 'Becas y Beneficios',
+			subItems: [
+				{
+					href: '/benefits/list',
+					icon: FiCheck,
+					label: 'Lista de Beneficios',
+					permission: 'benefits.benefits.view',
+				},
+				{
+					href: '/benefits/request',
+					icon: FiShield,
+					label: 'Solicitudes',
+					permission: 'benefits.benefits.review',
+				},
+			],
+		},
+
+		{
+			href: '/commitment-letters',
+			label: 'Fraccionamientos',
+			icon: FiFolder,
+			subItems: [
+				{
+					href: '/commitment-letters/list',
+					icon: FiClipboard,
+					label: 'Lista general',
+					permission: 'commitment.commitment.view',
+				},
+				{
+					href: '/commitment-letters/request',
+					icon: FiEdit3,
+					label: 'Solicitudes',
+					permission: 'commitment.commitment.review',
+				},
+			],
+		},
+
+		{
+			href: '/students',
+			icon: FaUserGraduate,
+			label: 'Estudiantes',
+			permission: 'students.students.view',
+		},
+
 		{
 			href: '/users',
 			icon: FiUsers,
 			label: 'Usuarios',
 			permission: 'users.users.view',
-		},
-		{
-			href: '/commitment-letters',
-			label: 'Fraccionamientos',
-			icon: FiFileText,
-			permission: 'commitment.commitment.view',
 		},
 	];
 

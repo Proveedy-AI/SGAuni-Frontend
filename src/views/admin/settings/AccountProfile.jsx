@@ -47,9 +47,6 @@ export const AccountProfile = () => {
 		if (!profile.last_name) newErrors.last_name = 'El apellido es obligatorio';
 		if (!profile.num_doc)
 			newErrors.num_doc = 'El número de documento es obligatorio';
-		if (!profile.category) newErrors.category = 'La categoría es obligatoria';
-		if (!profile.phone)
-			newErrors.phone = 'El número de teléfono es obligatorio';
 
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
@@ -87,7 +84,14 @@ export const AccountProfile = () => {
 	};
 
 	const handleUpdateProfile = async (e) => {
-		if (!validate()) return;
+		if (!validate()) {
+			toaster.create({
+				title: 'Por favor, completa todos los campos obligatorios.',
+				description: errors,
+				type: 'error',
+			});
+			return;
+		}
 
 		e.preventDefault();
 		setDisableUpload(true);

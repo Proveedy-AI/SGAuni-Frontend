@@ -10,6 +10,7 @@ import {
 	SettingsRoles,
 	SettingsModalities,
 	AccountStudentProfile,
+	SettingsDataProccess,
 } from './views/admin/settings';
 import { UserList } from './views/admin/UserList';
 import { PrivateRoute, ProtectedRoute } from './PrivateRoute ';
@@ -50,7 +51,19 @@ import { CommitmentLetters } from './views/admin/debt_requests';
 import { MyPaymentSchedule } from './views/admin/mypayments/MyPaymentSchedule';
 import { MyEnrollmentsLayout } from './views/admin/myenrollments/MyEnrollmentsLayout';
 import { MyEnrollments } from './views/admin/myenrollments';
-import { ClassMyCoursesByProgramView, ClassMyEstudentsByCourseView, ClassMyProgramView, MyClassesLayout } from './views/admin/myclasses';
+import {
+	ClassMyCoursesByProgramView,
+	ClassMyEstudentsByCourseView,
+	ClassMyProgramView,
+	MyClassesLayout,
+} from './views/admin/myclasses';
+import { BenefitsView } from './views/admin/benefits/BenefitsView';
+import { MyBenefitsView } from './views/admin/mypayments/MyBenefitsView';
+import { RequestBenefitsView } from './views/admin/benefits/RequestBenefitsView';
+import { FractionationsView } from './views/admin/debt_requests/FractionationsView';
+import { MyFractionationsView } from './views/admin/mypayments/MyFractionationsView';
+import { StudentsView } from './views/admin/student/StudentsView';
+import { StudentDetailView } from './views/admin/student/StudentDetailView';
 import { MyCoursesByEnrollement, MyEnrollmentsToViewCourses } from './views/admin/mycourses';
 
 function App() {
@@ -58,6 +71,7 @@ function App() {
 		<>
 			<BrowserRouter>
 				<Routes>
+					{/* ---------------------------- AUTHENTICATION ROUTES ---------------------------- */}
 					<Route path='/auth' element={<AuthLayout />}>
 						<Route path='login' element={<LoginAdmin />} />
 						{/*<Route path='admin/login' element={<LoginAdmin />} />*/}
@@ -67,6 +81,8 @@ function App() {
 					<Route element={<PrivateRoute />}>
 						<Route path='/' element={<AdminLayout />}>
 							<Route index element={<Dashboard />} />
+
+							{/* ---------------------------- USER ROUTES ---------------------------- */}
 							<Route
 								element={
 									<ProtectedRoute requiredPermission='users.users.view' />
@@ -74,6 +90,37 @@ function App() {
 							>
 								<Route path='users' element={<UserList />} />
 							</Route>
+
+							{/* ---------------------------- COURSES ROUTES ---------------------------- */}
+							<Route path='courses-schedules'>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='courses.schedules.view' />
+									}
+								>
+									<Route index element={<CoursesAndSchedules />} />
+								</Route>
+							</Route>
+							{/* ---------------------------- BENEFITS ROUTES ---------------------------- */}
+
+							<Route path='benefits'>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='benefits.benefits.view' />
+									}
+								>
+									<Route path='list' element={<BenefitsView />} />
+								</Route>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='benefits.benefits.view' />
+									}
+								>
+									<Route path='request' element={<RequestBenefitsView />} />
+								</Route>
+							</Route>
+
+							{/* ---------------------------- ADMISSIONS ROUTES ---------------------------- */}
 							<Route path='admissions'>
 								<Route
 									element={
@@ -145,6 +192,8 @@ function App() {
 									</Route>
 								</Route>
 							</Route>
+
+							{/* ---------------------------- CONTRACTS ROUTES ---------------------------- */}
 							<Route path='contracts'>
 								<Route
 									element={
@@ -161,6 +210,20 @@ function App() {
 									<Route path='list' element={<Contracts />} />
 								</Route>
 							</Route>
+
+							{/* ---------------------------- STUDENTS ROUTES ---------------------------- */}
+							<Route path='students'>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='students.students.view' />
+									}
+								>
+									<Route index element={<StudentsView />} />
+									<Route path=':id' element={<StudentDetailView />} />
+								</Route>
+							</Route>
+
+							{/* ---------------------------- TUITION ROUTES ---------------------------- */}
 							<Route path='enrollments'>
 								<Route
 									element={
@@ -202,6 +265,8 @@ function App() {
                 </Route>
               </Route>
 
+							{/* ---------------------------- PERSON ROUTES ---------------------------- */}
+
 							<Route path='myenrollments' element={<MyEnrollmentsLayout />}>
 								<Route
 									element={
@@ -212,31 +277,24 @@ function App() {
 								</Route>
 							</Route>
 
-							<Route path='courses-schedules'>
+							<Route path='myclasses' element={<MyClassesLayout />}>
 								<Route
 									element={
-										<ProtectedRoute requiredPermission='courses.schedules.view' />
+										<ProtectedRoute requiredPermission='classes.myclasses.view' />
 									}
 								>
-									<Route index element={<CoursesAndSchedules />} />
+									<Route path='myprograms'>
+										<Route index element={<ClassMyProgramView />} />
+										<Route path=':id'>
+											<Route index element={<ClassMyCoursesByProgramView />} />
+											<Route
+												path='course/:courseId'
+												element={<ClassMyEstudentsByCourseView />}
+											/>
+										</Route>
+									</Route>
 								</Route>
 							</Route>
-
-              <Route path='myclasses' element={<MyClassesLayout />}>
-                <Route
-                  element={
-                    <ProtectedRoute requiredPermission='classes.myprograms.view' />
-                  }
-                >
-                  <Route path='myprograms'>
-                    <Route index element={<ClassMyProgramView />} />
-                    <Route path=':id'>
-                      <Route index element={<ClassMyCoursesByProgramView />} />
-                      <Route path='course/:courseId' element={<ClassMyEstudentsByCourseView />} />
-                    </Route>
-                  </Route>
-                </Route>
-              </Route>
 
 							<Route path='mypaymentsdebts' element={<MyPaymentsLayout />}>
 								<Route>
@@ -260,12 +318,20 @@ function App() {
 										<Route path='history-requests'>
 											<Route index element={<MyPaymentHistories />} />
 										</Route>
+										<Route path='addBenefits'>
+											<Route index element={<MyBenefitsView />} />
+										</Route>
 										<Route path='schedule'>
 											<Route index element={<MyPaymentSchedule />} />
+										</Route>
+										<Route path='mycommitmentLetters'>
+											<Route index element={<MyFractionationsView />} />
 										</Route>
 									</Route>
 								</Route>
 							</Route>
+
+							{/* ---------------------------- DEBTS ADMIN ROUTES ---------------------------- */}
 
 							<Route path='debts' element={<DebtsLayout />}>
 								<Route
@@ -301,11 +367,26 @@ function App() {
 									/>
 								</Route>
 							</Route>
-							<Route
-								path='commitment-letters'
-								element={<CommitmentLetters />}
-							/>
-							{/* SETTINGS */}
+
+							{/* ---------------------------- DEBTS REQUESTS ROUTES ---------------------------- */}
+							<Route path='commitment-letters'>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='commitment.commitment.view' />
+									}
+								>
+									<Route path='list' element={<FractionationsView />} />
+								</Route>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='commitment.commitment.review' />
+									}
+								>
+									<Route path='request' element={<CommitmentLetters />} />
+								</Route>
+							</Route>
+							{/* ---------------------------- SETTINGS ROUTES ---------------------------- */}
+
 							<Route path='settings' element={<SettingsLayout />}>
 								<Route
 									element={
@@ -351,11 +432,21 @@ function App() {
 								>
 									<Route path='regional' element={<SettingsCountries />} />
 								</Route>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='settings.countries.view' />
+									}
+								>
+									<Route
+										path='data-processing'
+										element={<SettingsDataProccess />}
+									/>
+								</Route>
 							</Route>
 						</Route>
 					</Route>
 
-					{/* Ruta para ir a formulario de inscripción */}
+					{/* ---------------------------- PUBLIC ROUTES ---------------------------- */}
 					<Route
 						path='admission-process/:uuid'
 						element={<ChakraInscriptionForm />}
