@@ -43,7 +43,7 @@ export const StudentDetailView = () => {
 	const { data: dataPerson, isLoading: isPersonLoading } = useReadPersonById(
 		dataStudent?.person
 	);
-	console.log(dataPerson);
+
 	const statusEnum = [
 		{
 			id: 1,
