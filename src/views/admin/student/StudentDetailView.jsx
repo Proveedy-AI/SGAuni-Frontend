@@ -21,6 +21,9 @@ import {
 import {
 	FiCheckCircle,
 	FiClock,
+	FiFileText,
+	FiLock,
+	FiMapPin,
 	FiPhone,
 	FiUser,
 	FiXCircle,
@@ -348,6 +351,259 @@ export const StudentDetailView = () => {
 
 									<Card.Body>
 										<VStack align='stretch' gap={4}>
+											<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+												<Flex gap={3} align='start'>
+													<Box>
+														<Text
+															fontSize='sm'
+															fontWeight='medium'
+															color='gray.600'
+														>
+															Universidad de Procedencia
+														</Text>
+														<Text color='gray.900'>
+															{dataPerson?.university || '—'}
+														</Text>
+													</Box>
+												</Flex>
+												<Flex gap={3} align='start'>
+													<Box>
+														<Text
+															fontSize='sm'
+															fontWeight='medium'
+															color='gray.600'
+														>
+															Año de Graduación
+														</Text>
+														<Text color='gray.900'>
+															{dataPerson?.graduationYear || '—'}
+														</Text>
+													</Box>
+												</Flex>
+												<Flex gap={3} align='start'>
+													<Box>
+														<Text
+															fontSize='sm'
+															fontWeight='medium'
+															color='gray.600'
+														>
+															Nivel Educativo
+														</Text>
+														<Text color='gray.900'>
+															{dataPerson?.previousEducation || '—'}
+														</Text>
+													</Box>
+												</Flex>
+
+												<Flex gap={3} align='start'>
+													<Box>
+														<Text
+															fontSize='sm'
+															fontWeight='medium'
+															color='gray.600'
+														>
+															¿Es graduado de la UNI?
+														</Text>
+														<Text>
+															<Badge
+																colorPalette={
+																	dataPerson?.is_uni_graduate ? 'green' : 'red'
+																}
+																px={2}
+																py={1}
+																fontSize='sm'
+																borderRadius='md'
+															>
+																{dataPerson?.is_uni_graduate ? 'Sí' : 'No'}
+															</Badge>
+														</Text>
+													</Box>
+												</Flex>
+
+												<Flex gap={3} align='start'>
+													<Box>
+														<Text
+															fontSize='sm'
+															fontWeight='medium'
+															color='gray.600'
+														>
+															Año de Graduación
+														</Text>
+														<Text color='gray.900'>
+															{dataPerson?.graduationYear || '—'}
+														</Text>
+													</Box>
+												</Flex>
+												<Flex gap={3} align='start'>
+													<Box>
+														<Text
+															fontSize='sm'
+															fontWeight='medium'
+															color='gray.600'
+														>
+															Correo Institucional
+														</Text>
+														<Text color='gray.900'>
+															{dataPerson?.uni_email || '—'}
+														</Text>
+													</Box>
+												</Flex>
+												<Flex gap={3} align='start'>
+													<Box>
+														<Text
+															fontSize='sm'
+															fontWeight='medium'
+															color='gray.600'
+														>
+															Código UNI
+														</Text>
+														<Text color='gray.900'>
+															{dataPerson?.uni_code || '—'}
+														</Text>
+													</Box>
+												</Flex>
+												<Flex gap={3} align='start'>
+													<Box>
+														<Text
+															fontSize='sm'
+															fontWeight='medium'
+															color='gray.600'
+														>
+															Colegiatura
+														</Text>
+														<Text color='gray.900'>
+															{dataPerson?.license_number || '—'}
+														</Text>
+													</Box>
+												</Flex>
+											</SimpleGrid>
+										</VStack>
+									</Card.Body>
+								</Card.Root>
+								<Card.Root shadow={'md'}>
+									<Card.Header pb={0}>
+										<HStack gap={2}>
+											<Icon as={FiMapPin} boxSize={5} />
+											<Heading size='md'>Información de Ubicación</Heading>
+										</HStack>
+									</Card.Header>
+
+									<Card.Body>
+										<VStack align='stretch' gap={4}>
+											<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+												<Flex gap={3} align='start'>
+													<Box>
+														<Text
+															fontSize='sm'
+															fontWeight='medium'
+															color='gray.600'
+														>
+															Pais de Nacimiento
+														</Text>
+														<Text color='gray.900'>
+															{dataPerson?.birth_country_name || '—'}
+														</Text>
+													</Box>
+												</Flex>
+												<Flex gap={3} align='start'>
+													<Box>
+														<Text
+															fontSize='sm'
+															fontWeight='medium'
+															color='gray.600'
+														>
+															Ubigeo de Nacimiento
+														</Text>
+														<Text color='gray.900'>
+															{dataPerson?.birth_ubigeo_code || '—'}
+														</Text>
+													</Box>
+												</Flex>
+												<Flex gap={3} align='start'>
+													<Box>
+														<Text
+															fontSize='sm'
+															fontWeight='medium'
+															color='gray.600'
+														>
+															Nacionalidad
+														</Text>
+														<Text color='gray.900'>
+															{dataPerson?.nationality_name || '—'}
+														</Text>
+													</Box>
+												</Flex>
+												<Flex gap={3} align='start'>
+													<Box>
+														<Text
+															fontSize='sm'
+															fontWeight='medium'
+															color='gray.600'
+														>
+															País de Residencia
+														</Text>
+														<Text color='gray.900'>
+															{dataPerson?.residenceCountry_name || '—'}
+														</Text>
+													</Box>
+												</Flex>
+												<Flex gap={3} align='start'>
+													<Box>
+														<Text
+															fontSize='sm'
+															fontWeight='medium'
+															color='gray.600'
+														>
+															Departamento de Residencia
+														</Text>
+														<Text color='gray.900'>
+															{dataPerson?.department_name || '—'}
+														</Text>
+													</Box>
+												</Flex>
+												<Flex gap={3} align='start'>
+													<Box>
+														<Text
+															fontSize='sm'
+															fontWeight='medium'
+															color='gray.600'
+														>
+															Provincia de Residencia
+														</Text>
+														<Text color='gray.900'>
+															{dataPerson?.province_name || '—'}
+														</Text>
+													</Box>
+												</Flex>
+												<Flex gap={3} align='start'>
+													<Box>
+														<Text
+															fontSize='sm'
+															fontWeight='medium'
+															color='gray.600'
+														>
+															Distrito de Residencia
+														</Text>
+														<Text color='gray.900'>
+															{dataPerson?.district_name || '—'}
+														</Text>
+													</Box>
+												</Flex>
+												<Flex gap={3} align='start'>
+													<Box>
+														<Text
+															fontSize='sm'
+															fontWeight='medium'
+															color='gray.600'
+														>
+															Ubigeo de Residencia
+														</Text>
+														<Text color='gray.900'>
+															{dataPerson?.address_ubigeo_code || '—'}
+														</Text>
+													</Box>
+												</Flex>
+											</SimpleGrid>
 											<Flex gap={3} align='start'>
 												<Box>
 													<Text
@@ -355,19 +611,202 @@ export const StudentDetailView = () => {
 														fontWeight='medium'
 														color='gray.600'
 													>
-														¿Es graduado de la UNI?
+														Dirección
+													</Text>
+													<Text color='gray.900'>
+														{dataPerson?.address || '—'}
+													</Text>
+												</Box>
+											</Flex>
+										</VStack>
+									</Card.Body>
+								</Card.Root>
+								<Card.Root shadow={'md'}>
+									<Card.Header pb={0}>
+										<HStack gap={2}>
+											<Icon as={FiFileText} boxSize={5} />
+											<Heading size='md'>Datos Adicionales</Heading>
+										</HStack>
+									</Card.Header>
+
+									<Card.Body>
+										<VStack align='stretch' gap={4}>
+											<Flex gap={3} align='start'>
+												<Flex gap={3} align='start'>
+													<Box>
+														<Text
+															fontSize='sm'
+															fontWeight='medium'
+															color='gray.600'
+														>
+															¿Tiene alguna discapacidad?
+														</Text>
+														<Text>
+															<Badge
+																colorPalette={
+																	dataPerson?.has_disability ? 'green' : 'red'
+																}
+																px={2}
+																py={1}
+																fontSize='sm'
+																borderRadius='md'
+															>
+																{dataPerson?.has_disability ? 'Sí' : 'No'}
+															</Badge>
+														</Text>
+													</Box>
+												</Flex>
+											</Flex>
+											{dataPerson?.has_disability && (
+												<>
+													<Flex gap={3} align='start'>
+														<Box>
+															<Text
+																fontSize='sm'
+																fontWeight='medium'
+																color='gray.600'
+															>
+																Discapacidad
+															</Text>
+															<Text color='gray.900'>
+																{dataPerson?.type_disability_name || '—'}
+															</Text>
+														</Box>
+													</Flex>
+													<Flex gap={3} align='start'>
+														<Box>
+															<Text
+																fontSize='sm'
+																fontWeight='medium'
+																color='gray.600'
+															>
+																Descripción de la discapacidad
+															</Text>
+															<Text color='gray.900'>
+																{dataPerson?.other_disability || '—'}
+															</Text>
+														</Box>
+													</Flex>
+												</>
+											)}
+											<Flex gap={3} align='start'>
+												<Box>
+													<Text
+														fontSize='sm'
+														fontWeight='medium'
+														color='gray.600'
+													>
+														Experiencia Laboral
+													</Text>
+													<Text color='gray.900'>
+														{dataPerson?.workExperience || '—'}
+													</Text>
+												</Box>
+											</Flex>
+											<Flex gap={3} align='start'>
+												<Box>
+													<Text
+														fontSize='sm'
+														fontWeight='medium'
+														color='gray.600'
+													>
+														Código Postal
+													</Text>
+													<Text color='gray.900'>
+														{dataPerson?.postalCode || '—'}
+													</Text>
+												</Box>
+											</Flex>
+											<Flex gap={3} align='start'>
+												<Box>
+													<Text
+														fontSize='sm'
+														fontWeight='medium'
+														color='gray.600'
+													>
+														¿Cómo se enteró de nuestro programa?
+													</Text>
+													<Text color='gray.900'>
+														{dataPerson?.howDidYouKnow || '—'}
+													</Text>
+												</Box>
+											</Flex>
+											<Flex gap={3} align='start'>
+												<Box>
+													<Text
+														fontSize='sm'
+														fontWeight='medium'
+														color='gray.600'
+													>
+														Comentarios Adicionales
+													</Text>
+													<Text color='gray.900'>
+														{dataPerson?.additionalComments || '—'}
+													</Text>
+												</Box>
+											</Flex>
+										</VStack>
+									</Card.Body>
+								</Card.Root>
+								<Card.Root shadow={'md'}>
+									<Card.Header pb={0}>
+										<HStack gap={2}>
+											<Icon as={FiLock} boxSize={5} />
+											<Heading size='md'>Aceptación de Términos</Heading>
+										</HStack>
+									</Card.Header>
+
+									<Card.Body>
+										<VStack align='stretch' gap={4}>
+											<Flex gap={3} align='start'>
+												<Box>
+													<Text
+														fontSize='sm'
+														fontWeight='medium'
+														color='gray.600'
+													>
+														Interesado en información sobre becas
 													</Text>
 													<Text>
 														<Badge
 															colorPalette={
-																dataPerson?.is_uni_graduate ? 'green' : 'red'
+																dataPerson?.scholarshipInterest
+																	? 'green'
+																	: 'red'
 															}
 															px={2}
 															py={1}
 															fontSize='sm'
 															borderRadius='md'
 														>
-															{dataPerson?.is_uni_graduate ? 'Sí' : 'No'}
+															{dataPerson?.scholarshipInterest ? 'Sí' : 'No'}
+														</Badge>
+													</Text>
+												</Box>
+											</Flex>
+
+											<Flex gap={3} align='start'>
+												<Box>
+													<Text
+														fontSize='sm'
+														fontWeight='medium'
+														color='gray.600'
+													>
+														Acepta el tratamiento de datos personales
+													</Text>
+													<Text>
+														<Badge
+															colorPalette={
+																dataPerson?.acceptsDataProcessing
+																	? 'green'
+																	: 'red'
+															}
+															px={2}
+															py={1}
+															fontSize='sm'
+															borderRadius='md'
+														>
+															{dataPerson?.acceptsDataProcessing ? 'Sí' : 'No'}
 														</Badge>
 													</Text>
 												</Box>
@@ -379,24 +818,20 @@ export const StudentDetailView = () => {
 														fontWeight='medium'
 														color='gray.600'
 													>
-														Correo Institucional
+														Acepta los términos y condiciones
 													</Text>
-													<Text color='gray.900'>
-														{dataPerson?.uni_email || '—'}
-													</Text>
-												</Box>
-											</Flex>
-											<Flex gap={3} align='start'>
-												<Box>
-													<Text
-														fontSize='sm'
-														fontWeight='medium'
-														color='gray.600'
-													>
-														Código UNI
-													</Text>
-													<Text color='gray.900'>
-														{dataPerson?.uni_code || '—'}
+													<Text>
+														<Badge
+															colorPalette={
+																dataPerson?.acceptsTerms ? 'green' : 'red'
+															}
+															px={2}
+															py={1}
+															fontSize='sm'
+															borderRadius='md'
+														>
+															{dataPerson?.acceptsTerms ? 'Sí' : 'No'}
+														</Badge>
 													</Text>
 												</Box>
 											</Flex>
@@ -407,10 +842,12 @@ export const StudentDetailView = () => {
 														fontWeight='medium'
 														color='gray.600'
 													>
-														Colegiatura
+														Fecha de Admisión
 													</Text>
 													<Text color='gray.900'>
-														{dataPerson?.license_number || '—'}
+														{dataPerson?.admission_date
+															? formatDateString(dataPerson.admission_date)
+															: '—'}
 													</Text>
 												</Box>
 											</Flex>
