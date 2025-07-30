@@ -62,6 +62,8 @@ import { MyBenefitsView } from './views/admin/mypayments/MyBenefitsView';
 import { RequestBenefitsView } from './views/admin/benefits/RequestBenefitsView';
 import { FractionationsView } from './views/admin/debt_requests/FractionationsView';
 import { MyFractionationsView } from './views/admin/mypayments/MyFractionationsView';
+import { StudentsView } from './views/admin/student/StudentsView';
+import { StudentDetailView } from './views/admin/student/StudentDetailView';
 
 function App() {
 	return (
@@ -205,6 +207,18 @@ function App() {
 									}
 								>
 									<Route path='list' element={<Contracts />} />
+								</Route>
+							</Route>
+
+							{/* ---------------------------- STUDENTS ROUTES ---------------------------- */}
+							<Route path='students'>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='students.students.view' />
+									}
+								>
+									<Route index element={<StudentsView />} />
+									<Route path=':id' element={<StudentDetailView />} />
 								</Route>
 							</Route>
 

@@ -17,7 +17,7 @@ import {
 	FiEdit3,
 	FiClipboard,
 } from 'react-icons/fi';
-import { FaFileContract, FaRegFile } from 'react-icons/fa';
+import { FaFileContract, FaRegFile, FaUserGraduate } from 'react-icons/fa';
 import { HiOutlineClipboardList } from 'react-icons/hi';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 
@@ -177,6 +177,13 @@ export const useDataSidebar = () => {
 					permission: 'commitment.commitment.review',
 				},
 			],
+		},
+
+		{
+			href: '/students',
+			icon: FaUserGraduate,
+			label: 'Estudiantes',
+			permission: 'students.students.view',
 		},
 
 		{
