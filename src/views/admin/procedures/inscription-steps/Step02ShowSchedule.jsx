@@ -3,7 +3,6 @@ import { Box, Heading, Text, Grid } from "@chakra-ui/react"
 import { useColorModeValue } from "@/components/ui";
 
 export const Step02ShowSchedule = ({ selectedGroups }) => {
-  console.log(selectedGroups);
   // Arrays de tiempo y días de la semana (igual que en ScheduleEnrollmentProgramsModal)
   const timeSlots = ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'];
   const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -27,11 +26,11 @@ export const Step02ShowSchedule = ({ selectedGroups }) => {
   // Función para obtener cursos para un slot de tiempo específico
   const getCourseForTimeSlot = (day, time) => {
     return selectedGroups.filter((course) => {
-      const courseDayName = dayNumberToName[course.day_of_week];
+      const courseDayName = dayNumberToName[course?.schedule?.day_of_week];
       if (courseDayName !== day) return false;
       
-      const courseStart = Number.parseInt(course.start_time.split(':')[0]);
-      const courseEnd = Number.parseInt(course.end_time.split(':')[0]);
+      const courseStart = Number.parseInt(course?.schedule?.start_time.split(':')[0]);
+      const courseEnd = Number.parseInt(course?.schedule?.end_time.split(':')[0]);
       const slotTime = Number.parseInt(time.split(':')[0]);
       
       return slotTime >= courseStart && slotTime < courseEnd;
@@ -40,8 +39,8 @@ export const Step02ShowSchedule = ({ selectedGroups }) => {
 
   // Función para calcular la altura del curso
   const getCourseHeight = (course) => {
-    const start = Number.parseInt(course.start_time.split(':')[0]);
-    const end = Number.parseInt(course.end_time.split(':')[0]);
+    const start = Number.parseInt(course?.schedule?.start_time.split(':')[0]);
+    const end = Number.parseInt(course?.schedule?.end_time.split(':')[0]);
     return (end - start) * 48; // 48px por hora
   };
 

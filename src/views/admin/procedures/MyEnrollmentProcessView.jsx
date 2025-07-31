@@ -126,8 +126,8 @@ export const MyEnrollmentProcessView = () => {
 
   const bgColor = useColorModeValue("blue.50", "blue.900");
 
-  const handleStartEnrollment = (enrollment) => {
-    const encrypted = Encryptor.encrypt(enrollment.id); // id enrollment
+  const handleStartEnrollment = (enrollmentId) => {
+    const encrypted = Encryptor.encrypt(enrollmentId); // id enrollment
     const encoded = encodeURIComponent(encrypted);
     navigate(`/myprocedures/enrollment-process/${encoded}`);
   };

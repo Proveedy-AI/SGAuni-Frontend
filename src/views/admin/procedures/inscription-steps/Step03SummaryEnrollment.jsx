@@ -13,13 +13,12 @@ import { Button } from "@/components/ui";
 import { LuCircleAlert } from "react-icons/lu";
 
 export const Step03SummaryEnrollment = ({ selectedGroups, onBack, onNext }) => {
-  console.log('selectedGroups', selectedGroups);  
   // Calcular totales
   const totalCourses = selectedGroups?.length;
   const totalCredits = selectedGroups?.reduce((sum, course) => sum + (course.credits || 0), 0);
   const totalWeeklyHours = selectedGroups?.reduce((sum, course) => {
-    const start = Number.parseInt(course.start_time.split(':')[0]);
-    const end = Number.parseInt(course.end_time.split(':')[0]);
+    const start = Number.parseInt(course?.schedule?.start_time.split(':')[0]);
+    const end = Number.parseInt(course?.schedule?.end_time.split(':')[0]);
     return sum + (end - start);
   }, 0);
 

@@ -1,6 +1,5 @@
 import { Encryptor } from "@/components/CrytoJS/Encryptor";
 import ResponsiveBreadcrumb from "@/components/ui/ResponsiveBreadcrumb";
-import { useReadCoursesToEnroll } from "@/hooks";
 import { 
   Box, 
   Heading, 
@@ -25,6 +24,10 @@ import { Step03SummaryEnrollment } from "./inscription-steps/Step03SummaryEnroll
 import { Step04EndEnrollmentProcess } from "./inscription-steps/Step04EndEnrollmentProcess";
 import { Step01CourseList } from "./inscription-steps/Step01CourseList";
 import { Button } from "@/components/ui";
+import { 
+  useReadAvailableCourses,
+  useReadMySelections, 
+} from "@/hooks/course-selections";
 
 const STEPS = [
   {
@@ -88,167 +91,42 @@ StepIndicator.propTypes = {
   currentStep: PropTypes.number.isRequired
 };
 
-
 export const MyInscriptionFormView = () => {
   const { id } = useParams(); //id de la matrícula (enrollment)
   const decoded = decodeURIComponent(id);
   const decrypted = Encryptor.decrypt(decoded);
+  console.log(decrypted);
 
-  // Estados del componente
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedCourse, setSelectedCourse] = useState(null);
-  const [selectedGroups, setSelectedGroups] = useState([]);
 
   const {
     data: coursesToEnroll,
     isLoading: isLoadingCoursesToEnroll
-  } = useReadCoursesToEnroll(
-    decrypted, //programa asociado
-    { status:  1 }, //Todos los que están disponibles
-    { enabled: !!decrypted }
-  );
+  } = useReadAvailableCourses();
   
-  // Para testing usamos data local, después se puede usar coursesToEnroll del hook
-  console.log('coursesToEnroll from API:', coursesToEnroll);
-  console.log('isLoading:', isLoadingCoursesToEnroll);
+  const {
+    data: mySelections,
+    isLoading: isLoadingMySelections,
+    refetch: refetchMySelections
+  } = useReadMySelections();
 
-  // Simulación de cursos para matricularse según criterios
-  const localCoursesToEnroll = [
-    {
-      id: 1,
-      name: "Matemática Básica",
-      cycle: "1",
-      credits: 3,
-      failedPreviously: false,
-      status: 1,
-      status_display: "habilitado",
-      groups: [
-        {
-          id: 1,
-          course_group: 3,
-          course_group_code: "A1",
-          teacher: "Prof. Juan Pérez",
-          day_of_week: 1,
-          start_time: "08:00:00",
-          end_time: "10:00:00",
-        },
-        {
-          id: 2,
-          course_group: 3,
-          course_group_code: "A2",
-          teacher: "Prof. Ana Gómez",
-          day_of_week: 2,
-          start_time: "14:00:00",
-          end_time: "16:00:00",
-        },
-      ]
-    },
-    {
-      id: 2,
-      name: "Química General I",
-      cycle: "1",
-      credits: 2,
-      failedPreviously: false,
-      status: 1,
-      status_display: "habilitado",
-      groups: [
-        {
-          id: 3,
-          course_group: 4,
-          course_group_code: "B1",
-          teacher: "Prof. Luis Fernández",
-          day_of_week: 3,
-          start_time: "10:00:00",
-          end_time: "12:00:00",
-        },
-        {
-          id: 4,
-          course_group: 4,
-          course_group_code: "B2",
-          teacher: "Prof. María López",
-          day_of_week: 4,
-          start_time: "16:00:00",
-          end_time: "18:00:00",
-        },
-      ]
-    },
-    {
-      id: 3,
-      name: "Programación I",
-      cycle: "1",
-      credits: 4,
-      failedPreviously: false,
-      status: 1,
-      status_display: "habilitado",
-      groups: [
-        {
-          id: 5,
-          course_group: 5,
-          course_group_code: "C1",
-          teacher: "Prof. Carlos Ruiz",
-          day_of_week: 1,
-          start_time: "08:00:00",
-          end_time: "10:00:00",
-        },
-        {
-          id: 6,
-          course_group: 5,
-          course_group_code: "C2",
-          teacher: "Prof. Laura Torres",
-          day_of_week: 5,
-          start_time: "14:00:00",
-          end_time: "16:00:00",
-        },
-      ]      
-    },
-    {
-      id: 4,
-      name: "Cálculo I",
-      cycle: "1",
-      credits: 3,
-      failedPreviously: false,
-      status: 1,
-      status_display: "habilitado",
-      groups: [
-        {
-          id: 7,
-          course_group: 6,
-          course_group_code: "D1",
-          teacher: "Prof. Andrés Martínez",
-          day_of_week: 3,
-          start_time: "10:00:00",
-          end_time: "12:00:00",
-        },
-        {
-          id: 8,
-          course_group: 6,
-          course_group_code: "D2",
-          teacher: "Prof. Elena Sánchez",
-          day_of_week: 3,
-          start_time: "16:00:00",
-          end_time: "18:00:00",
-        },
-      ]
-    }
-  ];
+  // Loading state
+  if (isLoadingCoursesToEnroll || isLoadingMySelections) {
+    return (
+      <Box textAlign="center" py={10}>
+        <Text>Cargando...</Text>
+      </Box>
+    );
+  }
 
   // Handlers
-  const handleSelectGroup = (group, course, action) => {
-    if (action === 'add') {
-      const newSelection = {
-        ...group,
-        courseName: course.name,
-        courseId: course.id,
-        credits: course.credits,
-      };
-      setSelectedGroups(prev => [...prev, newSelection]);
-    } else if (action === 'remove') {
-      setSelectedGroups(prev => prev.filter(sg => sg.id !== group.id));
-    }
+  const handleRefreshSelections = () => {
+    refetchMySelections();
   };
 
   return (
-    <Box spaceY='5' p={{ base: 4, md: 6 }} maxW="7xl" mx="auto">
+    <Box spaceY='5' p={{ base: 4, md: 6 }} maxW="8xl" mx="auto">
       <ResponsiveBreadcrumb
         items={[
           { label: 'Trámites', to: '/myprocedures' },
@@ -265,24 +143,44 @@ export const MyInscriptionFormView = () => {
 
       <StepIndicator steps={STEPS} currentStep={currentStep} />
 
+      {(currentStep === 1 || currentStep === 2) && (
+        <Flex justify="space-between" mt={8} py={6} borderY="1px solid" borderColor="gray.200">
+          <Button
+            variant="outline"
+            disabled={currentStep === 1}
+            onClick={() => {setCurrentStep(currentStep - 1);}}
+          >
+            <FiArrowLeft /> Anterior
+          </Button>
+          
+          <Button
+            bg="blue.600"
+            onClick={() => setCurrentStep(currentStep + 1)}
+            disabled={!mySelections || mySelections.length === 0}
+          >
+            Siguiente <FiArrowRight />
+          </Button>
+        </Flex>
+      )}
+
       <Box>
         {currentStep === 1 && (
           <Step01CourseList
-            courses={localCoursesToEnroll}
-            selectedGroups={selectedGroups}
-            onSelectGroup={handleSelectGroup}
+            courses={coursesToEnroll?.available_courses}
+            mySelections={mySelections}
             selectedCourse={selectedCourse}
             setSelectedCourse={setSelectedCourse}
+            onRefreshSelections={handleRefreshSelections}
           />
         )}
 
         {currentStep === 2 && (
-          <Step02ShowSchedule selectedGroups={selectedGroups} />
+          <Step02ShowSchedule selectedGroups={mySelections} />
         )}
 
         {currentStep === 3 && (
           <Step03SummaryEnrollment
-            selectedGroups={selectedGroups}
+            selectedGroups={mySelections}
             onBack={() => setCurrentStep(currentStep - 1)}
             onNext={() => setCurrentStep(currentStep + 1)} 
           />
@@ -292,27 +190,6 @@ export const MyInscriptionFormView = () => {
           <Step04EndEnrollmentProcess />
         )}
       </Box>
-
-      {(currentStep === 1 || currentStep === 2) && (
-
-        <Flex justify="space-between" mt={8} pt={6} borderTop="1px solid" borderColor="gray.200">
-        <Button
-          variant="outline"
-          disabled={currentStep === 1}
-          onClick={() => {setCurrentStep(currentStep - 1);}}
-          >
-          <FiArrowLeft /> Anterior
-        </Button>
-        
-        <Button
-          bg="blue.600"
-          onClick={() => setCurrentStep(currentStep + 1)}
-          disabled={selectedGroups.length === 0}
-          >
-          Siguiente <FiArrowRight />
-        </Button>
-      </Flex>
-    )}
     </Box>
   );
 };
