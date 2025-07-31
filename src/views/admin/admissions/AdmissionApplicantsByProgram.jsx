@@ -35,6 +35,15 @@ import { LiaSlashSolid } from 'react-icons/lia';
 import { useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router';
 
+/*
+export const AdmissionApplicantsMenu = ({ dataProgram, applicants, data }) => {
+  const [openGeneratePdfModal, setOpenGeneratePdfModal] = useState(false);
+  const [openGenerateSuneduExcelModal, setOpenGenerateSuneduExcelModal] = useState(false);
+  const [openMasiveEvaluationModal, setOpenMasiveEvaluationModal] = useState(false);
+  const admissionProcessId = data?.admission_process || null;
+  const { data: dataAdmissionProcess, loading: isAdmissionProcessLoading } = useReadAdmissionById(admissionProcessId);
+*/
+
 export const AdmissionApplicantsMenu = ({ applicants, data }) => {
 	const [openGeneratePdfModal, setOpenGeneratePdfModal] = useState(false);
 	const [openGenerateSuneduExcelModal, setOpenGenerateSuneduExcelModal] =
@@ -120,6 +129,7 @@ export const AdmissionApplicantsMenu = ({ applicants, data }) => {
 };
 
 AdmissionApplicantsMenu.propTypes = {
+  dataProgram: PropTypes.object.isRequired,
 	applicants: PropTypes.array,
 	data: PropTypes.object,
 };
@@ -217,6 +227,7 @@ export const AdmissionApplicantsByProgram = () => {
 							</Span>
 						</Box>
 						<AdmissionApplicantsMenu
+              dataProgram={dataProgram}
 							applicants={allApplicants}
 							data={dataProgram}
 						/>
