@@ -10,13 +10,13 @@ import useSortedData from '@/utils/useSortedData';
 
 const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 	const statusDisplay = [
-		{ id: 1, label: 'No Matriculado', bg: '#FFE5E5', color: '#D32F2F' },
-		{ id: 2, label: 'Pago Pendiente', bg: '#FFF8E1', color: '#FFA000' },
-		{ id: 3, label: 'Pago Parcial', bg: '#E3F2FD', color: '#1976D2' },
-		{ id: 4, label: 'Pago Expirado', bg: '#F3E5F5', color: '#8E24AA' },
-		{ id: 5, label: 'Elegible', bg: '#E8F5E9', color: '#388E3C' },
-		{ id: 6, label: 'Matriculado', bg: '#FFFDE7', color: '#FBC02D' },
-		{ id: 7, label: 'Cancelado', bg: '#ECEFF1', color: '#455A64' },
+		{ id: 7, label: 'No Matriculado', bg: '#ECEFF1', color: '#455A64' },
+		{ id: 1, label: 'Pago Pendiente', bg: '#FFF8E1', color: '#FFA000' },
+		{ id: 2, label: 'Pago Parcial', bg: '#E3F2FD', color: '#1976D2' },
+		{ id: 3, label: 'Pago Vencido', bg: '#FFE5E5', color: '#D32F2F' },
+		{ id: 4, label: 'Elegible', bg: '#E8F5E9', color: '#388E3C' },
+		{ id: 5, label: 'Matriculado', bg: '#FFFDE7', color: '#FBC02D' },
+		{ id: 6, label: 'Cancelado', bg: '#F3E5F5', color: '#8E24AA' },
 	];
 
 	const matchStatus = statusDisplay.find((status) => status.id === item.status);
@@ -141,7 +141,7 @@ export const StudentTuitionTable = ({ data, fetchData, isLoading }) => {
 					</Table.Header>
 					<Table.Body>
 						{isLoading ? (
-							<SkeletonTable columns={6} />
+							<SkeletonTable columns={7} />
 						) : visibleRows?.length > 0 ? (
 							visibleRows.map((item, index) => (
 								<Row
@@ -156,7 +156,7 @@ export const StudentTuitionTable = ({ data, fetchData, isLoading }) => {
 							))
 						) : (
 							<Table.Row>
-								<Table.Cell colSpan={6} textAlign='center' py={2}>
+								<Table.Cell colSpan={7} textAlign='center' py={2}>
 									No hay datos disponibles.
 								</Table.Cell>
 							</Table.Row>
