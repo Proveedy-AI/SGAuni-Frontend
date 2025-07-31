@@ -46,6 +46,7 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 			</Table.Cell>
 			<Table.Cell>{item.student_name}</Table.Cell>
 			<Table.Cell>{item.admission_program_name}</Table.Cell>
+			<Table.Cell>{item.admission_period}</Table.Cell>
 			<Table.Cell>{item.admission_year}</Table.Cell>
 			<Table.Cell>
 				{item.has_scholarship ? (
@@ -143,7 +144,14 @@ export const StudentsTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-
+							<Table.ColumnHeader w='15%'>
+								<SortableHeader
+									label='Periodo de Admisión'
+									columnKey='admission_period'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
 							<Table.ColumnHeader w='20%'>
 								<SortableHeader
 									label='Año de Admisión'
