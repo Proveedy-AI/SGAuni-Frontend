@@ -20,7 +20,7 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 	];
 
 	const matchStatus = statusDisplay.find((status) => status.id === item.status);
-	console.log(item);
+
 	return (
 		<Table.Row
 			key={item.id}
