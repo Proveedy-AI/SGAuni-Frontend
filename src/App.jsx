@@ -66,6 +66,7 @@ import { StudentsView } from './views/admin/student/StudentsView';
 import { StudentDetailView } from './views/admin/student/StudentDetailView';
 import { MyCoursesByEnrollement, MyEnrollmentsToViewCourses } from './views/admin/mycourses';
 import { MyEnrollmentProcessView, MyInscriptionFormView, MyProceduresView } from './views/admin/procedures';
+import { MyCoursesListByAcademicPeriodView } from './views/admin/mycourses/MyCoursesListByAcademicPeriodView';
 
 function App() {
 	return (
@@ -259,7 +260,7 @@ function App() {
                     <ProtectedRoute requiredPermission='enrollments.mycourses.view' />
                   }
                 >
-                  <Route index element={<MyEnrollmentsToViewCourses />} />
+                  <Route index element={<MyCoursesListByAcademicPeriodView />} />
                   <Route path='enrollment/:id'>
                     <Route index element={<MyCoursesByEnrollement />} />
                   </Route>

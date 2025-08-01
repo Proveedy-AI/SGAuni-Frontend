@@ -33,8 +33,8 @@ export const Step01CourseList = ({
   const { mutateAsync: createSelection, isPending: loadingGroupSelection } = useCreateCourseSelection();
   const { mutateAsync: removeSelection, isPending: loadingGroupRemoval } = useDeleteCourseSelection();
 
-  const isGroupSelected = (groupId) => {
-    return mySelections?.some(selection => selection.id === groupId) || false;
+  const isGroupSelected = (courseName) => {
+    return mySelections?.some(selection => selection.course_name === courseName) || false;
   };
 
   const handleSelectGroup = async (groupId) => {
@@ -46,9 +46,9 @@ export const Step01CourseList = ({
         })
         onRefreshSelections()
       },
-      onError: () => {
+      onError: (error) => {
         toaster.create({
-          title: 'Error al añadir el grupo',
+          title: error ? error.message || 'Error al añadir el grupo' : 'Error al añadir el grupo',
           type: 'error',
         })
       }
@@ -64,9 +64,9 @@ export const Step01CourseList = ({
         })
         onRefreshSelections()
       },
-      onError: () => {
+      onError: (error) => {
         toaster.create({
-          title: 'Error al eliminar el grupo',
+          title: error ? error.message : 'Error al eliminar el grupo',
           type: 'error',
         })
       }
@@ -196,8 +196,8 @@ export const Step01CourseList = ({
             </Table.Header>
             <Table.Body>
               {courseGroups?.map((group) => {
-                const isSelected = isGroupSelected(group.id);
-                console.log(group);
+                const isSelected = isGroupSelected(group.course_name
+);
                 return (
                   <Table.Row key={group.id} _hover={{ bg: "gray.50" }}>
                     <Table.Cell>
