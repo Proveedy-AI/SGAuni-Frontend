@@ -118,7 +118,7 @@ export const UpdatePaymentRules = ({
 			//program: null,
 			//in_installments: false,
 		};
-		console.log(payload)
+
 		update(
 			{ id: item.id, payload },
 			{
@@ -158,7 +158,7 @@ export const UpdatePaymentRules = ({
 		},
 		{ value: 2, label: 'Creditos de Programa de postgrado' },
 	];
-console.log(item)
+
 	return (
 		<Modal
 			title='Actualizar Reglas de Pago'
