@@ -3,7 +3,6 @@ import {
 	Flex,
 	HStack,
 	Skeleton,
-	Text,
 	SimpleGrid,
 	Grid,
 } from '@chakra-ui/react';
@@ -11,7 +10,7 @@ import React from 'react';
 
 export default function ApplicantSkeleton() {
 	return (
-		<Box  maxW={'80%'} spaceY='5' mx={'auto'} >
+		<Box spaceY='5' mx={'auto'}>
 			{/* Header */}
 			<Flex
 				bg='white'
@@ -39,10 +38,6 @@ export default function ApplicantSkeleton() {
 
 			{/* Datos del postulante */}
 			<Box bg='white' borderRadius='10px' boxShadow='md' p={6} mb={6}>
-				<Text fontWeight='bold' color='red.600' mb={4}>
-					Datos del postulante:
-				</Text>
-
 				<SimpleGrid columns={[1, 2]} spacingY={4} columnGap={6}>
 					{[1, 2].map((_, colIdx) => (
 						<Grid
@@ -63,10 +58,6 @@ export default function ApplicantSkeleton() {
 
 			{/* Trámites */}
 			<Box bg='white' borderRadius='10px' boxShadow='md' p={6} mb={6}>
-				<Text fontWeight='bold' color='red.600' mb={4}>
-					Trámites:
-				</Text>
-
 				<Box w='full' p={4}>
 					<SimpleGrid columns={[1, 8]} spacingY={2} columnGap={3}>
 						{Array.from({ length: 8 }).map((_, i) => (

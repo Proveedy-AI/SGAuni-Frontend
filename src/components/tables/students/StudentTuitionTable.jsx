@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { memo, useEffect, useState } from 'react';
+import { memo, useState } from 'react';
 import { Badge, Box, Table } from '@chakra-ui/react';
 import { Pagination } from '@/components/ui';
 
@@ -7,31 +7,22 @@ import { usePaginationSettings } from '@/components/navigation/usePaginationSett
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
-import { usePaginatedInfiniteData } from '@/components/navigation';
-import { useNavigate } from 'react-router';
-import { Encryptor } from '@/components/CrytoJS/Encryptor';
 
 const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
-	const navigate = useNavigate();
 	const statusDisplay = [
-		{ id: 1, label: 'Activo', bg: '#D0EDD0', color: '#2D9F2D' },
-		{ id: 2, label: 'Suspendido', bg: '#d0daedff', color: '#2d689fff' },
-		{ id: 3, label: 'Graduado', bg: '#F7CDCE', color: '#E0383B' },
-		{ id: 4, label: 'Retirado', bg: '#D0EDD0', color: '#2D9F2D' },
+		{ id: 7, label: 'No Matriculado', bg: '#ECEFF1', color: '#455A64' },
+		{ id: 1, label: 'Pago Pendiente', bg: '#FFF8E1', color: '#FFA000' },
+		{ id: 2, label: 'Pago Parcial', bg: '#E3F2FD', color: '#1976D2' },
+		{ id: 3, label: 'Pago Vencido', bg: '#FFE5E5', color: '#D32F2F' },
+		{ id: 4, label: 'Elegible', bg: '#E8F5E9', color: '#388E3C' },
+		{ id: 5, label: 'Matriculado', bg: '#FFFDE7', color: '#FBC02D' },
+		{ id: 6, label: 'Cancelado', bg: '#F3E5F5', color: '#8E24AA' },
 	];
-	const encrypted = Encryptor.encrypt(item.id);
-	const encoded = encodeURIComponent(encrypted);
 
 	const matchStatus = statusDisplay.find((status) => status.id === item.status);
-	const handleRowClick = () => {
-		navigate(`/students/${encoded}`);
-	};
+
 	return (
 		<Table.Row
-			onClick={(e) => {
-				if (e.target.closest('button') || e.target.closest('a')) return;
-				handleRowClick();
-			}}
 			key={item.id}
 			bg={index % 2 === 0 ? 'gray.100' : 'white'} // tu color alternado aquí
 			_hover={{
@@ -44,12 +35,11 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 					? data.length - (startIndex + index)
 					: startIndex + index + 1}
 			</Table.Cell>
-			<Table.Cell>{item.student_name}</Table.Cell>
-			<Table.Cell>{item.admission_program_name}</Table.Cell>
-			<Table.Cell>{item.admission_period}</Table.Cell>
-			<Table.Cell>{item.admission_year}</Table.Cell>
+			<Table.Cell>{item.student_full_name}</Table.Cell>
+			<Table.Cell>{item.program_period}</Table.Cell>
+			<Table.Cell>{item.program_name}</Table.Cell>
 			<Table.Cell>
-				{item.has_scholarship ? (
+				{item.is_first_enrollment ? (
 					<Badge colorPalette='green'>Sí</Badge>
 				) : (
 					<Badge colorPalette='red'>No</Badge>
@@ -60,6 +50,7 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 					{matchStatus?.label || 'N/A'}
 				</Badge>
 			</Table.Cell>
+			<Table.Cell></Table.Cell>
 		</Table.Row>
 	);
 });
@@ -75,38 +66,14 @@ Row.propTypes = {
 	data: PropTypes.array,
 };
 
-export const StudentsTable = ({
-	data,
-	fetchData,
-	isLoading,
-	totalCount,
-	isFetchingNextPage,
-	fetchNextPage,
-	hasNextPage,
-	resetPageTrigger,
-}) => {
+export const StudentTuitionTable = ({ data, fetchData, isLoading }) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
+	const [currentPage, setCurrentPage] = useState(1);
+	const startIndex = (currentPage - 1) * pageSize;
+	const endIndex = startIndex + pageSize;
 	const [sortConfig, setSortConfig] = useState(null);
-
 	const sortedData = useSortedData(data, sortConfig);
-
-	const {
-		currentPage,
-		startIndex,
-		visibleRows,
-		loadUntilPage,
-		setCurrentPage,
-	} = usePaginatedInfiniteData({
-		data: sortedData,
-		pageSize,
-		fetchNextPage,
-		hasNextPage,
-		isFetchingNextPage,
-	});
-
-	useEffect(() => {
-		setCurrentPage(1);
-	}, [resetPageTrigger]);
+	const visibleRows = sortedData?.slice(startIndex, endIndex);
 
 	return (
 		<Box
@@ -138,32 +105,25 @@ export const StudentsTable = ({
 							</Table.ColumnHeader>
 							<Table.ColumnHeader w='20%'>
 								<SortableHeader
-									label='Admisión'
-									columnKey='admission_program_name'
+									label='Periodo'
+									columnKey='program_period'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='15%'>
-								<SortableHeader
-									label='Periodo de Admisión'
-									columnKey='admission_period'
-									sortConfig={sortConfig}
-									onSort={setSortConfig}
-								/>
-							</Table.ColumnHeader>
+
 							<Table.ColumnHeader w='20%'>
 								<SortableHeader
-									label='Año de Admisión'
-									columnKey='admission_year'
+									label='Programa'
+									columnKey='program_name'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
 							<Table.ColumnHeader w='15%'>
 								<SortableHeader
-									label='Beca'
-									columnKey='has_scholarship'
+									label='Primera Inscripción'
+									columnKey='is_first_enrollment'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
@@ -176,11 +136,12 @@ export const StudentsTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
+							<Table.ColumnHeader w='10%'>Acciones </Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{isLoading || (isFetchingNextPage && hasNextPage) ? (
-							<SkeletonTable columns={6} />
+						{isLoading ? (
+							<SkeletonTable columns={7} />
 						) : visibleRows?.length > 0 ? (
 							visibleRows.map((item, index) => (
 								<Row
@@ -195,7 +156,7 @@ export const StudentsTable = ({
 							))
 						) : (
 							<Table.Row>
-								<Table.Cell colSpan={6} textAlign='center' py={2}>
+								<Table.Cell colSpan={7} textAlign='center' py={2}>
 									No hay datos disponibles.
 								</Table.Cell>
 							</Table.Row>
@@ -205,11 +166,11 @@ export const StudentsTable = ({
 			</Table.ScrollArea>
 
 			<Pagination
-				count={totalCount}
+				count={data?.length}
 				pageSize={pageSize}
 				currentPage={currentPage}
 				pageSizeOptions={pageSizeOptions}
-				onPageChange={loadUntilPage}
+				onPageChange={setCurrentPage}
 				onPageSizeChange={(size) => {
 					setPageSize(size);
 					setCurrentPage(1);
@@ -219,13 +180,8 @@ export const StudentsTable = ({
 	);
 };
 
-StudentsTable.propTypes = {
+StudentTuitionTable.propTypes = {
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
 	isLoading: PropTypes.bool,
-	fetchNextPage: PropTypes.func,
-	hasNextPage: PropTypes.bool,
-	isFetchingNextPage: PropTypes.bool,
-	resetPageTrigger: PropTypes.func,
-	totalCount: PropTypes.number,
 };

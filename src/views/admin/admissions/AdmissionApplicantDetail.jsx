@@ -1,3 +1,4 @@
+import { DocumentCard } from '@/components/card/DocumentCard';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { GenerateApplicantDataPdfModal } from '@/components/forms/admissions';
 import { PaymentOrdersByApplicationTable } from '@/components/tables/payment_orders';
@@ -6,12 +7,14 @@ import ApplicantSkeleton from '@/components/ui/ApplicantSkeleton';
 import { formatDateString } from '@/components/ui/dateHelpers';
 import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
 import { useReadAdmissionApplicantById } from '@/hooks/admissions_applicants/useReadAdmissionApplicantById';
+import { useReadDocuments } from '@/hooks/documents';
 import {
 	Badge,
 	Box,
 	Card,
 	Flex,
 	Heading,
+	HStack,
 	Icon,
 	SimpleGrid,
 	Stack,
@@ -23,6 +26,7 @@ import {
 	FiCheckCircle,
 	FiClock,
 	FiCreditCard,
+	FiFileText,
 	FiGlobe,
 	FiHome,
 	FiMail,
@@ -43,6 +47,10 @@ export const AdmissionApplicantDetail = () => {
 
 	const { data: dataApplicant, isLoading: isApplicantLoading } =
 		useReadAdmissionApplicantById(decrypted);
+
+	const { data: dataDocuments } = useReadDocuments({
+		application: dataApplicant?.application,
+	});
 
 	const statusEnum = [
 		{
@@ -65,6 +73,10 @@ export const AdmissionApplicantDetail = () => {
 	const statusEnumSelected = statusEnum.find(
 		(item) => item.id === dataApplicant?.status
 	);
+
+	const handleDownload = (filePath) => {
+		window.open(filePath, '_blank');
+	};
 
 	return (
 		<Box spaceY='5'>
@@ -387,6 +399,39 @@ export const AdmissionApplicantDetail = () => {
 							<PaymentOrdersByApplicationTable
 								data={dataApplicant?.payment_orders}
 							/>
+						</Card.Body>
+					</Card.Root>
+					<Card.Root shadow={'md'}>
+						<Card.Header pb={0}>
+							<HStack gap={2}>
+								<Icon as={FiFileText} boxSize={5} />
+								<Heading size='md'>Documentos</Heading>
+							</HStack>
+						</Card.Header>
+
+						<Card.Body>
+							{dataDocuments.results.length === 0 ? (
+								<Box
+									colSpan={{ base: 1, md: 2 }}
+									p={6}
+									borderWidth='1px'
+									borderRadius='lg'
+									textAlign='center'
+									color='gray.500'
+								>
+									No hay documentos disponibles.
+								</Box>
+							) : (
+								<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+									{dataDocuments.results.map((doc) => (
+										<DocumentCard
+											key={doc.id}
+											doc={doc}
+											handleDownload={handleDownload}
+										/>
+									))}
+								</SimpleGrid>
+							)}
 						</Card.Body>
 					</Card.Root>
 				</Stack>

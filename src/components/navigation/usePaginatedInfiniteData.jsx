@@ -12,7 +12,7 @@ export const usePaginatedInfiniteData = ({
 	const startIndex = (currentPage - 1) * pageSize;
 	const endIndex = startIndex + pageSize;
 
-	const visibleRows = data.slice(startIndex, endIndex);
+	const visibleRows = data?.slice(startIndex, endIndex);
 
 	// Autocarga si faltan datos
 	useEffect(() => {

@@ -3,13 +3,15 @@ import TuitionSummaryCard from '@/components/modals/tuition/TuitionSummaryCard';
 import { Alert, Button, Checkbox, Field, toaster } from '@/components/ui';
 import {
 	useReadMyApplicants,
+	useReadMyBenefits,
+	useReadMyEnrollments,
 	useReadPaymentRules,
 	useReadProgramsbyId,
 } from '@/hooks';
 import { useReadEnrollmentsProgramsbyId } from '@/hooks/enrollments_programs/useReadEnrollmentsProgramsbyId';
 import { useReadMethodPayment } from '@/hooks/method_payments';
 import { useCreatePaymentRequest } from '@/hooks/payment_requests';
-import { useReadPurposes } from '@/hooks/purposes';
+import { useReadGraduateUni } from '@/hooks/person/useReadGraduateUni';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import {
 	Box,
@@ -25,7 +27,7 @@ import {
 	Textarea,
 	VStack,
 } from '@chakra-ui/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
 	FiAlertCircle,
 	FiAlertTriangle,
@@ -41,6 +43,7 @@ export const MyPaymentAddRequests = () => {
 	const [acceptTerms, setAcceptTerms] = useState(false);
 	const [numDocCarpeta, setnumDocCarpeta] = useState('');
 	const [amountValue, setAmountValue] = useState('');
+	const [discountValue, setDiscountValue] = useState('');
 	const [isAmountReadOnly, setIsAmountReadOnly] = useState(false);
 	const [description, setDescription] = useState('');
 	const [isSelectCaja, setisSelectCaja] = useState(false);
@@ -48,13 +51,12 @@ export const MyPaymentAddRequests = () => {
 	const [selectedProcessType, setSelectedProcessType] = useState(null);
 	const { data: dataUser } = useReadUserLogged();
 	const { data: dataMyApplicants } = useReadMyApplicants();
-	//const { data: dataPurposes } = useReadPurposes();
 	const { mutate: paymentRequests, isPending } = useCreatePaymentRequest();
 
-	/*const { data: PaymentRules } = useReadPaymentRules({
+	const { data: PaymentRules } = useReadPaymentRules({
 		payment_purpose: selectedPurpose?.value,
 		enabled: !!selectedPurpose?.value, // asegúrate de que solo se llame si hay propósito
-	});*/
+	});
 
 	const { data: MethodPayment, isLoading: isLoadingMethodPayment } =
 		useReadMethodPayment();
@@ -63,6 +65,10 @@ export const MyPaymentAddRequests = () => {
 		selectedProgram?.programId || null,
 		{}
 	);
+
+	const { data: MyEnrollment } = useReadMyEnrollments();
+	const { data: studentScholarships } = useReadMyBenefits();
+	const { data: globalDiscountsRaw } = useReadGraduateUni();
 	const { data: DataEnrollmentProgram } = useReadEnrollmentsProgramsbyId(
 		selectedProgram?.enrollment_program || null,
 		{}
@@ -77,42 +83,27 @@ export const MyPaymentAddRequests = () => {
 		}
 	}, [selectedDocumentType, dataUser]);
 
-	const globalDiscounts = [
-		{
-			id: 1,
-			label: 'Descuento por ser egresado UNI',
-			percentage: 0.15,
-			requireGraduate: true,
-			purposeToGlobalDiscountId: [2, 4, 5, 6, 7],
-		},
-	];
-
-	const studentScholarships = [
-		{
-			id: 10,
-			label: 'Beca alto rendimiento',
-			percentage: 0.25,
-		},
-	];
+	const rawDiscounts = globalDiscountsRaw ?? {};
+	const globalDiscounts = Object.values(rawDiscounts)
+		.map((item) => {
+			if (typeof item === 'string') {
+				try {
+					return JSON.parse(item);
+				} catch (e) {
+					console.error('Error parseando descuento global:', item, e);
+					return null;
+				}
+			}
+			return item;
+		})
+		.filter(Boolean);
 
 	const validPurposeIds = [4, 5, 6];
 
-	//--cambiar---//
-	const MyEnrollment = [
-		{
-			id: 1,
-			program_name: 'Maestría en administración est',
-			programId: 2,
-			student: 2,
-			enrollment_period_program: 1,
-			is_first_enrollment: true,
-		},
-	];
-
-	const MyEnrollmentOptions = MyEnrollment.map((item) => ({
+	const MyEnrollmentOptions = MyEnrollment?.map((item) => ({
 		value: item.id,
-		label: item.program_name,
-		programId: item.programId,
+		label: `${item.program_name} - ${item.program_period}`,
+		programId: item.program_id,
 		enrollment_program: item.enrollment_period_program,
 		first: item.is_first_enrollment,
 	}));
@@ -143,85 +134,36 @@ export const MyPaymentAddRequests = () => {
 			label: method.name,
 		})) || [];
 
-	const paymentRules = useMemo(
-		() => [
-			{
-				payment_purpose: 1,
-				payment_purpose_name: 'Admisión ordinaria',
-				process_types: ['admission', 'enrollment'],
-				applies_to_students: false,
-				applies_to_applicants: true,
-				only_first_enrollment: false,
-				student_status: null,
-				amount_type: 'fijo', // No aplica
-				amount: '150',
-				use_credits_from: null,
-				discount_percentage: null,
-			},
-			{
-				payment_purpose: 4,
-				payment_purpose_name: 'Pago por semestre completo',
-				process_types: ['enrollment'],
-				applies_to_students: true,
-				applies_to_applicants: false,
-				only_first_enrollment: true,
-				student_status: null,
-				amount_type: 'calcular',
-				amount: null,
-				use_credits_from: 'enrollment_program',
-				discount_percentage: 0.08,
-			},
-			{
-				payment_purpose: 5,
-				payment_purpose_name: 'Pago por curso',
-				process_types: ['enrollment'],
-				applies_to_students: true,
-				applies_to_applicants: false,
-				only_first_enrollment: false,
-				student_status: null,
-				amount_type: 'calcular',
-				amount: null,
-				use_credits_from: 'program',
-				discount_percentage: 0.16,
-			},
-			{
-				payment_purpose: 6,
-				payment_purpose_name: 'Matrícula extraordinaria',
-				process_types: ['enrollment'],
-				applies_to_students: true,
-				applies_to_applicants: false,
-				only_first_enrollment: false,
-				student_status: null, // aplica solo para egresados, si deseas
-				amount_type: 'fijo',
-				amount: 150.0,
-				use_credits_from: null,
-				discount_percentage: null,
-			},
-		],
-		[]
-	);
-	const currentRule = paymentRules?.find(
+	const currentRule = PaymentRules?.results?.find(
 		(rule) => rule.payment_purpose === selectedPurpose?.value
 	);
+
 	const discounts = [
 		// 1. Global Discounts válidos para los propósitos seleccionados
-		...globalDiscounts
-			.filter(() => validPurposeIds.includes(selectedPurpose?.value))
-			.filter((d) => !d.requireGraduate || dataUser?.is_uni_graduate)
-			.map((d) => ({
-				id: `global-${d.id}`,
-				label: d.label,
-				percentage: d.percentage,
-			})),
-
+		...(Array.isArray(globalDiscounts)
+			? globalDiscounts
+					.filter(
+						(d) =>
+							Array.isArray(d.purposeToGlobalDiscountId) &&
+							d.purposeToGlobalDiscountId.includes(selectedPurpose?.value)
+					)
+					.filter((d) => !d.requireGraduate || dataUser?.is_uni_graduate)
+					.map((d) => ({
+						id: `global-${d.id}`,
+						label: d.label,
+						percentage: Number(d.percentage * 100),
+					}))
+			: []),
 		// 2. Becas válidas para los propósitos seleccionados
-		...studentScholarships
-			.filter(() => validPurposeIds.includes(selectedPurpose?.value))
-			.map((s) => ({
-				id: `scholarship-${s.id}`,
-				label: s.label,
-				percentage: s.percentage,
-			})),
+		...(Array.isArray(studentScholarships)
+			? studentScholarships
+					.filter(() => validPurposeIds.includes(selectedPurpose?.value))
+					.map((s) => ({
+						id: `scholarship-${s.id}`,
+						label: s.label,
+						percentage: s.percentage,
+					}))
+			: []),
 
 		// 3. Descuento de la regla de pago
 		...(currentRule?.discount_percentage
@@ -234,18 +176,18 @@ export const MyPaymentAddRequests = () => {
 				]
 			: []),
 	];
+
 	const userRoles = dataUser.roles?.map((r) => r.name.toLowerCase());
 
 	const isFirstEnrollment = selectedProgram?.first;
 
-	const filteredPurposes = paymentRules.filter((rule) => {
+	const filteredPurposes = PaymentRules?.results?.filter((rule) => {
 		const matchesProcess = rule.process_types.includes(
 			selectedProcessType?.value
 		);
 		const matchesRole =
-			(rule.applies_to_students && !userRoles.includes('estudiante')) ||
+			(rule.applies_to_students && userRoles.includes('estudiante')) ||
 			(rule.applies_to_applicants && userRoles.includes('postulante'));
-
 		const matchesFirstEnrollment =
 			!rule.only_first_enrollment ||
 			(rule.only_first_enrollment && isFirstEnrollment);
@@ -253,7 +195,7 @@ export const MyPaymentAddRequests = () => {
 		return matchesProcess && matchesRole && matchesFirstEnrollment;
 	});
 
-	const PurposesOptions = filteredPurposes.map((rule) => ({
+	const PurposesOptions = filteredPurposes?.map((rule) => ({
 		value: rule.payment_purpose,
 		label: rule.payment_purpose_name,
 	}));
@@ -295,6 +237,7 @@ export const MyPaymentAddRequests = () => {
 						num_document: numDocCarpeta,
 						description: description,
 						aceppt_terms: acceptTerms,
+						discount_value: discountValue || '',
 					}
 				: {
 						payment_method: selectedMethod?.value,
@@ -305,9 +248,8 @@ export const MyPaymentAddRequests = () => {
 						num_document: numDocCarpeta,
 						description: description,
 						accept_terms: acceptTerms,
+						discount_value: discountValue || '',
 					};
-
-    console.log(payload)
 
 		paymentRequests(payload, {
 			onSuccess: () => {
@@ -348,18 +290,17 @@ export const MyPaymentAddRequests = () => {
 	};
 
 	useEffect(() => {
-		if (!selectedPurpose?.value || selectedPurpose?.value === 1) {
+		if (!selectedPurpose?.value) {
 			setAmountValue('');
 			setDescription('');
 
 			return;
 		}
 
-		console.log('aqui');
 		const priceCredit = parseFloat(DataProgram?.price_credit || '0');
 
 		// Obtener la regla correspondiente al propósito seleccionado
-		const currentRule = paymentRules?.find(
+		const currentRule = PaymentRules?.results?.find(
 			(rule) => rule.payment_purpose === selectedPurpose.value
 		);
 
@@ -370,26 +311,27 @@ export const MyPaymentAddRequests = () => {
 			return;
 		}
 
+		console.log('Regla actual:', currentRule);
 		// Si tiene monto fijo
-		if (currentRule?.amount_type === 'fijo' && currentRule.amount) {
+		if (currentRule?.amount_type == 1) {
+			console.log('Monto fijo:', currentRule.amount);
 			setAmountValue(currentRule?.amount);
 			setIsAmountReadOnly(true);
 			return;
 		}
 
 		// Si es monto calculado
-		if (currentRule.amount_type === 'calcular') {
+		if (currentRule.amount_type === 2) {
 			let credits = 0;
 
-			if (currentRule.use_credits_from === 'enrollment_program') {
+			if (currentRule.use_credits_from === 1) {
 				credits = parseFloat(DataEnrollmentProgram?.credits || '0');
-			} else if (currentRule.use_credits_from === 'program') {
-				credits = parseFloat(selectedProgram?.total_credits || '0');
+			} else if (currentRule.use_credits_from === 2) {
+				credits = parseFloat(DataProgram?.total_program_credits || '0');
 			}
 
 			const baseAmount = credits * priceCredit;
-			const discount = currentRule.discount_percentage || 0;
-			const finalAmount = (baseAmount * (1 - discount)).toFixed(2);
+			const finalAmount = baseAmount.toFixed(2);
 
 			setAmountValue(finalAmount);
 			setIsAmountReadOnly(false);
@@ -404,7 +346,7 @@ export const MyPaymentAddRequests = () => {
 		DataProgram,
 		DataEnrollmentProgram,
 		selectedProgram,
-		paymentRules,
+		PaymentRules,
 	]);
 
 	return (
@@ -444,7 +386,6 @@ export const MyPaymentAddRequests = () => {
 										Si esta es tu primera matrícula, debes solicitar la
 									</Text>
 									<List.Root pl='4' mt='2'>
-										<List.Item>Solicitud por Derecho de Admisión</List.Item>
 										<List.Item>
 											Solicitud por Segundo Derecho de Admisión (se debe pagar
 											hasta el segundo mes)
@@ -563,7 +504,8 @@ export const MyPaymentAddRequests = () => {
 													Algunos conceptos tienen monto fijo definido por la
 													institución.
 												</Alert>
-											) : !amountValue ? (
+											) : !amountValue &&
+											  currentRule?.amount_type_display !== 'Calcular' ? (
 												<Alert Icon={<FiAlertCircle />} status='error'>
 													El monto para este propósito no fue definido, contacte
 													a un administrador.
@@ -600,6 +542,7 @@ export const MyPaymentAddRequests = () => {
 										title='Cálculo de Matrícula'
 										discounts={discounts}
 										setDescription={setDescription}
+										setDiscountValue={setDiscountValue}
 										baseAmount={Number(amountValue)}
 									/>
 								)}
@@ -609,6 +552,7 @@ export const MyPaymentAddRequests = () => {
 										title='Cálculo de Matrícula'
 										discounts={discounts}
 										setDescription={setDescription}
+										setDiscountValue={setDiscountValue}
 										baseAmount={Number(amountValue)}
 									/>
 								)}
@@ -621,6 +565,7 @@ export const MyPaymentAddRequests = () => {
 											credits={DataEnrollmentProgram.credits}
 											pricePerCredit={parseFloat(DataProgram.price_credit)}
 											discounts={discounts}
+											setDiscountValue={setDiscountValue}
 											setDescription={setDescription}
 										/>
 									)}
@@ -633,6 +578,7 @@ export const MyPaymentAddRequests = () => {
 											credits={DataProgram.total_program_credits}
 											pricePerCredit={parseFloat(DataProgram.price_credit)}
 											discounts={discounts}
+											discountValue={discountValue}
 											setDescription={setDescription}
 										/>
 									)}

@@ -153,7 +153,7 @@ export const MyFractionationTable = ({
 					</Table.Header>
 					<Table.Body>
 						{isLoading || (isFetchingNextPage && hasNextPage) ? (
-							<SkeletonTable columns={6} />
+							<SkeletonTable columns={7} />
 						) : visibleRows?.length > 0 ? (
 							visibleRows.map((item, index) => (
 								<Row
@@ -168,7 +168,7 @@ export const MyFractionationTable = ({
 							))
 						) : (
 							<Table.Row>
-								<Table.Cell colSpan={6} textAlign='center' py={2}>
+								<Table.Cell colSpan={7} textAlign='center' py={2}>
 									No hay datos disponibles.
 								</Table.Cell>
 							</Table.Row>
