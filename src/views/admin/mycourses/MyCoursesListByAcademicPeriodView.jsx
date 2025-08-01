@@ -172,8 +172,8 @@ export const MyCoursesListByAcademicPeriodView = () => {
   };
 
   const getGradeColor = (grade) => {
-    if (grade >= 11) return "green";
-    return "red";
+    if (grade >= 11) return "blue.400";
+    return "red.400";
   };
 
   return (
@@ -221,18 +221,17 @@ export const MyCoursesListByAcademicPeriodView = () => {
               overflow="hidden" 
               border="1px solid" 
               borderColor={borderColor}
-              boxShadow="sm"
             >
               <Table.Root variant="simple" size="sm">
                 <Table.Header bg={headerBg}>
-                  <Table.Row>
-                    <Table.Cell fontWeight="bold" color="blue.700">Ciclo</Table.Cell>
-                    <Table.Cell fontWeight="bold" color="blue.700" width="360px">Asignatura</Table.Cell>
+                  <Table.Row >
+                    <Table.Cell fontWeight="bold" color="blue.700" textAlign="center">Ciclo</Table.Cell>
+                    <Table.Cell fontWeight="bold" color="blue.700" textAlign="center" width="360px">Asignatura</Table.Cell>
                     <Table.Cell fontWeight="bold" color="blue.700" textAlign="center">Calificación</Table.Cell>
                     <Table.Cell fontWeight="bold" color="blue.700" textAlign="center">Créditos</Table.Cell>
                     <Table.Cell fontWeight="bold" color="blue.700" textAlign="center">Sección</Table.Cell>
-                    <Table.Cell fontWeight="bold" color="blue.700" width="320px">Docente</Table.Cell>
-                    <Table.Cell fontWeight="bold" color="blue.700" width="320px">Horario</Table.Cell>
+                    <Table.Cell fontWeight="bold" color="blue.700" textAlign="center" width="320px">Docente</Table.Cell>
+                    <Table.Cell fontWeight="bold" color="blue.700" textAlign="center" width="320px">Horario</Table.Cell>
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
@@ -240,11 +239,10 @@ export const MyCoursesListByAcademicPeriodView = () => {
                     <Table.Row 
                       key={index} 
                       _hover={{ bg: hoverBg }}
-                      borderBottom="1px solid"
                       borderColor={borderColor}
                     >
                       <Table.Cell>
-                        <Text fontSize="sm" color="blue.600" fontWeight="medium">
+                        <Text fontSize="sm" color="blue.600" fontWeight="medium" textAlign="center">
                           {period.enrollment_period_program}
                         </Text>
                       </Table.Cell>
@@ -257,10 +255,13 @@ export const MyCoursesListByAcademicPeriodView = () => {
                       </Table.Cell>
                       <Table.Cell textAlign="center">
                         <Badge 
-                          colorScheme={getGradeColor(course.average)} 
+                          bg={getGradeColor(course.average)} 
                           variant="solid"
-                          px={2}
-                          py={1}
+                          p={1}
+                          boxSize={6}
+                          textAlign={"center"}
+                          justifyContent="center"
+                          color="white"
                           borderRadius="md"
                         >
                           {course.average}
