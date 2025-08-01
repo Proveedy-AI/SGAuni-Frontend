@@ -13,14 +13,25 @@ import { Button } from "@/components/ui";
 import { LuCircleAlert } from "react-icons/lu";
 
 export const Step03SummaryEnrollment = ({ selectedGroups, onBack, onNext }) => {
+  console.log(selectedGroups);
   // Calcular totales
-  const totalCourses = selectedGroups?.length;
-  const totalCredits = selectedGroups?.reduce((sum, course) => sum + (course.credits || 0), 0);
-  const totalWeeklyHours = selectedGroups?.reduce((sum, course) => {
-    const start = Number.parseInt(course?.schedule?.start_time.split(':')[0]);
-    const end = Number.parseInt(course?.schedule?.end_time.split(':')[0]);
-    return sum + (end - start);
-  }, 0);
+  const totalCourses = selectedGroups?.total_selections;
+  const totalCreditsToPay = selectedGroups?.price_credit;
+  const totalWeeklyHours = Array.isArray(selectedGroups?.selections)
+    ? selectedGroups.selections.reduce((sum, course) => {
+        if (Array.isArray(course.schedule)) {
+          return (
+            sum +
+            course.schedule.reduce((schSum, sch) => {
+              const start = Number.parseInt(sch?.start_time?.split(':')[0]);
+              const end = Number.parseInt(sch?.end_time?.split(':')[0]);
+              return schSum + (end && start ? end - start : 0);
+            }, 0)
+          );
+        }
+        return sum;
+      }, 0)
+    : 0;
 
   // Color modes
 
@@ -81,7 +92,7 @@ export const Step03SummaryEnrollment = ({ selectedGroups, onBack, onNext }) => {
               minW="40px"
               textAlign="center"
             >
-              {totalCredits}
+              {totalCreditsToPay}
             </Box>
           </HStack>
         </VStack>
