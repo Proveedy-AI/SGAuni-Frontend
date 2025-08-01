@@ -18,6 +18,7 @@ export default function TuitionSummaryCard({
 	baseAmount: providedBaseAmount,
 	discounts,
 	setDescription,
+	setDiscountValue,
 }) {
 	// 1. Calcular baseAmount
 	const baseAmount =
@@ -27,7 +28,7 @@ export default function TuitionSummaryCard({
 
 	// 2. Acumular porcentajes y montos fijos
 	const totalPercentage = discounts.reduce(
-		(acc, d) => acc + (d.percentage || 0),
+		(acc, d) => acc + (Number(d.percentage / 100) || 0),
 		0
 	);
 	const totalFixed = discounts.reduce((acc, d) => acc + (d.amount || 0), 0);
@@ -48,7 +49,7 @@ ${credits ? `Créditos: ${credits}\n` : ''}${
 ${discounts
 	.map((d) => {
 		const parts = [];
-		if (d.percentage) parts.push(`${(d.percentage * 100).toFixed(0)}%`);
+		if (d.percentage) parts.push(`${Number(d.percentage).toFixed(0)}%`);
 		if (d.amount) parts.push(`S/ ${d.amount.toFixed(2)}`);
 		return `- ${d.label} (${parts.join(' + ')})`;
 	})
@@ -57,6 +58,7 @@ Total descuento: -S/ ${totalDiscountAmount.toFixed(2)}
 Monto final: S/ ${finalAmount.toFixed(2)}
 `.trim();
 
+		setDiscountValue(totalPercentage * 100);
 		setDescription?.(summaryText);
 	}, [credits, pricePerCredit, providedBaseAmount, discounts, setDescription]);
 
@@ -112,7 +114,7 @@ Monto final: S/ ${finalAmount.toFixed(2)}
 						</Flex>
 						<Text>
 							{[
-								d.percentage ? `${(d.percentage * 100).toFixed(0)}%` : '',
+								d.percentage ? `${Number(d.percentage).toFixed(0)}%` : '',
 								d.amount ? `S/ ${d.amount.toFixed(2)}` : '',
 							]
 								.filter(Boolean)
@@ -162,4 +164,5 @@ TuitionSummaryCard.propTypes = {
 		})
 	),
 	setDescription: PropTypes.func,
+	setDiscountValue: PropTypes.func,
 };
