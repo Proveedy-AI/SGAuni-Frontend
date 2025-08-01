@@ -100,7 +100,9 @@ export const MyPaymentAddRequests = () => {
 
 	const validPurposeIds = [4, 5, 6];
 
-	const MyEnrollmentOptions = MyEnrollment?.map((item) => ({
+	const MyEnrollmentOptions = MyEnrollment?.filter(
+		(item) => item.is_current_enrollment
+	).map((item) => ({
 		value: item.id,
 		label: `${item.program_name} - ${item.program_period}`,
 		programId: item.program_id,
