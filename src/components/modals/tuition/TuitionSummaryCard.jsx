@@ -58,7 +58,7 @@ Total descuento: -S/ ${totalDiscountAmount.toFixed(2)}
 Monto final: S/ ${finalAmount.toFixed(2)}
 `.trim();
 
-		setDiscountValue(totalPercentage * 100);
+		setDiscountValue(Number(totalPercentage * 100));
 		setDescription?.(summaryText);
 	}, [credits, pricePerCredit, providedBaseAmount, discounts, setDescription]);
 
