@@ -390,7 +390,7 @@ export const AdmissionApplicantDetail = () => {
 								<Icon as={FiCreditCard} boxSize={5} color='blue.600' />
 								<Heading size='md'>Trámites y Pagos</Heading>
 								<Badge colorScheme='blue'>
-									{dataApplicant.payment_orders.length} trámites
+									{dataApplicant?.payment_orders?.length} trámites
 								</Badge>
 							</Flex>
 						</Card.Header>
