@@ -1,3 +1,4 @@
+import { Encryptor } from "@/components/CrytoJS/Encryptor";
 import { useColorModeValue } from "@/components/ui";
 import { useReadMyCourses } from "@/hooks/mycourses"
 import { 
@@ -9,6 +10,7 @@ import {
   VStack,
   HStack,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router";
 
 const CoursesListByPeriod = [
   {
@@ -151,6 +153,8 @@ export const MyCoursesListByAcademicPeriodView = () => {
     isLoading: isLoadingMyCourses
   } = useReadMyCourses();
 
+  const navigate = useNavigate();
+
   const bgColor = useColorModeValue("white", "gray.800");
   const borderColor = useColorModeValue("gray.200", "gray.600");
   const headerBg = useColorModeValue("blue.50", "blue.900");
@@ -174,6 +178,13 @@ export const MyCoursesListByAcademicPeriodView = () => {
   const getGradeColor = (grade) => {
     if (grade >= 11) return "blue.400";
     return "red.400";
+  };
+
+  const handleRowClick = (course) => {
+    console.log(course);
+    const encrypted = Encryptor.encrypt(course.id);
+    const encoded = encodeURIComponent(encrypted);
+    navigate(`/mycourses/${encoded}`);
   };
 
   return (
@@ -240,6 +251,11 @@ export const MyCoursesListByAcademicPeriodView = () => {
                       key={index} 
                       _hover={{ bg: hoverBg }}
                       borderColor={borderColor}
+                      onClick={(e) => {
+                        if (e.target.closest('button') || e.target.closest('a')) return;
+                        handleRowClick(course)
+                      }}
+                      cursor="pointer"
                     >
                       <Table.Cell>
                         <Text fontSize="sm" color="blue.600" fontWeight="medium" textAlign="center">
