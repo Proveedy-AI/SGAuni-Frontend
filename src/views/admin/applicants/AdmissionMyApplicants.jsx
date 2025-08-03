@@ -66,17 +66,16 @@ export const AdmissionMyApplicants = () => {
 			)}
 			{
 				<>
-					{!isLoading &&
-						dataMyApplicants?.length > 0 &&
-						dataUser?.document_path && (
-							<MyApplicantsTable
-								data={dataMyApplicants}
-								fetchData={fetchMyApplicants}
-								permissions={[]}
-								search={searchValue}
-								setSearch={setSearchValue}
-							/>
-						)}
+					{!isLoading && dataUser?.document_path && (
+						<MyApplicantsTable
+							data={dataMyApplicants}
+							fetchData={fetchMyApplicants}
+							permissions={[]}
+							search={searchValue}
+							setSearch={setSearchValue}
+							isLoading={isLoading}
+						/>
+					)}
 				</>
 			}
 		</Box>

@@ -9,15 +9,16 @@ import { useNavigate } from 'react-router';
 import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { SortableHeader } from '@/components/ui/SortableHeader';
+import SkeletonTable from '@/components/ui/SkeletonTable';
 
 const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
-  console.log(item)
 	const navigate = useNavigate();
 	const statusMap = {
-		1: { label: 'Incompleto', color: 'orange.500' },
-		2: { label: 'Pendiente', color: 'orange.500' },
-		3: { label: 'Aprobado', color: 'green' },
-		4: { label: 'Rechazado', color: 'red' },
+		Incompleto: { label: 'Incompleto', color: 'yellow.400' }, // Amarillo para incompleto
+		Completado: { label: 'Completado', color: 'blue.500' }, // Azul para completado
+		Evaluado: { label: 'Evaluado', color: 'teal.500' }, // Verde azulado para evaluado
+		Admitido: { label: 'Admitido', color: 'green.500' }, // Verde para admitido
+		Rechazado: { label: 'Rechazado', color: 'red.500' }, // Rojo para rechazado
 	};
 
 	const handleRowClick = (e) => {
@@ -63,7 +64,7 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 
 			<Table.Cell>
 				{(() => {
-					const status = statusMap[item.status] || {
+					const status = statusMap[item.status_display] || {
 						label: item.status_display,
 						color: 'default',
 					};
@@ -90,7 +91,7 @@ Row.propTypes = {
 	data: PropTypes.array,
 };
 
-export const MyApplicantsTable = ({ data, fetchData, permissions }) => {
+export const MyApplicantsTable = ({ data, fetchData, permissions, isLoading }) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [currentPage, setCurrentPage] = useState(1);
 	const startIndex = (currentPage - 1) * pageSize;
@@ -174,18 +175,28 @@ export const MyApplicantsTable = ({ data, fetchData, permissions }) => {
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{visibleRows?.map((item, index) => (
-							<Row
-								key={item.id}
-								item={item}
-								data={data}
-								sortConfig={sortConfig}
-								permissions={permissions}
-								fetchData={fetchData}
-								startIndex={startIndex}
-								index={index}
-							/>
-						))}
+						{isLoading ? (
+							<SkeletonTable columns={8} />
+						) : visibleRows?.length > 0 ? (
+							visibleRows?.map((item, index) => (
+								<Row
+									key={item.id}
+									item={item}
+									data={data}
+									sortConfig={sortConfig}
+									permissions={permissions}
+									fetchData={fetchData}
+									startIndex={startIndex}
+									index={index}
+								/>
+							))
+						) : (
+							<Table.Row>
+								<Table.Cell colSpan={8} textAlign='center' py={2}>
+									No hay datos disponibles.
+								</Table.Cell>
+							</Table.Row>
+						)}
 					</Table.Body>
 				</Table.Root>
 			</Table.ScrollArea>
@@ -210,4 +221,5 @@ MyApplicantsTable.propTypes = {
 	fetchData: PropTypes.func,
 	loading: PropTypes.bool,
 	permissions: PropTypes.array,
+	isLoading: PropTypes.bool,
 };

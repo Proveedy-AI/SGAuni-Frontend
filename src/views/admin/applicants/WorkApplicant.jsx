@@ -81,7 +81,8 @@ export const WorkApplicant = ({ onAllCompleted }) => {
 						setDisableUpload(false);
 						toaster.create({
 							title:
-								error.response?.data?.[0] || 'Error al actualizar el contrato',
+								error.response?.data?.error ||
+								'Error al actualizar el contrato',
 							type: 'error',
 						});
 					},
@@ -105,9 +106,9 @@ export const WorkApplicant = ({ onAllCompleted }) => {
 	};
 
 	const [groupedWorks, setGroupedWorks] = useState({
-		Essay: [],
-		Interview: [],
-		Exam: [],
+		Ensayo: [],
+		Entrevista: [],
+		Examen: [],
 	});
 
 	const handleDownloadGuides = () => {
@@ -127,9 +128,9 @@ export const WorkApplicant = ({ onAllCompleted }) => {
 		if (!dataEvaluationsByApplication?.results) return;
 
 		const grouped = {
-			Essay: [],
-			Interview: [],
-			Exam: [],
+			Ensayo: [],
+			Entrevista: [],
+			Examen: [],
 		};
 
 		for (const item of dataEvaluationsByApplication.results) {
@@ -144,19 +145,25 @@ export const WorkApplicant = ({ onAllCompleted }) => {
 		if (!dataEvaluationsByApplication?.results) return;
 
 		const grouped = {
-			Essay: [],
-			Interview: [],
-			Exam: [],
+			Ensayo: [],
+			Entrevista: [],
+			Examen: [],
 		};
 
 		let allCompleted = true;
+		const results = dataEvaluationsByApplication.results || [];
+		console.log(results);
+		// Si no hay ningún trabajo, no está completo
+		if (results.length === 0) {
+			allCompleted = false;
+		} else {
+			for (const item of results) {
+				const type = item.type_application_display;
+				if (grouped[type]) grouped[type].push(item);
 
-		for (const item of dataEvaluationsByApplication.results) {
-			const type = item.type_application_display;
-			if (grouped[type]) grouped[type].push(item);
-
-			if (item.status_qualification_display !== 'Completed') {
-				allCompleted = false;
+				if (item.status_qualification_display !== 'Completado') {
+					allCompleted = false;
+				}
 			}
 		}
 
@@ -171,7 +178,7 @@ export const WorkApplicant = ({ onAllCompleted }) => {
 	const renderWorkItem = (work) => {
 		const now = new Date();
 		const deadline = new Date(`${work.end_date}T23:59:59`);
-		const isEssay = work.type_application_display === 'Essay';
+		const isEssay = work.type_application_display === 'Ensayo';
 		const showInput = isEssay && now <= deadline;
 
 		const status = STATUS_MAP[work.status_qualification_display] || {
@@ -270,9 +277,9 @@ export const WorkApplicant = ({ onAllCompleted }) => {
 	};
 
 	const hasNoWorks =
-		groupedWorks.Essay.length === 0 &&
-		groupedWorks.Interview.length === 0 &&
-		groupedWorks.Exam.length === 0;
+		groupedWorks.Ensayo.length === 0 &&
+		groupedWorks.Entrevista.length === 0 &&
+		groupedWorks.Examen.length === 0;
 
 	return (
 		<Box
@@ -296,14 +303,14 @@ export const WorkApplicant = ({ onAllCompleted }) => {
 				</Heading>
 			</Stack>
 
-			{['Essay', 'Interview', 'Exam'].map(
+			{['Ensayo', 'Entrevista', 'Examen'].map(
 				(type) =>
-					groupedWorks[type].length > 0 && (
+					groupedWorks[type]?.length > 0 && (
 						<Box key={type} mb={6}>
 							<Heading size='sm' mb={2} color='gray.700'>
-								{type === 'Essay' && 'Ensayo'}
-								{type === 'Interview' && 'Entrevista'}
-								{type === 'Exam' && 'Examen'}
+								{type === 'Ensayo' && 'Ensayo'}
+								{type === 'Entrevista' && 'Entrevista'}
+								{type === 'Examen' && 'Examen'}
 							</Heading>
 
 							<VStack spacing={4} align='stretch'>
