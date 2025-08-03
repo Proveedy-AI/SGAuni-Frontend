@@ -97,6 +97,7 @@ export const CoursesAndSchedules = () => {
                 <InputGroup flex='1' startElement={<FiSearch />}>
                   <Input
                     ml='1'
+                    minW={{ base: 'auto', md: '400px' }}
                     size='sm'
                     placeholder='Buscar por nombre de curso'
                     value={searchCourseName}
