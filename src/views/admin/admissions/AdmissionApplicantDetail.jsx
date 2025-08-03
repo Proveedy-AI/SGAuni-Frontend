@@ -970,7 +970,7 @@ console.log(dataApplicant)
 								</Box>
 							) : (
 								<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-									{dataDocuments?.results.map((doc) => (
+									{dataDocuments?.results?.map((doc) => (
 										<DocumentCard
 											key={doc.id}
 											doc={doc}
