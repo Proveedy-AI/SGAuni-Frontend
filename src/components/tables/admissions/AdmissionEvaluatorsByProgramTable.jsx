@@ -9,7 +9,7 @@ import useSortedData from '@/utils/useSortedData';
 import { Badge, Box, HStack, IconButton, Table } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
-import { FiCheckCircle } from 'react-icons/fi';
+import { FiCheckCircle, FiEdit2 } from 'react-icons/fi';
 
 const Row = memo(({ item, fetchData, isLoading, startIndex, index, data, sortConfig }) => {
     const hasEvaluations = item.evaluations && item.evaluations.length > 0;
