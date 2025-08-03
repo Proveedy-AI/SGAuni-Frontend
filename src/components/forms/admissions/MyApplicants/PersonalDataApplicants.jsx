@@ -25,7 +25,6 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 	const { data: dataDisabilities, isLoading: loadingDisabilities } =
 		useReadDisabilities();
 	const [isUni, setIsUni] = useState(false);
-	const [isDisable, setIsDisable] = useState(false);
 
 	const [formData, setFormData] = useState({
 		id: '',
@@ -34,9 +33,6 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 		uni_email: '',
 		is_uni_graduate: false,
 		uni_code: '',
-		has_disability: '',
-		type_disability: '',
-		other_disability: '',
 		license_number: '',
 		orcid_code: '',
 		document_path: '',
@@ -85,7 +81,7 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 			is_uni_graduate: formData.is_uni_graduate,
 			uni_code: formData.uni_code,
 			has_disability: formData.has_disability,
-			type_disability: formData.type_disability,
+			type_disability: formData.type_disability?.value,
 			other_disability: formData.other_disability,
 			license_number: formData.license_number,
 			orcid_code: formData.orcid_code,
@@ -154,13 +150,22 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 		);
 	}, [dataUbigeo, data]);
 
+	useEffect(() => {
+		preloadSelectValue(
+			dataDisabilities,
+			formData?.type_disability,
+			DiscapacityOptions,
+			'type_disability'
+		);
+	}, [dataDisabilities, formData]);
+
 	return (
 		<Box
 			bg={{ base: 'white', _dark: 'its.gray.500' }}
 			p='4'
 			borderRadius='10px'
 			overflow='hidden'
-			justifyContent={'center'}	
+			justifyContent={'center'}
 			mx={'auto'}
 			w={{ base: 'full', md: '80%' }}
 			boxShadow='md'
@@ -178,13 +183,14 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 						sm: 'sm',
 						md: 'md',
 					}}
-					 color={'uni.secondary'}
+					color={'uni.secondary'}
 				>
 					Inscripción: Datos Generales
 				</Heading>
 			</Stack>
 			<Text fontWeight='semibold' mb={2}>
-				1. Adjuntar documento de identidad (anverso y reverso en un solo archivo PDF)
+				1. Adjuntar documento de identidad (anverso y reverso en un solo archivo
+				PDF)
 			</Text>
 			<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
 				<CompactFileUpload
@@ -280,10 +286,9 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 			<SimpleGrid columns={{ base: 1, md: 2 }} gap={4} mt={4}>
 				<Field label='¿Tiene alguna discapacidad?'>
 					<RadioGroup
-						value={isDisable ? 'yes' : 'no'}
+						value={formData.has_disability ? 'yes' : 'no'}
 						onChange={(e) => {
 							const selected = e.target.value === 'yes';
-							setIsDisable(e.target.defaultValue === 'yes');
 							updateProfileField('has_disability', selected);
 						}}
 						direction='row'
@@ -299,7 +304,7 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 							<ReactSelect
 								label='Discapacidad'
 								options={DiscapacityOptions}
-								value={data.type_disability}
+								value={formData.type_disability}
 								isLoading={loadingDisabilities}
 								onChange={(value) =>
 									updateProfileField('type_disability', value)
