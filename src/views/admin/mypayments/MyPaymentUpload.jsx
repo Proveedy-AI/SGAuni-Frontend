@@ -38,7 +38,8 @@ export const MyPaymentUpload = () => {
 
 	const { data: paymentRequests, isLoading: isLoadingRequests } =
 		useReadMyPaymentRequest();
-	const { data: paymentVouchers } = useReadMyPaymentVouchers();
+	const { data: paymentVouchers, refetch: refetchVouchers } =
+		useReadMyPaymentVouchers();
 
 	const { data: paymentOrders, isLoading: isLoadingOrders } =
 		useReadPaymentOrders(
@@ -109,6 +110,7 @@ export const MyPaymentUpload = () => {
 			setSelectedRequests(null);
 			setSelectedOrders(null);
 			setSelectedFile(null);
+			refetchVouchers();
 			setPaymentDate('');
 			setNotes('');
 			setResetFileKey((prev) => prev + 1); // Forzar el reseteo del componente
@@ -319,12 +321,11 @@ export const MyPaymentUpload = () => {
 						<Table.Body>
 							{paymentVouchers?.length > 0 &&
 								paymentVouchers.map((voucher, idx) => {
-									const statusObj =
-										StatusOptions.find(
-											(opt) =>
-												opt.value.toLowerCase() ===
-												(voucher.order_status || '').toLowerCase()
-										) || { color: 'gray', value: voucher.order_status || '-' };
+									const statusObj = StatusOptions.find(
+										(opt) =>
+											opt.value.toLowerCase() ===
+											(voucher.order_status || '').toLowerCase()
+									) || { color: 'gray', value: voucher.order_status || '-' };
 									return (
 										<Table.Row key={voucher.id}>
 											<Table.Cell>{idx + 1}</Table.Cell>
