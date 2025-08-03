@@ -51,7 +51,7 @@ export const UpdateQualificationEvaluatorsModal = ({ data, isLoading, isOpen, on
       title='Calificar examen'
       role='alertdialog'
       placement='center'
-      size='xs'
+      size='xl'
       hiddenFooter={false}
       onSave={() => 
         onSubmit?.({
@@ -75,11 +75,11 @@ export const UpdateQualificationEvaluatorsModal = ({ data, isLoading, isOpen, on
           <Field label='Tipo de evaluación:'>{data.type_application_display}</Field>
           <Field label='Estado:'>
             <Badge
-              bg={data.status_qualification_display === 'Completed' ? '#D0EDD0' : '#AEAEAE'}
-              color={data.status_qualification_display === 'Completed' ? '#2D9F2D' : '#F5F5F5'}
+              bg={data.status_qualification_display === 'Completado' ? '#D0EDD0' : '#AEAEAE'}
+              color={data.status_qualification_display === 'Completado' ? '#2D9F2D' : '#F5F5F5'}
               fontWeight='semibold'
             >
-              {data.status_qualification_display === 'Completed' ? 'Calificado' : 'Pendiente'}
+              {data.status_qualification_display === 'Completado' ? 'Calificado' : 'Pendiente'}
             </Badge>
           </Field>
           

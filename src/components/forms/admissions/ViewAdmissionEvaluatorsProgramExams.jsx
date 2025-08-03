@@ -28,7 +28,7 @@ export const ViewAdmissionEvaluatorsProgramExams = ({ item, isLoading, isOpen, o
                         <Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
                             <Table.ColumnHeader>N°</Table.ColumnHeader>
                             <Table.ColumnHeader minW='150px'>Fecha</Table.ColumnHeader>
-                            <Table.ColumnHeader minW='170px'>Examenes realizados</Table.ColumnHeader>
+                            <Table.ColumnHeader minW='170px'>Tipo de Evaluación</Table.ColumnHeader>
                             <Table.ColumnHeader minW='120px'>Estado</Table.ColumnHeader>
                             <Table.ColumnHeader>Calificación</Table.ColumnHeader>
                             <Table.ColumnHeader minW='200px'>Observaciones</Table.ColumnHeader>
@@ -45,11 +45,11 @@ export const ViewAdmissionEvaluatorsProgramExams = ({ item, isLoading, isOpen, o
                                     <Table.Cell>{evaluation.type_application_display}</Table.Cell>
                                     <Table.Cell>
                                         <Badge
-                                            bg={evaluation.status_qualification_display === 'Completed' ? '#D0EDD0' : '#AEAEAE'}
-                                            color={evaluation.status_qualification_display === 'Completed' ? '#2D9F2D' : '#F5F5F5'}
+                                            bg={evaluation.status_qualification_display === 'Completado' ? '#D0EDD0' : '#AEAEAE'}
+                                            color={evaluation.status_qualification_display === 'Completado' ? '#2D9F2D' : '#F5F5F5'}
                                             fontWeight='semibold'
                                         >
-                                            {evaluation.status_qualification_display === 'Completed' ? 'Calificado' : 'Pendiente'}
+                                            {evaluation.status_qualification_display === 'Completado' ? 'Calificado' : 'Pendiente'}
                                         </Badge>
                                     </Table.Cell>
                                     <Table.Cell>{evaluation.qualification ?? '-'}</Table.Cell>

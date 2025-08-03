@@ -60,7 +60,7 @@ export const ViewAdmissionProgramExams = ({ item }) => {
 							<Table.ColumnHeader>N°</Table.ColumnHeader>
 							<Table.ColumnHeader>Evaluador</Table.ColumnHeader>
 							<Table.ColumnHeader>Fecha</Table.ColumnHeader>
-							<Table.ColumnHeader>Tareas realizadas</Table.ColumnHeader>
+							<Table.ColumnHeader>Tipo de Evaluación</Table.ColumnHeader>
 							<Table.ColumnHeader>Calificación</Table.ColumnHeader>
 							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 						</Table.Row>
@@ -76,7 +76,7 @@ export const ViewAdmissionProgramExams = ({ item }) => {
 										<Table.Cell>{evaluation.start_date}</Table.Cell>
 										<Table.Cell>
 											{evaluation.type_application_display}
-											{evaluation.type_application === 1 &&
+											{evaluation.type_application === 2 &&
 												evaluation.path_url && (
 													<Box as='span' ml={2}>
 														<button

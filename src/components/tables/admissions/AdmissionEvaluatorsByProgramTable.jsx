@@ -13,7 +13,7 @@ import { FiCheckCircle, FiEdit2 } from 'react-icons/fi';
 
 const Row = memo(({ item, fetchData, isLoading, startIndex, index, data, sortConfig }) => {
     const hasEvaluations = item.evaluations && item.evaluations.length > 0;
-    const isEvaluated = hasEvaluations && item.evaluations.every((e) => e.status_qualification_display === 'Completed');
+    const isEvaluated = hasEvaluations && item.evaluations.every((e) => e.status_qualification_display === 'Completado');
     const averageScore = hasEvaluations ? (item.evaluations.reduce((sum, evalItem) => sum + parseFloat(evalItem.qualification || 0), 0) / item.evaluations.length).toFixed(2) : null;
 
     const [openModal, setOpenModal] = useState(null);
