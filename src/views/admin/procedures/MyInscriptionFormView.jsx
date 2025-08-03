@@ -167,7 +167,7 @@ export const MyInscriptionFormView = () => {
         {currentStep === 1 && (
           <Step01CourseList
             courses={coursesToEnroll?.available_courses}
-            mySelections={mySelections}
+            mySelections={mySelections?.selections}
             selectedCourse={selectedCourse}
             setSelectedCourse={setSelectedCourse}
             onRefreshSelections={handleRefreshSelections}
@@ -175,7 +175,7 @@ export const MyInscriptionFormView = () => {
         )}
 
         {currentStep === 2 && (
-          <Step02ShowSchedule selectedGroups={mySelections} />
+          <Step02ShowSchedule selectedGroups={mySelections?.selections} />
         )}
 
         {currentStep === 3 && (

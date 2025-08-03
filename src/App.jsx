@@ -64,8 +64,8 @@ import { FractionationsView } from './views/admin/debt_requests/FractionationsVi
 import { MyFractionationsView } from './views/admin/mypayments/MyFractionationsView';
 import { StudentsView } from './views/admin/student/StudentsView';
 import { StudentDetailView } from './views/admin/student/StudentDetailView';
-import { MyCoursesByEnrollement, MyEnrollmentsToViewCourses } from './views/admin/mycourses';
 import { MyEnrollmentProcessView, MyInscriptionFormView, MyProceduresView } from './views/admin/procedures';
+import { MyCoursesListByAcademicPeriodView, MyEvaluationsByCourseView } from './views/admin/mycourses';
 
 function App() {
 	return (
@@ -259,9 +259,9 @@ function App() {
                     <ProtectedRoute requiredPermission='enrollments.mycourses.view' />
                   }
                 >
-                  <Route index element={<MyEnrollmentsToViewCourses />} />
-                  <Route path='enrollment/:id'>
-                    <Route index element={<MyCoursesByEnrollement />} />
+                  <Route index element={<MyCoursesListByAcademicPeriodView />} />
+                  <Route path=':id'>
+                    <Route index element={<MyEvaluationsByCourseView />} />
                   </Route>
                 </Route>
               </Route>

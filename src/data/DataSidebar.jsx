@@ -89,12 +89,6 @@ export const useDataSidebar = () => {
       label: 'Mis cursos',
       permission: 'enrollments.mycourses.view'
     },
-		{
-			href: '/myenrollments',
-			icon: FiBookOpen,
-			label: 'Mis Matrículas',
-			permission: 'enrollments.myenrollments.view',
-		},
     {
       href: '/myprocedures',
       icon: FiAward,

@@ -15,8 +15,6 @@ export const Step01CourseList = ({
   setSelectedCourse,
   onRefreshSelections
 }) => {
-  console.log('cursos elegibles', courses);
-  console.log('selecciones', mySelections);
   const bgColor = useColorModeValue("white", "gray.800");
   
   const {
@@ -28,13 +26,65 @@ export const Step01CourseList = ({
     { enabled: !!selectedCourse }
   );
 
-  console.log('groups', courseGroups);
-  
+  // const groupWithLocalData = [
+  //   ...(Array.isArray(courseGroups) ? courseGroups : []),
+  //   {
+  //       id: 101,
+  //       group_code: "EX_1",
+  //       course_id: 1,
+  //       course_name: "Estructuras de Datos",
+  //       teacher_name: "Pedrizi",
+  //       capacity: 45,
+  //       enrolled_count: 1,
+  //       schedule_info: [
+  //           {
+  //             day: "Martes",
+  //             day_number: 2,
+  //             start_time: "08:00",
+  //             end_time: "12:00",
+  //             duration: "08:00 - 12:00"
+  //           }
+  //       ]
+  //   },
+  //   {
+  //       id: 102,
+  //       group_code: "EXA_2",
+  //       course_id: 1,
+  //       course_name: "Estructuras de Datos",
+  //       teacher_name: "Armandizi",
+  //       capacity: 45,
+  //       enrolled_count: 1,
+  //       schedule_info: [
+  //           {
+  //             day: "Miercoles",
+  //             day_number: 3,
+  //             start_time: "08:00",
+  //             end_time: "10:00",
+  //             duration: "08:00 - 10:00"
+  //           },
+  //           {
+  //             day: "Jueves",
+  //             day_number: 3,
+  //             start_time: "08:00",
+  //             end_time: "10:00",
+  //             duration: "08:00 - 10:00"
+  //           }
+  //       ]
+  //   }
+  // ];
+
   const { mutateAsync: createSelection, isPending: loadingGroupSelection } = useCreateCourseSelection();
   const { mutateAsync: removeSelection, isPending: loadingGroupRemoval } = useDeleteCourseSelection();
 
-  const isGroupSelected = (groupId) => {
-    return mySelections?.some(selection => selection.id === groupId) || false;
+  // Verificar si ya hay un grupo seleccionado de este curso (por course_name, no por group_code)
+  const isCourseAlreadySelected = (courseName) => {
+    return mySelections?.some(selection => selection.course_name === courseName) || false;
+  };
+
+  // Función auxiliar para convertir tiempo a minutos
+  const timeToMinutes = (timeString) => {
+    const [hours, minutes] = timeString.split(':').map(Number);
+    return hours * 60 + minutes;
   };
 
   const handleSelectGroup = async (groupId) => {
@@ -46,17 +96,26 @@ export const Step01CourseList = ({
         })
         onRefreshSelections()
       },
-      onError: () => {
+      onError: (error) => {
         toaster.create({
-          title: 'Error al añadir el grupo',
+          title: error ? error.message || 'Error al añadir el grupo' : 'Error al añadir el grupo',
           type: 'error',
         })
       }
     })
   };
 
-  const handleRemoveGroup = async (groupId) => {
-    await removeSelection(groupId, {
+  const handleRemoveGroup = async (groupName) => {
+    const selection = mySelections?.find(selection => selection.course_name === groupName);
+    if (!selection) {
+      toaster.create({
+        title: 'Grupo no encontrado en la selección',
+        type: 'error',
+      });
+      return;
+    }
+
+    await removeSelection(selection.id, {
       onSuccess: () => {
         toaster.create({
           title: 'Grupo eliminado de la matrícula',
@@ -64,9 +123,9 @@ export const Step01CourseList = ({
         })
         onRefreshSelections()
       },
-      onError: () => {
+      onError: (error) => {
         toaster.create({
-          title: 'Error al eliminar el grupo',
+          title: error ? error.message : 'Error al eliminar el grupo',
           type: 'error',
         })
       }
@@ -196,8 +255,49 @@ export const Step01CourseList = ({
             </Table.Header>
             <Table.Body>
               {courseGroups?.map((group) => {
-                const isSelected = isGroupSelected(group.id);
-                console.log(group);
+                // Verificar si este grupo específico está seleccionado
+                const isThisGroupSelected = mySelections?.some(selection => 
+                  selection.course_name === group.course_name && selection.group_code === group.group_code
+                ) || false;
+                
+                // Verificar si ya hay algún grupo de este curso seleccionado
+                const courseAlreadySelected = isCourseAlreadySelected(group.course_name);
+                
+                // Verificar conflictos de horario específicos para este grupo
+                const hasConflict = mySelections?.some(selection => {
+                  if (!selection.schedule || typeof selection.schedule === 'string') {
+                    return false;
+                  }
+                  if (!Array.isArray(selection.schedule)) {
+                    return false;
+                  }
+                  
+                  return group.schedule_info?.some(groupSlot => {
+                    return selection.schedule.some(selectionSlot => {
+                      if (groupSlot.day !== selectionSlot.day) {
+                        return false;
+                      }
+                      
+                      const groupStart = timeToMinutes(groupSlot.start_time);
+                      const groupEnd = timeToMinutes(groupSlot.end_time);
+                      const selectionStart = timeToMinutes(selectionSlot.start_time);
+                      const selectionEnd = timeToMinutes(selectionSlot.end_time);
+                      
+                      return (groupStart < selectionEnd && groupEnd > selectionStart);
+                    });
+                  });
+                }) || false;
+                
+                // Verificar si está lleno
+                const isGroupFull = group.enrolled_count >= group.capacity;
+                
+                // Determinar si el grupo debe estar deshabilitado
+                // Si este grupo específico está seleccionado, debe poder quitarse
+                // Si otro grupo del mismo curso está seleccionado, este debe estar deshabilitado
+                const isDisabled = isGroupFull || 
+                  (!isThisGroupSelected && courseAlreadySelected) || 
+                  (!isThisGroupSelected && hasConflict);
+                
                 return (
                   <Table.Row key={group.id} _hover={{ bg: "gray.50" }}>
                     <Table.Cell>
@@ -226,21 +326,33 @@ export const Step01CourseList = ({
                       </VStack>
                     </Table.Cell>
                     <Table.Cell>
-                      <Badge 
-                        colorScheme={group.enrolled_count < group.capacity ? "green" : "red"} 
-                        variant="subtle"
-                        size="sm"
-                      >
-                        {group.enrolled_count < group.capacity ? "Disponible" : "Lleno"}
-                      </Badge>
+                      <VStack align="start" spacing={1}>
+                        <Badge 
+                          colorScheme={group.enrolled_count < group.capacity ? "green" : "red"} 
+                          variant="subtle"
+                          size="sm"
+                        >
+                          {group.enrolled_count < group.capacity ? "Disponible" : "Lleno"}
+                        </Badge>
+                        {!isThisGroupSelected && courseAlreadySelected && (
+                          <Text fontSize="xs" color="orange.500">
+                            Ya tienes un grupo de este curso
+                          </Text>
+                        )}
+                        {!isThisGroupSelected && hasConflict && (
+                          <Text fontSize="xs" color="red.500">
+                            Conflicto de horario
+                          </Text>
+                        )}
+                      </VStack>
                     </Table.Cell>
                     <Table.Cell textAlign="right">
-                      {isSelected ? (
+                      {isThisGroupSelected ? (
                         <Button
                           bg="red"
                           size="sm"
                           leftIcon={<Icon as={FiX} />}
-                          onClick={() => handleRemoveGroup(group.id)}
+                          onClick={() => handleRemoveGroup(group.course_name)}
                           isLoading={loadingGroupRemoval === group.id}
                           isDisabled={loadingGroupRemoval === group.id}
                         >
@@ -248,13 +360,15 @@ export const Step01CourseList = ({
                         </Button>
                       ) : (
                         <Button
-                          bg="green"
+                          bg={isDisabled ? "gray.400" : "green"}
                           size="sm"
                           onClick={() => handleSelectGroup(group.id)}
                           isLoading={loadingGroupSelection === group.id}
-                          isDisabled={group.enrolled_count >= group.capacity}
+                          disabled={isDisabled}
                         >
-                          {group.enrolled_count >= group.capacity ? 'Lleno' : 'Seleccionar'}
+                          {isGroupFull ? 'Lleno' : 
+                           courseAlreadySelected ? 'Ya seleccionado' :
+                           hasConflict ? 'Cruce de horario' : 'Seleccionar'}
                         </Button>
                       )}
                     </Table.Cell>

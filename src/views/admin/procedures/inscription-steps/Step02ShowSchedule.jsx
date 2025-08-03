@@ -3,21 +3,10 @@ import { Box, Heading, Text, Grid } from "@chakra-ui/react"
 import { useColorModeValue } from "@/components/ui";
 
 export const Step02ShowSchedule = ({ selectedGroups }) => {
-  // Arrays de tiempo y días de la semana (igual que en ScheduleEnrollmentProgramsModal)
+  console.log(selectedGroups)
   const timeSlots = ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'];
   const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
   
-  // Mapeo de números de día a nombres (1 = Lunes, 2 = Martes, etc.)
-  const dayNumberToName = {
-    1: 'Lunes',
-    2: 'Martes', 
-    3: 'Miércoles',
-    4: 'Jueves',
-    5: 'Viernes',
-    6: 'Sábado'
-  };
-
-  // Color modes - llamados en el nivel superior del componente
   const headerBg = useColorModeValue('gray.50', 'gray.700');
   const courseBg = useColorModeValue('blue.100', 'blue.800');
   const courseBorderColor = useColorModeValue('blue.400', 'blue.300');
@@ -25,22 +14,39 @@ export const Step02ShowSchedule = ({ selectedGroups }) => {
   
   // Función para obtener cursos para un slot de tiempo específico
   const getCourseForTimeSlot = (day, time) => {
-    return selectedGroups.filter((course) => {
-      const courseDayName = dayNumberToName[course?.schedule?.day_of_week];
-      if (courseDayName !== day) return false;
+    const coursesInSlot = [];
+    
+    selectedGroups?.forEach((course) => {
+      // Verificar que el curso tenga horarios definidos
+      if (!course?.schedule || !Array.isArray(course.schedule) || course.schedule.length === 0) {
+        return; // Saltar cursos sin horarios
+      }
       
-      const courseStart = Number.parseInt(course?.schedule?.start_time.split(':')[0]);
-      const courseEnd = Number.parseInt(course?.schedule?.end_time.split(':')[0]);
-      const slotTime = Number.parseInt(time.split(':')[0]);
-      
-      return slotTime >= courseStart && slotTime < courseEnd;
+      // Verificar cada horario del curso
+      course.schedule.forEach((scheduleItem) => {
+        if (scheduleItem.day === day) {
+          const courseStart = Number.parseInt(scheduleItem.start_time.split(':')[0]);
+          const courseEnd = Number.parseInt(scheduleItem.end_time.split(':')[0]);
+          const slotTime = Number.parseInt(time.split(':')[0]);
+          
+          if (slotTime >= courseStart && slotTime < courseEnd) {
+            // Crear un objeto que incluya el horario específico
+            coursesInSlot.push({
+              ...course,
+              currentSchedule: scheduleItem
+            });
+          }
+        }
+      });
     });
+    
+    return coursesInSlot;
   };
 
   // Función para calcular la altura del curso
   const getCourseHeight = (course) => {
-    const start = Number.parseInt(course?.schedule?.start_time.split(':')[0]);
-    const end = Number.parseInt(course?.schedule?.end_time.split(':')[0]);
+    const start = Number.parseInt(course?.currentSchedule?.start_time?.split(':')[0]);
+    const end = Number.parseInt(course?.currentSchedule?.end_time?.split(':')[0]);
     return (end - start) * 48; // 48px por hora
   };
 
@@ -96,7 +102,7 @@ export const Step02ShowSchedule = ({ selectedGroups }) => {
                     borderColor='gray.50'
                   >
                     {courses.map((course, index) => {
-                      const isFirstSlotOfCourse = course.start_time.startsWith(
+                      const isFirstSlotOfCourse = course?.currentSchedule.start_time.startsWith(
                         time.split(':')[0]
                       );
                       if (!isFirstSlotOfCourse) return null;
@@ -107,7 +113,7 @@ export const Step02ShowSchedule = ({ selectedGroups }) => {
 
                       return (
                         <Box
-                          key={course.id}
+                          key={`${course.id}-${course.currentSchedule.day}-${course.currentSchedule.start_time}`}
                           position='absolute'
                           top={0}
                           left={left}
@@ -132,16 +138,16 @@ export const Step02ShowSchedule = ({ selectedGroups }) => {
                           }}
                         >
                           <Text fontWeight='medium' fontSize='xs' noOfLines={1}>
-                            {course.courseName}
+                            {course.course_name}
                           </Text>
                           <Text fontSize='xs' color='gray.600' noOfLines={1}>
-                            {course.course_group_code}
+                            {course.group_code}
                           </Text>
                           <Text fontSize='xs' color='gray.500' noOfLines={1}>
-                            {course.teacher}
+                            {course.teacher_name}
                           </Text>
                           <Text fontSize='xs' color='gray.500' noOfLines={1}>
-                            {course.start_time.slice(0, 5)} - {course.end_time.slice(0, 5)}
+                            {course?.currentSchedule?.start_time?.slice(0, 5)} - {course?.currentSchedule?.end_time?.slice(0, 5)}
                           </Text>
                         </Box>
                       );
