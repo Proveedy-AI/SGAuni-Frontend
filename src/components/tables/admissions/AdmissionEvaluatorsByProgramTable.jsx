@@ -186,7 +186,7 @@ export const AdmissionEvaluatorsByProgramTable = ({ data, fetchData, isLoading }
                     </Table.Header>
                     <Table.Body>
                         {isLoading ? (
-                            <SkeletonTable columns={6} />
+                            <SkeletonTable columns={5} />
                         ) : visibleRows?.length > 0 ? (
                             visibleRows.map((item, index) => (
                                 <Row
