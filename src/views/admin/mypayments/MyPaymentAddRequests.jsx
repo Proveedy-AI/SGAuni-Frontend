@@ -8,7 +8,7 @@ import {
 	useReadPaymentRules,
 	useReadProgramsbyId,
 } from '@/hooks';
-import { useReadEnrollmentsProgramsbyId } from '@/hooks/enrollments_programs/useReadEnrollmentsProgramsbyId';
+//import { useReadEnrollmentsProgramsbyId } from '@/hooks/enrollments_programs/useReadEnrollmentsProgramsbyId';
 import { useReadMethodPayment } from '@/hooks/method_payments';
 import { useCreatePaymentRequest } from '@/hooks/payment_requests';
 import { useReadGraduateUni } from '@/hooks/person/useReadGraduateUni';
@@ -69,10 +69,10 @@ export const MyPaymentAddRequests = () => {
 	const { data: MyEnrollment } = useReadMyEnrollments();
 	const { data: studentScholarships } = useReadMyBenefits();
 	const { data: globalDiscountsRaw } = useReadGraduateUni();
-	const { data: DataEnrollmentProgram } = useReadEnrollmentsProgramsbyId(
+	/*const { data: DataEnrollmentProgram } = useReadEnrollmentsProgramsbyId(
 		selectedProgram?.enrollment_program || null,
 		{}
-	);
+	);*/
 
 	useEffect(() => {
 		if (selectedDocumentType?.value === 1 && dataUser?.document_number) {
@@ -100,7 +100,9 @@ export const MyPaymentAddRequests = () => {
 
 	const validPurposeIds = [4, 5, 6];
 
-	const MyEnrollmentOptions = MyEnrollment?.map((item) => ({
+	const MyEnrollmentOptions = MyEnrollment?.filter(
+		(item) => item.is_current_enrollment
+	).map((item) => ({
 		value: item.id,
 		label: `${item.program_name} - ${item.program_period}`,
 		programId: item.program_id,
@@ -191,8 +193,11 @@ export const MyPaymentAddRequests = () => {
 		const matchesFirstEnrollment =
 			!rule.only_first_enrollment ||
 			(rule.only_first_enrollment && isFirstEnrollment);
+		const isNotExcluded = rule.payment_purpose !== 4;
 
-		return matchesProcess && matchesRole && matchesFirstEnrollment;
+		return (
+			matchesProcess && matchesRole && matchesFirstEnrollment && isNotExcluded
+		);
 	});
 
 	const PurposesOptions = filteredPurposes?.map((rule) => ({
@@ -311,10 +316,8 @@ export const MyPaymentAddRequests = () => {
 			return;
 		}
 
-		console.log('Regla actual:', currentRule);
 		// Si tiene monto fijo
 		if (currentRule?.amount_type == 1) {
-			console.log('Monto fijo:', currentRule.amount);
 			setAmountValue(currentRule?.amount);
 			setIsAmountReadOnly(true);
 			return;
@@ -324,9 +327,10 @@ export const MyPaymentAddRequests = () => {
 		if (currentRule.amount_type === 2) {
 			let credits = 0;
 
-			if (currentRule.use_credits_from === 1) {
+			/*if (currentRule.use_credits_from === 1) {
 				credits = parseFloat(DataEnrollmentProgram?.credits || '0');
-			} else if (currentRule.use_credits_from === 2) {
+			} else */
+			if (currentRule.use_credits_from === 2) {
 				credits = parseFloat(DataProgram?.total_program_credits || '0');
 			}
 
@@ -344,7 +348,7 @@ export const MyPaymentAddRequests = () => {
 	}, [
 		selectedPurpose?.value,
 		DataProgram,
-		DataEnrollmentProgram,
+		//DataEnrollmentProgram,
 		selectedProgram,
 		PaymentRules,
 	]);
@@ -557,7 +561,7 @@ export const MyPaymentAddRequests = () => {
 									/>
 								)}
 
-								{selectedPurpose?.value === 4 &&
+								{/*selectedPurpose?.value === 4 &&
 									DataEnrollmentProgram &&
 									DataProgram && (
 										<TuitionSummaryCard
@@ -568,7 +572,7 @@ export const MyPaymentAddRequests = () => {
 											setDiscountValue={setDiscountValue}
 											setDescription={setDescription}
 										/>
-									)}
+									)*/}
 
 								{selectedPurpose?.value === 5 &&
 									selectedProgram &&
@@ -578,7 +582,7 @@ export const MyPaymentAddRequests = () => {
 											credits={DataProgram.total_program_credits}
 											pricePerCredit={parseFloat(DataProgram.price_credit)}
 											discounts={discounts}
-											discountValue={discountValue}
+											setDiscountValue={setDiscountValue}
 											setDescription={setDescription}
 										/>
 									)}
