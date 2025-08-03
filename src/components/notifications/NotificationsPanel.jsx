@@ -13,7 +13,7 @@ import {
 	Text,
 	VStack,
 } from '@chakra-ui/react';
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FiBell, FiX } from 'react-icons/fi';
 import { BsCheck2All } from 'react-icons/bs';
@@ -25,14 +25,14 @@ import {
 import { useTimeDifference } from '@/hooks';
 import { useMarkAllReadNotifications } from '@/hooks/notifications/useMarkAllReadNotifications';
 
-export const NotificationsPanel = ({ dataUser }) => {
+export const NotificationsPanel = () => {
 	const [visibleCount, setVisibleCount] = useState(4);
 	const [toastData, setToastData] = useState({
 		open: false,
 		title: '',
 		message: '',
 	});
-	const socketRef = useRef(null);
+	//const socketRef = useRef(null);
 	const { data: notifications, refetch } = useReadMyNotifications(
 		{},
 		{ enabled: true }
@@ -41,8 +41,9 @@ export const NotificationsPanel = ({ dataUser }) => {
 	const { mutateAsync: markAllRead } = useMarkAllReadNotifications();
 
 	const handleMarkAllAsRead = async () => {
+		console.log('Marcar todas las notificaciones como leídas');
 		try {
-			await markAllRead();
+			await markAllRead({});
 			refetch();
 		} catch (error) {
 			console.error('Error marking all notifications as read:', error);
@@ -55,12 +56,13 @@ export const NotificationsPanel = ({ dataUser }) => {
 
 	const counter = useMemo(() => {
 		return (
-			notifications?.notifications?.filter((notification) => !notification.is_read)
-				.length || 0
+			notifications?.notifications?.filter(
+				(notification) => !notification.is_read
+			).length || 0
 		);
 	}, [notifications]);
 
-	useEffect(() => {
+	/*useEffect(() => {
 		const socketUrl = import.meta.env.VITE_WEBSOCKET_URL;
 
 		if (!dataUser?.id || !socketUrl) return;
@@ -103,8 +105,12 @@ export const NotificationsPanel = ({ dataUser }) => {
 			socketRef.current = null;
 		};
 	}, [dataUser?.id, refetch]);
+	*/
 
-	const visibleNotifications = notifications?.notifications?.slice(0, visibleCount);
+	const visibleNotifications = notifications?.notifications?.slice(
+		0,
+		visibleCount
+	);
 	const hasMore = visibleCount < notifications?.notifications?.length;
 
 	return (
@@ -149,7 +155,6 @@ export const NotificationsPanel = ({ dataUser }) => {
 									borderRadius={'md'}
 									onClick={handleMarkAllAsRead}
 								>
-									{' '}
 									<BsCheck2All />
 									<Text fontSize='xs'>Marcar todos</Text>
 								</Button>
