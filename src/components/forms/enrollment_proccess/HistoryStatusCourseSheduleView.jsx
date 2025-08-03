@@ -35,7 +35,7 @@ export const HistoryStatusCourseSheduleView = ({ data, statusMap }) => {
 		admissionReviews?.results?.filter((r) => r.status_display === 'Rechazado')
 			.length || 0;
 	const totalEvaluations =
-		admissionReviews?.results?.filter((review) => review.review_at !== null)
+		admissionReviews?.results?.filter((review) => review.reviewed_at !== null)
 			.length || 0;
 
 	return (

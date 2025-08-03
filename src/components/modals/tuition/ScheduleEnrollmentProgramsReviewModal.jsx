@@ -1190,7 +1190,9 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 
 	//const [selectedIds, setSelectedIds] = useState([]);
 	const allCourseSchedules =
-		dataCourseSchedule?.pages?.flatMap((page) => page.results) ?? [];
+		dataCourseSchedule?.pages?.flatMap((page) =>
+			page.results.filter((item) => item.status_review !== 1)
+		) ?? [];
 
 	const dayNames = [
 		'Domingo',
@@ -1227,18 +1229,14 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 
 	const sortedData = useSortedData(allCourseSchedules, sortConfig);
 
-	const {
-		currentPage,
-		visibleRows,
-		loadUntilPage,
-		setCurrentPage,
-	} = usePaginatedInfiniteData({
-		data: sortedData,
-		pageSize,
-		fetchNextPage,
-		hasNextPage,
-		isFetchingNextPage,
-	});
+	const { currentPage, visibleRows, loadUntilPage, setCurrentPage } =
+		usePaginatedInfiniteData({
+			data: sortedData,
+			pageSize,
+			fetchNextPage,
+			hasNextPage,
+			isFetchingNextPage,
+		});
 
 	/*const { mutate: createCourseReview, isPending: LoadingProgramsReview } =
 		useCreateCourseScheduleReview();
@@ -1486,7 +1484,7 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 									</Table.Cell>
 									<Table.Cell>
 										<SortableHeader
-											label='Código'
+											label='Grupo'
 											columnKey='course_group_code'
 											sortConfig={sortConfig}
 											onSort={setSortConfig}
