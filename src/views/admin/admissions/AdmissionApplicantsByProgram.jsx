@@ -129,7 +129,7 @@ export const AdmissionApplicantsMenu = ({ applicants, data }) => {
 };
 
 AdmissionApplicantsMenu.propTypes = {
-  dataProgram: PropTypes.object.isRequired,
+	dataProgram: PropTypes.object.isRequired,
 	applicants: PropTypes.array,
 	data: PropTypes.object,
 };
@@ -155,7 +155,9 @@ export const AdmissionApplicantsByProgram = () => {
 		isFetchingNextPage: isFetchingNextApplicants,
 		isLoading: isLoadingApplicants,
 		refetch: refetchApplicants,
-	} = useReadAdmissionApplicants();
+	} = useReadAdmissionApplicants({
+		admission_program: decrypted,
+	});
 
 	const allApplicants =
 		dataAdmissionApplicants?.pages?.flatMap((page) => page.results) ?? [];
@@ -227,7 +229,7 @@ export const AdmissionApplicantsByProgram = () => {
 							</Span>
 						</Box>
 						<AdmissionApplicantsMenu
-              dataProgram={dataProgram}
+							dataProgram={dataProgram}
 							applicants={allApplicants}
 							data={dataProgram}
 						/>
