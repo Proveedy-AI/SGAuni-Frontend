@@ -6,7 +6,7 @@ import {
 	Flex,
 	Heading,
 	Icon,
-	Input,
+	//Input,
 	List,
 	SimpleGrid,
 	Stack,
@@ -56,7 +56,7 @@ export const UpdateTuitionProgramsModal = ({
 		evalStart: '',
 		evalEnd: '',
 		semester_start_date: '',
-		semesterCredits: '',
+		//semesterCredits: '',
 	});
 
 	const ProgramsOptions = dataPrograms?.results?.map((department) => ({
@@ -74,7 +74,7 @@ export const UpdateTuitionProgramsModal = ({
 				evalStart: data.examen_start_date || '',
 				evalEnd: data.examen_end_date || '',
 				semester_start_date: data.semester_start_date || '',
-				semesterCredits: data.credits || '',
+				//semesterCredits: data.credits || '',
 			});
 		} else {
 			setFormData({
@@ -84,7 +84,7 @@ export const UpdateTuitionProgramsModal = ({
 				evalStart: '',
 				evalEnd: '',
 				semester_start_date: '',
-				semesterCredits: '',
+				//semesterCredits: '',
 			});
 		}
 	}, [open, data]);
@@ -156,9 +156,9 @@ export const UpdateTuitionProgramsModal = ({
 				'El semestre debe comenzar después del fin del período de examen';
 		}
 
-		if (!formData.semesterCredits) {
+		/*if (!formData.semesterCredits) {
 			newErrors.semesterCredits = 'Los créditos del semestre son requeridos';
-		}
+		}*/
 
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
@@ -186,7 +186,7 @@ export const UpdateTuitionProgramsModal = ({
 				examen_start_date: formData.evalStart,
 				examen_end_date: formData.evalEnd,
 				semester_start_date: formData.semester_start_date,
-				credits: formData.semesterCredits,
+				credits: formData.semesterCredits 	|| 1,
 			};
 
 			createEnrollmentsPrograms(payload, {
@@ -234,7 +234,7 @@ export const UpdateTuitionProgramsModal = ({
 				examen_start_date: formData.evalStart,
 				examen_end_date: formData.evalEnd,
 				semester_start_date: formData.semester_start_date,
-				credits: formData.semesterCredits,
+				credits: formData.semesterCredits 	|| 1,
 			};
 
 			updateEnrollmentsPrograms(
@@ -462,7 +462,7 @@ export const UpdateTuitionProgramsModal = ({
 								/>
 							</Field>
 						</Box>
-						<Box>
+						{/*<Box>
 							<Field
 								label='Creditos del semestre:'
 								invalid={!!errors.semesterCredits}
@@ -476,7 +476,7 @@ export const UpdateTuitionProgramsModal = ({
 									}
 								/>
 							</Field>
-						</Box>
+						</Box>*/}
 					</Card.Body>
 				</Card.Root>
 

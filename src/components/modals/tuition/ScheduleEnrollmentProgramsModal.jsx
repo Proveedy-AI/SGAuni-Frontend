@@ -1185,7 +1185,7 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 		isLoading: isLoadingCourseSchedule,
 		refetch: refetchCourseSchedule,
 	} = useReadCourseSchedule(
-		{ enrollment_period_program_course: data.id },
+		{ enrollment_period_program: data.id },
 		{ enabled: open }
 	);
 
