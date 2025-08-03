@@ -154,6 +154,7 @@ export const ApplicantsLayout = () => {
 							<Button
 								colorPalette='gray'
 								variant='ghost'
+								disabled={!isStepValid}
 								onClick={handleCompleteProcess}
 							>
 								Completar <FaChevronRight />
