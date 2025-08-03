@@ -62,7 +62,19 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 		if (!examEnd) newErrors.examEnd = 'Fecha de fin de examen es requerida';
 		if (!semesterStart)
 			newErrors.semesterStart = 'Fecha de inicio de semestre es requerida';
+		if (registrationStart && examStart) {
+			if (new Date(examStart) <= new Date(registrationEnd)) {
+				newErrors.examStart =
+					'La fecha de inicio del examen debe ser posterior al fin de inscripciones';
+			}
+		}
 
+		if (examEnd && semesterStart) {
+			if (new Date(semesterStart) <= new Date(examEnd)) {
+				newErrors.semesterStart =
+					'La fecha de inicio del semestre debe ser posterior al fin de evaluaciones';
+			}
+		}
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
 	};
