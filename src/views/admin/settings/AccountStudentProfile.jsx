@@ -111,7 +111,7 @@ export const AccountStudentProfile = () => {
 			is_uni_graduate: profile.is_uni_graduate,
 			uni_code: profile.uni_code || null,
 			has_disability: profile.has_disability,
-			type_disability: profile.type_disability,
+			type_disability: profile.type_disability?.value || null,
 			other_disability: profile.other_disability,
 			license_number: profile.license_number,
 			orcid_code: profile.orcid_code,
