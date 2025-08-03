@@ -37,6 +37,7 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
                     : startIndex + index + 1}
             </Table.Cell>
             <Table.Cell>{item.admission_process_name}</Table.Cell>
+             <Table.Cell>{item.admission_program_name}</Table.Cell>
             <Table.Cell>{item.role_display}</Table.Cell>
         </Table.Row>
     )
@@ -82,12 +83,13 @@ export const AdmissionEvaluatorsTable = ({ data, fetchData, isLoading }) => {
                                 />
                             </Table.ColumnHeader>
                             <Table.ColumnHeader minW={'200px'}>Proceso de Admisión</Table.ColumnHeader>
+                            <Table.ColumnHeader minW={'200px'}>Programa de Admisión</Table.ColumnHeader>
                             <Table.ColumnHeader minW={'200px'}>Tipo de Evaluación</Table.ColumnHeader>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
                         {isLoading ? (
-                            <SkeletonTable columns={3} />
+                            <SkeletonTable columns={4} />
                         ) : visibleRows?.length > 0 ? (
                             visibleRows.map((item, index) => (
                                 <Row
@@ -102,7 +104,7 @@ export const AdmissionEvaluatorsTable = ({ data, fetchData, isLoading }) => {
                             ))
                         ) : (
                             <Table.Row>
-                                <Table.Cell colSpan={3} textAlign='center' py={2}>
+                                <Table.Cell colSpan={4} textAlign='center' py={2}>
                                     No hay datos disponibles.
                                 </Table.Cell>
                             </Table.Row>
