@@ -70,9 +70,10 @@ const Row = memo(
 				},
 			});
 		};
+
 		const statusMap = {
 			Borrador: { label: 'Borrador', color: 'gray' },
-			Pendiente: { label: 'Pendiente', color: 'orange.500' },
+			"En revision": { label: 'En revisión', color: 'orange.500' },
 			Aprobado: { label: 'Aprobado', color: 'green' },
 			Rechazado: { label: 'Rechazado', color: 'red' },
 		};
