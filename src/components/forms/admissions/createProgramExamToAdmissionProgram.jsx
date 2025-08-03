@@ -107,7 +107,6 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 			!startDateExamInput ||
 			!timeExamInput ||
 			!endDateExamInput ||
-			!evaluatorInput ||
 			!applicationTypeInput
 		) {
 			toaster.create({
@@ -290,7 +289,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 							gap={4}
 							mb={4}
 						>
-							<Field label='Fecha de inicio:' w='full'>
+							<Field label='Fecha de inicio:' w='full' required>
 								<CustomDatePicker
 									selectedDate={startDateExamInput}
 									onDateChange={(date) =>
@@ -303,7 +302,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 								/>
 							</Field>
 
-							<Field label='Fecha de fin:' w='full'>
+							<Field label='Fecha de fin:' w='full' required>
 								<CustomDatePicker
 									selectedDate={endDateExamInput}
 									onDateChange={(date) =>
@@ -316,7 +315,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 								/>
 							</Field>
 
-							<Field label='Hora:' w='full'>
+							<Field label='Hora:' w='full' required>
 								<Input
 									type='time'
 									value={timeExamInput}
@@ -331,7 +330,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 							mb={6}
 							gap={4}
 						>
-							<Field label='Tipo de Examen' w='full'>
+							<Field label='Tipo de Examen' w='full' required>
 								<ReactSelect
 									value={applicationTypeInput}
 									options={filteredApplicationTypeOptions}
@@ -345,7 +344,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 								/>
 							</Field>
 
-							<Field label='Evaluador:' w='full'>
+							<Field label='Evaluador: (Opcional)' w='full'>
 								<ReactSelect
 									value={evaluatorInput}
 									options={evaluatorOptions}
@@ -361,10 +360,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 								bg='green'
 								p={4}
 								disabled={
-									!startDateExamInput ||
-									!timeExamInput ||
-									!evaluatorInput ||
-									!applicationTypeInput
+									!startDateExamInput || !timeExamInput || !applicationTypeInput
 								}
 								onClick={handleSubmit}
 								loading={isCreateEvaluationPending || isEditEvaluationPending}
@@ -440,7 +436,9 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 									filteredEvaluationsByStudent.map((exam, index) => (
 										<Table.Row key={exam.id}>
 											<Table.Cell>{index + 1}</Table.Cell>
-											<Table.Cell>{exam.evaluator_full_name}</Table.Cell>
+											<Table.Cell>
+												{exam.evaluator_full_name || ' - '}
+											</Table.Cell>
 											<Table.Cell>{exam.type_application_display}</Table.Cell>
 											<Table.Cell>{exam.start_date}</Table.Cell>
 											<Table.Cell>{exam.end_date}</Table.Cell>
