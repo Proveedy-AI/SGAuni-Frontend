@@ -136,7 +136,7 @@ export const useDataSidebar = () => {
 		{
 			href: '/courses-schedules',
 			icon: FiBookOpen,
-			label: 'Cursos y Horarios',
+			label: 'Cursos',
 			permission: 'courses.schedules.view',
 		},
 		{
