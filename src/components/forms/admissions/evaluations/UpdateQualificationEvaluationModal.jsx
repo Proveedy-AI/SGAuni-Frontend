@@ -133,7 +133,6 @@ export const UpdateQualificationEvaluationModal = ({ data, fetchData }) => {
 			bg: 'red.50',
 		};
 	};
-	console.log(data);
 
 	const typeInfo = getEvaluationTypeInfo(data.type_application);
 	const TypeIcon = typeInfo.icon;
@@ -167,7 +166,6 @@ export const UpdateQualificationEvaluationModal = ({ data, fetchData }) => {
 			onOpenChange={(e) => setOpen(e.open)}
 			size='4xl'
 			loading={isSaving}
-			disabledSave={data.status_qualification === 3}
 			onSave={handleUpdateQualification}
 		>
 			<Stack
