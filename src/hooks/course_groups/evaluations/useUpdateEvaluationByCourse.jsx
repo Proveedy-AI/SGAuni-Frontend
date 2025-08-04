@@ -6,7 +6,7 @@ export const useUpdateEvaluationByCourse = () => {
 
   return useMutation({
     mutationFn: async ({ id, payload }) => {
-      const res = await axiosPrivate.patch(`/api/v1/evaluations-components/${id}/`, payload);
+      const res = await axiosPrivate.patch(`/api/v1/evaluation-components/${id}/`, payload);
       return res.data;
     },
   });

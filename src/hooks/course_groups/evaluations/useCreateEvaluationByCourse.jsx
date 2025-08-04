@@ -5,7 +5,7 @@ export const useCreateEvaluationByCourse = () => {
 
   return useMutation({
     mutationFn: async (payload) => {
-      const res = await axiosPrivate.post('/api/v1/evaluations-components/', payload);
+      const res = await axiosPrivate.post('/api/v1/evaluation-components/', payload);
       return res.data;
     },
   });

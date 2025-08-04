@@ -23,6 +23,7 @@ import { Button, Field } from '@/components/ui';
 import { FiBook, FiTrash, FiUpload, FiUsers } from 'react-icons/fi';
 import { ConfigurateCalificationCourseModal } from '@/components/modals/myclasses/ConfigurateCalificationCourseModal';
 import { MdGroup, MdPerson } from 'react-icons/md';
+import { useReadEvaluationsComponents } from '@/hooks/evaluation_components';
 
 export const ClassMyEstudentsByCourseView = () => {
 	const { courseId } = useParams();
@@ -31,8 +32,17 @@ export const ClassMyEstudentsByCourseView = () => {
 
 	const {
 		data: dataCourseGroup,
-		//isLoading: loadingCourseGroup,
+		isLoading: loadingCourseGroup,
 	} = useReadCourseGroupById(decrypted, {});
+
+  const {
+    data: dataEvaluationComponents,
+    refetch: refetchEvaluationComponents,
+  } = useReadEvaluationsComponents();
+
+  const filteredByCourseGroup = dataEvaluationComponents?.results?.filter(
+    (component) => component.course_group === dataCourseGroup?.id
+  );
 
 	// simular campos evaluations y has_configured de courseGroup
 	const evaluations = [
@@ -69,54 +79,55 @@ export const ClassMyEstudentsByCourseView = () => {
 			updatedAt: '2025-10-01T00:00:00.000Z',
 		},
 	];
-	const has_configured = true;
-	const mode_calification = 2; // null: sin configuración ,1: Porcentaje, 2: Promedio simple, 3: Conceptual
+	
+  const has_configured = filteredByCourseGroup?.length > 0;
+  // null: sin configuración ,1: Porcentaje, 2: Promedio simple, 3: Conceptual
+	const mode_calification = has_configured ? 1 : filteredByCourseGroup?.[0]?.mode_calification || 1;
 
 	const { data: studentsData, isLoading: loadingStudents } =
 		useReadStudentsByCourseId(decrypted, {});
 
-	console.log(studentsData);
-	const dataStudentsLocal = {
-		results: [
-			{
-				id: 1,
-				uuid: '4fa85f64-5717-4562-b3fc-2c963f66afa7',
-				student_name: 'Juan Pérez',
-				qualification_status: 1, // En Curso
-				califications: [],
-				average: 0.0,
-			},
-			{
-				id: 2,
-				uuid: '5fa85f64-5717-4562-b3fc-2c963f66afa8',
-				student_name: 'María Gómez',
-				qualification_status: 2, // No calificado
-				califications: [],
-				average: 7.9,
-			},
-			{
-				id: 3,
-				uuid: '6fa85f64-5717-4562-b3fc-2c963f66afa9',
-				student_name: 'Carlos Ruiz',
-				qualification_status: 3, // Calificado
-				califications: [],
-				average: 9.2,
-			},
-			{
-				id: 4,
-				uuid: '7fa85f64-5717-4562-b3fc-2c963f66afaa',
-				student_name: 'Ana Torres',
-				qualification_status: 1, // En Curso
-				califications: [],
-				average: 0.0,
-			},
-		],
-	};
+	// const dataStudentsLocal = {
+	// 	results: [
+	// 		{
+	// 			id: 1,
+	// 			uuid: '4fa85f64-5717-4562-b3fc-2c963f66afa7',
+	// 			student_name: 'Juan Pérez',
+	// 			qualification_status: 1, // En Curso
+	// 			califications: [],
+	// 			average: 0.0,
+	// 		},
+	// 		{
+	// 			id: 2,
+	// 			uuid: '5fa85f64-5717-4562-b3fc-2c963f66afa8',
+	// 			student_name: 'María Gómez',
+	// 			qualification_status: 2, // No calificado
+	// 			califications: [],
+	// 			average: 7.9,
+	// 		},
+	// 		{
+	// 			id: 3,
+	// 			uuid: '6fa85f64-5717-4562-b3fc-2c963f66afa9',
+	// 			student_name: 'Carlos Ruiz',
+	// 			qualification_status: 3, // Calificado
+	// 			califications: [],
+	// 			average: 9.2,
+	// 		},
+	// 		{
+	// 			id: 4,
+	// 			uuid: '7fa85f64-5717-4562-b3fc-2c963f66afaa',
+	// 			student_name: 'Ana Torres',
+	// 			qualification_status: 1, // En Curso
+	// 			califications: [],
+	// 			average: 0.0,
+	// 		},
+	// 	],
+	// };
 
 	const [filteredName, setFilteredName] = useState('');
 	const [selectedStatus, setSelectedStatus] = useState(null);
 
-	const filteredStudents = dataStudentsLocal.results.filter((student) => {
+	const filteredStudents = studentsData?.students?.filter((student) => {
 		const matchesName = student.student_name
 			.toLowerCase()
 			.includes(filteredName.toLowerCase());
@@ -154,11 +165,11 @@ export const ClassMyEstudentsByCourseView = () => {
 				<Card.Header>
 					<Flex align='center' gap={2}>
 						<Icon as={FiBook} boxSize={5} color='blue.600' />
-						<Heading fontSize='24px'>{dataCourseGroup?.course_name}</Heading>
+						<Heading fontSize='24px'>{loadingCourseGroup ? 'Cargando...' : dataCourseGroup?.course_name}</Heading>
 					</Flex>
 					<Text fontSize='sm' color='gray.500'>
-						Código: {dataCourseGroup?.course_code} | Grupo:{' '}
-						{dataCourseGroup?.group_code}
+						Código: {loadingCourseGroup ? 'Cargando...' : dataCourseGroup?.course_code} | Grupo:{' '}
+						{loadingCourseGroup ? 'Cargando...' : dataCourseGroup?.group_code}
 					</Text>
 				</Card.Header>
 				<Card.Body px={4} py={3}>
@@ -168,7 +179,7 @@ export const ClassMyEstudentsByCourseView = () => {
 							<Text fontWeight='medium' color='gray.700'>
 								Docente:
 								<Text as='span' fontWeight='semibold' ml={1}>
-									{dataCourseGroup?.teacher_name || '—'}
+									{loadingCourseGroup ? 'Cargando...' :  dataCourseGroup?.teacher_name || '—'}
 								</Text>
 							</Text>
 						</Flex>
@@ -178,7 +189,7 @@ export const ClassMyEstudentsByCourseView = () => {
 							<Text fontWeight='medium' color='gray.700'>
 								Capacidad:
 								<Text as='span' fontWeight='semibold' ml={1}>
-									{dataCourseGroup?.capacity ?? '—'}
+									{loadingCourseGroup ? 'Cargando...' : dataCourseGroup?.capacity ?? '—'}
 								</Text>
 							</Text>
 						</Flex>
@@ -262,7 +273,9 @@ export const ClassMyEstudentsByCourseView = () => {
 							</IconButton>
 
 							<ConfigurateCalificationCourseModal
-								evaluations={evaluations}
+                fetchData={refetchEvaluationComponents}
+                courseGroup={dataCourseGroup}
+								evaluationComponents={filteredByCourseGroup}
 								mode_calification={mode_calification}
 							/>
 						</SimpleGrid>

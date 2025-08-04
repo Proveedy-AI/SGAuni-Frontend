@@ -6,7 +6,7 @@ export const useDeleteEvaluationByCourse = () => {
 
   return useMutation({
     mutationFn: async (id) => {
-      const res = await axiosPrivate.delete(`/api/v1/evaluations-components/${id}/`);
+      const res = await axiosPrivate.delete(`/api/v1/evaluation-components/${id}/`);
       return res.data;
     },
   });
