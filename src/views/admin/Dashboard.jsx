@@ -14,8 +14,13 @@ export const Dashboard = () => {
 		);
 	}
 
-	const userPermissions =
-		profile.roles?.[0]?.permissions?.map((perm) => perm.guard_name) || [];
+	const userPermissions = [
+		...new Set(
+			profile.roles?.flatMap((role) =>
+				role.permissions.map((perm) => perm.guard_name)
+			) ?? []
+		),
+	];
 
 	const allowedDashboards = dashboardsByPermission
 		.filter(({ permission }) => userPermissions.includes(permission))
@@ -25,7 +30,7 @@ export const Dashboard = () => {
 				{/* Ejecutamos la función, así solo se instancia si hay permiso */}
 			</Box>
 		));
-
+	console.log(profile);
 	return (
 		<Flex direction='column' px='0' w='full'>
 			<Box py='8' px='0' w='full'>

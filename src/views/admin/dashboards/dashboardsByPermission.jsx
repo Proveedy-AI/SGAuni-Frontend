@@ -14,14 +14,14 @@ export const dashboardsByPermission = [
 		component: () => <CoordinatorDashboard />,
 	},
 	{
+		permission: 'dashboard.student.view',
+		component: () => <StudentDashboard />,
+	},
+	{
 		permission: 'dashboard.applicant.view',
 		component: () => <ApplicantDashboard />,
 	},
 
-	{
-		permission: 'dashboard.student.view',
-		component: () => <StudentDashboard />,
-	},
 	{
 		permission: 'dashboard.debt.view',
 		component: () => <DebtDashboard />,

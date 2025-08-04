@@ -52,11 +52,15 @@ export const StudentDashboard = () => {
 			verified_at: '2024-01-15T10:30:00Z',
 		},
 	];*/
-
-	const activeEnrollments =
-		dataMyEnrollments?.filter((enrollment) => enrollment.status === 1) || [];
-	const firstTimeEnrollments =
+	const currentEnrollments =
 		dataMyEnrollments?.filter(
+			(enrollment) => enrollment.is_current_enrollment === true
+		) || [];
+	const activeEnrollments =
+		currentEnrollments?.filter((enrollment) => enrollment.status === 1) || [];
+
+	const firstTimeEnrollments =
+		currentEnrollments?.filter(
 			(enrollment) => enrollment.is_first_enrollment === true
 		) || [];
 	const navigate = useNavigate();
