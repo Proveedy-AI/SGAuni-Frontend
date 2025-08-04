@@ -41,7 +41,6 @@ export const NotificationsPanel = () => {
 	const { mutateAsync: markAllRead } = useMarkAllReadNotifications();
 
 	const handleMarkAllAsRead = async () => {
-		console.log('Marcar todas las notificaciones como leídas');
 		try {
 			await markAllRead({});
 			refetch();

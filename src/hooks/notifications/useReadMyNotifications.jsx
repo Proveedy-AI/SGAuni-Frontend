@@ -13,6 +13,7 @@ export const useReadMyNotifications = (params = {}, options = {}) => {
 			);
 			return res.data;
 		},
+		refetchInterval: 60000, // 👈 vuelve a consultar cada 1 minuto
 		...options,
 	});
 };
