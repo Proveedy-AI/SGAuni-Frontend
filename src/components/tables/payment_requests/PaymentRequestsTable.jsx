@@ -61,7 +61,13 @@ const Row = memo(
 				<Table.Cell>{item.purpose_display}</Table.Cell>
 				<Table.Cell>{item.num_document}</Table.Cell>
 				<Table.Cell>{item.payment_method_display}</Table.Cell>
-				<Table.Cell>{item.admission_process_program_name || item.enrollment_process_program_name}</Table.Cell>
+				<Table.Cell>
+					{item.admission_process_program_name ||
+						item.enrollment_process_program_name}
+				</Table.Cell>
+				<Table.Cell>
+					{item.admission_process_name || item.enrollment_process_name}
+				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					<Badge
 						bg={statusDisplay.find((status) => status.id === item.status)?.bg}
@@ -153,7 +159,7 @@ export const PaymentRequestsTable = ({
 							<Table.ColumnHeader alignContent={'start'}>
 								<SortableHeader
 									label='Fecha de Solicitud'
-									columnKey='due_date'
+									columnKey='requested_at'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
@@ -161,7 +167,7 @@ export const PaymentRequestsTable = ({
 							<Table.ColumnHeader alignContent={'start'}>
 								<SortableHeader
 									label='Propósito de pago'
-									columnKey='payment_order_name'
+									columnKey='purpose_display'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
@@ -169,7 +175,7 @@ export const PaymentRequestsTable = ({
 							<Table.ColumnHeader alignContent={'start'}>
 								<SortableHeader
 									label='Documento'
-									columnKey='document_num'
+									columnKey='num_document'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
@@ -185,7 +191,15 @@ export const PaymentRequestsTable = ({
 							<Table.ColumnHeader alignContent={'start'}>
 								<SortableHeader
 									label='Programa'
-									columnKey='payment_order_name'
+									columnKey='admission_process_program_name'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader alignContent={'start'}>
+								<SortableHeader
+									label='Proceso'
+									columnKey='admission_process_name'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
