@@ -899,7 +899,7 @@ export const StudentDetailView = () => {
 							</Card.Header>
 
 							<Card.Body>
-								{dataDocuments.results.length === 0 ? (
+								{dataDocuments?.results?.length === 0 ? (
 									<Box
 										colSpan={{ base: 1, md: 2 }}
 										p={6}
@@ -912,7 +912,7 @@ export const StudentDetailView = () => {
 									</Box>
 								) : (
 									<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-										{dataDocuments.results.map((doc) => (
+										{dataDocuments?.results?.map((doc) => (
 											<DocumentCard
 												key={doc.id}
 												doc={doc}
