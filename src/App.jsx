@@ -64,8 +64,15 @@ import { FractionationsView } from './views/admin/debt_requests/FractionationsVi
 import { MyFractionationsView } from './views/admin/mypayments/MyFractionationsView';
 import { StudentsView } from './views/admin/student/StudentsView';
 import { StudentDetailView } from './views/admin/student/StudentDetailView';
-import { MyEnrollmentProcessView, MyInscriptionFormView, MyProceduresView } from './views/admin/procedures';
-import { MyCoursesListByAcademicPeriodView, MyEvaluationsByCourseView } from './views/admin/mycourses';
+import {
+	MyEnrollmentProcessView,
+	MyInscriptionFormView,
+	MyProceduresView,
+} from './views/admin/procedures';
+import {
+	MyCoursesListByAcademicPeriodView,
+	MyEvaluationsByCourseView,
+} from './views/admin/mycourses';
 
 function App() {
 	return (
@@ -253,18 +260,21 @@ function App() {
 								</Route>
 							</Route>
 
-              <Route path='mycourses'>
-                <Route
-                  element={
-                    <ProtectedRoute requiredPermission='enrollments.mycourses.view' />
-                  }
-                >
-                  <Route index element={<MyCoursesListByAcademicPeriodView />} />
-                  <Route path=':id'>
-                    <Route index element={<MyEvaluationsByCourseView />} />
-                  </Route>
-                </Route>
-              </Route>
+							<Route path='mycourses'>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='enrollments.mycourses.view' />
+									}
+								>
+									<Route
+										index
+										element={<MyCoursesListByAcademicPeriodView />}
+									/>
+									<Route path=':id'>
+										<Route index element={<MyEvaluationsByCourseView />} />
+									</Route>
+								</Route>
+							</Route>
 
 							{/* ---------------------------- PERSON ROUTES ---------------------------- */}
 
@@ -278,24 +288,21 @@ function App() {
 								</Route>
 							</Route>
 
-              {/* ---------------------------- PROCEDURES STUDENT ---------------------------- */}
+							{/* ---------------------------- PROCEDURES STUDENT ---------------------------- */}
 
-              <Route path='myprocedures'>
-                <Route
-                  element={
-                    <ProtectedRoute requiredPermission='procedures.myprocedures.view' />
-                  }
-                >
-                  <Route index element={<MyProceduresView />} />
-                  <Route path='enrollment-process'>
-                    <Route index element={<MyEnrollmentProcessView />} />
-                    <Route
-                      path=':id'
-                      element={<MyInscriptionFormView />}
-                    />
-                  </Route>
-                </Route>
-              </Route>
+							<Route path='myprocedures'>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='procedures.myprocedures.view' />
+									}
+								>
+									<Route index element={<MyProceduresView />} />
+									<Route path='enrollment-process'>
+										<Route index element={<MyEnrollmentProcessView />} />
+										<Route path=':id' element={<MyInscriptionFormView />} />
+									</Route>
+								</Route>
+							</Route>
 
 							<Route path='myclasses' element={<MyClassesLayout />}>
 								<Route
