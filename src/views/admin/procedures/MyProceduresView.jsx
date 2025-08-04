@@ -11,7 +11,7 @@ import {
 } from "react-icons/fi";
 import { useNavigate } from "react-router";
 import PropTypes from "prop-types";
-import { useColorModeValue } from "@/components/ui";
+import { toaster, useColorModeValue } from "@/components/ui";
 import { Box, Card, Flex, Heading, Icon, SimpleGrid, Text } from "@chakra-ui/react";
 
 const ProcedureCard = ({ procedure, onClick }) => {
@@ -99,62 +99,79 @@ export const MyProceduresView = () => {
     label: "Proceso de matrícula",
     href: "/myprocedures/enrollment-process",
     icon: FiFileText,
-    description: "Gestiona tu proceso de matrícula académica"
+    description: "Gestiona tu proceso de matrícula académica",
+    isActive: true,
   },
   {
     id: 2,
     label: "Constancia de matrícula",
     href: "/myprocedures/enrollment-certificate",
     icon: FiCheckCircle,
-    description: "Solicita tu constancia de matrícula"
+    description: "Solicita tu constancia de matrícula",
+    isActive: false,
   },
   {
     id: 3,
     label: "Constancia de ingreso",
     href: "/myprocedures/admission-certificate",
     icon: FiLogIn,
-    description: "Obtén tu constancia de ingreso"
+    description: "Obtén tu constancia de ingreso",
+    isActive: false,
   },
   {
     id: 4,
     label: "Retiro de curso",
     href: "/myprocedures/course-withdrawal",
     icon: FiBook,
-    description: "Solicita el retiro de un curso"
+    description: "Solicita el retiro de un curso",
+    isActive: false,
   },
   {
     id: 5,
     label: "Constancia de promedio ponderado",
     href: "/myprocedures/gpa-certificate",
     icon: FiTrendingUp,
-    description: "Constancia de tu promedio académico"
+    description: "Constancia de tu promedio académico",
+    isActive: false,
   },
   {
     id: 6,
     label: "Constancia de no adeudo",
     href: "/myprocedures/no-debt-certificate",
     icon: FiCreditCard,
-    description: "Certificado de no tener deudas pendientes"
+    description: "Certificado de no tener deudas pendientes",
+    isActive: false,
   },
   {
     id: 7,
     label: "Postergar matrícula",
     href: "/myprocedures/postpone-enrollment",
     icon: FiUserX,
-    description: "Solicita postergar tu matrícula"
+    description: "Solicita postergar tu matrícula",
+    isActive: false,
   },
   {
     id: 8,
     label: "Proceso de Tesis y Sustentación",
     href: "/myprocedures/thesis-process",
     icon: FiAward,
-    description: "Gestiona tu proceso de tesis"
+    description: "Gestiona tu proceso de tesis",
+    isActive: false,
   }
 ];
 
   const handleProcedureClick = (procedure) => {
     console.log("Navegando a:", procedure.href);
-    navigate(procedure.href);
+    if (procedure.isActive) {
+      navigate(procedure.href);
+    }
+    else {
+      toaster.create({
+        title: "Función en desarrollo",
+        description: "Esta función aún no está disponible.",
+        type: "warning",
+      });
+    }
   };
 
   return (
