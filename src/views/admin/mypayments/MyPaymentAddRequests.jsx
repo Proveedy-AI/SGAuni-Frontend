@@ -4,6 +4,7 @@ import { Alert, Button, Checkbox, Field, toaster } from '@/components/ui';
 import {
 	useReadMyApplicants,
 	useReadMyBenefits,
+	useReadMyCredits,
 	useReadMyEnrollments,
 	useReadPaymentRules,
 	useReadProgramsbyId,
@@ -69,6 +70,7 @@ export const MyPaymentAddRequests = () => {
 	const { data: MyEnrollment } = useReadMyEnrollments();
 	const { data: studentScholarships } = useReadMyBenefits();
 	const { data: globalDiscountsRaw } = useReadGraduateUni();
+	const { data: MyCredits } = useReadMyCredits();
 	/*const { data: DataEnrollmentProgram } = useReadEnrollmentsProgramsbyId(
 		selectedProgram?.enrollment_program || null,
 		{}
@@ -100,9 +102,7 @@ export const MyPaymentAddRequests = () => {
 
 	const validPurposeIds = [4, 5, 6];
 
-	const MyEnrollmentOptions = MyEnrollment?.filter(
-		(item) => item.is_current_enrollment
-	).map((item) => ({
+	const MyEnrollmentOptions = MyEnrollment?.map((item) => ({
 		value: item.id,
 		label: `${item.program_name} - ${item.program_period}`,
 		programId: item.program_id,
@@ -163,7 +163,7 @@ export const MyPaymentAddRequests = () => {
 					.map((s) => ({
 						id: `scholarship-${s.id}`,
 						label: s.label,
-						percentage: s.percentage,
+						percentage: s.percentage * 100,
 					}))
 			: []),
 
@@ -254,6 +254,8 @@ export const MyPaymentAddRequests = () => {
 						description: description,
 						accept_terms: acceptTerms,
 						discount_value: discountValue || '',
+						//amount_credits_total:
+						//	selectedPurpose?.value === 5 ? MyCredits?.total_credits : '',
 					};
 
 		paymentRequests(payload, {
@@ -331,7 +333,7 @@ export const MyPaymentAddRequests = () => {
 				credits = parseFloat(DataEnrollmentProgram?.credits || '0');
 			} else */
 			if (currentRule.use_credits_from === 2) {
-				credits = parseFloat(DataProgram?.total_program_credits || '0');
+				credits = parseFloat(MyCredits?.total_credits || '0');
 			}
 
 			const baseAmount = credits * priceCredit;
@@ -348,6 +350,7 @@ export const MyPaymentAddRequests = () => {
 	}, [
 		selectedPurpose?.value,
 		DataProgram,
+		MyCredits,
 		//DataEnrollmentProgram,
 		selectedProgram,
 		PaymentRules,
@@ -579,7 +582,7 @@ export const MyPaymentAddRequests = () => {
 									DataProgram && (
 										<TuitionSummaryCard
 											title='Cálculo de Matrícula'
-											credits={DataProgram.total_program_credits}
+											credits={MyCredits?.total_credits}
 											pricePerCredit={parseFloat(DataProgram.price_credit)}
 											discounts={discounts}
 											setDiscountValue={setDiscountValue}

@@ -11,4 +11,4 @@ export * from './useReadMyEnrolledCourses';
 export * from './useReadMyRequestBenefits';
 export * from './useReadCoursesToEnroll';
 export * from './useReadMyBenefits';
-
+export * from './useReadMyCredits';
