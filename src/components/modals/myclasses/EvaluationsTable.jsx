@@ -24,7 +24,7 @@ const Row = memo(({ evaluation, index, currentQualificationType, onEdit, onDelet
           <Group>
             <Button
               size="xs"
-              colorScheme="blue"
+              bg="blue.500"
               onClick={() => onEdit(evaluation)}
               leftIcon={<FiEdit2 />}
             >
@@ -32,7 +32,7 @@ const Row = memo(({ evaluation, index, currentQualificationType, onEdit, onDelet
             </Button>
             <Button
               size="xs"
-              colorScheme="red"
+              bg="red"
               onClick={() => onDelete(evaluation.id)}
               leftIcon={<FiTrash2 />}
               isLoading={isRemoving}
