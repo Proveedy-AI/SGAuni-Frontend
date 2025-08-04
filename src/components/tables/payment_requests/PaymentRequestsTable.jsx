@@ -47,7 +47,6 @@ const Row = memo(
 				color: '#E0383B',
 			},
 		];
-    console.log(item)
 
 		return (
 			<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
@@ -62,7 +61,7 @@ const Row = memo(
 				<Table.Cell>{item.purpose_display}</Table.Cell>
 				<Table.Cell>{item.num_document}</Table.Cell>
 				<Table.Cell>{item.payment_method_display}</Table.Cell>
-				<Table.Cell>{item.admission_process_program_name}</Table.Cell>
+				<Table.Cell>{item.admission_process_program_name || item.enrollment_process_program_name}</Table.Cell>
 				<Table.Cell textAlign='center'>
 					<Badge
 						bg={statusDisplay.find((status) => status.id === item.status)?.bg}
@@ -185,7 +184,7 @@ export const PaymentRequestsTable = ({
 							</Table.ColumnHeader>
 							<Table.ColumnHeader alignContent={'start'}>
 								<SortableHeader
-									label='Programa de admisión'
+									label='Programa'
 									columnKey='payment_order_name'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
