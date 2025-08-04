@@ -11,9 +11,9 @@ import {
 import { FiArrowLeft } from "react-icons/fi";
 import { Button } from "@/components/ui";
 import { LuCircleAlert } from "react-icons/lu";
+import { ProcessEnrollmentModal } from "@/components/modals/procedures/ProcessEnrollmentModal";
 
-export const Step03SummaryEnrollment = ({ selectedGroups, onBack, onNext }) => {
-  console.log(selectedGroups);
+export const Step03SummaryEnrollment = ({ selectedGroups, onBack }) => {
   // Calcular totales
   const totalCourses = selectedGroups?.total_selections;
   const totalCreditsToPay = selectedGroups?.price_credit;
@@ -112,12 +112,14 @@ export const Step03SummaryEnrollment = ({ selectedGroups, onBack, onNext }) => {
           Regresar
         </Button>
         
-        <Button
-          colorScheme="blue"
-          onClick={onNext}
-        >
-          Procesar matrícula
-        </Button>
+        <ProcessEnrollmentModal
+          triggerButton={
+            <Button colorScheme="blue">
+              Procesar matrícula
+            </Button>
+          }
+          onNext={() => {}}
+        />
       </Flex>
     </VStack>
   )
@@ -126,5 +128,4 @@ export const Step03SummaryEnrollment = ({ selectedGroups, onBack, onNext }) => {
 Step03SummaryEnrollment.propTypes = {
   selectedGroups: PropTypes.array,
   onBack: PropTypes.func,
-  onNext: PropTypes.func,
 };
