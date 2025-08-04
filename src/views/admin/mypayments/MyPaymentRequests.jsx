@@ -246,7 +246,7 @@ export const MyPaymentRequests = () => {
 									))
 								) : (
 									<Table.Row>
-										<Table.Cell colSpan={7} textAlign='center'>
+										<Table.Cell colSpan={8} textAlign='center'>
 											No hay solicitudes de pago
 										</Table.Cell>
 									</Table.Row>

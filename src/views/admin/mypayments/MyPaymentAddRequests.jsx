@@ -275,7 +275,17 @@ export const MyPaymentAddRequests = () => {
 			},
 			onError: (error) => {
 				const errorData = error.response?.data;
-				if (errorData && typeof errorData === 'object') {
+
+				if (Array.isArray(errorData)) {
+					// Caso como: ["Ya existe una solicitud de pago Pendiente..."]
+					errorData.forEach((message) => {
+						toaster.create({
+							title: message,
+							type: 'error',
+						});
+					});
+				} else if (errorData && typeof errorData === 'object') {
+					// Caso como: { field1: ["msg1", "msg2"], field2: ["msg3"] }
 					Object.values(errorData).forEach((errorList) => {
 						if (Array.isArray(errorList)) {
 							errorList.forEach((message) => {
@@ -287,6 +297,7 @@ export const MyPaymentAddRequests = () => {
 						}
 					});
 				} else {
+					// Fallback
 					toaster.create({
 						title: 'Error al solicitar el pago',
 						type: 'error',
