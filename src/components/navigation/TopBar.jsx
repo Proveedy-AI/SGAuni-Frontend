@@ -41,7 +41,7 @@ export const TopBar = () => {
 
 	useEffect(() => {
 		if (profile) {
-			setFullname(profile.user.first_name || '');
+			setFullname(profile.user.first_name + ' ' + profile.user.last_name || '');
 		}
 	}, [profile]);
 
@@ -92,15 +92,7 @@ export const TopBar = () => {
 	const username = profile.user?.username || '';
 	//const email = profile.uni_email || '';
 
-	const mainRole =
-		roles.length > 0
-			? roles.reduce((max, curr) =>
-					(curr.permissions?.length || 0) > (max.permissions?.length || 0)
-						? curr
-						: max
-				)
-			: null;
-
+	const mainRole = roles.length > 0 ? roles[roles.length - 1] : null;
 	return (
 		<Flex
 			bg={{ base: 'white', _dark: 'uni.gray.500' }}
