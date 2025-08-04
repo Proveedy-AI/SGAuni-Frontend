@@ -11,6 +11,7 @@ export const AdminLayout = () => {
 	const isSettingsPage = location.pathname.startsWith('/settings');
 	const isMyPaymentsPage = location.pathname.startsWith('/mypayments');
 	const isDebtsPage = location.pathname.startsWith('/debts');
+	const isMyClassesPage = location.pathname.startsWith('/myclasses');
 
 	return (
 		<Flex h='100svh' w='100vw' position='fixed' direction='column'>
@@ -27,7 +28,7 @@ export const AdminLayout = () => {
 
 					<Box
 						p={
-							!isSettingsPage && !isMyPaymentsPage && !isDebtsPage
+							!isSettingsPage && !isMyPaymentsPage && !isDebtsPage && !isMyClassesPage
 								? { base: '3', md: '6' }
 								: '0'
 						}

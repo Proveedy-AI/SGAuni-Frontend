@@ -246,7 +246,7 @@ export const ClassMyEstudentsByCourseView = () => {
                       <>
                         {evaluations.map(evaluation => (
                           <Table.Cell key={evaluation.id}>
-                            {student.califications.find(c => c.evaluation_id === evaluation.id)?.grade || "N/A"}
+                            {student.califications.find(c => c.evaluation_id === evaluation.id)?.grade || "-"}
                           </Table.Cell>
                         ))}
                         <Table.Cell>{student.average.toFixed(2)}</Table.Cell>

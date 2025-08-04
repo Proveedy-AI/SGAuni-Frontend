@@ -55,7 +55,7 @@ const STEPS = [
 // Componente para el stepper
 const StepIndicator = ({ steps, currentStep }) => {
   return (
-    <HStack justify="center" spacing={8} mb={8}>
+    <HStack justify="center" gap={8} mb={8}>
       {steps.map((step) => {
         const isActive = step.id === currentStep;
         const isCompleted = step.id < currentStep;
