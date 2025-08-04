@@ -53,7 +53,7 @@ import { LuUpload } from 'react-icons/lu';
 import { useUploadCourseScheduleExcel } from '@/hooks/enrollments_programs/schedule/useUploadCourseScheduleExcel';
 import { uploadToS3 } from '@/utils/uploadToS3';
 import { useProccessCourseScheduleExcel } from '@/hooks/enrollments_programs/schedule/useProccessCourseScheduleExcel';
-import { SendConfirmationModal } from '@/components/ui/SendConfirmationModal';
+//import { SendConfirmationModal } from '@/components/ui/SendConfirmationModal';
 import { useCreateCourseScheduleReview } from '@/hooks/enrollments_programs/schedule/useCreateCourseScheduleReview';
 import { useDeleteCourseSchedule } from '@/hooks/enrollments_programs/schedule/useDeleteCourseSchedule';
 import { FaClock, FaGraduationCap } from 'react-icons/fa';
@@ -1172,7 +1172,7 @@ CalendarView.propTypes = {
 export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 	const [open, setOpen] = useState(false);
 	const [openDelete, setOpenDelete] = useState(false);
-	const [openSend, setOpenSend] = useState(false);
+	//const [openSend, setOpenSend] = useState(false);
 	const [addCourseOpen, setAddCourseOpen] = useState(false);
 	const [addExcelOpen, setAddExcelOpen] = useState(false);
 	const [tab, setTab] = useState(1);
@@ -1230,7 +1230,7 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 	const { mutate: createCourseReview, isPending: LoadingProgramsReview } =
 		useCreateCourseScheduleReview();
 
-	const handleSend = (course) => {
+	/*const handleSend = (course) => {
 		createCourseReview(course.id, {
 			onSuccess: () => {
 				toaster.create({
@@ -1248,7 +1248,7 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 				});
 			},
 		});
-	};
+	};*/
 
 	const handleSendMultiple = (courseIds = []) => {
 		if (!courseIds.length) return;
@@ -1275,6 +1275,8 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 					title: `✅ ${successCount} horario(s) enviados correctamente`,
 					type: 'success',
 				});
+				refetchCourseSchedule();
+				setSelectedIds([]); // Limpiar selección después de enviar
 			}
 
 			if (errorCount > 0) {
@@ -1289,8 +1291,10 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 			}
 
 			refetchCourseSchedule();
-			setOpenSend(false);
+			//setOpenSend(false);
 		});
+		refetchCourseSchedule();
+		setSelectedIds([]);
 	};
 
 	const { mutate: deleteCourseSchedule, isPending } = useDeleteCourseSchedule();
@@ -1433,18 +1437,17 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 						</Tabs.Trigger>
 					</HStack>
 
-					{selectedIds.length > 0 && (
-						<Button
-							colorPalette='green'
-							mt={2}
-							size='xs'
-							loading={LoadingProgramsReview}
-							loadingText='Enviando...'
-							onClick={() => handleSendMultiple(selectedIds)}
-						>
-							<FiSend /> Enviar {selectedIds.length} horario(s)
-						</Button>
-					)}
+					<Button
+						colorPalette='green'
+						mt={2}
+						size='xs'
+						disabled={selectedIds.length <= 0}
+						loading={LoadingProgramsReview}
+						loadingText='Enviando...'
+						onClick={() => handleSendMultiple(selectedIds)}
+					>
+						<FiSend /> Enviar {selectedIds.length} horario(s)
+					</Button>
 				</Tabs.List>
 
 				<Tabs.Content value={1}>
@@ -1502,7 +1505,7 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 									</Table.Cell>
 									<Table.Cell>
 										<SortableHeader
-											label='Código'
+											label='Grupo'
 											columnKey='course_group_code'
 											sortConfig={sortConfig}
 											onSort={setSortConfig}
@@ -1643,13 +1646,13 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 											</Table.Cell>
 											<Table.Cell>
 												<HStack>
-													<SendConfirmationModal
+													{/*<SendConfirmationModal
 														item={course}
 														onConfirm={() => handleSend(course)}
 														openSend={openSend}
 														setOpenSend={setOpenSend}
 														loading={LoadingProgramsReview}
-													/>
+													/>*/}
 
 													<ConfirmModal
 														placement='center'
