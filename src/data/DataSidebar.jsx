@@ -20,6 +20,7 @@ import {
 import { FaFileContract, FaRegFile, FaUserGraduate } from 'react-icons/fa';
 import { HiOutlineClipboardList } from 'react-icons/hi';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
+import { HiOutlineDocumentText } from 'react-icons/hi2';
 
 export const useDataSidebar = () => {
 	const { data: profile } = useReadUserLogged();
@@ -91,7 +92,7 @@ export const useDataSidebar = () => {
     },
     {
       href: '/myprocedures',
-      icon: FiAward,
+      icon: HiOutlineDocumentText,
       label: 'Mis Trámites',
       permission: 'procedures.myprocedures.view',
     },
