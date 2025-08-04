@@ -201,13 +201,14 @@ export const MyPaymentRequests = () => {
 							<Table.Row>
 								<Table.ColumnHeader>N°</Table.ColumnHeader>
 								<Table.ColumnHeader w={'20%'}>Programa</Table.ColumnHeader>
-								<Table.ColumnHeader w={'20%'}>Propósito</Table.ColumnHeader>
-								<Table.ColumnHeader w={'15%'}>Monto</Table.ColumnHeader>
+								<Table.ColumnHeader w={'15%'}>Proceso</Table.ColumnHeader>
+								<Table.ColumnHeader w={'15%'}>Propósito</Table.ColumnHeader>
+								<Table.ColumnHeader w={'10%'}>Monto</Table.ColumnHeader>
 								<Table.ColumnHeader>Estado</Table.ColumnHeader>
-								<Table.ColumnHeader w={'20%'}>
+								<Table.ColumnHeader w={'15%'}>
 									Fecha Solicitud
 								</Table.ColumnHeader>
-								<Table.ColumnHeader>Orden de Pago</Table.ColumnHeader>
+								<Table.ColumnHeader>O. de Pago</Table.ColumnHeader>
 							</Table.Row>
 
 							<Table.Body>
@@ -216,7 +217,10 @@ export const MyPaymentRequests = () => {
 										<Table.Row key={item.id}>
 											<Table.Cell>{index + 1}</Table.Cell>
 											<Table.Cell>
-												{item.admission_process_program_name}
+												{item.admission_process_program_name || item.enrollment_process_program_name}
+											</Table.Cell>
+											<Table.Cell>
+												{item.admission_process_name || item.enrollment_process_name}
 											</Table.Cell>
 											<Table.Cell>{item.purpose_display}</Table.Cell>
 											<Table.Cell>S/ {item.amount}</Table.Cell>
