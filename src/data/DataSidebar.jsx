@@ -126,6 +126,11 @@ export const useDataSidebar = () => {
 					label: 'Procesos Matricula',
 					permission: 'enrollments.proccessEnrollments.view',
 				},
+        {
+          href: '/enrollments/enrolled',
+          icon: FiUsers,
+          label: 'Matriculados',
+        }
 			],
 		},
 		{

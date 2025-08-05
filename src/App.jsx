@@ -73,6 +73,7 @@ import {
 	MyCoursesListByAcademicPeriodView,
 	MyEvaluationsByCourseView,
 } from './views/admin/mycourses';
+import { EnrolledCourseGroupsView, EnrolledProcessView } from './views/admin/tuitions/enrolled';
 
 function App() {
 	return (
@@ -258,6 +259,18 @@ function App() {
 								>
 									<Route path='programs/:id' element={<TuitonPrograms />} />
 								</Route>
+              
+              {/* ---------------------------- ENROLLED ROUTES ---------------------------- */}
+                <Route
+                  element={
+                    <ProtectedRoute requiredPermission='enrollments.enrolled.view' />
+                  }
+                >
+                  <Route path='enrolled' element={<EnrolledProcessView />} />
+                  <Route path='programs/:id'>
+                    <Route path ='course-groups' element={<EnrolledCourseGroupsView />} />
+                  </Route>
+                </Route>
 							</Route>
 
 							<Route path='mycourses'>
