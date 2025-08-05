@@ -53,7 +53,7 @@ export const AccountStudentProfile = () => {
 
 	const [isChangesMade, setIsChangesMade] = useState(false);
 	const [initialProfile, setInitialProfile] = useState(null);
-	console.log(dataUser);
+
 	useEffect(() => {
 		if (!isLoading && dataUser) {
 			setProfile(dataUser);
