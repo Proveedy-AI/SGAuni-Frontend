@@ -15,7 +15,7 @@ import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
 import { useReadPurposes } from '@/hooks/purposes';
 import { useReadPaymentOrders } from '@/hooks/payment_orders';
 import { useReadMyPaymentRequest } from '@/hooks/payment_requests/useReadMyPaymentRequest';
-import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
+//import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import PropTypes from 'prop-types';
 import {
 	FiCheckCircle,
@@ -30,14 +30,14 @@ import { useEffect } from 'react';
 export const PaymentApplicant = ({ onValidationChange }) => {
 	const navigate = useNavigate();
 	const { data: dataPurposes } = useReadPurposes();
-	const { data: dataUser } = useReadUserLogged();
+	//const { data: dataUser } = useReadUserLogged();
 	const { data: PaymentRequest, isLoading: isLoadingPaymentRquest } =
 		useReadMyPaymentRequest();
-	const hasStudentRole = dataUser.roles?.some(
+	/*const hasStudentRole = dataUser.roles?.some(
 		(role) => role.name === 'Estudiante'
-	);
+	);*/
 	const item = EncryptedStorage.load('selectedApplicant');
-	const isPreMaestria = !hasStudentRole && item?.modality_id === 1;
+	const isPreMaestria = item?.modality_id === 1;
 	const { data: PaymentRules } = useReadPaymentRules();
 
 	const statusDisplay = [
