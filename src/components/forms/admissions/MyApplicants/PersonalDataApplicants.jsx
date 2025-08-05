@@ -1,9 +1,9 @@
 import { ReactSelect } from '@/components/select';
 import { Field, Radio, RadioGroup, toaster } from '@/components/ui';
 import { CompactFileUpload } from '@/components/ui/CompactFileInput';
-import { useUpdatePerson } from '@/hooks';
 import { useReadDisabilities } from '@/hooks/disabilities';
 import { useReadUbigeos } from '@/hooks/ubigeos';
+import { useUpdateProfile } from '@/hooks/users';
 import { uploadToS3 } from '@/utils/uploadToS3';
 import {
 	Box,
@@ -19,7 +19,7 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
 export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
-	const { mutate: update } = useUpdatePerson();
+	const { mutate: update } = useUpdateProfile();
 	const [loadingUpdate, setloadingUpdate] = useState(false);
 	const { data: dataUbigeo, isLoading: loadingUbigeo } = useReadUbigeos();
 	const { data: dataDisabilities, isLoading: loadingDisabilities } =
@@ -88,41 +88,38 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 			document_path: pathDocUrl,
 		};
 
-		update(
-			{ id: formData.id, payload },
-			{
-				onSuccess: () => {
-					toaster.create({
-						title: 'Perfil actualizado correctamente.',
-						type: 'success',
-					});
-					setloadingUpdate(false);
-					fetchUser();
-				},
-				onError: (error) => {
-					const errorData = error.response?.data;
-					setloadingUpdate(false);
-					if (errorData && typeof errorData === 'object') {
-						Object.values(errorData).forEach((errorList) => {
-							if (Array.isArray(errorList)) {
-								errorList.forEach((message) => {
-									toaster.create({
-										title: message,
-										type: 'error',
-									});
+		update(payload, {
+			onSuccess: () => {
+				toaster.create({
+					title: 'Perfil actualizado correctamente.',
+					type: 'success',
+				});
+				setloadingUpdate(false);
+				fetchUser();
+			},
+			onError: (error) => {
+				const errorData = error.response?.data;
+				setloadingUpdate(false);
+				if (errorData && typeof errorData === 'object') {
+					Object.values(errorData).forEach((errorList) => {
+						if (Array.isArray(errorList)) {
+							errorList.forEach((message) => {
+								toaster.create({
+									title: message,
+									type: 'error',
 								});
-							}
-						});
-					} else {
-						setloadingUpdate(false);
-						toaster.create({
-							title: 'Error al registrar el Programa',
-							type: 'error',
-						});
-					}
-				},
-			}
-		);
+							});
+						}
+					});
+				} else {
+					setloadingUpdate(false);
+					toaster.create({
+						title: 'Error al registrar el Programa',
+						type: 'error',
+					});
+				}
+			},
+		});
 	};
 
 	const preloadSelectValue = (data, profileValue, options, fieldName) => {

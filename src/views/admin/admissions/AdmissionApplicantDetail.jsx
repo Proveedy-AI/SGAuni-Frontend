@@ -52,7 +52,7 @@ export const AdmissionApplicantDetail = () => {
 	const { data: dataDocuments } = useReadDocuments({
 		application: dataApplicant?.id,
 	});
-console.log(dataApplicant)
+
 	const statusEnum = [
 		{
 			id: 1,

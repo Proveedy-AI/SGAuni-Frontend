@@ -6,13 +6,13 @@ import { Link } from 'react-router';
 import { ChangeProfileControl } from '@/components/forms/acount/ChangeProfileControl';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { uploadToS3 } from '@/utils/uploadToS3';
-import { useUpdatePerson } from '@/hooks';
 import { ChangeDataStudentProfileForm } from '@/components/forms/acount/ChangeDataStudentProfileForm';
+import { useUpdateProfile } from '@/hooks/users';
 
 export const AccountStudentProfile = () => {
 	const { data: dataUser, isLoading, error, refetch } = useReadUserLogged();
 	const [disableUpload, setDisableUpload] = useState(false);
-	const { mutate: update, loading: loadingUpdate } = useUpdatePerson();
+	const { mutate: update, loading: loadingUpdate } = useUpdateProfile();
 
 	const [profile, setProfile] = useState({
 		id: '',
@@ -90,6 +90,7 @@ export const AccountStudentProfile = () => {
 		const payload = {
 			user: {
 				password: profile.password,
+				first_name: profile.first_name,
 			},
 			first_name: profile.first_name,
 			paternal_surname: profile.paternal_surname,
@@ -120,43 +121,40 @@ export const AccountStudentProfile = () => {
 			personal_email: profile.personal_email,
 			residenceCountry: profile.residenceCountry?.value,
 		};
-
-		update(
-			{ id: profile.id, payload },
-			{
-				onSuccess: () => {
-					setInitialProfile(profile);
-					setIsChangesMade(false);
-					toaster.create({
-						title: 'Perfil actualizado correctamente.',
-						type: 'success',
-					});
-					setDisableUpload(false);
-					refetch();
-				},
-				onError: (error) => {
-					const errorData = error.response?.data;
-					setDisableUpload(false);
-					if (errorData && typeof errorData === 'object') {
-						Object.values(errorData).forEach((errorList) => {
-							if (Array.isArray(errorList)) {
-								errorList.forEach((message) => {
-									toaster.create({
-										title: message,
-										type: 'error',
-									});
+		console.log(payload);
+		update(payload, {
+			onSuccess: () => {
+				setInitialProfile(profile);
+				setIsChangesMade(false);
+				toaster.create({
+					title: 'Perfil actualizado correctamente.',
+					type: 'success',
+				});
+				setDisableUpload(false);
+				refetch();
+			},
+			onError: (error) => {
+				const errorData = error.response?.data;
+				setDisableUpload(false);
+				if (errorData && typeof errorData === 'object') {
+					Object.values(errorData).forEach((errorList) => {
+						if (Array.isArray(errorList)) {
+							errorList.forEach((message) => {
+								toaster.create({
+									title: message,
+									type: 'error',
 								});
-							}
-						});
-					} else {
-						toaster.create({
-							title: 'Error al Actualizar el perfil',
-							type: 'error',
-						});
-					}
-				},
-			}
-		);
+							});
+						}
+					});
+				} else {
+					toaster.create({
+						title: 'Error al Actualizar el perfil',
+						type: 'error',
+					});
+				}
+			},
+		});
 	};
 
 	return (
