@@ -47,7 +47,7 @@ export const EditProgram = ({
 				postgraduate_focus: ProgramFocusOptions?.find(
 					(p) => String(p.value) === String(item.postgraduate_focus)
 				),
-				minPaymentPercentage: item.min_payment_percentage,
+				minPaymentPercentage: item.min_payment_percentage * 100, 
 				maxInstallments: item.max_installments,
 			}));
 		}
@@ -111,7 +111,7 @@ export const EditProgram = ({
 				? Number(programRequest.postgraduate_focus.value)
 				: null,
 			// Condicion de deuda
-			min_payment_percentage: programRequest.minPaymentPercentage,
+			min_payment_percentage: programRequest.minPaymentPercentage / 100,
 			max_installments: programRequest.maxInstallments,
 			total_program_credits: programRequest.total_program_credits,
 		};

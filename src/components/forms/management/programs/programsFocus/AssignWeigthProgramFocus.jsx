@@ -72,7 +72,7 @@ export const AssignWeigthProgramFocus = ({ item, fetchData }) => {
 
 		const payload = {
 			postgraduate_focus: item.id,
-			evaluation_weight: evaluatorRequest.evaluation_weight,
+			evaluation_weight: evaluatorRequest.evaluation_weight / 100,
 			evaluation_type: Number(evaluatorRequest.evaluation_type.value),
 		};
 
@@ -129,8 +129,8 @@ export const AssignWeigthProgramFocus = ({ item, fetchData }) => {
 						showArrow
 						openDelay={0}
 					>
-						<IconButton colorPalette='orange' size='xs'>
-							<FiCheckSquare />
+						<IconButton p={2} colorPalette='orange' size='xs'>
+							<FiCheckSquare /> Asignar Pesos
 						</IconButton>
 					</Tooltip>
 				</Box>
@@ -228,7 +228,7 @@ export const AssignWeigthProgramFocus = ({ item, fetchData }) => {
 											)?.label || item.evaluation_type}
 										</Table.Cell>
 										<Table.Cell>
-											{item.evaluation_weight || item.evaluation_weight}
+											{item.evaluation_weight * 100}
 										</Table.Cell>
 
 										<Table.Cell>

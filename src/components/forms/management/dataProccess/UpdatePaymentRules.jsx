@@ -31,7 +31,7 @@ export const UpdatePaymentRules = ({
 		amount: item?.amount || '',
 		amount_type: null,
 		use_credits_from: null,
-		discount_percentage: item?.discount_percentage || '',
+		discount_percentage: Number(item?.discount_percentage) * 100 || '',
 		applies_to_students: item?.applies_to_students ?? false,
 		applies_to_applicants: item?.applies_to_applicants ?? false,
 		only_first_enrollment: item?.only_first_enrollment ?? false,
@@ -108,7 +108,7 @@ export const UpdatePaymentRules = ({
 			use_credits_from: purposeRequest.use_credits_from
 				? Number(purposeRequest.use_credits_from.value)
 				: null,
-			discount_percentage: purposeRequest.discount_percentage,
+			discount_percentage: purposeRequest.discount_percentage / 100,
 			applies_to_students: purposeRequest.applies_to_students,
 			applies_to_applicants: purposeRequest.applies_to_applicants,
 			only_first_enrollment: purposeRequest.only_first_enrollment,
