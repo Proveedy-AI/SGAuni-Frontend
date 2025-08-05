@@ -173,7 +173,7 @@ export const MyPaymentAddRequests = () => {
 					{
 						id: `rule-${currentRule.payment_purpose}`,
 						label: `Descuento por modalidad de pago`,
-						percentage: currentRule.discount_percentage,
+						percentage: currentRule.discount_percentage * 100,
 					},
 				]
 			: []),
