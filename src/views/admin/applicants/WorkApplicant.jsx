@@ -8,6 +8,8 @@ import {
 	IconButton,
 	Stack,
 	Button,
+	HStack,
+	Icon,
 } from '@chakra-ui/react';
 import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
 import {
@@ -16,7 +18,7 @@ import {
 } from '@/hooks/admissions_evaluations';
 import { useEffect, useState } from 'react';
 import { CompactFileUpload } from '@/components/ui/CompactFileInput';
-import { FaDownload, FaUpload } from 'react-icons/fa';
+import { FaCalendar, FaDownload, FaTimes, FaUpload } from 'react-icons/fa';
 import { uploadToS3 } from '@/utils/uploadToS3';
 import { toaster } from '@/components/ui';
 import PropTypes from 'prop-types';
@@ -177,9 +179,14 @@ export const WorkApplicant = ({ onAllCompleted }) => {
 
 	const renderWorkItem = (work) => {
 		const now = new Date();
-		const deadline = new Date(`${work.end_date}T23:59:59`);
+
+		// Validación robusta
+		const parsedDeadline = work.end_date
+			? new Date(`${work.end_date}T23:59:59-05:00`) // Forza zona horaria Perú
+			: null;
+
 		const isEssay = work.type_application_display === 'Ensayo';
-		const showInput = isEssay && now <= deadline;
+		const showInput = isEssay && parsedDeadline && now <= parsedDeadline;
 
 		const status = STATUS_MAP[work.status_qualification_display] || {
 			label: work.status_qualification_display,
@@ -204,10 +211,30 @@ export const WorkApplicant = ({ onAllCompleted }) => {
 				>
 					<Box>
 						<Text fontWeight='bold'>Evaluador: {work.evaluator_full_name}</Text>
-						<Text>
-							Fecha y hora:{' '}
-							{formatDateTime(work.start_date, work.evaluation_time)}
-						</Text>
+						<Stack gap={2}>
+							<HStack gap={2}>
+								<Icon as={FaCalendar} boxSize={4} color='gray.600' />
+								<Text fontWeight='medium' color='gray.700'>
+									Fecha y hora de inicio:
+								</Text>
+								<Text>
+									{formatDateTime(work.start_date, work.evaluation_time)}
+								</Text>
+							</HStack>
+
+							{isEssay && work.end_date && (
+								<HStack gap={2}>
+									<Icon as={FaTimes} boxSize={4} color='gray.600' />
+									<Text fontWeight='medium' color='gray.700'>
+										Fecha y hora final:
+									</Text>
+									<Text>
+										{formatDateTime(work.end_date, work.evaluation_time)}
+									</Text>
+								</HStack>
+							)}
+						</Stack>
+
 						<Badge colorPalette={status.color} mt={1}>
 							{status.label}
 						</Badge>

@@ -72,10 +72,10 @@ export const PaymentApplicant = ({ onValidationChange }) => {
 	];
 
 	const carpetaRequest = PaymentRequest?.find(
-		(req) => req.application === item?.id && req.purpose === 2
+		(req) => req.application === item?.id && req.purpose === 1
 	);
 	const admisionRequest = PaymentRequest?.find(
-		(req) => req.application === item?.id && req.purpose === 1
+		(req) => req.application === item?.id && req.purpose === 2
 	);
 
 	// Obtener órdenes usando filtros del backend
@@ -287,14 +287,14 @@ export const PaymentApplicant = ({ onValidationChange }) => {
 					{carpetaRequest
 						? renderPaymentRequestCard(
 								carpetaRequest,
-								purposes[2]?.rule,
+								purposes[1]?.rule,
 								carpetaOrder,
 								'Derecho de Carpeta',
-								purposes[2]?.amount || 50
+								purposes[1]?.amount || 50
 							)
 						: renderRequestPrompt(
 								'Derecho de Carpeta',
-								purposes[2]?.rule?.amount || 250
+								purposes[1]?.rule?.amount || 250
 							)}
 
 					{/* Admisión (solo para pre-maestría) */}
@@ -305,11 +305,11 @@ export const PaymentApplicant = ({ onValidationChange }) => {
 									purposes[2]?.rule,
 									admisionOrder,
 									'Admisión',
-									purposes[1]?.amount || 50
+									purposes[2]?.amount || 50
 								)
 							: renderRequestPrompt(
 									'Admisión',
-									purposes[1]?.rule?.amount || 250,
+									purposes[2]?.rule?.amount || 250,
 									true
 								))}
 				</Stack>
