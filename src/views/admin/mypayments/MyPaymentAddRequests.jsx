@@ -393,7 +393,7 @@ export const MyPaymentAddRequests = () => {
 									</Text>
 									<List.Root pl='4' mt='2'>
 										<List.Item>Solicitud por Derecho de Carpeta</List.Item>
-										<List.Item>Solicitud por Carpeta de Admisión</List.Item>
+										<List.Item>Solicitud por Carpeta de Admisión - I</List.Item>
 									</List.Root>
 								</Alert>
 							)}
@@ -405,7 +405,7 @@ export const MyPaymentAddRequests = () => {
 									</Text>
 									<List.Root pl='4' mt='2'>
 										<List.Item>
-											Solicitud por Segundo Derecho de Admisión (se debe pagar
+											Solicitud Derecho de Admisión - II (se debe pagar
 											hasta el segundo mes)
 										</List.Item>
 									</List.Root>
