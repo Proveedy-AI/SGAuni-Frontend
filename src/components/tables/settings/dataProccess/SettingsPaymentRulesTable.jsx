@@ -103,7 +103,7 @@ const Row = memo(
 						<Badge colorPalette='gray'>No aplica</Badge>
 					)}
 				</Table.Cell>
-				<Table.Cell>{item?.discount_percentage ?? ''}</Table.Cell>
+				<Table.Cell>{item?.discount_percentage != null ? item.discount_percentage * 100 : ''}</Table.Cell>
 				<Table.Cell>
 					<HStack>
 						<UpdatePaymentRules
@@ -122,7 +122,6 @@ const Row = memo(
 							onOpenChange={(e) => setOpen(e.open)}
 							onConfirm={() => handleDelete(item.id)}
 							loading={isPending}
-							
 						>
 							<Text>
 								¿Estás seguro que quieres eliminar a

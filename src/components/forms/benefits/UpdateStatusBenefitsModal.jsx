@@ -219,7 +219,7 @@ export const UpdateStatusBenefitsModal = ({ data, fetchData }) => {
 								onClick={() => setSelectedStatus(4)}
 							>
 								<Icon as={FiCheckCircle} boxSize={5} />
-								<Text fontWeight='medium'>Aprobar Proceso</Text>
+								<Text fontWeight='medium'>Aprobar Beneficio</Text>
 							</Button>
 
 							<Button
@@ -240,7 +240,7 @@ export const UpdateStatusBenefitsModal = ({ data, fetchData }) => {
 								onClick={() => setSelectedStatus(3)}
 							>
 								<Icon as={FiXCircle} boxSize={5} />
-								<Text fontWeight='medium'>Rechazar Proceso</Text>
+								<Text fontWeight='medium'>Rechazar Beneficio</Text>
 							</Button>
 						</SimpleGrid>
 
@@ -256,8 +256,8 @@ export const UpdateStatusBenefitsModal = ({ data, fetchData }) => {
 							>
 								<Text color={selectedStatus === 4 ? 'green.800' : 'red.800'}>
 									{selectedStatus === 4
-										? 'El proceso será aprobado y se notificará automáticamente.'
-										: 'El proceso será rechazado. Por favor, proporciona un comentario explicativo.'}
+										? 'El Beneficio será aprobado y se notificará automáticamente.'
+										: 'El Beneficio será rechazado. Por favor, proporciona un comentario explicativo.'}
 								</Text>
 							</Alert>
 						)}

@@ -18,6 +18,10 @@ import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
 import { DocumentsApplicant } from './DocumentsApplicant';
 import { WorkApplicant } from './WorkApplicant';
 import { PaymentApplicant } from './PaymentApplicant';
+import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
+import { useReadAdmissionApplicantById } from '@/hooks/admissions_applicants/useReadAdmissionApplicantById';
+import { useUpdateAdmissionApplicants } from '@/hooks/admissions_applicants';
+import { toaster } from '@/components/ui';
 
 export const ApplicantsLayout = () => {
 	const [step, setStep] = useState(0);
@@ -25,6 +29,10 @@ export const ApplicantsLayout = () => {
 	const [isDocumentsStepValid, setIsDocumentsStepValid] = useState(false);
 	const [allWorksCompleted, setAllWorksCompleted] = useState(false);
 	const [isPaymentStepValid, setIsPaymentStepValid] = useState(false);
+	const item = EncryptedStorage.load('selectedApplicant');
+	const { data: dataApplicant } = useReadAdmissionApplicantById(item.id);
+
+	const { mutate: updateAdmissionApplicant } = useUpdateAdmissionApplicants();
 
 	const {
 		data: dataUser,
@@ -33,9 +41,21 @@ export const ApplicantsLayout = () => {
 	} = useReadUserLogged();
 
 	const handleCompleteProcess = () => {
-		// Aquí puedes hacer una llamada a la API o actualizar el estado final
-		console.log('Proceso finalizado');
-		setStep(step + 1); // esto muestra Steps.CompletedContent
+		updateAdmissionApplicant(dataApplicant.uuid, {
+			onSuccess: () => {
+				setStep(step + 1); // Solo avanza si la respuesta es exitosa
+			},
+			onError: (error) => {
+				toaster.create({
+					title: 'Error',
+					description:
+						error?.message || 'Ocurrió un error al completar el proceso.',
+					type: 'error',
+					duration: 5000,
+					isClosable: true,
+				});
+			},
+		});
 	};
 
 	useEffect(() => {

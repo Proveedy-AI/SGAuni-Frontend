@@ -87,7 +87,7 @@ export const AddProgram = ({
 				: null,
 			price_credit: programRequest.price_credit,
 			// Condicion de deuda
-			min_payment_percentage: programRequest.minPaymentPercentage,
+			min_payment_percentage: programRequest.minPaymentPercentage / 100,
 			max_installments: programRequest.maxInstallments,
 			total_program_credits: programRequest.total_program_credits,
 		};

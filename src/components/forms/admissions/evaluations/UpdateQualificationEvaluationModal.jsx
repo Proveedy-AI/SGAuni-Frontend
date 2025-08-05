@@ -32,7 +32,7 @@ export const UpdateQualificationEvaluationModal = ({ data, fetchData }) => {
 	const [open, setOpen] = useState(false);
 	const [qualification, setQualification] = useState(data.qualification || '');
 	const [comment, setComments] = useState(data.feedback || '');
-	const { mutateAsync: updateExam, isSaving } =
+	const { mutateAsync: updateExam, isPending } =
 		useQualificationAdmissionEvaluation();
 
 	const handleUpdateQualification = async () => {
@@ -165,7 +165,7 @@ export const UpdateQualificationEvaluationModal = ({ data, fetchData }) => {
 			open={open}
 			onOpenChange={(e) => setOpen(e.open)}
 			size='4xl'
-			loading={isSaving}
+			loading={isPending}
 			onSave={handleUpdateQualification}
 		>
 			<Stack

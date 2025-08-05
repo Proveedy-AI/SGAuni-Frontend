@@ -3,7 +3,6 @@ import { memo, useState } from 'react';
 import { Box, Group, HStack, Table } from '@chakra-ui/react';
 import { Pagination } from '@/components/ui';
 
-
 import useSortedData from '@/utils/useSortedData';
 
 import { DeleteProgramType } from '@/components/forms/management/programTypes';
@@ -26,10 +25,10 @@ const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 			<Table.Cell>
 				<HStack justify='space-between'>
 					<Group>
-						<EditProgramFocus item={item} fetchData={fetchData} />
 						<AssignWeigthProgramFocus item={item} fetchData={fetchData} />
+						<EditProgramFocus item={item} fetchData={fetchData} />
+
 						<DeleteProgramType item={item} fetchData={fetchData} />
-						
 					</Group>
 				</HStack>
 			</Table.Cell>
