@@ -1,3 +1,3 @@
-export * from './myProceduresView';
+export * from './MyProceduresView';
 export * from './MyEnrollmentProcessView';
 export * from './MyInscriptionFormView';
