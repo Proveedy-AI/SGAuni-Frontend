@@ -1,5 +1,5 @@
 //import { UpdateSettingsCountryForm } from '@/components/forms';
-import { UpdateSettingsCountryForm } from '@/components/forms/settings';
+import { UpdatePorpuses } from '@/components/forms/management/purposes/UpdatePorpuses';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { Pagination } from '@/components/ui';
 import SkeletonTable from '@/components/ui/SkeletonTable';
@@ -22,7 +22,7 @@ const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 
 			<Table.Cell>
 				<HStack>
-					<UpdateSettingsCountryForm data={item} fetchData={fetchData} />
+					<UpdatePorpuses data={item} fetchData={fetchData} />
 				</HStack>
 			</Table.Cell>
 		</Table.Row>
