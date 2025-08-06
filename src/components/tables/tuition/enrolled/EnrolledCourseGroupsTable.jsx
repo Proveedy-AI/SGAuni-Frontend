@@ -43,6 +43,7 @@ const Row = memo(({ item, startIndex, index, sortConfig, data, permissions }) =>
           : startIndex + index + 1}
       </Table.Cell>
       <Table.Cell fontWeight="medium">{item.course_code}</Table.Cell>
+      <Table.Cell fontWeight="medium">{item.group_code}</Table.Cell>
       <Table.Cell>{item.course_name}</Table.Cell>
       <Table.Cell textAlign="center">{item.cycle}</Table.Cell>
       <Table.Cell textAlign="center">{item.credits}</Table.Cell>
@@ -108,8 +109,16 @@ export const EnrolledCourseGroupsTable = ({
               </Table.ColumnHeader>
               <Table.ColumnHeader w='15%'>
                 <SortableHeader
-                  label='Código'
+                  label='Código de curso'
                   columnKey='course_code'
+                  sortConfig={sortConfig}
+                  onSort={setSortConfig}
+                />
+              </Table.ColumnHeader>
+              <Table.ColumnHeader w='15%'>
+                <SortableHeader
+                  label='Código de grupo'
+                  columnKey='group_code'
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
                 />

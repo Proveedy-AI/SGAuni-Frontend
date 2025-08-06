@@ -1,7 +1,9 @@
 import { Encryptor } from "@/components/CrytoJS/Encryptor";
+import { GenerateStudentEnrolledListPdfModal } from "@/components/modals/tuition/enrolled";
 import { EnrolledCourseGroupsTable } from "@/components/tables/tuition/enrolled";
 import { InputGroup } from "@/components/ui";
 import ResponsiveBreadcrumb from "@/components/ui/ResponsiveBreadcrumb";
+import { useReadEnrollmentsPrograms } from "@/hooks/enrollments_programs";
 import { useReadEnrollmentProgramCourses } from "@/hooks/enrollments_programs/courses";
 import { useReadUserLogged } from "@/hooks/users/useReadUserLogged";
 import { Box, Heading, Input, Stack } from "@chakra-ui/react";
@@ -28,9 +30,28 @@ export const EnrolledCourseGroupsView = () => {
 		refetch: fetchCourseGroups,
 		isLoading,
   } = useReadEnrollmentProgramCourses(
-    { /*enrollment_id: decrypted*/ },
+    { /*enrollment_period: decrypted*/ },
     {}
   );
+
+  const {
+    data: dataEnrollmentProgram,
+    //isLoading: isLoadingEnrollmentProgram, //<-- Para el ReactSelect
+  } = useReadEnrollmentsPrograms(
+    { enrollment_period: decrypted },
+    { enabled: !!decrypted }
+  );
+
+  const EnrollmentProgramOptions = dataEnrollmentProgram?.results?.map(
+    (item) => (
+      {
+        value: item.program,
+        label: item.program_name,
+      }
+    )
+  );
+
+  console.log(EnrollmentProgramOptions);
 
   const [searchName, setSearchName] = useState('');
 
@@ -47,6 +68,162 @@ export const EnrolledCourseGroupsView = () => {
         .includes(searchName.toLowerCase())
     )
   );
+  
+  /*
+  const {
+    data: dataEnrolledStudents,
+    isLoading: isLoadingEnrolledStudents,
+  } = useReadEnrolledStudents(
+    { enrollment_process: decrypted }
+  );
+  */
+
+  const dataEnrolledStudents = [
+    {
+      enrollment_process: 0,
+      academic_period_name: "2025-II",
+      program_name: "MAESTRÍA EN CIENCIAS CON MENCIÓN EN PROYECTOS DE INVERSIÓN",
+      students: [
+        {
+          id: 1,
+          document: "string",
+          code: "string",
+          full_name: "string",
+          total_credits: 0,
+          course_groups_code: [
+            "string",
+            "string",
+            "string",
+            "string",
+          ]
+        },
+        {
+          id: 2,
+          document: "string",
+          code: "string",
+          full_name: "string",
+          total_credits: 0,
+          course_groups_code: [
+            "string",
+            "string",
+            "string",
+            "string",
+          ]
+        },
+        {
+          id: 3,
+          document: "string",
+          code: "string",
+          full_name: "string",
+          total_credits: 0,
+          course_groups_code: [
+            "string",
+            "string",
+            "string",
+            "string",
+          ]
+        },
+        {
+          id: 4,
+          document: "string",
+          code: "string",
+          full_name: "string",
+          total_credits: 0,
+          course_groups_code: [
+            "string",
+            "string",
+            "string",
+            "string",
+          ]
+        },
+        {
+          id: 5,
+          document: "string",
+          code: "string",
+          full_name: "string",
+          total_credits: 0,
+          course_groups_code: [
+            "string",
+            "string",
+            "string",
+            "string",
+          ]
+        },
+        {
+          id: 6,
+          document: "string",
+          code: "string",
+          full_name: "string",
+          total_credits: 0,
+          course_groups_code: [
+            "string",
+            "string",
+            "string",
+            "string",
+          ]
+        },
+        {
+          id: 7,
+          document: "string",
+          code: "string",
+          full_name: "string",
+          total_credits: 0,
+          course_groups_code: [
+            "string",
+            "string",
+            "string",
+            "string",
+          ]
+        },
+      ]
+    },
+    {
+      enrollment_process: 0,
+      academic_period_name: "2025-II",
+      program_name: "MAESTRÍA EN CIENCIAS E INGENIERÍA ESTADÍSTICA",
+      students: [
+        {
+          id: 1,
+          document: "string",
+          code: "string",
+          full_name: "string",
+          total_credits: 0,
+          course_groups_code: [
+            "string",
+            "string",
+            "string",
+            "string",
+          ]
+        },
+        {
+          id: 2,
+          document: "string",
+          code: "string",
+          full_name: "string",
+          total_credits: 0,
+          course_groups_code: [
+            "string",
+            "string",
+            "string",
+            "string",
+          ]
+        },
+        {
+          id: 3,
+          document: "string",
+          code: "string",
+          full_name: "string",
+          total_credits: 0,
+          course_groups_code: [
+            "string",
+            "string",
+            "string",
+            "string",
+          ]
+        },
+      ]
+    },
+  ]
 
   const totalCount = isFiltering
     ? filteredCourseGroups.length
@@ -95,6 +272,7 @@ export const EnrolledCourseGroupsView = () => {
             onChange={(e) => setSearchName(e.target.value) }
           />
         </InputGroup>
+        <GenerateStudentEnrolledListPdfModal students={dataEnrolledStudents} />
       </Stack>
 
       <EnrolledCourseGroupsTable
