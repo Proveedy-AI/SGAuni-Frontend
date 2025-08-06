@@ -254,8 +254,8 @@ export const MyPaymentAddRequests = () => {
 						description: description,
 						accept_terms: acceptTerms,
 						discount_value: discountValue || '',
-						//amount_credits_total:
-						//	selectedPurpose?.value === 5 ? MyCredits?.total_credits : '',
+						amount_credits_total:
+							selectedPurpose?.value === 5 ? MyCredits?.total_credits : '',
 					};
 
 		paymentRequests(payload, {
@@ -405,8 +405,8 @@ export const MyPaymentAddRequests = () => {
 									</Text>
 									<List.Root pl='4' mt='2'>
 										<List.Item>
-											Solicitud Derecho de Admisión - II (se debe pagar
-											hasta el segundo mes)
+											Solicitud Derecho de Admisión - II (se debe pagar hasta el
+											segundo mes)
 										</List.Item>
 									</List.Root>
 								</Alert>
