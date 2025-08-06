@@ -17,6 +17,7 @@ import {
 	FiBookOpen,
 	FiCheckCircle,
 	FiCircle,
+	FiCreditCard,
 	FiGift,
 	FiZap,
 } from 'react-icons/fi';
@@ -34,19 +35,14 @@ import { useState } from 'react';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { FaCalendarCheck, FaCircle } from 'react-icons/fa';
 
-export const Step03SummaryEnrollment = ({ selectedGroups, onBack }) => {
+export const Step03SummaryEnrollment = ({ selectedGroups, onBack, onNext  }) => {
 	// Calcular totales
-	const [paymentPlan, setPaymentPlan] = useState(4);
-	const [selectedProgram, setSelectedProgram] = useState(null);
-	const [selectedMethod, setSelectedMethod] = useState(null);
-	const [selectedDocumentType, setSelectedDocumentType] = useState(null);
-	const [acceptTerms, setAcceptTerms] = useState(false);
-	const [numDocCarpeta, setnumDocCarpeta] = useState('');
-	const [amountValue, setAmountValue] = useState('');
+	const [paymentPlan, setPaymentPlan] = useState(0);
+
 	const [discountValue, setDiscountValue] = useState('');
 
 	const [description, setDescription] = useState('');
-	const [isSelectCaja, setisSelectCaja] = useState(false);
+
 	const { data: studentScholarships } = useReadMyBenefits();
 	const { data: globalDiscountsRaw } = useReadGraduateUni();
 	const { data: MyCredits } = useReadMyCredits();
@@ -71,9 +67,9 @@ export const Step03SummaryEnrollment = ({ selectedGroups, onBack }) => {
 	const fullProgramAmount = MyCredits?.total_credits * PriceCreditsToPay;
 
 	const semesterDiscountAmount =
-		semesterBaseAmount * DiscountSemestreComplete.discount_percentage;
+		semesterBaseAmount * DiscountSemestreComplete?.discount_percentage;
 	const savingsProgramAmount =
-		fullProgramAmount * DiscountMasterComplete.discount_percentage;
+		fullProgramAmount * DiscountMasterComplete?.discount_percentage;
 
 	const baseAmount = paymentPlan === 4 ? semesterBaseAmount : fullProgramAmount;
 
@@ -179,7 +175,103 @@ export const Step03SummaryEnrollment = ({ selectedGroups, onBack }) => {
 						</Box>
 
 						{/* Opciones de Planes */}
-						<SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
+						<SimpleGrid columns={{ base: 1, md: 3 }} gap={6}>
+							<Card.Root
+								cursor='pointer'
+								transition='all 0.3s'
+								position='relative'
+								border={paymentPlan === 999 ? '2px solid' : '1px solid'}
+								borderColor={paymentPlan === 999 ? 'purple.500' : 'purple.200'}
+								transform={paymentPlan === 999 ? 'scale(1.02)' : undefined}
+								boxShadow={paymentPlan === 999 ? 'lg' : 'md'}
+								ring={paymentPlan === 999 ? 2 : 0}
+								ringColor='purple.500'
+								onClick={() => handlePlanChange(999)}
+								_hover={{ boxShadow: 'lg' }}
+							>
+								<Card.Body p={{ base: 3, md: 6 }}>
+									{/* Encabezado con ícono y estado */}
+									<HStack justify='space-between' mb={4}>
+										<HStack gap={3}>
+											<Box
+												bg='purple.100'
+												p={2}
+												borderRadius='full'
+												display={{ base: 'none', md: 'block' }}
+											>
+												<Icon
+													as={FiCreditCard}
+													boxSize={6}
+													color='purple.600'
+												/>
+											</Box>
+											<Box>
+												<Text fontWeight='semibold' color='gray.800'>
+													Pago en Armadas
+												</Text>
+												<Text fontSize='sm' color='purple.600'>
+													Hasta 6 armadas sin intereses
+												</Text>
+											</Box>
+										</HStack>
+
+										<Box
+											color={paymentPlan === 999 ? 'purple.500' : 'gray.300'}
+										>
+											<Icon
+												as={paymentPlan === 999 ? FiCheckCircle : FaCircle}
+												boxSize={6}
+											/>
+										</Box>
+									</HStack>
+
+									{/* Descripción */}
+									<Text fontSize='sm' color='gray.600' mb={4}>
+										Divide tu pago del semestre en hasta 6 armadas mensuales.
+									</Text>
+
+									{/* Beneficios */}
+									<VStack align='start' gap={2} mb={4}>
+										<HStack gap={2} fontSize='sm'>
+											<Icon as={FiCheckCircle} boxSize={4} color='purple.500' />
+											<Text fontWeight='medium'>
+												Hasta 6 armadas mensuales.
+											</Text>
+										</HStack>
+										<HStack gap={2} fontSize='sm'>
+											<Icon as={FiCheckCircle} boxSize={4} color='purple.500' />
+											<Text color='gray.700'>Sin pago inicial elevado</Text>
+										</HStack>
+										<HStack gap={2} fontSize='sm'>
+											<Icon as={FiCheckCircle} boxSize={4} color='purple.500' />
+											<Text color='gray.700'>
+												Acceso inmediato tras el primer pago
+											</Text>
+										</HStack>
+									</VStack>
+									<Box borderTop='1px solid' borderColor='gray.200' pt={4}>
+										<Stack
+											direction={{ base: 'column', md: 'row' }}
+											justify='space-between'
+											align={{ base: 'flex-start', md: 'center' }}
+											spacing={4}
+										>
+											<Text fontSize='sm' color='gray.600'>
+												Costo Total
+											</Text>
+											<Box textAlign={{ base: 'left', md: 'right' }}>
+												<Text
+													fontSize={{ base: 'lg', md: 'xl' }}
+													fontWeight='bold'
+													color='gray.800'
+												>
+													S/ {semesterBaseAmount.toFixed(2)}
+												</Text>
+											</Box>
+										</Stack>
+									</Box>
+								</Card.Body>
+							</Card.Root>
 							<Card.Root
 								cursor='pointer'
 								transition='all 0.3s'
@@ -197,7 +289,12 @@ export const Step03SummaryEnrollment = ({ selectedGroups, onBack }) => {
 									{/* Encabezado con ícono y estado */}
 									<HStack justify='space-between' mb={4}>
 										<HStack gap={3}>
-											<Box bg='blue.100' p={2} borderRadius='full'>
+											<Box
+												bg='blue.100'
+												p={2}
+												borderRadius='full'
+												display={{ base: 'none', md: 'block' }}
+											>
 												<Icon
 													as={FaCalendarCheck}
 													boxSize={6}
@@ -208,7 +305,7 @@ export const Step03SummaryEnrollment = ({ selectedGroups, onBack }) => {
 												<Text fontWeight='semibold' color='gray.800'>
 													Pago por Semestre
 												</Text>
-												<Text fontSize='sm' color='gray.600'>
+												<Text fontSize='sm' color='blue.600'>
 													Flexibilidad de pago
 												</Text>
 											</Box>
@@ -251,12 +348,21 @@ export const Step03SummaryEnrollment = ({ selectedGroups, onBack }) => {
 										</HStack>
 									</VStack>
 									<Box borderTop='1px solid' borderColor='gray.200' pt={4}>
-										<HStack justify='space-between'>
+										<Stack
+											direction={{ base: 'column', md: 'row' }}
+											justify='space-between'
+											align={{ base: 'flex-start', md: 'center' }}
+											spacing={4}
+										>
 											<Text fontSize='sm' color='gray.600'>
 												Por semestre
 											</Text>
-											<Box textAlign='right'>
-												<Text fontSize='xl' fontWeight='bold' color='gray.800'>
+											<Box textAlign={{ base: 'left', md: 'right' }}>
+												<Text
+													fontSize={{ base: 'lg', md: 'xl' }}
+													fontWeight='bold'
+													color='gray.800'
+												>
 													S/ {semesterBaseAmount.toFixed(2)}
 												</Text>
 												{semesterDiscountAmount > 0 && (
@@ -269,14 +375,14 @@ export const Step03SummaryEnrollment = ({ selectedGroups, onBack }) => {
 													</Text>
 												)}
 											</Box>
-										</HStack>
+										</Stack>
 									</Box>
 								</Card.Body>
 							</Card.Root>
 
 							<Card.Root
-								border='1px solid'
-								borderColor='orange.200'
+								border={paymentPlan === 5 ? '2px solid' : '1px solid'}
+								borderColor={paymentPlan === 5 ? 'orange.500' : 'orange.200'}
 								position='relative'
 								cursor='pointer'
 								transition='all 0.3s'
@@ -288,11 +394,15 @@ export const Step03SummaryEnrollment = ({ selectedGroups, onBack }) => {
 								_hover={{ boxShadow: 'lg' }}
 							>
 								{/* Badge Popular */}
+								{/* Badge Más Popular */}
 								<Badge
 									position='absolute'
-									top='-3'
+									top={{ base: '-2', md: '-3' }}
 									left='50%'
-									transform='translateX(-50%)'
+									transform={{
+										base: 'translateX(-100%) rotate(-12deg)',
+										md: 'translateX(-50%)',
+									}}
 									bg='orange.500'
 									color='white'
 									px='3'
@@ -309,8 +419,8 @@ export const Step03SummaryEnrollment = ({ selectedGroups, onBack }) => {
 								{/* Badge Descuento */}
 								<Badge
 									position='absolute'
-									top='-2'
-									right='-2'
+									top={{ base: '-1', md: '-2' }}
+									right={{ base: '-6', md: '-2' }}
 									bg='red.500'
 									color='white'
 									px='2'
@@ -333,6 +443,7 @@ export const Step03SummaryEnrollment = ({ selectedGroups, onBack }) => {
 												bgGradient='linear(to-r, orange.100, red.100)'
 												borderRadius='full'
 												color='orange.600'
+												display={{ base: 'none', md: 'block' }}
 											>
 												<FiZap size={24} />
 											</Box>
@@ -380,12 +491,21 @@ export const Step03SummaryEnrollment = ({ selectedGroups, onBack }) => {
 
 									{/* Total */}
 									<Box borderTop='1px' borderColor='gray.200' pt={4}>
-										<Flex justify='space-between' align='center'>
+										<Stack
+											direction={{ base: 'column', md: 'row' }}
+											justify='space-between'
+											align={{ base: 'flex-start', md: 'center' }}
+											spacing={4}
+										>
 											<Text fontSize='sm' color='gray.600'>
 												Pago único
 											</Text>
-											<Box textAlign='right'>
-												<Text fontSize='xl' fontWeight='bold' color='gray.800'>
+											<Box textAlign={{ base: 'left', md: 'right' }}>
+												<Text
+													fontSize={{ base: 'lg', md: 'xl' }}
+													fontWeight='bold'
+													color='gray.800'
+												>
 													S/ {fullProgramAmount.toFixed(2)}
 												</Text>
 												{savingsProgramAmount > 0 && (
@@ -398,7 +518,7 @@ export const Step03SummaryEnrollment = ({ selectedGroups, onBack }) => {
 													</Text>
 												)}
 											</Box>
-										</Flex>
+										</Stack>
 									</Box>
 
 									{/* Mensaje Promocional */}
@@ -416,7 +536,7 @@ export const Step03SummaryEnrollment = ({ selectedGroups, onBack }) => {
 											gap={2}
 											color='orange.700'
 										>
-											<Box as={FiGift} size='16px' />
+											<Box as={FiGift} size='40px' />
 											<Text
 												fontSize={{ base: 'sm', md: 'md' }}
 												fontWeight='medium'
@@ -509,16 +629,17 @@ export const Step03SummaryEnrollment = ({ selectedGroups, onBack }) => {
 				</Card.Root>
 			)}
 
-			<TuitionSummaryCard
-				title={paymentPlan === 4 ? 'Pago por Semestre' : 'Pago por Maestría'}
-				credits={paymentPlan === 4 ? totalCredits : MyCredits?.total_credits}
-				pricePerCredit={parseFloat(PriceCreditsToPay)}
-				discounts={discounts}
-				setDiscountValue={setDiscountValue}
-				setDescription={setDescription}
-			/>
+			{(paymentPlan === 4 || paymentPlan === 5) && (
+				<TuitionSummaryCard
+					title={paymentPlan === 4 ? 'Pago por Semestre' : 'Pago por Maestría'}
+					credits={paymentPlan === 4 ? totalCredits : MyCredits?.total_credits}
+					pricePerCredit={parseFloat(PriceCreditsToPay)}
+					discounts={discounts}
+					setDiscountValue={setDiscountValue}
+					setDescription={setDescription}
+				/>
+			)}
 			<Flex
-				mt={24}
 				bg={'#FFF1CB'}
 				py={4}
 				px={4}
@@ -532,7 +653,7 @@ export const Step03SummaryEnrollment = ({ selectedGroups, onBack }) => {
 				<Icon as={LuCircleAlert} color={'#F86A1E'} boxSize={6} />
 				<Text maxW={'75%'}>
 					Importante: Para culminar es necesario seleccionar el botón
-					&quot;Procesar matrícula&quot;
+					&quot;Procesar orden de matrícula&quot;
 				</Text>
 			</Flex>
 
@@ -546,8 +667,14 @@ export const Step03SummaryEnrollment = ({ selectedGroups, onBack }) => {
 				</Button>
 
 				<ProcessEnrollmentModal
-					triggerButton={<Button colorScheme='blue'>Procesar matrícula</Button>}
-					onNext={() => {}}
+					paymentPlan={paymentPlan}
+					discountValue={discountValue}
+					baseAmount={baseAmount}
+					amountCredits={
+						paymentPlan === 4 ? totalCredits : MyCredits?.total_credits
+					}
+					description={description}
+					onNext={onNext}
 				/>
 			</Flex>
 		</VStack>
@@ -555,6 +682,6 @@ export const Step03SummaryEnrollment = ({ selectedGroups, onBack }) => {
 };
 
 Step03SummaryEnrollment.propTypes = {
-	selectedGroups: PropTypes.array,
+	selectedGroups: PropTypes.object,
 	onBack: PropTypes.func,
 };
