@@ -25,6 +25,7 @@ import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
 import { StartEnrollmentProcessModal } from '@/components/modals/procedures';
 import { useNavigate } from 'react-router';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
+import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
 
 const EnrollmentCard = ({ enrollment, onStartEnrollment }) => {
   const cardBg = useColorModeValue("white", "gray.800");
@@ -126,9 +127,10 @@ export const MyEnrollmentProcessView = () => {
 
   const bgColor = useColorModeValue("blue.50", "blue.900");
 
-  const handleStartEnrollment = (enrollmentId) => {
-    const encrypted = Encryptor.encrypt(enrollmentId); // id enrollment
+  const handleStartEnrollment = (enrollment) => {
+    const encrypted = Encryptor.encrypt(enrollment.id); // id enrollment
     const encoded = encodeURIComponent(encrypted);
+    EncryptedStorage.save('selectedEnrollmentProccess', enrollment);
     navigate(`/myprocedures/enrollment-process/${encoded}`);
   };
 

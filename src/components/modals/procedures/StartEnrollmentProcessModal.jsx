@@ -77,7 +77,7 @@ export const StartEnrollmentProcessModal = ({ enrollment, onStartEnrollment }) =
                   bg="#0661D8"
                   _hover={{ bg: "#0550B8" }}
                   onClick={() => {
-                    onStartEnrollment(enrollment.id);
+                    onStartEnrollment(enrollment);
                     setOpen(false);
                   }}
                 >
