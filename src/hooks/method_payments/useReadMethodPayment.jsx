@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useReadMethodPayment = () => {
+export const useReadMethodPayment = (options = {}) => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useQuery({
@@ -11,5 +11,6 @@ export const useReadMethodPayment = () => {
 			const res = await axiosPrivate.get(`/api/v1/payment-methods/`);
 			return res.data;
 		},
+		...options,
 	});
 };
