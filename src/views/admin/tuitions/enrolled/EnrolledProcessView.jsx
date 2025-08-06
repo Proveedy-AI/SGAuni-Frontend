@@ -25,7 +25,7 @@ export const EnrolledProcessView = () => {
         .includes(searchValue.toLowerCase());
       return matchesSearch; // && matchesStatus;
     });
-  
+
     return (
       <Box spaceY='5'>
         <Heading size={{ xs: 'xs', sm: 'sm', md: 'md' }}>
