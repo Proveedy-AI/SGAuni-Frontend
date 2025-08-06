@@ -241,7 +241,7 @@ export const MyPaymentAddRequests = () => {
 						document_type: selectedDocumentType?.value,
 						num_document: numDocCarpeta,
 						description: description,
-						aceppt_terms: acceptTerms,
+						acepted_terms: acceptTerms,
 						discount_value: discountValue || '',
 					}
 				: {
@@ -252,7 +252,7 @@ export const MyPaymentAddRequests = () => {
 						document_type: selectedDocumentType?.value,
 						num_document: numDocCarpeta,
 						description: description,
-						accept_terms: acceptTerms,
+						acepted_terms: acceptTerms,
 						discount_value: discountValue || '',
 						amount_credits_total:
 							selectedPurpose?.value === 5 ? MyCredits?.total_credits : '',
