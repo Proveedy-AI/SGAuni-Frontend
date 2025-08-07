@@ -23,6 +23,7 @@ export const Step01CourseList = ({
 	selectedCourse,
 	setSelectedCourse,
 	onRefreshSelections,
+	isSomeRequestPending,
 }) => {
 	const bgColor = useColorModeValue('white', 'gray.800');
 
@@ -258,7 +259,9 @@ export const Step01CourseList = ({
 											size='sm'
 											rightIcon={<Icon as={FiArrowRight} />}
 											onClick={() => setSelectedCourse(course)}
-											isDisabled={course.status === 'blocked'}
+											disabled={
+												course.status === 'blocked' || isSomeRequestPending
+											}
 										>
 											Ver horarios
 										</Button>
@@ -493,4 +496,5 @@ Step01CourseList.propTypes = {
 	selectedCourse: PropTypes.object,
 	setSelectedCourse: PropTypes.func.isRequired,
 	onRefreshSelections: PropTypes.func.isRequired,
+	isSomeRequestPending: PropTypes.bool,
 };

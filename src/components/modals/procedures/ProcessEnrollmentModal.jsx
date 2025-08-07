@@ -26,7 +26,6 @@ import { ReactSelect } from '@/components/select';
 import { FiAlertTriangle, FiCreditCard } from 'react-icons/fi';
 import { useReadMethodPayment } from '@/hooks/method_payments';
 import { useCreatePaymentRequest } from '@/hooks/payment_requests';
-import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
 
 export const ProcessEnrollmentModal = ({
 	paymentPlan,
@@ -35,6 +34,7 @@ export const ProcessEnrollmentModal = ({
 	discountValue,
 	amountCredits,
 	onNext,
+	enrollmentItem,
 }) => {
 	const [open, setOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
@@ -43,12 +43,6 @@ export const ProcessEnrollmentModal = ({
 	const [selectedDocumentType, setSelectedDocumentType] = useState(null);
 	const [acceptTerms, setAcceptTerms] = useState(false);
 	const [numDocCarpeta, setnumDocCarpeta] = useState('');
-	const [enrollmentItem, setEnrollmentItem] = useState(null);
-
-	useEffect(() => {
-		const stored = EncryptedStorage.load('selectedEnrollmentProccess');
-		setEnrollmentItem(stored);
-	}, []);
 
 	const [errors, setErrors] = useState({});
 
@@ -90,7 +84,7 @@ export const ProcessEnrollmentModal = ({
 				: {
 						payment_method: selectedMethod?.value,
 						amount: baseAmount || '0',
-						enrollment: enrollmentItem.id, // para matrícula
+						enrollment: enrollmentItem?.id, // para matrícula
 						purpose: paymentPlan,
 						document_type: selectedDocumentType?.value,
 						num_document: numDocCarpeta,
@@ -99,51 +93,53 @@ export const ProcessEnrollmentModal = ({
 						discount_value: discountValue || '',
 						amount_credits_total: amountCredits,
 					};
-		console.log('Payload:', payload);
-		onNext();
-		/*paymentRequests(payload, {
-			onSuccess: () => {
-				toaster.create({
-					title: 'Solicitud de pago fue exitoso',
-					type: 'success',
-				});
 
-				setisSelectCaja(false);
-				setSelectedMethod(null);
-				setnumDocCarpeta('');
-				setSelectedDocumentType(null);
-			},
-			onError: (error) => {
-				const errorData = error.response?.data;
+		if (paymentPlan === 4 || paymentPlan === 5) {
+			paymentRequests(payload, {
+				onSuccess: () => {
+					toaster.create({
+						title: 'Solicitud de pago fue exitoso',
+						type: 'success',
+					});
+					onNext();
+					setisSelectCaja(false);
+					setSelectedMethod(null);
+					setnumDocCarpeta('');
+					setSelectedDocumentType(null);
+				},
+				onError: (error) => {
+					const errorData = error.response?.data;
 
-				if (Array.isArray(errorData)) {
-					// Caso como: ["Ya existe una solicitud de pago Pendiente..."]
-					errorData.forEach((message) => {
+					if (Array.isArray(errorData)) {
+						// Caso como: ["Ya existe una solicitud de pago Pendiente..."]
+						errorData.forEach((message) => {
+							toaster.create({
+								title: message,
+								type: 'error',
+							});
+						});
+					} else if (errorData && typeof errorData === 'object') {
+						// Caso como: { field1: ["msg1", "msg2"], field2: ["msg3"] }
+						Object.values(errorData).forEach((errorList) => {
+							if (Array.isArray(errorList)) {
+								errorList.forEach((message) => {
+									toaster.create({
+										title: message,
+										type: 'error',
+									});
+								});
+							}
+						});
+					} else {
+						// Fallback
 						toaster.create({
-							title: message,
+							title: 'Error al solicitar el pago',
 							type: 'error',
 						});
-					});
-				} else if (errorData && typeof errorData === 'object') {
-					// Caso como: { field1: ["msg1", "msg2"], field2: ["msg3"] }
-					Object.values(errorData).forEach((errorList) => {
-						if (Array.isArray(errorList)) {
-							errorList.forEach((message) => {
-								toaster.create({
-									title: message,
-									type: 'error',
-								});
-							});
-						}
-					});
-				} else {
-					// Fallback
-					toaster.create({
-						title: 'Error al solicitar el pago',
-						type: 'error',
-					});
-				}
-			},*/
+					}
+				},
+			});
+		}
 	};
 
 	// Efecto de carga cuando se abre el modal
@@ -170,11 +166,12 @@ export const ProcessEnrollmentModal = ({
 	return (
 		<Modal
 			placement='center'
-			trigger={<Button colorPalette='blue'>Procesar Orden</Button>}
+			trigger={<Button disabled={!paymentPlan} colorPalette='blue'>Procesar Orden</Button>}
 			open={open}
 			onSave={handleSubmitData}
 			onOpenChange={(e) => setOpen(e.open)}
 			size='2xl'
+			saveLabel='Solicitar'
 			loading={isPending}
 		>
 			<Stack gap={4} pb={6}>
@@ -223,15 +220,20 @@ export const ProcessEnrollmentModal = ({
 										/>
 									</Field>
 									<Field
-										label='N° Doc'
+										label='N° Documento'
 										invalid={!!errors.numDocCarpeta}
 										errorText={errors.numDocCarpeta}
 									>
 										<Input
 											value={numDocCarpeta}
 											onChange={(e) => setnumDocCarpeta(e.target.value)}
-											placeholder='Ingrese número de documento'
-											disabled={selectedDocumentType?.value === 1}
+											placeholder={
+												selectedDocumentType?.value === 1
+													? 'Ingrese número de documento'
+													: selectedDocumentType?.value === 2
+														? 'Ingrese número de RUC'
+														: 'Ingrese número de documento'
+											}
 										/>
 									</Field>
 									<Field
@@ -337,4 +339,5 @@ ProcessEnrollmentModal.propTypes = {
 	description: PropTypes.string,
 	amountCredits: PropTypes.number,
 	onNext: PropTypes.func,
+	enrollmentItem: PropTypes.object,
 };
