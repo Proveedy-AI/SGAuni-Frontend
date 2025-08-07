@@ -1,4 +1,3 @@
-import { useMyEvaluationsByCourse } from "@/hooks/mycourses";
 import { useColorModeValue } from "@/components/ui";
 import { 
   Box, 
@@ -19,6 +18,7 @@ import { useParams, useNavigate } from "react-router";
 import { IoArrowBack } from "react-icons/io5";
 import { Button } from "@/components/ui";
 import { Encryptor } from "@/components/CrytoJS/Encryptor";
+import { useReadCourseGradesByCourseId } from "@/hooks/students";
 
 export const MyEvaluationsByCourseView = () => {
 const { id } = useParams();
@@ -28,66 +28,9 @@ const { id } = useParams();
   const navigate = useNavigate();
 
   const {
-    // data: dataMyEvaluations, // No funcional por ahora, usando localMyEvaluations
+    data: dataMyEvaluations,
     isLoading: isLoadingMyEvaluations,
-  } = useMyEvaluationsByCourse(decrypted);
-
-  // Datos locales de ejemplo
-  const localMyEvaluations = {
-    course_info: {
-      id: 1,
-      course_name: "Fundamentos de Administración",
-      course_code: "ADM101",
-      credits: 4,
-      teacher_name: "Dr. Juan Pérez",
-      group_code: "A1",
-      program_name: "Maestría en Administración",
-      period: "2025-1",
-      final_average: 15.2
-    },
-    evaluations: [
-      {
-        id: 1,
-        name: "Examen Parcial 1",
-        grade: 16,
-        weight: 25,
-        date: "2025-03-15",
-        status: "evaluated"
-      },
-      {
-        id: 2,
-        name: "Trabajo Grupal",
-        grade: 18,
-        weight: 20,
-        date: "2025-04-10",
-        status: "evaluated"
-      },
-      {
-        id: 3,
-        name: "Examen Parcial 2",
-        grade: 14,
-        weight: 25,
-        date: "2025-05-20",
-        status: "evaluated"
-      },
-      {
-        id: 4,
-        name: "Proyecto Final",
-        grade: 15,
-        weight: 30,
-        date: "2025-06-25",
-        status: "evaluated"
-      },
-      {
-        id: 5,
-        name: "Examen Final",
-        grade: null,
-        weight: 0,
-        date: "2025-07-15",
-        status: "pending"
-      }
-    ]
-  };
+  } = useReadCourseGradesByCourseId(decrypted, {}, { enabled: !!decrypted });
 
   const bgColor = useColorModeValue("white", "gray.800");
   const borderColor = useColorModeValue("gray.200", "gray.600");
@@ -115,19 +58,39 @@ const { id } = useParams();
     });
   };
 
+  const { data } = dataMyEvaluations;
+
   const calculateWeightedAverage = (evaluations) => {
-    const evaluatedItems = evaluations.filter(evaluation => evaluation.grade !== null && evaluation.weight > 0);
+    const evaluatedItems = evaluations?.filter(evaluation => evaluation.grade_obtained !== null && evaluation.weight_percentage > 0) || [];
     if (evaluatedItems.length === 0) return 0;
     
-    const totalWeight = evaluatedItems.reduce((sum, evaluation) => sum + evaluation.weight, 0);
-    const weightedSum = evaluatedItems.reduce((sum, evaluation) => sum + (evaluation.grade * evaluation.weight), 0);
+    const totalWeight = evaluatedItems.reduce((sum, evaluation) => sum + evaluation.weight_percentage, 0);
+    const weightedSum = evaluatedItems.reduce((sum, evaluation) => sum + (evaluation.grade_obtained * evaluation.weight_percentage), 0);
     
     return totalWeight > 0 ? (weightedSum / totalWeight).toFixed(1) : 0;
   };
 
-  const pendingEvaluations = localMyEvaluations.evaluations.filter(evaluation => evaluation.status === "pending").length;
-  const completedEvaluations = localMyEvaluations.evaluations.filter(evaluation => evaluation.status === "evaluated").length;
-  const currentAverage = calculateWeightedAverage(localMyEvaluations.evaluations);
+  const pendingEvaluations = data?.evaluations?.filter(evaluation => evaluation.grade_obtained === null).length || 0;
+  const completedEvaluations = data?.evaluations?.filter(evaluation => evaluation.grade_obtained !== null).length || 0;
+  const currentAverage = data?.grade_summary?.calculated_average?.toFixed(1) || calculateWeightedAverage(data?.evaluations);
+
+  // Mostrar loader mientras se cargan los datos
+  if (isLoadingMyEvaluations) {
+    return (
+      <Box p={6} maxW="full" mx="auto" textAlign="center">
+        <Text>Cargando evaluaciones...</Text>
+      </Box>
+    );
+  }
+
+  // Si no hay datos
+  if (!data) {
+    return (
+      <Box p={6} maxW="full" mx="auto" textAlign="center">
+        <Text>No se encontraron datos de evaluaciones</Text>
+      </Box>
+    );
+  }
 
   return (
     <Box p={6} maxW="full" mx="auto">
@@ -150,50 +113,47 @@ const { id } = useParams();
             <HStack pb={5}>
               <FaBookOpen color="blue" />
               <Heading size="lg" color="blue.700">
-                {localMyEvaluations.course_info.course_code} - {localMyEvaluations.course_info.course_name}
+                {data.course_info?.course_name}
               </Heading>
             </HStack>
           </Card.Header>
           <Card.Body>
-            <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(4, 1fr)" }} gap={4}>
-              <GridItem >
-                <Box display="flex" alignItems="center" gapX={3}>
-                  <FaUser /> Docente
-                </Box>
-                <Text fontWeight="medium">{localMyEvaluations.course_info.teacher_name}</Text>
-              </GridItem>
+            <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }} gap={4}>
               <GridItem>
                 <Box display="flex" alignItems="center" gapX={3}>
                   <FaUser /> Sección
                 </Box>
-                <Text fontWeight="medium">{localMyEvaluations.course_info.group_code}</Text>
-              </GridItem>
-              <GridItem>
-                <Box display="flex" alignItems="center" gapX={3}>
-                  <FaUser /> Créditos
-                </Box>
-                <Text fontWeight="medium">{localMyEvaluations.course_info.credits}</Text>
+                <Text fontWeight="medium">{data.course_info?.group_section}</Text>
               </GridItem>
               <GridItem>
                 <Box display="flex" alignItems="center" gapX={3}>
                   <FaUser /> Período
                 </Box>
-                <Text fontWeight="medium">{localMyEvaluations.course_info.period}</Text>
+                <Text fontWeight="medium">{data.course_info?.academic_period}</Text>
+              </GridItem>
+              <GridItem>
+                <Box display="flex" alignItems="center" gapX={3}>
+                  <FaUser /> Estado
+                </Box>
+                <Text fontWeight="medium">
+                  {data.course_info?.qualification_status}
+                  {data.course_info?.is_repeated && " (Repetido)"}
+                </Text>
               </GridItem>
             </Grid>
           </Card.Body>
         </Card.Root>
 
         {/* Estadísticas Rápidas */}
-        <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={4}>
+        <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(4, 1fr)" }} gap={4}>
           <GridItem>
             <Stat.Root bg={statBg} p={4} borderRadius="lg" border="1px solid" borderColor={borderColor}>
-              <Stat.Label>Promedio Actual</Stat.Label>
-              <Stat.ValueUnit color={getGradeColor(currentAverage)}>
-                {currentAverage}
+              <Stat.Label>Promedio Final</Stat.Label>
+              <Stat.ValueUnit color={getGradeColor(data.grade_summary?.final_grade || currentAverage)}>
+                {data.grade_summary?.final_grade?.toFixed(1) || currentAverage}
               </Stat.ValueUnit>
               <Stat.HelpText>
-                Basado en evaluaciones completadas
+                {data.grade_summary?.final_grade ? 'Nota final oficial' : 'Promedio calculado'}
               </Stat.HelpText>
             </Stat.Root>
           </GridItem>
@@ -202,7 +162,7 @@ const { id } = useParams();
               <Stat.Label>Evaluaciones Completadas</Stat.Label>
               <Stat.ValueUnit color="green.500">{completedEvaluations}</Stat.ValueUnit>
               <Stat.HelpText>
-                De {localMyEvaluations.evaluations.length} totales
+                De {data.evaluations?.length || 0} totales
               </Stat.HelpText>
             </Stat.Root>
           </GridItem>
@@ -212,6 +172,17 @@ const { id } = useParams();
               <Stat.ValueUnit color="orange.500">{pendingEvaluations}</Stat.ValueUnit>
               <Stat.HelpText>
                 Por realizar
+              </Stat.HelpText>
+            </Stat.Root>
+          </GridItem>
+          <GridItem>
+            <Stat.Root bg={cardBg} p={4} borderRadius="lg" border="1px solid" borderColor={borderColor}>
+              <Stat.Label>Peso Total Usado</Stat.Label>
+              <Stat.ValueUnit color="blue.500">
+                {data.grade_summary?.total_weight_used || 0}%
+              </Stat.ValueUnit>
+              <Stat.HelpText>
+                Del total evaluado
               </Stat.HelpText>
             </Stat.Root>
           </GridItem>
@@ -242,23 +213,26 @@ const { id } = useParams();
                       Fecha
                     </Table.Cell>
                     <Table.Cell fontWeight="bold" color="blue.700" textAlign="center">
+                      Tipo
+                    </Table.Cell>
+                    <Table.Cell fontWeight="bold" color="blue.700" textAlign="center">
                       Estado
                     </Table.Cell>
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {localMyEvaluations.evaluations.map((evaluation) => (
+                  {data.evaluations?.map((evaluation) => (
                     <Table.Row key={evaluation.id} borderColor={borderColor}>
                       <Table.Cell>
                         <Text fontWeight="medium" color="gray.700">
-                          {evaluation.name}
+                          {evaluation.evaluation_name}
                         </Text>
                       </Table.Cell>
                       <Table.Cell textAlign="center">
-                        {evaluation.grade !== null ? (
+                        {evaluation.grade_obtained !== null ? (
                           <Badge 
-                            bg={getGradeColor(evaluation.grade)}
-                            variant={getGradeBadgeVariant(evaluation.grade)}
+                            bg={getGradeColor(evaluation.grade_obtained)}
+                            variant={getGradeBadgeVariant(evaluation.grade_obtained)}
                             p={1}
                             boxSize={6}
                             textAlign={"center"}
@@ -266,7 +240,7 @@ const { id } = useParams();
                             color="white"
                             borderRadius="md"
                           >
-                            {evaluation.grade}
+                            {evaluation.grade_obtained}
                           </Badge>
                         ) : (
                           <Badge bg="gray.300" variant="outline" p={2} borderRadius="md">
@@ -276,25 +250,35 @@ const { id } = useParams();
                       </Table.Cell>
                       <Table.Cell textAlign="center">
                         <Text fontWeight="medium">
-                          {evaluation.weight > 0 ? `${evaluation.weight}%` : '-'}
+                          {evaluation.weight_percentage > 0 ? `${evaluation.weight_percentage}%` : '-'}
                         </Text>
                       </Table.Cell>
                       <Table.Cell textAlign="center">
                         <Text fontSize="sm" color="gray.600">
-                          {formatDate(evaluation.date)}
+                          {formatDate(evaluation.evaluation_date)}
                         </Text>
                       </Table.Cell>
                       <Table.Cell textAlign="center">
-                        <Badge 
-                          bg={evaluation.status === "evaluated" ? "green.300" : "orange.300"}
-                          variant="subtle"
-                          color={evaluation.status === "evaluated" ? "green.700" : "orange.700"}
-                        >
-                          {evaluation.status === "evaluated" ? "Evaluado" : "Pendiente"}
+                        <Badge variant="outline" colorScheme="blue">
+                          {evaluation.qualification_type || 'N/A'}
                         </Badge>
                       </Table.Cell>
+                      <Table.Cell textAlign="center">
+                        <Badge 
+                          bg={evaluation.grade_obtained !== null ? "green.300" : "orange.300"}
+                          variant="subtle"
+                          color={evaluation.grade_obtained !== null ? "green.700" : "orange.700"}
+                        >
+                          {evaluation.grade_obtained !== null ? "Evaluado" : "Pendiente"}
+                        </Badge>
+                        {evaluation.grade_conceptual && (
+                          <Text fontSize="xs" color="gray.500" mt={1}>
+                            {evaluation.grade_conceptual}
+                          </Text>
+                        )}
+                      </Table.Cell>
                     </Table.Row>
-                  ))}
+                  )) || []}
                 </Table.Body>
               </Table.Root>
             </Box>

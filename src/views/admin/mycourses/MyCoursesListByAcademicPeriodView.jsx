@@ -1,6 +1,6 @@
 import { Encryptor } from "@/components/CrytoJS/Encryptor";
 import { useColorModeValue } from "@/components/ui";
-import { useReadMyCourses } from "@/hooks/mycourses"
+import { useReadCoursesByPeriod } from "@/hooks/students";
 import { 
   Box, 
   Heading, 
@@ -9,149 +9,16 @@ import {
   Badge, 
   VStack,
   HStack,
+  Spinner,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router";
 
-const CoursesListByPeriod = [
-  {
-    id: 1,
-    student_id: 1,
-    program_id: 2,
-    program_name: "Maestría en Administración",
-    program_period: "2025-1",
-    enrollment_period_program: 1,
-    status: 2,
-    status_display: "Matriculado",
-    payment_verified: true,
-    is_first_enrollment: true,
-    verified_at: "2025-07-17T16:04:20.478000-05:00",
-    courses_enrolled: 4,
-    total_credits: 16,
-    courses: [
-      {
-        id: 1,
-        course_id: 3,
-        course_name: "Fundamentos de Administración",
-        course_code: "ADM101",
-        credits: 4,
-        group_id: 5,
-        group_code: "A1",
-        teacher_id: 1,
-        teacher_name: "Dr. Juan Pérez",
-        average: 15,
-        schedule_info: [
-          {
-            day_of_week: 1,
-            start_time: "08:00",
-            end_time: "12:00",
-            total_hours: 4
-          },
-        ]
-      },
-      {
-        id: 2,
-        course_id: 4,
-        course_name: "Gestión de Proyectos",
-        course_code: "ADM201",
-        credits: 4,
-        group_id: 6,
-        group_code: "B1",
-        teacher_id: 2,
-        teacher_name: "Dra. María López",
-        average: 11,
-        schedule_info: [
-          {
-            day_of_week: 3,
-            start_time: "14:00",
-            end_time: "18:00",
-            total_hours: 4
-          },
-        ]
-      },
-      {
-        id: 3,
-        course_id: 5,
-        course_name: "Contabilidad Financiera",
-        course_code: "ADM301",
-        credits: 4,
-        group_id: 7,
-        group_code: "C1",
-        teacher_id: 3,
-        teacher_name: "Lic. Ana Torres",
-        average: 14,
-        schedule_info: [
-          {
-            day_of_week: 5,
-            start_time: "16:00",
-            end_time: "20:00",
-            total_hours: 4
-          },
-        ]
-      }
-    ]
-  },
-  {
-    id: 2,
-    student_id: 1,
-    program_id: 2,
-    program_name: "Maestría en Administración",
-    program_period: "2025-2",
-    enrollment_period_program: 2,
-    status: 2,
-    status_display: "Matriculado",
-    payment_verified: true,
-    is_first_enrollment: false,
-    verified_at: "2026-01-15T10:30:00.000000-05:00",
-    courses: [
-      {
-        id: 3,
-        course_id: 5,
-        course_name: "Marketing Estratégico",
-        course_code: "MKT301",
-        credits: 4,
-        group_id: 7,
-        group_code: "C1",
-        teacher_id: 3,
-        teacher_name: "Ing. Carlos García",
-        average: 9,
-        schedule_info: [
-          {
-            day_of_week: 2,
-            start_time: "10:00",
-            end_time: "14:00",
-            total_hours: 4
-          },
-        ]
-      },
-      {
-        id: 4,
-        course_id: 6,
-        course_name: "Finanzas Corporativas",
-        course_code: "FIN401",
-        credits: 4,
-        group_id: 8,
-        group_code: "D1",
-        teacher_id: 4,
-        teacher_name: "Lic. Ana Torres",
-        average: 11,
-        schedule_info: [
-          {
-            day_of_week: 5,
-            start_time: "16:00",
-            end_time: "20:00",
-            total_hours: 4
-          },
-        ]
-      }
-    ]
-  }
-]
-
 export const MyCoursesListByAcademicPeriodView = () => {
-  const { // No funcional por ahora, debes usar CoursesListByPeriod
-    data: myCourses,
-    isLoading: isLoadingMyCourses
-  } = useReadMyCourses();
+  const {
+    data: dataCoursesByPeriod,
+    isLoading: isLoadingCoursesByPeriod,
+    error: errorCoursesByPeriod
+  } = useReadCoursesByPeriod();
 
   const navigate = useNavigate();
 
@@ -167,10 +34,10 @@ export const MyCoursesListByAcademicPeriodView = () => {
     return days[dayNumber];
   };
 
-  const formatSchedule = (scheduleInfo) => {
-    if (!scheduleInfo || scheduleInfo.length === 0) return "Sin horario";
+  const formatSchedule = (schedules) => {
+    if (!schedules || schedules.length === 0) return "Sin horario";
     
-    return scheduleInfo.map(schedule => 
+    return schedules.map(schedule => 
       `${getDayName(schedule.day_of_week)}: ${schedule.start_time} - ${schedule.end_time}`
     ).join(", ");
   };
@@ -187,15 +54,38 @@ export const MyCoursesListByAcademicPeriodView = () => {
     navigate(`/mycourses/${encoded}`);
   };
 
+  // Error state
+  if (errorCoursesByPeriod) {
+    return (
+      <Box p={6} maxW="full" mx="auto">
+        <Box p={4} bg="red.50" borderRadius="md" border="1px solid" borderColor="red.200">
+          <Text color="red.600" fontWeight="medium">
+            Error al cargar los cursos: {errorCoursesByPeriod.message || 'Error desconocido'}
+          </Text>
+        </Box>
+      </Box>
+    );
+  }
+
   return (
     <Box p={6} maxW="full" mx="auto">
       <Heading mb={3}>
         Mis Cursos
       </Heading>
 
-      <VStack spacing={6} align="stretch">
-        {CoursesListByPeriod.map((period) => (
-          <Box key={period.id} mb={3}>
+      {isLoadingCoursesByPeriod ? (
+        <Box p={6} maxW="full" mx="auto" textAlign="center">
+          <Spinner size="lg" />
+          <Text mt={4}>Cargando cursos...</Text>
+        </Box>
+      ) : (
+        <VStack spacing={6} align="stretch">
+        {!dataCoursesByPeriod?.data || dataCoursesByPeriod.data.length === 0 ? (
+          <Box p={6} maxW="full" mx="auto" textAlign="center">
+            <Text>No se encontraron cursos registrados.</Text>
+          </Box>
+        ) : dataCoursesByPeriod.data.map((periodData, periodIndex) => (
+          <Box key={periodIndex} mb={3}>
             <Box 
               bg={periodHeaderBg} 
               py={2}
@@ -205,23 +95,20 @@ export const MyCoursesListByAcademicPeriodView = () => {
               borderColor={borderColor}
             >
               <Text fontSize={14} fontWeight="bold" color="purple.700">
-                PERIODO ACADÉMICO {period.program_period}
+                PERIODO ACADÉMICO {periodData.academic_period}
               </Text>
             </Box>
 
             <Box my={2} px={6} py={3} bg={summaryBg} borderRadius="md">
               <HStack justify="space-between">
                 <Text fontSize="sm" color="gray.600">
-                  <strong>Programa:</strong> {period.program_name}
+                  <strong>Total de Cursos:</strong> {periodData.total_courses}
                 </Text>
                 <Text fontSize="sm" color="gray.600">
-                  <strong>Cursos:</strong> {period.courses.length}
-                </Text>
-                <Text fontSize="sm" color="gray.600">
-                  <strong>Total Créditos:</strong> {period.courses.reduce((sum, course) => sum + course.credits, 0)}
-                </Text>
-                <Text fontSize="sm" color="gray.600">
-                  <strong>Estado:</strong> {period.status_display}
+                  <strong>Total Créditos:</strong> {periodData.courses.reduce((sum, course) => {
+                    // Obtener créditos del primer schedule si existe
+                    return sum + (course.schedules?.[0]?.credits || 0);
+                  }, 0)}
                 </Text>
               </HStack>
             </Box>
@@ -243,10 +130,11 @@ export const MyCoursesListByAcademicPeriodView = () => {
                     <Table.Cell fontWeight="bold" color="blue.700" textAlign="center">Sección</Table.Cell>
                     <Table.Cell fontWeight="bold" color="blue.700" textAlign="center" width="320px">Docente</Table.Cell>
                     <Table.Cell fontWeight="bold" color="blue.700" textAlign="center" width="320px">Horario</Table.Cell>
+                    <Table.Cell fontWeight="bold" color="blue.700" textAlign="center">Estado</Table.Cell>
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {period.courses.map((course, index) => (
+                  {periodData.courses.map((course, index) => (
                     <Table.Row 
                       key={index} 
                       _hover={{ bg: hoverBg }}
@@ -259,7 +147,7 @@ export const MyCoursesListByAcademicPeriodView = () => {
                     >
                       <Table.Cell>
                         <Text fontSize="sm" color="blue.600" fontWeight="medium" textAlign="center">
-                          {period.enrollment_period_program}
+                          {course.schedules?.[0]?.cycle || "N/A"}
                         </Text>
                       </Table.Cell>
                       <Table.Cell>
@@ -267,11 +155,16 @@ export const MyCoursesListByAcademicPeriodView = () => {
                           <Text fontSize="sm" fontWeight="medium" color="blue.600">
                             {course.course_code} - {course.course_name}
                           </Text>
+                          {course.is_repeated && (
+                            <Badge colorScheme="orange" size="sm">
+                              Repetido
+                            </Badge>
+                          )}
                         </VStack>
                       </Table.Cell>
                       <Table.Cell textAlign="center">
                         <Badge 
-                          bg={getGradeColor(course.average)} 
+                          bg={getGradeColor(course.final_grade)} 
                           variant="solid"
                           p={1}
                           boxSize={6}
@@ -280,28 +173,38 @@ export const MyCoursesListByAcademicPeriodView = () => {
                           color="white"
                           borderRadius="md"
                         >
-                          {course.average}
+                          {course.final_grade || "N/A"}
                         </Badge>
                       </Table.Cell>
                       <Table.Cell textAlign="center">
                         <Text fontSize="sm" fontWeight="medium">
-                          {course.credits}
+                          {course.schedules?.[0]?.credits || "N/A"}
                         </Text>
                       </Table.Cell>
                       <Table.Cell textAlign="center">
                         <Text fontSize="sm" fontWeight="medium">
-                          {course.group_code}
+                          {course.group_section}
                         </Text>
                       </Table.Cell>
                       <Table.Cell>
                         <Text fontSize="sm">
-                          {course.teacher_name}
+                          {course.teacher}
                         </Text>
                       </Table.Cell>
                       <Table.Cell>
                         <Text fontSize="sm" color="gray.600">
-                          {formatSchedule(course.schedule_info)}
+                          {formatSchedule(course.schedules)}
                         </Text>
+                      </Table.Cell>
+                      <Table.Cell textAlign="center">
+                        {course.schedules?.[0] && (
+                          <Badge 
+                            colorScheme={course.schedules[0].status_review === 1 ? "green" : "orange"}
+                            size="sm"
+                          >
+                            {course.schedules[0].status_review_display}
+                          </Badge>
+                        )}
                       </Table.Cell>
                     </Table.Row>
                   ))}
@@ -311,6 +214,7 @@ export const MyCoursesListByAcademicPeriodView = () => {
           </Box>
         ))}
       </VStack>
+      )}
     </Box>
   );
 };
