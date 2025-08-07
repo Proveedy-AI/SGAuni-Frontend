@@ -4,8 +4,9 @@ import { Stack, Card, Icon } from "@chakra-ui/react";
 import { useState } from "react";
 import { LuFileText } from 'react-icons/lu';
 import { RegistrationDocument } from '@/components/pdf/RegistrationDocument';
+import { FiDownload } from 'react-icons/fi';
 
-export const GenerateRegistrationPdfModal = ({ registration_info }) => {
+export const GenerateRegistrationPdfModal = ({ loading, registration_info }) => {
   const [open, setOpen] = useState(false);
 
 
@@ -19,8 +20,9 @@ export const GenerateRegistrationPdfModal = ({ registration_info }) => {
           colorScheme='blue'
           leftIcon={<Icon as={LuFileText} />}
           onClick={() => setOpen(true)}
+          disabled={loading}
         >
-          Descargar Boleta
+          <FiDownload />Descargar Boleta
         </Button>
       }
       open={open}
@@ -41,5 +43,6 @@ export const GenerateRegistrationPdfModal = ({ registration_info }) => {
 };
 
 GenerateRegistrationPdfModal.propTypes = {
+  loading: PropTypes.bool.isRequired,
   registration_info: PropTypes.object.isRequired
 }

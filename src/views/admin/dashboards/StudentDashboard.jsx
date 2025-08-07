@@ -72,7 +72,7 @@ export const StudentDashboard = () => {
 		navigate(`/settings/myprofile`);
 	};
 
-	const hasMatriculatedEnrollment = dataMyEnrollments.some(
+	const hasMatriculatedEnrollment = dataMyEnrollments?.some(
 		(enrollment) => enrollment.status === 5
 	);
 

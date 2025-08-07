@@ -91,9 +91,10 @@ export const EnrolledCourseGroupsView = () => {
   const {
     data: dataEnrolledStudents,
     isLoading: isLoadingEnrolledStudents,
-  } = useReadEnrollmentReport();
-
-  console.log(dataEnrolledStudents)
+  } = useReadEnrollmentReport(
+    { enrollment_period_id: decrypted },
+    {}
+  );
 
   const totalCount = hasActiveFilters
     ? filteredCourseGroups.length

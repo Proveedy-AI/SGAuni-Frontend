@@ -123,7 +123,7 @@ export const MyInscriptionFormView = () => {
 		setEnrollmentItem(stored);
 	}, []);
 
-	const [currentStep, setCurrentStep] = useState(1);
+	const [currentStep, setCurrentStep] = useState(4);
 	const [selectedCourse, setSelectedCourse] = useState(null);
 
 	const { data: coursesToEnroll, isLoading: isLoadingCoursesToEnroll } =
@@ -223,7 +223,7 @@ export const MyInscriptionFormView = () => {
 					/>
 				)}
 
-				{currentStep === 4 && <Step04EndEnrollmentProcess />}
+				{currentStep === 4 && <Step04EndEnrollmentProcess step={currentStep} id={decrypted} />}
 			</Box>
 		</Box>
 	);
