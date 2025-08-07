@@ -68,6 +68,61 @@ export const StudentDashboard = () => {
 		navigate(`/mypaymentsdebts/addrequests`);
 	};
 
+	const handleGoRouteProfile = () => {
+		navigate(`/settings/myprofile`);
+	};
+
+	const hasMatriculatedEnrollment = dataMyEnrollments.some(
+		(enrollment) => enrollment.status === 5
+	);
+
+	const shouldShowAlert =
+		hasMatriculatedEnrollment && (!profile?.uni_email || !profile?.uni_code);
+
+	const enrollmentStatusMap = {
+		1: {
+			label: 'Pago pendiente',
+			color: 'yellow',
+			bg: 'yellow.50',
+			border: 'yellow.200',
+		},
+		2: {
+			label: 'Pago parcial',
+			color: 'orange',
+			bg: 'orange.50',
+			border: 'orange.200',
+		},
+		3: {
+			label: 'Pago vencido',
+			color: 'red',
+			bg: 'red.50',
+			border: 'red.200',
+		},
+		4: {
+			label: 'Elegible',
+			color: 'blue',
+			bg: 'blue.50',
+			border: 'blue.200',
+		},
+		5: {
+			label: 'Matriculado',
+			color: 'green',
+			bg: 'green.50',
+			border: 'green.200',
+		},
+		6: {
+			label: 'Cancelado',
+			color: 'gray',
+			bg: 'gray.50',
+			border: 'gray.200',
+		},
+		7: {
+			label: 'No matriculado',
+			color: 'purple',
+			bg: 'purple.50',
+			border: 'purple.200',
+		},
+	};
 	return (
 		<Box maxW='90%' mx='auto'>
 			{profile && profile.admission_notification_uuid && (
@@ -214,6 +269,34 @@ export const StudentDashboard = () => {
 					</Alert>
 				)}
 
+				{shouldShowAlert && (
+					<Alert
+						status='error'
+						borderRadius='md'
+						icon={<FiInfo />}
+						title='¡Acción requerida!'
+						mb={4}
+					>
+						<Flex w='full' align='center'>
+							<Box>
+								Ya estás matriculado, pero no has registrado tu{' '}
+								<b>correo institucional</b> ni tu <b>código universitario</b>.
+								Es urgente que actualices estos datos para continuar sin
+								inconvenientes.
+							</Box>
+							<Spacer />
+
+							<Button
+								colorPalette='red'
+								size='sm'
+								onClick={() => handleGoRouteProfile()}
+							>
+								Actualizar
+							</Button>
+						</Flex>
+					</Alert>
+				)}
+
 				{dataMyEnrollments && dataMyEnrollments.length === 0 && (
 					<Alert
 						status='warning'
@@ -235,52 +318,57 @@ export const StudentDashboard = () => {
 						Mis Inscripciones ({dataMyEnrollments.length})
 					</Heading>
 					<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-						{dataMyEnrollments.map((enrollment) => (
-							<Box
-								key={enrollment.id}
-								p={4}
-								borderWidth={2}
-								borderRadius='lg'
-								bg={enrollment.status === 1 ? 'green.50' : 'gray.50'}
-								borderColor={enrollment.status === 1 ? 'green.200' : 'gray.200'}
-								_hover={{
-									borderColor:
-										enrollment.status === 1 ? 'green.300' : 'gray.300',
-									boxShadow: 'md',
-								}}
-							>
-								<Flex justify='space-between' align='start' mb={3}>
-									<Text fontWeight='semibold'>
-										{enrollment.program_name || `Programa ${enrollment.id}`}
-									</Text>
-									<Badge
-										colorPalette={enrollment.status === 1 ? 'green' : 'yellow'}
-										variant='subtle'
-									>
-										{enrollment.status === 1 ? 'Activo' : 'En proceso'}
-									</Badge>
-								</Flex>
+						{dataMyEnrollments.map((enrollment) => {
+							const status = enrollmentStatusMap[enrollment.status] || {
+								label: 'Desconocido',
+								color: 'gray',
+								bg: 'gray.50',
+								border: 'gray.200',
+							};
 
-								<Stack spacing={1} fontSize='sm' color='gray.600'>
-									<Text>ID: {enrollment.id}</Text>
-									<Text>
-										Pago verificado:{' '}
-										{enrollment.payment_verified ? '✅ Sí' : '❌ No'}
-									</Text>
-									<Text>
-										Primera inscripción:{' '}
-										{enrollment.is_first_enrollment ? '✅ Sí' : '❌ No'}
-									</Text>
-									{enrollment.verified_at && (
-										<Flex align='center'>
-											<Box as={FiClock} w={4} h={4} mr={2} color='gray.400' />
-											Verificado:{' '}
-											{new Date(enrollment.verified_at).toLocaleDateString()}
-										</Flex>
-									)}
-								</Stack>
-							</Box>
-						))}
+							return (
+								<Box
+									key={enrollment.id}
+									p={4}
+									borderWidth={2}
+									borderRadius='lg'
+									bg={status.bg}
+									borderColor={status.border}
+									_hover={{
+										borderColor: status.border.replace('.200', '.300'),
+										boxShadow: 'md',
+									}}
+								>
+									<Flex justify='space-between' align='start' mb={3}>
+										<Text fontWeight='semibold'>
+											{enrollment.program_name || `Programa ${enrollment.id}`}
+										</Text>
+										<Badge colorPalette={status.color} variant='subtle'>
+											{status.label}
+										</Badge>
+									</Flex>
+
+									<Stack spacing={1} fontSize='sm' color='gray.600'>
+										<Text>ID: {enrollment.id}</Text>
+										<Text>
+											Pago verificado:{' '}
+											{enrollment.payment_verified ? '✅ Sí' : '❌ No'}
+										</Text>
+										<Text>
+											Primera inscripción:{' '}
+											{enrollment.is_first_enrollment ? '✅ Sí' : '❌ No'}
+										</Text>
+										{enrollment.verified_at && (
+											<Flex align='center'>
+												<Box as={FiClock} w={4} h={4} mr={2} color='gray.400' />
+												Verificado:{' '}
+												{new Date(enrollment.verified_at).toLocaleDateString()}
+											</Flex>
+										)}
+									</Stack>
+								</Box>
+							);
+						})}
 					</SimpleGrid>
 				</Box>
 			)}
