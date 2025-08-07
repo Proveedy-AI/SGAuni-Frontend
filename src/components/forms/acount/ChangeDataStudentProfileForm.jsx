@@ -601,28 +601,26 @@ export const ChangeDataStudentProfileForm = ({
 									</Field>
 								</Box>
 								<Separator />
-								{profile.is_uni_graduate && (
-									<Box>
-										<FieldWithInputText
-											label='Correo institucional:'
-											field='uni_email'
-											placeholder='Ingresar correo'
-											value={profile.uni_email}
-											updateProfileField={updateProfileField}
-										/>
-									</Box>
-								)}
-								{profile.is_uni_graduate && (
-									<Box>
-										<FieldWithInputText
-											label='Código UNI:'
-											field='uni_code'
-											placeholder='Ingresar código'
-											value={profile.uni_code}
-											updateProfileField={updateProfileField}
-										/>
-									</Box>
-								)}
+
+								<Box>
+									<FieldWithInputText
+										label='Correo institucional:'
+										field='uni_email'
+										placeholder='Ingresar correo'
+										value={profile.uni_email}
+										updateProfileField={updateProfileField}
+									/>
+								</Box>
+
+								<Box>
+									<FieldWithInputText
+										label='Código UNI:'
+										field='uni_code'
+										placeholder='Ingresar código'
+										value={profile.uni_code}
+										updateProfileField={updateProfileField}
+									/>
+								</Box>
 
 								<Box>
 									<FieldWithInputText
