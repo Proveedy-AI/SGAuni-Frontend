@@ -1,14 +1,17 @@
+import { ReactSelect } from "@/components";
 import { Encryptor } from "@/components/CrytoJS/Encryptor";
 import { GenerateStudentEnrolledListPdfModal } from "@/components/modals/tuition/enrolled";
 import { EnrolledCourseGroupsTable } from "@/components/tables/tuition/enrolled";
-import { InputGroup } from "@/components/ui";
+import { Button, InputGroup, Field } from "@/components/ui";
 import ResponsiveBreadcrumb from "@/components/ui/ResponsiveBreadcrumb";
+import { useReadEnrollmentById } from "@/hooks/enrollments_proccess";
 import { useReadEnrollmentsPrograms } from "@/hooks/enrollments_programs";
 import { useReadEnrollmentProgramCourses } from "@/hooks/enrollments_programs/courses";
+import { useReadEnrollmentReport } from "@/hooks/enrollments_programs/reports";
 import { useReadUserLogged } from "@/hooks/users/useReadUserLogged";
-import { Box, Heading, Input, Stack } from "@chakra-ui/react";
+import { Box, Card, Flex, Heading, Icon, Input, SimpleGrid, Stack } from "@chakra-ui/react";
 import { useState } from "react";
-import { FiSearch } from "react-icons/fi";
+import { FiBookOpen, FiSearch, FiTrash } from "react-icons/fi";
 import { useParams } from "react-router";
 
 export const EnrolledCourseGroupsView = () => {
@@ -30,7 +33,7 @@ export const EnrolledCourseGroupsView = () => {
 		refetch: fetchCourseGroups,
 		isLoading,
   } = useReadEnrollmentProgramCourses(
-    { /*enrollment_period: decrypted*/ },
+    {},
     {}
   );
 
@@ -51,209 +54,114 @@ export const EnrolledCourseGroupsView = () => {
     )
   );
 
-  console.log(EnrollmentProgramOptions);
-
   const [searchName, setSearchName] = useState('');
+  const [selectedProgram, setSelectedProgram] = useState(null);
 
   const allCourseGroups =
 		dataCourseGroups?.pages?.flatMap((page) => page.results) ?? [];
 
-  const isFiltering = searchName.length > 0;
+  const filteredCourseGroupsByEnrollmentPeriod = allCourseGroups
+    .filter((group) => group.enrollment_period === decrypted) ?? [];
 
-  const filteredCourseGroups = allCourseGroups.filter(
+  const filteredCourseGroups = filteredCourseGroupsByEnrollmentPeriod.filter(
     (group) =>
     (!searchName ||
       group.course_group_name
         .toLowerCase()
         .includes(searchName.toLowerCase())
+    ) && 
+    (!selectedProgram ||
+      group.enrollment_program === selectedProgram?.value
     )
   );
+
+  const hasActiveFilters = searchName || selectedProgram;
+
+  const clearFilters = () => {
+    setSearchName('');
+    setSelectedProgram(null);
+  }
+
+  const {
+    data: dataEnrollmentProcess,
+    isLoading: isLoadingEnrollmentProcess
+  } = useReadEnrollmentById(decrypted)
+
   
-  /*
   const {
     data: dataEnrolledStudents,
     isLoading: isLoadingEnrolledStudents,
-  } = useReadEnrolledStudents(
-    { enrollment_process: decrypted }
+  } = useReadEnrollmentReport(
+    { enrollment_period_id: decrypted },
+    {}
   );
-  */
 
-  const dataEnrolledStudents = [
-    {
-      enrollment_process: 0,
-      academic_period_name: "2025-II",
-      program_name: "MAESTRÍA EN CIENCIAS CON MENCIÓN EN PROYECTOS DE INVERSIÓN",
-      students: [
-        {
-          id: 1,
-          document: "string",
-          code: "string",
-          full_name: "string",
-          total_credits: 0,
-          course_groups_code: [
-            "string",
-            "string",
-            "string",
-            "string",
-          ]
-        },
-        {
-          id: 2,
-          document: "string",
-          code: "string",
-          full_name: "string",
-          total_credits: 0,
-          course_groups_code: [
-            "string",
-            "string",
-            "string",
-            "string",
-          ]
-        },
-        {
-          id: 3,
-          document: "string",
-          code: "string",
-          full_name: "string",
-          total_credits: 0,
-          course_groups_code: [
-            "string",
-            "string",
-            "string",
-            "string",
-          ]
-        },
-        {
-          id: 4,
-          document: "string",
-          code: "string",
-          full_name: "string",
-          total_credits: 0,
-          course_groups_code: [
-            "string",
-            "string",
-            "string",
-            "string",
-          ]
-        },
-        {
-          id: 5,
-          document: "string",
-          code: "string",
-          full_name: "string",
-          total_credits: 0,
-          course_groups_code: [
-            "string",
-            "string",
-            "string",
-            "string",
-          ]
-        },
-        {
-          id: 6,
-          document: "string",
-          code: "string",
-          full_name: "string",
-          total_credits: 0,
-          course_groups_code: [
-            "string",
-            "string",
-            "string",
-            "string",
-          ]
-        },
-        {
-          id: 7,
-          document: "string",
-          code: "string",
-          full_name: "string",
-          total_credits: 0,
-          course_groups_code: [
-            "string",
-            "string",
-            "string",
-            "string",
-          ]
-        },
-      ]
-    },
-    {
-      enrollment_process: 0,
-      academic_period_name: "2025-II",
-      program_name: "MAESTRÍA EN CIENCIAS E INGENIERÍA ESTADÍSTICA",
-      students: [
-        {
-          id: 1,
-          document: "string",
-          code: "string",
-          full_name: "string",
-          total_credits: 0,
-          course_groups_code: [
-            "string",
-            "string",
-            "string",
-            "string",
-          ]
-        },
-        {
-          id: 2,
-          document: "string",
-          code: "string",
-          full_name: "string",
-          total_credits: 0,
-          course_groups_code: [
-            "string",
-            "string",
-            "string",
-            "string",
-          ]
-        },
-        {
-          id: 3,
-          document: "string",
-          code: "string",
-          full_name: "string",
-          total_credits: 0,
-          course_groups_code: [
-            "string",
-            "string",
-            "string",
-            "string",
-          ]
-        },
-      ]
-    },
-  ]
-
-  const totalCount = isFiltering
+  const totalCount = hasActiveFilters
     ? filteredCourseGroups.length
     : (allCourseGroups?.length ?? 0);
+
+  const isDownloadable = !isLoadingEnrolledStudents && dataEnrolledStudents.length > 0;
 
   return (
     <Box spaceY='5' p={{ base: 4, md: 6 }} maxW="8xl" mx="auto">
       <ResponsiveBreadcrumb
         items={[
           { label: 'Matriculados', to: '/enrollments/enrolled' },
-          { label: id ? id : 'Cargando...' },
+          { label: !isLoadingEnrollmentProcess ? dataEnrollmentProcess?.academic_period_name : 'Cargando...' },
         ]}
       />
 
-      <Stack
-        Stack
-        direction={{ base: 'column', sm: 'row' }}
-        align={{ base: 'start', sm: 'center' }}
-        justify='space-between'
-      >
-        <Heading
-          size={{
-            xs: 'xs',
-            sm: 'sm',
-            md: 'md',
-          }}
-        >
-          Grupos de Cursos
-        </Heading>
-      </Stack>
+      <Card.Root>
+        <Card.Header>
+          <Flex justify='space-between' align='center'>
+            <Flex align='center' gap={2}>
+              <Icon as={FiBookOpen} boxSize={5} color='blue.600' />
+              <Heading fontSize='24px'>Grupos de Cursos</Heading>
+            </Flex>
+
+            <Stack direction='row' spacing={2} align='center'>
+              {hasActiveFilters && (
+                <Button
+                  variant='outline'
+                  colorPalette='red'
+                  size='sm'
+                  onClick={clearFilters}
+                >
+                  <FiTrash />
+                  Limpiar Filtros
+                </Button>
+              )}
+            </Stack>
+          </Flex>
+        </Card.Header>
+        <Card.Body>
+          <Stack gap={4} mb={4}>
+            <SimpleGrid columns={{ base: 1, sm: 2 }} gap={6}>
+              <Field label='Nombre del curso:'>
+                <InputGroup w='100%' startElement={<FiSearch />}>
+                  <Input
+                    ml='1'
+                    size='sm'
+                    bg={'white'}
+                    placeholder='Buscar por nombre del curso...'
+                    value={searchName}
+                    onChange={(e) => setSearchName(e.target.value) }
+                    />
+                </InputGroup>
+              </Field>
+              <Field label='Buscar por programa:'>
+                <ReactSelect
+                  placeholder='Buscar por programa...'
+                  options={EnrollmentProgramOptions}
+                  value={selectedProgram}
+                  onChange={setSelectedProgram}
+                  isClearable
+                />
+              </Field>
+            </SimpleGrid>
+          </Stack>
+        </Card.Body>
+      </Card.Root>
 
       <Stack
         Stack
@@ -261,18 +169,11 @@ export const EnrolledCourseGroupsView = () => {
         align={{ base: 'center', sm: 'center' }}
         justify='space-between'
       >
-        <InputGroup flex='1' startElement={<FiSearch />}>
-          <Input
-            ml='1'
-            size='sm'
-            bg={'white'}
-            maxWidth={'550px'}
-            placeholder='Buscar por nombre del programa ...'
-            value={searchName}
-            onChange={(e) => setSearchName(e.target.value) }
-          />
-        </InputGroup>
-        <GenerateStudentEnrolledListPdfModal students={dataEnrolledStudents} />
+        <GenerateStudentEnrolledListPdfModal 
+          isDownloadable={isDownloadable}
+          students={dataEnrolledStudents}
+          options={EnrollmentProgramOptions}
+        />
       </Stack>
 
       <EnrolledCourseGroupsTable
