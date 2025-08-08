@@ -98,7 +98,7 @@ export const ProcessEnrollmentModal = ({
 	const handleSubmitData = async () => {
 		if (!validateFields()) return;
 
-		if (paymentPlan === 4 || paymentPlan === 5) {
+		if (paymentPlan === 4 || paymentPlan === 5 || paymentPlan === 9) {
 			const payload = {
 				payment_method: selectedMethod?.value,
 				amount: baseAmount || '0',
@@ -310,7 +310,9 @@ export const ProcessEnrollmentModal = ({
 								</HStack>
 							</Card.Header>
 							<Card.Body gap={4}>
-								{(paymentPlan === 5 || paymentPlan === 4) && (
+								{(paymentPlan === 5 ||
+									paymentPlan === 4 ||
+									paymentPlan === 9) && (
 									<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
 										<Field
 											label='Tipo de documento:'

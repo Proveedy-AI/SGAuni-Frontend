@@ -191,7 +191,7 @@ export const MyInscriptionFormView = () => {
 					<Button
 						bg='blue.600'
 						onClick={() => setCurrentStep(currentStep + 1)}
-						disabled={!mySelections || mySelections.length === 0}
+						disabled={!mySelections || mySelections.selections.length === 0}
 					>
 						Siguiente <FiArrowRight />
 					</Button>

@@ -37,6 +37,7 @@ import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
 import { useConfirmCourseSelection } from '@/hooks/course-selections';
 import { LuGraduationCap } from 'react-icons/lu';
 import { HiSparkles } from 'react-icons/hi2';
+import FailedCoursesCard from './FailedCoursesCard';
 
 export const Step03SummaryEnrollment = ({
 	selectedGroups,
@@ -59,11 +60,28 @@ export const Step03SummaryEnrollment = ({
 	const { mutate: confirmCourses } = useConfirmCourseSelection();
 	const totalCourses = selectedGroups?.total_selections;
 	// Calcular créditos totales (asumiendo que cada curso tiene una propiedad credits)
-	const totalCredits = Array.isArray(selectedGroups?.selections)
-		? selectedGroups.selections.reduce((sum, course) => {
-				return sum + (course.credits || 0);
-			}, 0)
-		: 0;
+	const selections = Array.isArray(selectedGroups?.selections)
+		? selectedGroups.selections
+		: [];
+
+	// Total de créditos
+	const totalCredits = selections?.reduce(
+		(sum, course) => sum + (course.credits || 0),
+		0
+	);
+
+	// Detectar si hay cursos desaprobados (repetidos)
+	const repeatedCourses = selections?.filter(
+		(course) => course.is_repeated_course
+	);
+
+	// Booleano: ¿tiene curso desaprobado?
+	const hasFailedCourse = repeatedCourses?.length > 0;
+
+	// Créditos de los cursos desaprobados
+	const failedCoursesCredits = repeatedCourses?.map(
+		(course) => course.credits || 0
+	);
 	const DiscountMasterComplete = PaymentRules?.results?.find(
 		(rule) => rule.payment_purpose === 5
 	);
@@ -74,13 +92,18 @@ export const Step03SummaryEnrollment = ({
 	const PriceCreditsToPay = selectedGroups?.price_credit;
 	const semesterBaseAmount = totalCredits * PriceCreditsToPay;
 	const fullProgramAmount = MyCredits?.total_credits * PriceCreditsToPay;
-
+	const CourseFailedAmount = failedCoursesCredits * PriceCreditsToPay;
 	const semesterDiscountAmount =
 		semesterBaseAmount * DiscountSemestreComplete?.discount_percentage;
 	const savingsProgramAmount =
 		fullProgramAmount * DiscountMasterComplete?.discount_percentage;
 
-	const baseAmount = paymentPlan === 4 ? semesterBaseAmount : fullProgramAmount;
+	const baseAmount =
+		paymentPlan === 4
+			? semesterBaseAmount
+			: paymentPlan === 9
+				? CourseFailedAmount
+				: fullProgramAmount;
 
 	const totalWeeklyHours = Array.isArray(selectedGroups?.selections)
 		? selectedGroups.selections.reduce((sum, course) => {
@@ -191,7 +214,9 @@ export const Step03SummaryEnrollment = ({
 			},
 		});
 	};
-
+	const handleRequestPaymentOrder = () => {
+		setPaymentPlan(9);
+	};
 	const handlePlanChange = (plan) => {
 		setPaymentPlan(plan);
 	};
@@ -415,6 +440,14 @@ export const Step03SummaryEnrollment = ({
 						</VStack>
 					</Card.Body>
 				</Card.Root>
+			) : selectedGroups?.paid_complete_master && hasFailedCourse ? (
+				<FailedCoursesCard
+					totalFailedCourses={repeatedCourses?.length}
+					totalFailedCredits={failedCoursesCredits}
+					repeatedCourses={repeatedCourses}
+					handleRequestPaymentOrder={handleRequestPaymentOrder}
+					paymentPlan={paymentPlan}
+				/>
 			) : discountValue >= 100 ? (
 				<Card.Root
 					position='relative'
@@ -679,13 +712,18 @@ export const Step03SummaryEnrollment = ({
 					</Button>
 				)}
 
-				{!isSomeRequestPending && !selectedGroups?.paid_complete_master && (
+				{((!isSomeRequestPending && !selectedGroups?.paid_complete_master) ||
+					paymentPlan === 9) && (
 					<ProcessEnrollmentModal
 						paymentPlan={paymentPlan}
 						discountValue={discountValue}
 						baseAmount={baseAmount}
 						amountCredits={
-							paymentPlan === 4 ? totalCredits : MyCredits?.total_credits
+							paymentPlan === 4
+								? totalCredits
+								: paymentPlan === 9
+									? failedCoursesCredits
+									: MyCredits?.total_credits
 						}
 						description={description}
 						onNext={onNext}
