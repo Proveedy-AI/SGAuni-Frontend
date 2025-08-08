@@ -136,7 +136,6 @@ export const FractionateDebt = ({ countDebts }) => {
 
 			const payload = {
 				enrollment: program?.enrollment,
-				plan_type: 2,
 				upfront_percentage: DataProgram?.min_payment_percentage,
 				number_of_installments: installments,
 				payment_document_type: selectedDocumentType?.value,
