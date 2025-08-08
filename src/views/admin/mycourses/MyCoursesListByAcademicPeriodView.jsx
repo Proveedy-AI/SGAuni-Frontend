@@ -1,5 +1,5 @@
 import { Encryptor } from "@/components/CrytoJS/Encryptor";
-import { useColorModeValue } from "@/components/ui";
+import { Button, useColorModeValue } from "@/components/ui";
 import { useReadCoursesByPeriod } from "@/hooks/students";
 import { 
   Box, 
@@ -10,7 +10,10 @@ import {
   VStack,
   HStack,
   Spinner,
+  Icon,
+  Card,
 } from "@chakra-ui/react";
+import { FiArrowRight, FiBookOpen, FiCalendar } from "react-icons/fi";
 import { useNavigate } from "react-router";
 
 export const MyCoursesListByAcademicPeriodView = () => {
@@ -81,9 +84,64 @@ export const MyCoursesListByAcademicPeriodView = () => {
       ) : (
         <VStack spacing={6} align="stretch">
         {!dataCoursesByPeriod?.data || dataCoursesByPeriod.data.length === 0 ? (
-          <Box p={6} maxW="full" mx="auto" textAlign="center">
-            <Text>No se encontraron cursos registrados.</Text>
-          </Box>
+          <Card.Root p={8} maxW="full" mx="auto" textAlign="center">
+            <VStack spacing={6}>
+              <Box
+                p={4}
+                borderRadius="full"
+                bg={{ base: "blue.50", _dark: "blue.900"}}
+                border="2px solid"
+                borderColor={{ base: "blue.100", _dark: "blue.700"}}
+              >
+                <Icon 
+                  as={FiBookOpen} 
+                  boxSize={12} 
+                  color={{ base: "blue.500", _dark: "blue.300"}}
+                />
+              </Box>
+
+              <VStack spacing={3}>
+                <Heading size="lg" color={{ base: "gray.700", _dark: "gray.200"}}>
+                  No tienes cursos registrados
+                </Heading>
+                <Text fontSize="md" textAlign={"justify"} color="gray.500" maxW="md" mx="auto">
+                  Parece que aún no estás inscrito en ningún curso. 
+                  Puedes comenzar el proceso de matrícula para inscribirte en tus cursos.
+                </Text>
+              </VStack>
+
+              <Box 
+                p={4} 
+                bg={{ base: "gray.50", _dark: "gray.700"}}
+                borderRadius="md" 
+                border="1px solid"
+                borderColor={borderColor}
+                maxW="md"
+              >
+                <HStack spacing={3} justify="center">
+                  <Icon as={FiCalendar} color="blue.500" />
+                  <Text fontSize="sm" color="gray.600">
+                    Una vez completada la matrícula, tus cursos aparecerán aquí
+                  </Text>
+                </HStack>
+              </Box>
+
+              <Button
+                size="lg"
+                bg="blue.500"
+                onClick={() => navigate("/myprocedures/enrollment-process")}
+                _hover={{
+                  bg: "blue.600"
+                }}
+              >
+                <FiArrowRight /> Ir al Proceso de Matrícula
+              </Button>
+
+              <Text fontSize="xs" color="gray.400" mt={2}>
+                ¿Necesitas ayuda? Contacta con la oficina de registros académicos
+              </Text>
+            </VStack>
+          </Card.Root>
         ) : dataCoursesByPeriod.data.map((periodData, periodIndex) => (
           <Box key={periodIndex} mb={3}>
             <Box 
