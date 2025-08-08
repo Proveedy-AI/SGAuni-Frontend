@@ -53,7 +53,7 @@ import { MyEnrollmentsLayout } from './views/admin/myenrollments/MyEnrollmentsLa
 import { MyEnrollments } from './views/admin/myenrollments';
 import {
 	ClassMyCoursesByProgramView,
-	ClassMyEstudentsByCourseView,
+	ClassMyStudentsByCourseView,
 	ClassMyProgramView,
 	MyClassesLayout,
 } from './views/admin/myclasses';
@@ -332,7 +332,7 @@ function App() {
 											<Route index element={<ClassMyCoursesByProgramView />} />
 											<Route
 												path='course/:courseId'
-												element={<ClassMyEstudentsByCourseView />}
+												element={<ClassMyStudentsByCourseView />}
 											/>
 										</Route>
 									</Route>

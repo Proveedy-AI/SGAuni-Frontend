@@ -1,355 +1,626 @@
-import { ReactSelect } from "@/components/select";
-import { Field, Button, Modal, toaster } from "@/components/ui";
-import { Card, Flex, Heading, Input, Stack, Text } from "@chakra-ui/react";
-import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
-import { FiFile, FiPlus, FiSave } from "react-icons/fi";
-import { useCreateEvaluationByCourse, useUpdateEvaluationByCourse } from "@/hooks/course_groups/evaluations";
-import { useDeleteEvaluationByCourse } from "@/hooks/course_groups/evaluations/useDeleteEvaluationByCourse";
-import { EvaluationsTable } from "./EvaluationsTable";
+import { ReactSelect } from '@/components/select';
+import { Field, Button, Modal, toaster } from '@/components/ui';
+import {
+	Card,
+	Flex,
+	Heading,
+	Input,
+	Stack,
+	Text,
+	VStack,
+	HStack,
+	Badge,
+} from '@chakra-ui/react';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import { FiSave, FiSettings } from 'react-icons/fi';
+import { useConfigureEvaluationByCourse } from '@/hooks/course_groups';
 
-export const ConfigurateCalificationCourseModal = ({ fetchData, courseGroup, evaluationComponents }) => {
-  const [open, setOpen] = useState(false);
-  const [currentQualificationType, setCurrentQualificationType] = useState(null);
-  const [selectedMode, setSelectedMode] = useState(null);
-  const [form, setForm] = useState({ id: null, name: "", weight: "", selectedMode: null });
-  const [errors, setErrors] = useState({});
+export const ConfigurateCalificationCourseModal = ({
+	fetchData,
+	courseGroup,
+	data,
+	hasConfiguration,
+}) => {
+	const [open, setOpen] = useState(false);
+	const [evaluationMethod, setEvaluationMethod] = useState(null); // Nueva: Método de evaluación
+	const [qualificationType, setQualificationType] = useState(null);
+	const [numberOfEvaluations, setNumberOfEvaluations] = useState('');
+	const [evaluations, setEvaluations] = useState([]);
+	const [errors, setErrors] = useState({});
+	const [currentStep, setCurrentStep] = useState(1); // 1: Método, 2: Tipo, 3: Número, 4: Configurar
 
-  const GradingModes = [
-    { value: 1, label: "Porcentaje por pesos" },
-    { value: 2, label: "Promedio simple" },
-    { value: 3, label: "Calificación conceptual" },
-  ];
+  const evaluationComponents = data?.evaluation_components || [];
 
-  // Establecer el tipo de calificación actual basado en props
-  useEffect(() => {
-    const gradingModes = [
-      { value: 1, label: "Porcentaje por pesos" },
-      { value: 2, label: "Promedio simple" },
-      { value: 3, label: "Calificación conceptual" },
-    ];
-    
-    // Si hay evaluaciones existentes, tomar el tipo de la primera evaluación
-    if (evaluationComponents && evaluationComponents.length > 0) {
-      const firstEvalType = evaluationComponents[0].qualification_type;
-      setCurrentQualificationType(firstEvalType);
-      setSelectedMode(gradingModes.find(mode => mode.value === firstEvalType));
-    } else {
-      // Si no hay evaluaciones, resetear los estados
-      setCurrentQualificationType(null);
-      setSelectedMode(null);
-    }
-  }, [setForm, evaluationComponents]);
+	const { mutate: configureEvaluation, isLoading: isConfiguring } =
+		useConfigureEvaluationByCourse(courseGroup?.id);
 
-  const validate = () => {
-    const newErrors = {};
-    
-    if (!form.selectedMode) {
-      newErrors.selectedMode = "Debe seleccionar un modo de calificación";
-    }
-    
-    if (!form.name.trim()) {
-      newErrors.name = "El nombre es requerido";
-    }
-    
-    if (form.selectedMode?.value === 1 && !form.weight) {
-      newErrors.weight = "El valor ponderado es requerido";
-    }
+	const EvaluationMethods = [
+		{ value: 1, label: 'Nota Final' },
+		{ value: 2, label: 'Evaluaciones Parciales' },
+	];
 
-    // Validar que el modo seleccionado coincida con el tipo actual (si hay evaluaciones)
-    if (hasExistingEvaluations && form.selectedMode && form.selectedMode.value !== currentQualificationType) {
-      newErrors.selectedMode = "No puede cambiar el modo de calificación si ya existen evaluaciones";
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+	const QualificationTypes = [
+		{ value: 1, label: 'Porcentaje por pesos' },
+		{ value: 2, label: 'Promedio simple' },
+	];
 
-  const { mutate: create, isLoading: isCreating } = useCreateEvaluationByCourse();
-  const { mutate: update, isLoading: isUpdating } = useUpdateEvaluationByCourse();
-  const { mutate: remove, isLoading: isRemoving } = useDeleteEvaluationByCourse();
+	// Determinar si ya está configurado
+	const isAlreadyConfigured = hasConfiguration;
+	const currentQualificationLabel =
+		QualificationTypes.find((q) => q.value === data?.qualification_type_code)?.label ||
+		'No definido';
 
-  const isEditing = form.id !== null;
-  const hasExistingEvaluations = evaluationComponents && evaluationComponents.length > 0;
+	// Reset form cuando se abre la modal
+	useEffect(() => {
+		if (open && !isAlreadyConfigured) {
+			setCurrentStep(1);
+			setEvaluationMethod(null);
+			setQualificationType(null);
+			setNumberOfEvaluations('');
+			setEvaluations([]);
+			setErrors({});
+		}
+	}, [open, isAlreadyConfigured]);
 
-  const handleChange = (field, value) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-    // Limpiar errores específicos del campo
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: null }));
-    }
-  };
+	// Inicializar evaluaciones vacías cuando cambia el número
+	useEffect(() => {
+		if (numberOfEvaluations && parseInt(numberOfEvaluations) > 0) {
+			const num = parseInt(numberOfEvaluations);
+			const newEvaluations = Array.from({ length: num }, () => ({
+				name: '',
+				weight: qualificationType?.value === 1 ? 0 : null,
+			}));
+			setEvaluations(newEvaluations);
+		}
+	}, [numberOfEvaluations, qualificationType]);
 
-  const handleSubmit = () => {
-    if (!validate()) {
-      return toaster.create({
-        title: 'Campos incompletos',
-        description: 'Debe completar todos los campos del formulario correctamente',
-        type: 'warning'
-      });
-    }
+	const validateStep = (step) => {
+		const newErrors = {};
 
-    const payload = {
-      course_group: courseGroup.id,
-      name: form.name,
-      qualification_type: currentQualificationType ? currentQualificationType : form.selectedMode.value,
-      weight: form.selectedMode.value === 1 ? Number(form.weight) : null,
-      is_verified: true
-    };
+		if (step === 1) {
+			if (!evaluationMethod) {
+				newErrors.evaluationMethod = 'Debe seleccionar un método de evaluación';
+			}
+		}
 
-    console.log(payload)
+		if (step === 2) {
+			if (evaluationMethod?.value === 2 && !qualificationType) {
+				newErrors.qualificationType =
+					'Debe seleccionar un tipo de calificación';
+			}
+		}
 
-    if (isEditing) {
-      update({ id: form.id, ...payload }, {
-        onSuccess: () => {
-          setForm({ id: null, name: "", weight: "", selectedMode: null });
-          setErrors({});
-          fetchData && fetchData();
-          toaster.create({
-            title: 'Evaluación actualizada',
-            description: 'La evaluación se ha actualizado correctamente',
-            type: 'success'
-          });
-        },
-        onError: (error) => {
-          toaster.create({
-            title: 'Error al actualizar',
-            description: error.message || 'Ocurrió un error al actualizar la evaluación',
-            type: 'error'
-          });
-        }
-      });
-    } else {
-      create(payload, {
-        onSuccess: () => {
-          setForm({ id: null, name: "", weight: "", selectedMode: null });
-          setErrors({});
-          // Establecer el tipo de calificación si es la primera evaluación
-          if (!currentQualificationType) {
-            setCurrentQualificationType(form.selectedMode.value);
-          }
-          fetchData && fetchData();
-          toaster.create({
-            title: 'Evaluación creada',
-            description: 'La evaluación se ha creado correctamente',
-            type: 'success'
-          });
-        },
-        onError: (error) => {
-          toaster.create({
-            title: 'Error al crear',
-            description: error.message || 'Ocurrió un error al crear la evaluación',
-            type: 'error'
-          });
-        }
-      });
-    }
-  };
+		if (step === 3) {
+			if (
+				evaluationMethod?.value === 2 &&
+				(!numberOfEvaluations || parseInt(numberOfEvaluations) < 1)
+			) {
+				newErrors.numberOfEvaluations =
+					'Debe ingresar un número válido de evaluaciones';
+			}
+		}
 
-  const handleEdit = (evaluation) => {
-    const currentMode = GradingModes.find(mode => mode.value === currentQualificationType);
-    setForm({
-      id: evaluation.id,
-      name: evaluation.name,
-      weight: evaluation.weight ?? "",
-      selectedMode: currentMode,
-    });
-    setErrors({});
-  };
+		if (step === 4) {
+			evaluations.forEach((evaluation, index) => {
+				if (!evaluation.name.trim()) {
+					newErrors[`evaluation_${index}_name`] =
+						`El nombre de la evaluación ${index + 1} es requerido`;
+				}
+				if (
+					qualificationType?.value === 1 &&
+					(!evaluation.weight || evaluation.weight <= 0)
+				) {
+					newErrors[`evaluation_${index}_weight`] =
+						`El peso de la evaluación ${index + 1} debe ser mayor a 0`;
+				}
+			});
 
-  const handleDelete = (id) => {
-    console.log(id)
-    remove(id, {
-      onSuccess: () => {
-        fetchData && fetchData();
-        toaster.create({
-          title: 'Evaluación eliminada',
-          description: 'La evaluación se ha eliminado correctamente',
-          type: 'success'
-        });
-      },
-      onError: (error) => {
-        toaster.create({
-          title: 'Error al eliminar',
-          description: error.message || 'Ocurrió un error al eliminar la evaluación',
-          type: 'error'
-        });
-      }
-    });
-  };
+			// Validar que los pesos sumen 100% si es por pesos
+			if (qualificationType?.value === 1) {
+				const totalWeight = evaluations.reduce(
+					(sum, evaluation) => sum + (parseFloat(evaluation.weight) || 0),
+					0
+				);
+				if (totalWeight !== 100) {
+					newErrors.totalWeight = `Los pesos deben sumar exactamente 100%. Actualmente suma ${totalWeight}%`;
+				}
+			}
+		}
 
-  const resetForm = () => {
-    setForm({ id: null, name: "", weight: "", selectedMode: null });
-    setErrors({});
-  };
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
 
-  useEffect(() => {
-    // Reset when the modal closes
-    if (!open) {
-      resetForm();
-      if (!hasExistingEvaluations) {
-        setSelectedMode(null);
-        setCurrentQualificationType(null);
-      }
-    }
-  }, [open, hasExistingEvaluations]);
+	const handleNext = () => {
+		if (validateStep(currentStep)) {
+			// Lógica especial de navegación
+			if (currentStep === 1 && evaluationMethod?.value === 1) {
+				// Para nota única, saltar directo al paso 2 (resumen)
+				setCurrentStep(2);
+			} else {
+				setCurrentStep(currentStep + 1);
+			}
+		}
+	};
 
-  return (
-    <Modal
-      placement='center'
-      title="Configurar modo de calificación"
-      size='4xl'
-      trigger={
-        <Button
-          size='xs'
-          bg='uni.secondary'
-          color='white'
-          px={2}
-          onClick={() => setOpen(true)}
-        >
-          Configuración
-        </Button>
-      }
-      open={open}
-      onOpenChange={(e) => setOpen(e.open)}
-      hiddenFooter={true}
-    >
-      <Stack spacing={4}>
-        <Card.Root>
-          <Card.Header>
-            <Heading color={'#0661D8'} size='lg' display='flex' alignItems='center' gapX={2}>
-              <FiFile /> Configuración de Calificaciones
-            </Heading>
-            <Text fontSize='sm' color='gray.500'>
-              Configura el modo de calificación y gestiona las evaluaciones del curso.
-            </Text>
-          </Card.Header>
-          <Card.Body>
-            <Field
-              label="Modo de calificación"
-              invalid={!!errors.qualification_type}
-              errorText={errors.qualification_type}
-              required
-            >
-              <Input
-                readOnly
-                placeholder="Modo de calificación actual"
-                value={hasExistingEvaluations ? selectedMode?.label : "No definido"}
-				        variant='flushed'
-              />
-            </Field>
-          </Card.Body>
-        </Card.Root>
+	const handleBack = () => {
+		// Lógica especial de navegación hacia atrás
+		if (currentStep === 2 && evaluationMethod?.value === 1) {
+			// Para nota única, regresar directo al paso 1
+			setCurrentStep(1);
+		} else {
+			setCurrentStep(currentStep - 1);
+		}
+		setErrors({});
+	};
 
-        {/* Formulario para crear/editar evaluaciones */}
-        <Card.Root>
-          <Card.Header>
-            <Heading size="md" color="#0661D8">
-              {isEditing ? "Editar Evaluación" : "Nueva Evaluación"}
-            </Heading>
-          </Card.Header>
-            <Card.Body>
-              <Stack spacing={4}>
-                <Flex gap={4} direction={{ base: "column", md: "row" }}>
-                  <Field
-                    label="Modo de calificación"
-                    invalid={!!errors.selectedMode}
-                    errorText={errors.selectedMode}
-                    required
-                    maxW={{ base: "100%", md: "300px" }}
-                  >
-                    <ReactSelect
-                      options={GradingModes}
-                      value={form.selectedMode}
-                      onChange={(value) => handleChange("selectedMode", value)}
-                      placeholder="Selecciona modo de calificación"
-                    />
-                  </Field>
-                  
-                  <Field
-                    label="Nombre de la evaluación"
-                    invalid={!!errors.name}
-                    errorText={errors.name}
-                    required
-                    flex={1}
-                  >
-                    <Input
-                      placeholder="Ej. Parcial 1, Examen Final, Trabajo Grupal"
-                      value={form.name}
-                      onChange={(e) => handleChange("name", e.target.value)}
-                    />
-                  </Field>
-                  
-                  {(form.selectedMode?.value === 1 || currentQualificationType === 1) && (
-                    <Field
-                      label="Valor ponderado (%)"
-                      invalid={!!errors.weight}
-                      errorText={errors.weight}
-                      required
-                      maxW={{ base: "100%", md: "150px" }}
-                    >
-                      <Input
-                        type="number"
-                        min={0}
-                        max={100}
-                        placeholder="30"
-                        value={form.weight}
-                        onChange={(e) => handleChange("weight", e.target.value)}
-                      />
-                    </Field>
-                  )}
-                </Flex>
-                
-                <Flex gap={2}>
-                  <Button
-                    bg={isEditing ? "green.500" : "#0661D8"}
-                    color="white"
-                    onClick={handleSubmit}
-                    isLoading={isCreating || isUpdating}
-                    leftIcon={isEditing ? <FiSave /> : <FiPlus />}
-                  >
-                    {isEditing ? "Actualizar evaluación" : "Añadir evaluación"}
-                  </Button>
-                  
-                  {isEditing && (
-                    <Button
-                      variant="outline"
-                      onClick={resetForm}
-                    >
-                      Cancelar
-                    </Button>
-                  )}
-                </Flex>
-              </Stack>
-            </Card.Body>
-          </Card.Root>
+	const handleEvaluationChange = (index, field, value) => {
+		const newEvaluations = [...evaluations];
+		newEvaluations[index] = {
+			...newEvaluations[index],
+			[field]: field === 'weight' ? parseFloat(value) || 0 : value,
+		};
+		setEvaluations(newEvaluations);
 
-        {/* Lista de evaluaciones existentes */}
-        {hasExistingEvaluations && (
-          <Card.Root>
-            <Card.Header>
-              <Heading size="md" color="#0661D8">
-                Evaluaciones Configuradas ({evaluationComponents.length})
-              </Heading>
-            </Card.Header>
-            <Card.Body p={3}>
-              <EvaluationsTable
-                evaluationComponents={evaluationComponents}
-                currentQualificationType={currentQualificationType}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                isRemoving={isRemoving}
-              />
-            </Card.Body>
-          </Card.Root>
-        )}
-      </Stack>
-    </Modal>
-  );
+		// Limpiar errores específicos
+		if (errors[`evaluation_${index}_${field}`]) {
+			const newErrors = { ...errors };
+			delete newErrors[`evaluation_${index}_${field}`];
+			setErrors(newErrors);
+		}
+	};
+
+	const handleSubmit = () => {
+		let payload;
+
+		// Caso 1: Nota Única
+		if (evaluationMethod?.value === 1) {
+			payload = {
+				qualification_type: 2, // Siempre promedio simple para nota única
+				number_of_evaluations: 1,
+				evaluation_components: [
+					{
+						name: 'Evaluación final',
+						weight: null,
+					},
+				],
+			};
+		}
+		// Caso 2: Notas Parciales
+		else {
+			if (!validateStep(4)) {
+				return;
+			}
+
+			payload = {
+				qualification_type: qualificationType.value,
+				number_of_evaluations: parseInt(numberOfEvaluations),
+				evaluation_components: evaluations.map((evaluation) => ({
+					name: evaluation.name,
+					weight: qualificationType.value === 1 ? evaluation.weight : 0,
+				})),
+			};
+		}
+
+		configureEvaluation(payload, {
+				onSuccess: () => {
+					toaster.create({
+						title: 'Configuración guardada',
+						description: 'Las evaluaciones se han configurado correctamente',
+						type: 'success',
+					});
+					setOpen(false);
+					fetchData && fetchData();
+				},
+				onError: (error) => {
+					toaster.create({
+						title: 'Error al configurar',
+						description:
+							error.message ||
+							'Ocurrió un error al configurar las evaluaciones',
+						type: 'error',
+					});
+				},
+			}
+		);
+	};
+
+	const renderStepContent = () => {
+		if (isAlreadyConfigured) {
+			return (
+				<Card.Root>
+					<Card.Header>
+						<Heading
+							color={'#0661D8'}
+							size='lg'
+							display='flex'
+							alignItems='center'
+							gapX={2}
+						>
+							<FiSettings /> Configuración Actual
+						</Heading>
+					</Card.Header>
+					<Card.Body>
+						<VStack spacing={4} align='start'>
+							<HStack>
+								<Text fontWeight='semibold'>Tipo de calificación:</Text>
+								<Badge colorScheme='blue'>{currentQualificationLabel}</Badge>
+							</HStack>
+
+							<Text fontWeight='semibold'>Evaluaciones configuradas:</Text>
+							<VStack spacing={2} align='start' w='full'>
+								{evaluationComponents?.map((component, index) => (
+									<HStack
+										key={component.id || index}
+										w='full'
+										justify='space-between'
+									>
+										<Text>{component.name}</Text>
+										{data?.qualification_type_code === 1 && (
+											<Badge variant='outline'>{component.weight}%</Badge>
+										)}
+									</HStack>
+								))}
+							</VStack>
+
+							<Text fontSize='sm' color='gray.500' fontStyle='italic'>
+								La configuración ya está definida. No se puede modificar una vez
+								establecida.
+							</Text>
+						</VStack>
+					</Card.Body>
+				</Card.Root>
+			);
+		}
+
+		// Paso 1: Seleccionar método de evaluación
+		if (currentStep === 1) {
+			return (
+				<Card.Root>
+					<Card.Header>
+						<Heading color={'#0661D8'} size='lg'>
+							Paso 1: Método de Evaluación
+						</Heading>
+						<Text fontSize='sm' color='gray.500'>
+							¿Cómo deseas evaluar a los estudiantes de este curso?
+						</Text>
+					</Card.Header>
+					<Card.Body>
+						<Field
+							label='Método de evaluación'
+							invalid={!!errors.evaluationMethod}
+							errorText={errors.evaluationMethod}
+							required
+						>
+							<ReactSelect
+								options={EvaluationMethods}
+								value={evaluationMethod}
+								onChange={setEvaluationMethod}
+								placeholder='Selecciona el método de evaluación'
+							/>
+						</Field>
+
+						{evaluationMethod && (
+							<Card.Root mt={4} bg='blue.50' borderColor='blue.200'>
+								<Card.Body>
+									<Text fontSize='sm'>
+										<strong>{evaluationMethod.label}:</strong>{' '}
+										{evaluationMethod.value === 1
+											? 'Se registrará una sola calificación final por estudiante.'
+											: 'Se registrarán múltiples evaluaciones parciales que conformarán la nota final.'}
+									</Text>
+								</Card.Body>
+							</Card.Root>
+						)}
+					</Card.Body>
+				</Card.Root>
+			);
+		}
+
+		// Paso 2: Seleccionar tipo de calificación (solo para parciales)
+		if (currentStep === 2 && evaluationMethod?.value === 2) {
+			return (
+				<Card.Root>
+					<Card.Header>
+						<Heading color={'#0661D8'} size='lg'>
+							Paso 2: Tipo de Calificación
+						</Heading>
+						<Text fontSize='sm' color='gray.500'>
+							Selecciona cómo se calcularán las evaluaciones parciales.
+						</Text>
+					</Card.Header>
+					<Card.Body>
+						<Field
+							label='Tipo de calificación'
+							invalid={!!errors.qualificationType}
+							errorText={errors.qualificationType}
+							required
+						>
+							<ReactSelect
+								options={QualificationTypes}
+								value={qualificationType}
+								onChange={setQualificationType}
+								placeholder='Selecciona el tipo de calificación'
+							/>
+						</Field>
+
+						{qualificationType && (
+							<Card.Root mt={4} bg='blue.50' borderColor='blue.200'>
+								<Card.Body>
+									<Text fontSize='sm'>
+										<strong>{qualificationType.label}:</strong>{' '}
+										{qualificationType.value === 1
+											? 'Cada evaluación tendrá un peso específico que debe sumar 100%.'
+											: 'Todas las evaluaciones tendrán el mismo peso en la nota final.'}
+									</Text>
+								</Card.Body>
+							</Card.Root>
+						)}
+					</Card.Body>
+				</Card.Root>
+			);
+		}
+
+		// Paso 3: Número de evaluaciones (solo para parciales)
+		if (
+			(currentStep === 2 && evaluationMethod?.value === 1) ||
+			(currentStep === 3 && evaluationMethod?.value === 2)
+		) {
+			// Para nota única, saltar directamente al resumen
+			if (evaluationMethod?.value === 1) {
+				return (
+					<Card.Root>
+						<Card.Header>
+							<Heading color={'#0661D8'} size='lg'>
+								Paso 2: Resumen de Configuración
+							</Heading>
+							<Text fontSize='sm' color='gray.500'>
+								Confirma la configuración para la evaluación final.
+							</Text>
+						</Card.Header>
+						<Card.Body>
+							<VStack spacing={4} align='start'>
+								<HStack>
+									<Text fontWeight='semibold'>Método:</Text>
+									<Badge colorScheme='blue'>Nota Final</Badge>
+								</HStack>
+								<HStack>
+									<Text fontWeight='semibold'>Tipo:</Text>
+									<Badge colorScheme='green'>Promedio Simple</Badge>
+								</HStack>
+								<HStack>
+									<Text fontWeight='semibold'>Evaluaciones:</Text>
+									<Text>1 - Evaluación final</Text>
+								</HStack>
+
+								<Text fontSize='sm' color='gray.500' fontStyle='italic'>
+									Se creará un campo único para registrar la calificación final
+									de cada estudiante.
+								</Text>
+							</VStack>
+						</Card.Body>
+					</Card.Root>
+				);
+			}
+
+			// Para parciales, mostrar selector de número
+			return (
+				<Card.Root>
+					<Card.Header>
+						<Heading color={'#0661D8'} size='lg'>
+							Paso 3: Número de Evaluaciones
+						</Heading>
+						<Text fontSize='sm' color='gray.500'>
+							¿Cuántas evaluaciones parciales tendrá este curso?
+						</Text>
+					</Card.Header>
+					<Card.Body>
+						<Field
+							label='Número de evaluaciones'
+							invalid={!!errors.numberOfEvaluations}
+							errorText={errors.numberOfEvaluations}
+							required
+						>
+							<Input
+								type='number'
+								min={1}
+								max={20}
+								placeholder='Ej: 4'
+								value={numberOfEvaluations}
+								onChange={(e) => setNumberOfEvaluations(e.target.value)}
+							/>
+						</Field>
+					</Card.Body>
+				</Card.Root>
+			);
+		}
+
+		// Paso 4: Configurar evaluaciones (solo para parciales)
+		if (currentStep === 4 && evaluationMethod?.value === 2) {
+			return (
+				<VStack spacing={4}>
+					<Card.Root w='full'>
+						<Card.Header>
+							<Heading color={'#0661D8'} size='lg'>
+								Paso 4: Configurar Evaluaciones
+							</Heading>
+							<Text fontSize='sm' color='gray.500'>
+								Define el nombre{' '}
+								{qualificationType?.value === 1 ? 'y peso' : ''} de cada
+								evaluación.
+							</Text>
+						</Card.Header>
+					</Card.Root>
+
+					{evaluations.map((evaluation, index) => (
+						<Card.Root key={index} w='full'>
+							<Card.Header>
+								<Heading size='md' color='#0661D8'>
+									Evaluación {index + 1}
+								</Heading>
+							</Card.Header>
+							<Card.Body>
+								<Flex gap={4} direction={{ base: 'column', md: 'row' }}>
+									<Field
+										label='Nombre de la evaluación'
+										invalid={!!errors[`evaluation_${index}_name`]}
+										errorText={errors[`evaluation_${index}_name`]}
+										required
+										flex={1}
+									>
+										<Input
+											placeholder='Ej. Parcial 1, Examen Final, Trabajo Grupal'
+											value={evaluation.name}
+											onChange={(e) =>
+												handleEvaluationChange(index, 'name', e.target.value)
+											}
+										/>
+									</Field>
+
+									{qualificationType?.value === 1 && (
+										<Field
+											label='Peso (%)'
+											invalid={!!errors[`evaluation_${index}_weight`]}
+											errorText={errors[`evaluation_${index}_weight`]}
+											required
+											maxW={{ base: '100%', md: '150px' }}
+										>
+											<Input
+												type='number'
+												min={0}
+												max={100}
+												step={0.1}
+												placeholder='25'
+												value={evaluation.weight}
+												onChange={(e) =>
+													handleEvaluationChange(
+														index,
+														'weight',
+														e.target.value
+													)
+												}
+											/>
+										</Field>
+									)}
+								</Flex>
+							</Card.Body>
+						</Card.Root>
+					))}
+
+					{qualificationType?.value === 1 && (
+						<Card.Root w='full' bg='yellow.50' borderColor='yellow.200'>
+							<Card.Body>
+								<HStack>
+									<Text fontWeight='semibold'>Total de pesos:</Text>
+									<Badge
+										colorScheme={
+											evaluations.reduce(
+												(sum, evaluation) =>
+													sum + (parseFloat(evaluation.weight) || 0),
+												0
+											) === 100
+												? 'green'
+												: 'red'
+										}
+									>
+										{evaluations.reduce(
+											(sum, evaluation) =>
+												sum + (parseFloat(evaluation.weight) || 0),
+											0
+										)}
+										%
+									</Badge>
+								</HStack>
+								{errors.totalWeight && (
+									<Text color='red.500' fontSize='sm' mt={2}>
+										{errors.totalWeight}
+									</Text>
+								)}
+							</Card.Body>
+						</Card.Root>
+					)}
+				</VStack>
+			);
+		}
+	};
+
+	return (
+		<Modal
+			placement='center'
+			title='Configurar Evaluaciones del Curso'
+			size='4xl'
+			trigger={
+				<Button
+					size='xs'
+					bg='uni.secondary'
+					color='white'
+					px={2}
+					onClick={() => setOpen(true)}
+				>
+					{isAlreadyConfigured ? 'Ver Configuración' : 'Configurar'}
+				</Button>
+			}
+			open={open}
+			onOpenChange={(e) => setOpen(e.open)}
+			hiddenFooter={true}
+		>
+			<Stack spacing={4}>
+				{renderStepContent()}
+
+				{!isAlreadyConfigured && (
+					<Flex justify='space-between' mt={6}>
+						<Button
+							variant='outline'
+							onClick={handleBack}
+							isDisabled={currentStep === 1}
+						>
+							Anterior
+						</Button>
+
+						<HStack>
+							{/* Lógica de navegación dinámica */}
+							{currentStep === 1 ? (
+								<Button bg='#0661D8' color='white' onClick={handleNext}>
+									Siguiente
+								</Button>
+							) : evaluationMethod?.value === 1 && currentStep === 2 ? (
+								<Button
+									bg='green.500'
+									color='white'
+									onClick={handleSubmit}
+									isLoading={isConfiguring}
+									leftIcon={<FiSave />}
+								>
+									Guardar Configuración
+								</Button>
+							) : evaluationMethod?.value === 2 && currentStep < 4 ? (
+								<Button bg='#0661D8' color='white' onClick={handleNext}>
+									Siguiente
+								</Button>
+							) : (
+								<Button
+									bg='green.500'
+									color='white'
+									onClick={handleSubmit}
+									isLoading={isConfiguring}
+									leftIcon={<FiSave />}
+								>
+									Guardar Configuración
+								</Button>
+							)}
+						</HStack>
+					</Flex>
+				)}
+			</Stack>
+		</Modal>
+	);
 };
 
 ConfigurateCalificationCourseModal.propTypes = {
-  fetchData: PropTypes.func,
-  courseGroup: PropTypes.object,
-  evaluationComponents: PropTypes.array,
+	fetchData: PropTypes.func,
+	data: PropTypes.object,
+	courseGroup: PropTypes.object,
+	evaluationComponents: PropTypes.array,
+	hasConfiguration: PropTypes.bool,
 };

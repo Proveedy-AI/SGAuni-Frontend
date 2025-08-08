@@ -11,7 +11,7 @@ import {
 	Icon,
 	IconButton,
 } from '@chakra-ui/react';
-import { useReadCourseGroupById } from '@/hooks/course_groups';
+import { useReadCourseGroupById, useReadEvaluationSummaryByCourse } from '@/hooks/course_groups';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { useReadStudentsByCourseId } from '@/hooks/students';
 import { useState } from 'react';
@@ -20,10 +20,9 @@ import { Button, Field } from '@/components/ui';
 import { FiBook, FiTrash, FiUpload, FiUsers } from 'react-icons/fi';
 import { ConfigurateCalificationCourseModal } from '@/components/modals/myclasses/ConfigurateCalificationCourseModal';
 import { MdGroup, MdPerson } from 'react-icons/md';
-import { useReadEvaluationsComponents } from '@/hooks/evaluation_components';
 import { StudentsEvaluationsTable } from '@/components/tables/myclasses/StudentsEvaluationsTable';
 
-export const ClassMyEstudentsByCourseView = () => {
+export const ClassMyStudentsByCourseView = () => {
 	const { courseId } = useParams();
 	const decoded = decodeURIComponent(courseId);
 	const decrypted = Encryptor.decrypt(decoded);
@@ -34,18 +33,16 @@ export const ClassMyEstudentsByCourseView = () => {
 	} = useReadCourseGroupById(decrypted, {});
 
   const {
-    data: dataEvaluationComponents,
-    refetch: refetchEvaluationComponents,
-  } = useReadEvaluationsComponents();
+    data: dataEvaluationSummary,
+    refetch: refetchEvaluationSummary,
+  } = useReadEvaluationSummaryByCourse(decrypted, {}, {});
 
-  const filteredByCourseGroup = dataEvaluationComponents?.results?.filter(
-    (component) => component.course_group === dataCourseGroup?.id
-  );
+  console.log(dataEvaluationSummary)
 
+  const evaluationComponents = dataEvaluationSummary?.data?.evaluation_components || [];
 
-  const has_configured = filteredByCourseGroup?.length > 0;
-  // null: sin configuración ,1: Porcentaje, 2: Promedio simple, 3: Conceptual
-	const mode_calification = has_configured ? 1 : filteredByCourseGroup?.[0]?.mode_calification || 1;
+  const has_configured = dataEvaluationSummary?.data?.evaluation_configured || false;
+  
   console.log(dataCourseGroup?.id)
 	const { data: studentsData, isLoading: loadingStudents } =
 		useReadStudentsByCourseId(dataCourseGroup?.id, {});
@@ -193,10 +190,11 @@ export const ClassMyEstudentsByCourseView = () => {
 							</IconButton>
 
 							<ConfigurateCalificationCourseModal
-                fetchData={refetchEvaluationComponents}
+                fetchData={refetchEvaluationSummary}
                 courseGroup={dataCourseGroup}
-								evaluationComponents={filteredByCourseGroup}
-								mode_calification={mode_calification}
+                data={dataEvaluationSummary?.data}
+								evaluationComponents={evaluationComponents}
+				        hasConfiguration={has_configured}
 							/>
 						</SimpleGrid>
 					</Stack>
@@ -205,7 +203,7 @@ export const ClassMyEstudentsByCourseView = () => {
 
 			<StudentsEvaluationsTable
 				students={filteredStudents}
-				evaluationComponents={filteredByCourseGroup}
+				evaluationComponents={evaluationComponents}
 				isLoading={loadingStudents}
 				hasConfiguration={has_configured}
 			/>
