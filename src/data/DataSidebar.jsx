@@ -130,6 +130,7 @@ export const useDataSidebar = () => {
           href: '/enrollments/enrolled',
           icon: FiUsers,
           label: 'Matriculados',
+          permission: 'enrollments.enrolled.view',
         }
 			],
 		},
