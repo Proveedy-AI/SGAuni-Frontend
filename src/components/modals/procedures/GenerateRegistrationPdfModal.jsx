@@ -17,7 +17,7 @@ export const GenerateRegistrationPdfModal = ({ loading, registration_info }) => 
       trigger={
         <Button
           variant='outline'
-          colorScheme='blue'
+          colorPalette='blue'
           leftIcon={<Icon as={LuFileText} />}
           onClick={() => setOpen(true)}
           disabled={loading}
