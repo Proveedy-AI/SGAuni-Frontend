@@ -143,7 +143,7 @@ export const Step03SummaryEnrollment = ({
 					{
 						id: `rule-${currentRule.payment_purpose}`,
 						label: `Descuento por pago completo `,
-						percentage: currentRule.discount_percentage * 100,
+						percentage: currentRule?.discount_percentage * 100,
 					},
 				]
 			: []),
