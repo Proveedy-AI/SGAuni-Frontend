@@ -58,6 +58,7 @@ const Row = memo(
 				<Table.Cell>
 					{format(parseISO(item.requested_at), 'dd/MM/yyyy')}
 				</Table.Cell>
+				<Table.Cell>{item.amount}</Table.Cell>
 				<Table.Cell>{item.purpose_display}</Table.Cell>
 				<Table.Cell>{item.num_document}</Table.Cell>
 				<Table.Cell>{item.payment_method_display}</Table.Cell>
@@ -160,6 +161,14 @@ export const PaymentRequestsTable = ({
 								<SortableHeader
 									label='Fecha de Solicitud'
 									columnKey='requested_at'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader alignContent={'start'}>
+								<SortableHeader
+									label='Monto (S/.)'
+									columnKey='amount'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>

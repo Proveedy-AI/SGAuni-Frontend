@@ -67,7 +67,7 @@ export const MyPaymentUpload = () => {
 		?.filter((request) => request.status === 2)
 		.map((request) => ({
 			value: request.id,
-			label: `Solicitud #${request.id} - ${request.purpose_display} - ${request.admission_process_program_name}`,
+			label: `Solicitud #${request.id} - ${request.purpose_display} - ${request.admission_process_program_name || request.enrollment_process_program_name}`,
 			name: `${request.purpose_display} - ${request.num_document}`,
 		}));
 
