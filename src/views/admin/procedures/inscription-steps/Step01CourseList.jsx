@@ -357,7 +357,13 @@ export const Step01CourseList = ({
 											return false;
 										}
 
-										return group.schedule_info?.some((groupSlot) => {
+										const groupSlots = Array.isArray(group.schedule_info)
+											? group.schedule_info
+											: group.schedule_info
+												? [group.schedule_info] // si es un objeto único, lo metemos en un array
+												: [];
+
+										return groupSlots.some((groupSlot) => {
 											return selection.schedule.some((selectionSlot) => {
 												if (groupSlot.day !== selectionSlot.day) {
 													return false;

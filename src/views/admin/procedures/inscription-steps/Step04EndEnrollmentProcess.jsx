@@ -15,7 +15,7 @@ export const Step04EndEnrollmentProcess = ({ step, id, mySelections }) => {
 	const { data: dataRegistrationInfo, isLoading: loadingRegistrationInfo } =
 		useReadEnrollmentReceipt(id, {}, { enabled: !!id && step === 4 });
 
-	const courses_groups = dataRegistrationInfo?.data?.map((course_group) => {
+	const courses_groups = mySelections?.map((course_group) => {
 		return {
 			cycle: course_group.cycle,
 			group_code: course_group.group_code,
@@ -24,7 +24,7 @@ export const Step04EndEnrollmentProcess = ({ step, id, mySelections }) => {
 		};
 	});
 
-	const total_credits = dataRegistrationInfo?.data?.reduce(
+	const total_credits = mySelections?.reduce(
 		(acc, group) => acc + group.credits,
 		0
 	);
