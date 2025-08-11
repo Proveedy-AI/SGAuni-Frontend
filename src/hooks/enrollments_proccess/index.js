@@ -4,3 +4,4 @@ export * from "./useCreateEnrollments"
 export * from "./useUpdateEnrollments"
 export * from "./useDeleteEnrollments"
 export * from "./useDuplicateEnrollments"
+export * from './useGenerateReportEnrolled'

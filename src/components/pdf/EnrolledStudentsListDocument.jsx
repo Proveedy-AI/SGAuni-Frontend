@@ -4,6 +4,19 @@ import { Document, Page, Text, View, StyleSheet, Image, PDFViewer } from '@react
 export const EnrolledStudentsListDocument = ({ students }) => {
   const faviconUrl = `${window.location.origin}/favicon.png`;
 
+  const PERIOD_NAME = {
+    1: 'PRIMER',
+    2: 'SEGUNDO',
+    3: 'TERCERO',
+    4: 'CUARTO',
+    5: 'QUINTO',
+    6: 'SEXTO',
+    7: 'SÉPTIMO',
+    8: 'OCTAVO',
+    9: 'NOVENO',
+    10: 'DÉCIMO',
+  }
+
   const styles = StyleSheet.create({
     page: {
       flexDirection: 'column',
@@ -206,7 +219,7 @@ export const EnrolledStudentsListDocument = ({ students }) => {
               <View style={styles.infoRow}>
                 <Text style={styles.infoLabel}>PERÍODO</Text>
                 <Text style={styles.infoValue}>{programData.academic_period_name}</Text>
-                <Text style={styles.infoValue}>{programData.academic_period_name} PRIMER SEMESTRE FIEECS</Text>
+                <Text style={styles.infoValue}>{programData.academic_period_name} {PERIOD_NAME[programData?.academic_period_name?.split('-')[1]]} SEMESTRE FIEECS</Text>
               </View>
               
               <View style={styles.infoRow}>
