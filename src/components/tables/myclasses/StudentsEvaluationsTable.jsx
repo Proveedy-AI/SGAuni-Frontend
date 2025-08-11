@@ -10,7 +10,7 @@ const Row = memo(({ student, evaluationComponents, statusOptions, statusColors }
   return (
     <Table.Row key={student.uuid || student.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
       <Table.Cell>
-        {student.student_code || student.uuid}
+        { student?.student_code }
       </Table.Cell>
       <Table.Cell>
         <Text fontWeight="medium">{student.student_name}</Text>
@@ -361,7 +361,7 @@ export const StudentsEvaluationsTable = ({
           <Table.Header>
             <Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
               <Table.ColumnHeader w='8%'>
-                <Text fontWeight="bold">ID</Text>
+                <Text fontWeight="bold">Código</Text>
               </Table.ColumnHeader>
               <Table.ColumnHeader w='25%'>
                 <Text fontWeight="bold">Nombre</Text>

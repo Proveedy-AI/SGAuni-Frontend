@@ -10,10 +10,11 @@ import {
 	VStack,
 	HStack,
 	Badge,
+	Alert,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-import { FiSave, FiSettings } from 'react-icons/fi';
+import { FiSave, FiSettings, FiAlertTriangle } from 'react-icons/fi';
 import { useConfigureEvaluationByCourse } from '@/hooks/course_groups';
 
 export const ConfigurateCalificationCourseModal = ({
@@ -381,6 +382,18 @@ export const ConfigurateCalificationCourseModal = ({
 						</Card.Header>
 						<Card.Body>
 							<VStack spacing={4} align='start'>
+								{/* Alerta de advertencia */}
+								<Alert.Root status='warning' variant='subtle'>
+									<Alert.Indicator>
+										<FiAlertTriangle />
+									</Alert.Indicator>
+									<Alert.Title>¡Importante!</Alert.Title>
+									<Alert.Description>
+										Una vez configurado, el sistema de evaluación no podrá ser modificado. 
+										Revise cuidadosamente antes de confirmar.
+									</Alert.Description>
+								</Alert.Root>
+
 								<HStack>
 									<Text fontWeight='semibold'>Método:</Text>
 									<Badge colorScheme='blue'>Nota Final</Badge>
@@ -398,6 +411,7 @@ export const ConfigurateCalificationCourseModal = ({
 									Se creará un campo único para registrar la calificación final
 									de cada estudiante.
 								</Text>
+
 							</VStack>
 						</Card.Body>
 					</Card.Root>
@@ -540,6 +554,18 @@ export const ConfigurateCalificationCourseModal = ({
 							</Card.Body>
 						</Card.Root>
 					)}
+
+					{/* Alerta de advertencia para evaluaciones parciales */}
+					<Alert.Root status='warning' variant='subtle' w='full'>
+						<Alert.Indicator>
+							<FiAlertTriangle />
+						</Alert.Indicator>
+						<Alert.Title>¡Configuración Irreversible!</Alert.Title>
+						<Alert.Description>
+							Una vez guardada la configuración de evaluaciones, no podrá modificar los nombres, 
+							cantidades ni pesos de las evaluaciones. Verifique que toda la información sea correcta.
+						</Alert.Description>
+					</Alert.Root>
 				</VStack>
 			);
 		}

@@ -30,22 +30,29 @@ export const ClassMyStudentsByCourseView = () => {
 	const {
 		data: dataCourseGroup,
 		isLoading: loadingCourseGroup,
-	} = useReadCourseGroupById(decrypted, {});
+	} = useReadCourseGroupById(
+    decrypted,
+    { enabled: !!decrypted }
+  );
 
   const {
     data: dataEvaluationSummary,
     refetch: refetchEvaluationSummary,
-  } = useReadEvaluationSummaryByCourse(decrypted, {}, {});
-
-  console.log(dataEvaluationSummary)
+  } = useReadEvaluationSummaryByCourse(
+    decrypted, 
+    {},
+    { enabled: !!decrypted }
+  );
 
   const evaluationComponents = dataEvaluationSummary?.data?.evaluation_components || [];
 
   const has_configured = dataEvaluationSummary?.data?.evaluation_configured || false;
   
-  console.log(dataCourseGroup?.id)
 	const { data: studentsData, isLoading: loadingStudents } =
-		useReadStudentsByCourseId(dataCourseGroup?.id, {});
+		useReadStudentsByCourseId(
+      dataCourseGroup?.id,
+      { enabled: !!dataCourseGroup?.id }
+    );
 
 	const [filteredName, setFilteredName] = useState('');
 	const [selectedStatus, setSelectedStatus] = useState(null);
@@ -186,7 +193,7 @@ export const ClassMyStudentsByCourseView = () => {
 								px={4}
 								icon={<FiUpload />}
 							>
-								Subir Notas
+								Subir Notas con excel
 							</IconButton>
 
 							<ConfigurateCalificationCourseModal
