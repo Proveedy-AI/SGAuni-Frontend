@@ -2,6 +2,7 @@
 import { Box, Flex, Spinner, Heading } from '@chakra-ui/react';
 import { dashboardsByPermission } from './dashboards';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
+import { FooterDashboard } from '@/layouts/FooterDashboard';
 
 export const Dashboard = () => {
 	const { data: profile } = useReadUserLogged();
@@ -30,10 +31,10 @@ export const Dashboard = () => {
 				{/* Ejecutamos la función, así solo se instancia si hay permiso */}
 			</Box>
 		));
-	console.log(profile);
+
 	return (
-		<Flex direction='column' px='0' w='full'>
-			<Box py='8' px='0' w='full'>
+		<Flex direction='column' minH='100vh'>
+			<Box flex='1' py='8' px='0' w='full'>
 				{allowedDashboards.length > 0 ? (
 					allowedDashboards
 				) : (
@@ -42,6 +43,7 @@ export const Dashboard = () => {
 					</Box>
 				)}
 			</Box>
+			<FooterDashboard />
 		</Flex>
 	);
 };
