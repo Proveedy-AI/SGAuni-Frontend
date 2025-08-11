@@ -3,7 +3,6 @@ import useAxiosPrivate from "../axios/useAxiosPrivate";
 
 export const useReadCourseGradesByCourseId = (courseSelectionId, params = {}, options = {}) => {
   const axiosPrivate = useAxiosPrivate();
-
   return useQuery({
     queryKey: ['course-grades', courseSelectionId],
     queryFn: async () => {

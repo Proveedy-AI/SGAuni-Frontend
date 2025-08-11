@@ -32,16 +32,11 @@ export const MyCoursesListByAcademicPeriodView = () => {
   const hoverBg = useColorModeValue("gray.50", "gray.700");
   const summaryBg = useColorModeValue("gray.50", "gray.700");
 
-  const getDayName = (dayNumber) => {
-    const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-    return days[dayNumber];
-  };
-
   const formatSchedule = (schedules) => {
     if (!schedules || schedules.length === 0) return "Sin horario";
     
     return schedules.map(schedule => 
-      `${getDayName(schedule.day_of_week)}: ${schedule.start_time} - ${schedule.end_time}`
+      `${schedule.day}: ${schedule.start_time} - ${schedule.end_time}`
     ).join(", ");
   };
 
@@ -51,8 +46,7 @@ export const MyCoursesListByAcademicPeriodView = () => {
   };
 
   const handleRowClick = (course) => {
-    console.log(course);
-    const encrypted = Encryptor.encrypt(course.id);
+    const encrypted = Encryptor.encrypt(course.id_course_selection);
     const encoded = encodeURIComponent(encrypted);
     navigate(`/mycourses/${encoded}`);
   };
@@ -178,96 +172,89 @@ export const MyCoursesListByAcademicPeriodView = () => {
               border="1px solid" 
               borderColor={borderColor}
             >
-              <Table.Root variant="simple" size="sm">
-                <Table.Header bg={headerBg}>
-                  <Table.Row >
-                    <Table.Cell fontWeight="bold" color="blue.700" textAlign="center">Ciclo</Table.Cell>
-                    <Table.Cell fontWeight="bold" color="blue.700" textAlign="center" width="360px">Asignatura</Table.Cell>
-                    <Table.Cell fontWeight="bold" color="blue.700" textAlign="center">Calificación</Table.Cell>
-                    <Table.Cell fontWeight="bold" color="blue.700" textAlign="center">Créditos</Table.Cell>
-                    <Table.Cell fontWeight="bold" color="blue.700" textAlign="center">Sección</Table.Cell>
-                    <Table.Cell fontWeight="bold" color="blue.700" textAlign="center" width="320px">Docente</Table.Cell>
-                    <Table.Cell fontWeight="bold" color="blue.700" textAlign="center" width="320px">Horario</Table.Cell>
-                    <Table.Cell fontWeight="bold" color="blue.700" textAlign="center">Estado</Table.Cell>
-                  </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                  {periodData.courses.map((course, index) => (
-                    <Table.Row 
-                      key={index} 
-                      _hover={{ bg: hoverBg }}
-                      borderColor={borderColor}
-                      onClick={(e) => {
-                        if (e.target.closest('button') || e.target.closest('a')) return;
-                        handleRowClick(course)
-                      }}
-                      cursor="pointer"
-                    >
-                      <Table.Cell>
-                        <Text fontSize="sm" color="blue.600" fontWeight="medium" textAlign="center">
-                          {course.schedules?.[0]?.cycle || "N/A"}
-                        </Text>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <VStack align="start" spacing={1}>
-                          <Text fontSize="sm" fontWeight="medium" color="blue.600">
-                            {course.course_code} - {course.course_name}
+              <Table.ScrollArea>
+                <Table.Root variant="simple" size="sm">
+                  <Table.Header bg={headerBg}>
+                    <Table.Row >
+                      <Table.Cell borderRight={"1px solid"} borderColor={borderColor} fontWeight="bold" color="blue.700" textAlign="center" minWidth="100px">Ciclo</Table.Cell>
+                      <Table.Cell borderRight={"1px solid"} borderColor={borderColor} fontWeight="bold" color="blue.700" textAlign="center" minWidth="360px">Asignatura</Table.Cell>
+                      <Table.Cell borderRight={"1px solid"} borderColor={borderColor} fontWeight="bold" color="blue.700" textAlign="center" minWidth="100px">Calificación</Table.Cell>
+                      <Table.Cell borderRight={"1px solid"} borderColor={borderColor} fontWeight="bold" color="blue.700" textAlign="center" minWidth="100px">Créditos</Table.Cell>
+                      <Table.Cell borderRight={"1px solid"} borderColor={borderColor} fontWeight="bold" color="blue.700" textAlign="center" minWidth="100px">Sección</Table.Cell>
+                      <Table.Cell borderRight={"1px solid"} borderColor={borderColor} fontWeight="bold" color="blue.700" textAlign="center" minWidth="320px">Docente</Table.Cell>
+                      <Table.Cell fontWeight="bold" color="blue.700" textAlign="center" width="320px">Horario</Table.Cell>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    {periodData.courses.map((course, index) => (
+                      <Table.Row 
+                        key={index} 
+                        _hover={{ bg: hoverBg }}
+                        borderColor={borderColor}
+                        onClick={(e) => {
+                          if (e.target.closest('button') || e.target.closest('a')) return;
+                          handleRowClick(course)
+                        }}
+                        cursor="pointer"
+                      >
+                        <Table.Cell borderRight={"1px solid"} borderColor={borderColor}>
+                          <Text fontSize="sm" color="blue.600" fontWeight="medium" textAlign="center">
+                            {course.schedules?.[0]?.cycle || "N/A"}
                           </Text>
-                          {course.is_repeated && (
-                            <Badge colorScheme="orange" size="sm">
-                              Repetido
+                        </Table.Cell>
+                        <Table.Cell borderRight={"1px solid"} borderColor={borderColor}>
+                          <VStack align="start" spacing={1}>
+                            <Text fontSize="sm" fontWeight="medium" color="blue.600">
+                              {course.course_code} - {course.course_name}
+                            </Text>
+                            {course.is_repeated && (
+                              <Badge colorScheme="orange" size="sm">
+                                Repetido
+                              </Badge>
+                            )}
+                          </VStack>
+                        </Table.Cell>
+                        <Table.Cell textAlign="center" borderRight={"1px solid"} borderColor={borderColor}>
+                          {course.final_grade && (
+                            <Badge 
+                              bg={getGradeColor(course.final_grade)} 
+                              variant="solid"
+                              p={1}
+                              boxSize={6}
+                              textAlign={"center"}
+                              justifyContent="center"
+                              color="white"
+                              borderRadius="md"
+                            >
+                              {course.final_grade}
                             </Badge>
                           )}
-                        </VStack>
-                      </Table.Cell>
-                      <Table.Cell textAlign="center">
-                        <Badge 
-                          bg={getGradeColor(course.final_grade)} 
-                          variant="solid"
-                          p={1}
-                          boxSize={6}
-                          textAlign={"center"}
-                          justifyContent="center"
-                          color="white"
-                          borderRadius="md"
-                        >
-                          {course.final_grade || "N/A"}
-                        </Badge>
-                      </Table.Cell>
-                      <Table.Cell textAlign="center">
-                        <Text fontSize="sm" fontWeight="medium">
-                          {course.schedules?.[0]?.credits || "N/A"}
-                        </Text>
-                      </Table.Cell>
-                      <Table.Cell textAlign="center">
-                        <Text fontSize="sm" fontWeight="medium">
-                          {course.group_section}
-                        </Text>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Text fontSize="sm">
-                          {course.teacher}
-                        </Text>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Text fontSize="sm" color="gray.600">
-                          {formatSchedule(course.schedules)}
-                        </Text>
-                      </Table.Cell>
-                      <Table.Cell textAlign="center">
-                        {course.schedules?.[0] && (
-                          <Badge 
-                            colorScheme={course.schedules[0].status_review === 1 ? "green" : "orange"}
-                            size="sm"
-                          >
-                            {course.schedules[0].status_review_display}
-                          </Badge>
-                        )}
-                      </Table.Cell>
-                    </Table.Row>
-                  ))}
-                </Table.Body>
-              </Table.Root>
+                        </Table.Cell>
+                        <Table.Cell textAlign="center" borderRight={"1px solid"} borderColor={borderColor}>
+                          <Text fontSize="sm" fontWeight="medium">
+                            {course.schedules?.[0]?.credits || "N/A"}
+                          </Text>
+                        </Table.Cell>
+                        <Table.Cell textAlign="center" borderRight={"1px solid"} borderColor={borderColor}>
+                          <Text fontSize="sm" fontWeight="medium">
+                            {course.group_section}
+                          </Text>
+                        </Table.Cell>
+                        <Table.Cell borderRight={"1px solid"} borderColor={borderColor}>
+                          <Text fontSize="sm">
+                            {course.teacher}
+                          </Text>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <Text fontSize="sm" color="gray.600">
+                            {formatSchedule(course.schedules)}
+                          </Text>
+                        </Table.Cell>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table.Root>
+              </Table.ScrollArea>
             </Box>
           </Box>
         ))}

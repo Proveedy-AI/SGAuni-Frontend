@@ -21,7 +21,7 @@ import { Encryptor } from "@/components/CrytoJS/Encryptor";
 import { useReadCourseGradesByCourseId } from "@/hooks/students";
 
 export const MyEvaluationsByCourseView = () => {
-const { id } = useParams();
+  const { id } = useParams();
   const decoded = decodeURIComponent(id);
   const decrypted = Encryptor.decrypt(decoded);
 
@@ -30,7 +30,11 @@ const { id } = useParams();
   const {
     data: dataMyEvaluations,
     isLoading: isLoadingMyEvaluations,
-  } = useReadCourseGradesByCourseId(decrypted, {}, { enabled: !!decrypted });
+  } = useReadCourseGradesByCourseId(
+    decrypted, 
+    {}, 
+    { enabled: !!decrypted }
+  );
 
   const bgColor = useColorModeValue("white", "gray.800");
   const borderColor = useColorModeValue("gray.200", "gray.600");
@@ -58,7 +62,7 @@ const { id } = useParams();
     });
   };
 
-  const { data } = dataMyEvaluations;
+  const data = dataMyEvaluations?.data;
 
   const calculateWeightedAverage = (evaluations) => {
     const evaluatedItems = evaluations?.filter(evaluation => evaluation.grade_obtained !== null && evaluation.weight_percentage > 0) || [];
