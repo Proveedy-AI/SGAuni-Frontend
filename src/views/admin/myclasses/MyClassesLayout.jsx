@@ -33,16 +33,16 @@ export const MyClassesLayout = () => {
       label: 'Programas',
       icon: FiClipboard,
     },
-    {
-      href: '/myclasses/myschedules',
-      label: 'Horarios',
-      icon: FiFileText,
-    },
-    {
-      href: '/myclasses/myhistorial',
-      label: 'Historial',
-      icon: FiFileText,
-    }
+    // {
+    //   href: '/myclasses/myschedules',
+    //   label: 'Horarios',
+    //   icon: FiFileText,
+    // },
+    // {
+    //   href: '/myclasses/myhistorial',
+    //   label: 'Historial',
+    //   icon: FiFileText,
+    // }
   ];
 
   return (

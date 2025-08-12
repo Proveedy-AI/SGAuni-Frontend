@@ -9,7 +9,6 @@ import {
 	Stack,
 	SimpleGrid,
 	Icon,
-	IconButton,
 } from '@chakra-ui/react';
 import { useReadCourseGroupById, useReadEvaluationSummaryByCourse } from '@/hooks/course_groups';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
@@ -17,10 +16,10 @@ import { useReadStudentsByCourseId } from '@/hooks/students';
 import { useState } from 'react';
 import { ReactSelect } from '@/components';
 import { Button, Field } from '@/components/ui';
-import { FiBook, FiTrash, FiUpload, FiUsers } from 'react-icons/fi';
-import { ConfigurateCalificationCourseModal } from '@/components/modals/myclasses/ConfigurateCalificationCourseModal';
+import { FiBook, FiTrash, FiUsers } from 'react-icons/fi';
 import { MdGroup, MdPerson } from 'react-icons/md';
 import { StudentsEvaluationsTable } from '@/components/tables/myclasses/StudentsEvaluationsTable';
+import { ConfigurateCalificationCourseModal, LoadEvaluationsByExcelModal } from '@/components/modals/myclasses';
 
 export const ClassMyStudentsByCourseView = () => {
 	const { courseId } = useParams();
@@ -185,16 +184,10 @@ export const ClassMyStudentsByCourseView = () => {
 							
 							justifyContent='end'
 						>
-							<IconButton
-								size='sm'
-								bg='white'
-								color='blue.600'
-								border='1px solid'
-								px={4}
-								icon={<FiUpload />}
-							>
-								Subir Notas con excel
-							</IconButton>
+							<LoadEvaluationsByExcelModal 
+                dataCourseGroup={dataCourseGroup}
+                fetchData={refetchEvaluationSummary}
+              />
 
 							<ConfigurateCalificationCourseModal
                 fetchData={refetchEvaluationSummary}

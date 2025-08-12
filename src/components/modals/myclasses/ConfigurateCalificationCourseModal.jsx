@@ -455,7 +455,7 @@ export const ConfigurateCalificationCourseModal = ({
 			return (
 				<VStack spacing={4}>
 					<Card.Root w='full'>
-						<Card.Header>
+						<Card.Header py={4}>
 							<Heading color={'#0661D8'} size='lg'>
 								Paso 4: Configurar Evaluaciones
 							</Heading>
@@ -591,7 +591,7 @@ export const ConfigurateCalificationCourseModal = ({
 			onOpenChange={(e) => setOpen(e.open)}
 			hiddenFooter={true}
 		>
-			<Stack spacing={4}>
+			<Stack spacing={4} maxHeight={'700px'} overflowY='auto'>
 				{renderStepContent()}
 
 				{!isAlreadyConfigured && (

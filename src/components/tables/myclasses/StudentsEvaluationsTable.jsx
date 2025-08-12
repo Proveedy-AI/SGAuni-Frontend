@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import { memo } from 'react';
-import { Box, Table, Text, Badge } from '@chakra-ui/react';
+import { Box, Table, Text, Badge, Group } from '@chakra-ui/react';
 import SkeletonTable from '@/components/ui/SkeletonTable';
+import { RegisterEvaluationsModal } from '@/components/modals/myclasses';
 
 const Row = memo(({ student, evaluationComponents, statusOptions, statusColors }) => {
   const statusOption = statusOptions.find(opt => opt.value === student.qualification_status);
@@ -43,6 +44,11 @@ const Row = memo(({ student, evaluationComponents, statusOptions, statusColors }
           </Text>
         </Table.Cell>
       )}
+      <Table.Cell>
+        <Group>
+          <RegisterEvaluationsModal student={student} evaluationComponents={evaluationComponents} />
+        </Group>
+      </Table.Cell>
     </Table.Row>
   );
 });
@@ -69,193 +75,6 @@ export const StudentsEvaluationsTable = ({
     { value: 4, label: 'Aprobado' },
     { value: 5, label: 'Reprobado' },
   ];
-
-  // const studentsLocal = [
-  // {
-  //   "student_code": "2021001",
-  //   "student_name": "German Emilio Rodríguez",
-  //   "uuid": "6b004087-67a4-498f-8c85-ede9417e0888",
-  //   "student_email": "german.rodriguez@universidad.edu",
-  //   "final_grade": 15.75,
-  //   "qualification_status": 1,
-  //   "qualification_status_display": "En curso",
-  //   "califications": [
-  //     {
-  //       "id": 1,
-  //       "enrollment_course_selection": 101,
-  //       "evaluation_component": 1,
-  //       "evaluation_component_name": "Examen Parcial 1",
-  //       "grade": "16",
-  //       "grade_conceptual": "A",
-  //       "graded_at": "2025-03-15T14:30:00.000Z",
-  //       "graded_by": "Dr. Juan Pérez"
-  //     },
-  //     {
-  //       "id": 2,
-  //       "enrollment_course_selection": 101,
-  //       "evaluation_component": 2,
-  //       "evaluation_component_name": "Trabajo Grupal",
-  //       "grade": "18",
-  //       "grade_conceptual": "AD",
-  //       "graded_at": "2025-04-10T16:45:00.000Z",
-  //       "graded_by": "Dr. Juan Pérez"
-  //     },
-  //     {
-  //       "id": 3,
-  //       "enrollment_course_selection": 101,
-  //       "evaluation_component": 3,
-  //       "evaluation_component_name": "Examen Parcial 2",
-  //       "grade": "14",
-  //       "grade_conceptual": "B",
-  //       "graded_at": "2025-05-20T10:15:00.000Z",
-  //       "graded_by": "Dr. Juan Pérez"
-  //     }
-  //   ]
-  // },
-  // {
-  //   "student_code": "2021002",
-  //   "student_name": "María Elena González",
-  //   "uuid": "7c115198-78b5-509f-9d96-fef0518f1b99",
-  //   "student_email": "maria.gonzalez@universidad.edu",
-  //   "final_grade": 12.50,
-  //   "qualification_status": 2,
-  //   "qualification_status_display": "Calificado",
-  //   "califications": [
-  //     {
-  //       "id": 4,
-  //       "enrollment_course_selection": 102,
-  //       "evaluation_component": 1,
-  //       "evaluation_component_name": "Examen Parcial 1",
-  //       "grade": "13",
-  //       "grade_conceptual": "B",
-  //       "graded_at": "2025-03-15T14:30:00.000Z",
-  //       "graded_by": "Dr. Juan Pérez"
-  //     },
-  //     {
-  //       "id": 5,
-  //       "enrollment_course_selection": 102,
-  //       "evaluation_component": 2,
-  //       "evaluation_component_name": "Trabajo Grupal",
-  //       "grade": "15",
-  //       "grade_conceptual": "A",
-  //       "graded_at": "2025-04-10T16:45:00.000Z",
-  //       "graded_by": "Dr. Juan Pérez"
-  //     },
-  //     {
-  //       "id": 6,
-  //       "enrollment_course_selection": 102,
-  //       "evaluation_component": 3,
-  //       "evaluation_component_name": "Examen Parcial 2",
-  //       "grade": "10",
-  //       "grade_conceptual": "C",
-  //       "graded_at": "2025-05-20T10:15:00.000Z",
-  //       "graded_by": "Dr. Juan Pérez"
-  //     }
-  //   ]
-  // },
-  // {
-  //   "student_code": "2021003",
-  //   "student_name": "Carlos Alberto Ruiz",
-  //   "uuid": "8d226209-89c6-610g-ae07-0f152940c2aa",
-  //   "student_email": "carlos.ruiz@universidad.edu",
-  //   "final_grade": 17.25,
-  //   "qualification_status": 4,
-  //   "qualification_status_display": "Aprobado",
-  //   "califications": [
-  //     {
-  //       "id": 7,
-  //       "enrollment_course_selection": 103,
-  //       "evaluation_component": 1,
-  //       "evaluation_component_name": "Examen Parcial 1",
-  //       "grade": "18",
-  //       "grade_conceptual": "AD",
-  //       "graded_at": "2025-03-15T14:30:00.000Z",
-  //       "graded_by": "Dr. Juan Pérez"
-  //     },
-  //     {
-  //       "id": 8,
-  //       "enrollment_course_selection": 103,
-  //       "evaluation_component": 2,
-  //       "evaluation_component_name": "Trabajo Grupal",
-  //       "grade": "17",
-  //       "grade_conceptual": "A",
-  //       "graded_at": "2025-04-10T16:45:00.000Z",
-  //       "graded_by": "Dr. Juan Pérez"
-  //     },
-  //     {
-  //       "id": 9,
-  //       "enrollment_course_selection": 103,
-  //       "evaluation_component": 3,
-  //       "evaluation_component_name": "Examen Parcial 2",
-  //       "grade": "17",
-  //       "grade_conceptual": "A",
-  //       "graded_at": "2025-05-20T10:15:00.000Z",
-  //       "graded_by": "Dr. Juan Pérez"
-  //     },
-  //     {
-  //       "id": 10,
-  //       "enrollment_course_selection": 103,
-  //       "evaluation_component": 4,
-  //       "evaluation_component_name": "Proyecto Final",
-  //       "grade": "17",
-  //       "grade_conceptual": "A",
-  //       "graded_at": "2025-06-25T11:30:00.000Z",
-  //       "graded_by": "Dr. Juan Pérez"
-  //     }
-  //   ]
-  // },
-  // {
-  //   "student_code": "2021004",
-  //   "student_name": "Ana Patricia Torres",
-  //   "uuid": "9e337310-9ad7-721h-bf18-102630514bb",
-  //   "student_email": "ana.torres@universidad.edu",
-  //   "final_grade": null,
-  //   "qualification_status": 3,
-  //   "qualification_status_display": "No Calificado",
-  //   "califications": []
-  // },
-  // {
-  //   "student_code": "2021005",
-  //   "student_name": "Luis Fernando Morales",
-  //   "uuid": "af448421-abc8-832i-cg29-213741625cc",
-  //   "student_email": "luis.morales@universidad.edu",
-  //   "final_grade": 9.75,
-  //   "qualification_status": 5,
-  //   "qualification_status_display": "Reprobado",
-  //   "califications": [
-  //     {
-  //       "id": 11,
-  //       "enrollment_course_selection": 105,
-  //       "evaluation_component": 1,
-  //       "evaluation_component_name": "Examen Parcial 1",
-  //       "grade": "8",
-  //       "grade_conceptual": "C",
-  //       "graded_at": "2025-03-15T14:30:00.000Z",
-  //       "graded_by": "Dr. Juan Pérez"
-  //     },
-  //     {
-  //       "id": 12,
-  //       "enrollment_course_selection": 105,
-  //       "evaluation_component": 2,
-  //       "evaluation_component_name": "Trabajo Grupal",
-  //       "grade": "12",
-  //       "grade_conceptual": "B",
-  //       "graded_at": "2025-04-10T16:45:00.000Z",
-  //       "graded_by": "Dr. Juan Pérez"
-  //     },
-  //     {
-  //       "id": 13,
-  //       "enrollment_course_selection": 105,
-  //       "evaluation_component": 3,
-  //       "evaluation_component_name": "Examen Parcial 2",
-  //       "grade": "9",
-  //       "grade_conceptual": "C",
-  //       "graded_at": "2025-05-20T10:15:00.000Z",
-  //       "graded_by": "Dr. Juan Pérez"
-  //     }
-  //   ]
-  // }
-  // ];
 
   const statusColors = [
     { id: 1, bg: '#AEAEAE', color: '#F5F5F5' },
@@ -360,24 +179,17 @@ export const StudentsEvaluationsTable = ({
         <Table.Root size='sm' w='full' striped>
           <Table.Header>
             <Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
-              <Table.ColumnHeader w='8%'>
-                <Text fontWeight="bold">Código</Text>
-              </Table.ColumnHeader>
-              <Table.ColumnHeader w='25%'>
-                <Text fontWeight="bold">Nombre</Text>
-              </Table.ColumnHeader>
-              <Table.ColumnHeader w='15%'>
-                <Text fontWeight="bold">Estado</Text>
-              </Table.ColumnHeader>
+              <Table.ColumnHeader w='8%'>Código</Table.ColumnHeader>
+              <Table.ColumnHeader w='25%'>Nombre</Table.ColumnHeader>
+              <Table.ColumnHeader w='15%'>Estado</Table.ColumnHeader>
               {/* Columnas dinámicas para evaluaciones */}
               {evaluationComponents?.map((evaluation) => (
                 <Table.ColumnHeader key={evaluation.id} textAlign="center" w='10%'>
-                  <Text fontWeight="bold" fontSize="sm">{evaluation.name}</Text>
+                  {evaluation.name}
                 </Table.ColumnHeader>
               ))}
-              <Table.ColumnHeader textAlign="center" w='12%'>
-                <Text fontWeight="bold">Promedio</Text>
-              </Table.ColumnHeader>
+              <Table.ColumnHeader textAlign="center" w='12%'>Promedio</Table.ColumnHeader>
+              <Table.ColumnHeader textAlign="center" w='12%'>Acciones</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
           <Table.Body>
