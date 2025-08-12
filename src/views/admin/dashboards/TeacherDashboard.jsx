@@ -11,11 +11,11 @@ import {
 	Text,
 } from '@chakra-ui/react';
 import {
-	FiCalendar,
+	FiBookOpen,
 	FiCheckCircle,
 	FiEdit3,
-	FiFileText,
 	FiFolder,
+	FiUsers,
 } from 'react-icons/fi';
 import { useNavigate } from 'react-router';
 
@@ -33,22 +33,22 @@ export const TeacherDashboard = () => {
 			bg: 'green.100',
 		},
 		{
-			title: 'Procesos de matrícula',
-			subtitle: 'Pendiente aprobación',
+			title: 'Programas académicos',
+			subtitle: 'Cursos por configurar',
 			count: '02',
 			textColor: 'purple.600',
-			icon: FiFileText,
+			icon: FiBookOpen,
 			iconColor: 'purple.500',
 			bg: 'purple.100',
 		},
 		{
-			title: 'Horarios',
-			subtitle: 'Pendiente aprobación',
+			title: 'Postulantes',
+			subtitle: 'Por calificar',
 			count: '10',
-			textColor: 'orange.600',
-			icon: FiCalendar,
-			iconColor: 'orange.500',
-			bg: 'orange.100',
+			textColor: 'yellow.600',
+			icon: FiUsers,
+			iconColor: 'yellow.500',
+			bg: 'yellow.100',
 		},
 	];
 
@@ -63,13 +63,13 @@ export const TeacherDashboard = () => {
 			link: 'contracts/mylist',
 		},
 		{
-			title: 'Solicitudes de Beneficios:',
-			subtitle: 'Solicitudes de beneficios estudiantiles.',
-			icon: FiEdit3,
+			title: 'Mis clases:',
+			subtitle: 'Ver y gestionar mis clases.',
+			icon: FiBookOpen,
 			bg: 'purple.100',
 			borderColor: 'purple.200',
 			iconColor: 'purple.600',
-			link: '/benefits/request',
+			link: '/myclasses/myprograms',
 		},
 	];
 
@@ -150,7 +150,11 @@ export const TeacherDashboard = () => {
 									<Card.Body p={4}>
 										<Flex justify='space-between' align='flex-start'>
 											<Flex align='flex-start' gap={3}>
-												<Box p={2} rounded='lg' bg={item.bg || 'whiteAlpha.300'}>
+												<Box
+													p={2}
+													rounded='lg'
+													bg={item.bg || 'whiteAlpha.300'}
+												>
 													<Icon
 														as={item.icon}
 														boxSize={5}
@@ -225,7 +229,6 @@ export const TeacherDashboard = () => {
 					</SimpleGrid>
 				</Box>
 			</Box>
-			
 		</Flex>
 	);
 };
