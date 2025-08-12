@@ -123,6 +123,8 @@ export const StudentDashboard = () => {
 			border: 'purple.200',
 		},
 	};
+
+	const recentEnrollments = dataMyEnrollments?.slice(-2) || [];
 	return (
 		<Box maxW='90%' mx='auto'>
 			{profile && profile.admission_notification_uuid && (
@@ -265,7 +267,8 @@ export const StudentDashboard = () => {
 						title='Recordatorio importante 💡'
 					>
 						Como es tu primera inscripción, recuerda que el siguiente mes
-						deberás realizar el pago por concepto de derecho de admisión.
+						deberás realizar el pago por concepto de &quot;derecho de admisión -
+						II&quot;.
 					</Alert>
 				)}
 
@@ -312,13 +315,13 @@ export const StudentDashboard = () => {
 				)}
 			</Stack>
 
-			{dataMyEnrollments && dataMyEnrollments.length > 0 && (
+			{recentEnrollments.length > 0 && (
 				<Box>
 					<Heading size='md' mb={4}>
 						Mis Inscripciones ({dataMyEnrollments.length})
 					</Heading>
 					<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-						{dataMyEnrollments.map((enrollment) => {
+						{recentEnrollments.map((enrollment) => {
 							const status = enrollmentStatusMap[enrollment.status] || {
 								label: 'Desconocido',
 								color: 'gray',
@@ -370,6 +373,21 @@ export const StudentDashboard = () => {
 							);
 						})}
 					</SimpleGrid>
+
+					{/* Botón para ver más si hay más de 2 */}
+					{dataMyEnrollments.length > 1 && (
+						<Flex justify='end' mt={1}>
+							<Button
+								variant='gost'
+								onClick={() => navigate('/mycourses')}
+								_hover={{
+									color: 'blue.500',
+								}}
+							>
+								Ver todos
+							</Button>
+						</Flex>
+					)}
 				</Box>
 			)}
 		</Box>
