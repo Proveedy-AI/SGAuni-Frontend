@@ -176,7 +176,7 @@ export const CoordinatorDashboard = () => {
 												fontWeight='bold'
 												color={item.textColor}
 											>
-												{item.count}
+												{item.count || '00'}
 											</Text>
 										</Flex>
 									</Card.Body>
