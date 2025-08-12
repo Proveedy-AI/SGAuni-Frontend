@@ -9,7 +9,7 @@ const Row = memo(({ student, evaluationComponents, statusOptions, statusColors }
   const statusColor = statusColors.find(c => c.id === student.qualification_status) || { bg: 'gray.200', color: 'gray.800' };
 
   return (
-    <Table.Row key={student.uuid || student.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
+    <Table.Row key={student.uuid} bg={{ base: 'white', _dark: 'its.gray.500' }}>
       <Table.Cell>
         { student?.student_code }
       </Table.Cell>
@@ -85,7 +85,7 @@ export const StudentsEvaluationsTable = ({
   ];
 
   const getColumnCount = () => {
-    let baseColumns = 3; // ID, Nombre, Estado
+    let baseColumns = 4; // ID, Nombre, Estado
     if (hasConfiguration && evaluationComponents) {
       baseColumns += evaluationComponents.length + 1; // evaluaciones + promedio
     }

@@ -150,6 +150,7 @@ export const LoadEvaluationsByExcelModal = ({ dataCourseGroup, fetchData }) => {
     <Modal
       trigger={
         <Button
+          overflow='hidden'
           borderColor='uni.secondary'
           color='uni.secondary'
           variant='outline'
