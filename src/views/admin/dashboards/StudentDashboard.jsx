@@ -131,7 +131,7 @@ export const StudentDashboard = () => {
 	};
 
 	const recentEnrollments = dataMyEnrollments?.slice(-3) || [];
-	const remainingCredits = dataMyCredits.total_credits - dataMyCredits.program;
+	const remainingCredits = dataMyCredits?.total_credits - dataMyCredits?.program;
 	return (
 		<Stack mx='auto' gap={4}>
 			{profile && profile.admission_notification_uuid && (
@@ -254,7 +254,7 @@ export const StudentDashboard = () => {
 									Créditos Totales
 								</Text>
 								<Text fontSize='2xl' fontWeight='bold' color='blue.600'>
-									{dataMyCredits.program}
+									{dataMyCredits?.program}
 								</Text>
 							</Flex>
 						</Flex>
@@ -316,7 +316,7 @@ export const StudentDashboard = () => {
 									Créditos Restantes
 								</Text>
 								<Text fontSize='2xl' fontWeight='bold' color='green.600'>
-									{dataMyCredits.total_credits}
+									{dataMyCredits?.total_credits}
 								</Text>
 							</Flex>
 						</Flex>
