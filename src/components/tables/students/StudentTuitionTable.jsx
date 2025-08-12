@@ -10,13 +10,13 @@ import useSortedData from '@/utils/useSortedData';
 
 const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 	const statusDisplay = [
-		{ id: 7, label: 'No Matriculado', bg: '#ECEFF1', color: '#455A64' },
-		{ id: 1, label: 'Pago Pendiente', bg: '#FFF8E1', color: '#FFA000' },
-		{ id: 2, label: 'Pago Parcial', bg: '#E3F2FD', color: '#1976D2' },
-		{ id: 3, label: 'Pago Vencido', bg: '#FFE5E5', color: '#D32F2F' },
-		{ id: 4, label: 'Elegible', bg: '#E8F5E9', color: '#388E3C' },
-		{ id: 5, label: 'Matriculado', bg: '#FFFDE7', color: '#FBC02D' },
-		{ id: 6, label: 'Cancelado', bg: '#F3E5F5', color: '#8E24AA' },
+		{ id: 7, label: 'No Matriculado', color: 'gray' },
+		{ id: 1, label: 'Pago Pendiente', color: 'orange' },
+		{ id: 2, label: 'Pago Parcial', color: 'blue' },
+		{ id: 3, label: 'Pago Vencido', color: 'red' },
+		{ id: 4, label: 'Elegible', color: 'yellow' },
+		{ id: 5, label: 'Matriculado', color: 'green' },
+		{ id: 6, label: 'Cancelado', color: 'purple' },
 	];
 
 	const matchStatus = statusDisplay.find((status) => status.id === item.status);
@@ -46,7 +46,7 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 				)}
 			</Table.Cell>
 			<Table.Cell>
-				<Badge bg={matchStatus?.bg} color={matchStatus?.color}>
+				<Badge colorPalette={matchStatus?.color}>
 					{matchStatus?.label || 'N/A'}
 				</Badge>
 			</Table.Cell>

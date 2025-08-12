@@ -89,7 +89,7 @@ export const AdmissionApplicantDetail = () => {
 	const statusEnumSelected = statusEnum.find(
 		(item) => item.id === dataApplicant?.status
 	);
-	console.log('statusEnumSelected', dataApplicant);
+
 	const documentTypes = [
 		{ value: 1, label: 'DNI' },
 		{ value: 2, label: 'Pasaporte' },
