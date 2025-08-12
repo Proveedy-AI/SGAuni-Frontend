@@ -3,6 +3,8 @@ import {
 	FiCheckCircle,
 	FiClock,
 	FiInfo,
+	FiLayers,
+	FiTrendingUp,
 } from 'react-icons/fi';
 
 import {
@@ -18,19 +20,20 @@ import {
 	Collapsible,
 	Image,
 	IconButton,
+	Card,
+	Icon,
 } from '@chakra-ui/react';
 import { useReadMyEnrollments } from '@/hooks/person/useReadMyEnrollments';
 import { Alert } from '@/components/ui';
 import { useNavigate } from 'react-router';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
-import { useUpdateNotifications } from '@/hooks';
+import { useReadMyCredits, useUpdateNotifications } from '@/hooks';
 import { LuCheckCheck } from 'react-icons/lu';
-import { useReadMyPrograms } from '@/hooks/person/useReadMyPrograms';
 
 export const StudentDashboard = () => {
 	const { data: dataMyEnrollments } = useReadMyEnrollments();
-	const { data: dataMyPrograms } = useReadMyPrograms();
-	console.log('dataMyPrograms', dataMyPrograms);
+	const { data: dataMyCredits } = useReadMyCredits();
+	console.log('dataMyCredits', dataMyCredits);
 	const { data: profile } = useReadUserLogged();
 	const { mutate: updateNotifications } = useUpdateNotifications();
 
@@ -128,8 +131,9 @@ export const StudentDashboard = () => {
 	};
 
 	const recentEnrollments = dataMyEnrollments?.slice(-3) || [];
+	const remainingCredits = dataMyCredits.total_credits - dataMyCredits.program;
 	return (
-		<Box  mx='auto'>
+		<Stack mx='auto' gap={4}>
 			{profile && profile.admission_notification_uuid && (
 				<Collapsible.Root unmountOnExit defaultOpen={true}>
 					<Collapsible.Content>
@@ -225,6 +229,100 @@ export const StudentDashboard = () => {
 					</Collapsible.Trigger>
 				</Collapsible.Root>
 			)}
+			<SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
+				{/* Créditos Totales */}
+				<Card.Root
+					borderWidth='1px'
+					borderColor='gray.100'
+					shadow='sm'
+					rounded='xl'
+				>
+					<Card.Body p={5}>
+						<Flex align='center' gap={4}>
+							<Flex
+								w={12}
+								h={12}
+								align='center'
+								justify='center'
+								rounded='full'
+								bg='blue.50'
+							>
+								<Icon as={FiLayers} boxSize={6} color='blue.500' />
+							</Flex>
+							<Flex direction='column'>
+								<Text fontSize='sm' fontWeight='medium' color='gray.600'>
+									Créditos Totales
+								</Text>
+								<Text fontSize='2xl' fontWeight='bold' color='blue.600'>
+									{dataMyCredits.program}
+								</Text>
+							</Flex>
+						</Flex>
+					</Card.Body>
+				</Card.Root>
+
+				{/* Créditos Usados */}
+				<Card.Root
+					borderWidth='1px'
+					borderColor='gray.100'
+					shadow='sm'
+					rounded='xl'
+				>
+					<Card.Body p={5}>
+						<Flex align='center' gap={4}>
+							<Flex
+								w={12}
+								h={12}
+								align='center'
+								justify='center'
+								rounded='full'
+								bg='yellow.50'
+							>
+								<Icon as={FiTrendingUp} boxSize={6} color='yellow.500' />
+							</Flex>
+							<Flex direction='column'>
+								<Text fontSize='sm' fontWeight='medium' color='gray.600'>
+									Créditos Usados
+								</Text>
+								<Text fontSize='2xl' fontWeight='bold' color='yellow.600'>
+									{remainingCredits}
+								</Text>
+							</Flex>
+						</Flex>
+					</Card.Body>
+				</Card.Root>
+
+				{/* Créditos Restantes */}
+				<Card.Root
+					borderWidth='1px'
+					borderColor='gray.100'
+					shadow='sm'
+					rounded='xl'
+				>
+					<Card.Body p={5}>
+						<Flex align='center' gap={4}>
+							<Flex
+								w={12}
+								h={12}
+								align='center'
+								justify='center'
+								rounded='full'
+								bg='green.50'
+							>
+								<Icon as={FiCheckCircle} boxSize={6} color='green.500' />
+							</Flex>
+							<Flex direction='column'>
+								<Text fontSize='sm' fontWeight='medium' color='gray.600'>
+									Créditos Restantes
+								</Text>
+								<Text fontSize='2xl' fontWeight='bold' color='green.600'>
+									{dataMyCredits.total_credits}
+								</Text>
+							</Flex>
+						</Flex>
+					</Card.Body>
+				</Card.Root>
+			</SimpleGrid>
 			<Stack gap={4} mb={8}>
 				{activeEnrollments.length > 0 && (
 					<Alert
@@ -393,6 +491,6 @@ export const StudentDashboard = () => {
 					)}
 				</Box>
 			)}
-		</Box>
+		</Stack>
 	);
 };
