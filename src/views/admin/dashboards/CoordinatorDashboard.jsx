@@ -30,6 +30,7 @@ export const CoordinatorDashboard = () => {
 			textColor: 'blue.600',
 			icon: FiCheckCircle,
 			iconColor: 'blue.500',
+			bg: 'blue.100',
 		},
 		{
 			title: 'Procesos de matrícula',
@@ -38,6 +39,7 @@ export const CoordinatorDashboard = () => {
 			textColor: 'purple.600',
 			icon: FiFileText,
 			iconColor: 'purple.500',
+			bg: 'purple.100',
 		},
 		{
 			title: 'Horarios',
@@ -46,6 +48,7 @@ export const CoordinatorDashboard = () => {
 			textColor: 'orange.600',
 			icon: FiCalendar,
 			iconColor: 'orange.500',
+			bg: 'orange.100',
 		},
 	];
 
@@ -54,7 +57,7 @@ export const CoordinatorDashboard = () => {
 			title: 'Contratos:',
 			subtitle: 'Recopilación de contratos.',
 			icon: FiFolder,
-			bg: 'yellow.50',
+			bg: 'yellow.100',
 			borderColor: 'yellow.200',
 			iconColor: 'yellow.600',
 			link: 'contracts/mylist',
@@ -63,7 +66,7 @@ export const CoordinatorDashboard = () => {
 			title: 'Solicitudes de Beneficios:',
 			subtitle: 'Solicitudes de beneficios estudiantiles.',
 			icon: FiEdit3,
-			bg: 'purple.50',
+			bg: 'purple.100',
 			borderColor: 'purple.200',
 			iconColor: 'purple.600',
 			link: '/benefits/request',
@@ -147,7 +150,7 @@ export const CoordinatorDashboard = () => {
 									<Card.Body p={4}>
 										<Flex justify='space-between' align='flex-start'>
 											<Flex align='flex-start' gap={3}>
-												<Box p={2} rounded='lg' bg='whiteAlpha.300'>
+												<Box p={2} rounded='lg' bg={item.bg || 'whiteAlpha.300'}>
 													<Icon
 														as={item.icon}
 														boxSize={5}
@@ -204,7 +207,7 @@ export const CoordinatorDashboard = () => {
 							>
 								<Card.Body p={2}>
 									<Flex align='flex-start' gap={3}>
-										<Box p={2} rounded='lg' bg='whiteAlpha.500'>
+										<Box p={2} rounded='lg' bg={item.bg || 'whiteAlpha.300'}>
 											<Icon as={item.icon} boxSize={8} color={item.iconColor} />
 										</Box>
 										<Box>
