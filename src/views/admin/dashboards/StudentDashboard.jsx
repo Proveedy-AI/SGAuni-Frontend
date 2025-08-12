@@ -3,6 +3,8 @@ import {
 	FiCheckCircle,
 	FiClock,
 	FiInfo,
+	FiLayers,
+	FiTrendingUp,
 } from 'react-icons/fi';
 
 import {
@@ -18,16 +20,20 @@ import {
 	Collapsible,
 	Image,
 	IconButton,
+	Card,
+	Icon,
 } from '@chakra-ui/react';
 import { useReadMyEnrollments } from '@/hooks/person/useReadMyEnrollments';
 import { Alert } from '@/components/ui';
 import { useNavigate } from 'react-router';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
-import { useUpdateNotifications } from '@/hooks';
+import { useReadMyCredits, useUpdateNotifications } from '@/hooks';
 import { LuCheckCheck } from 'react-icons/lu';
 
 export const StudentDashboard = () => {
 	const { data: dataMyEnrollments } = useReadMyEnrollments();
+	const { data: dataMyCredits } = useReadMyCredits();
+	console.log('dataMyCredits', dataMyCredits);
 	const { data: profile } = useReadUserLogged();
 	const { mutate: updateNotifications } = useUpdateNotifications();
 
@@ -123,8 +129,11 @@ export const StudentDashboard = () => {
 			border: 'purple.200',
 		},
 	};
+
+	const recentEnrollments = dataMyEnrollments?.slice(-3) || [];
+	const remainingCredits = dataMyCredits.total_credits - dataMyCredits.program;
 	return (
-		<Box maxW='90%' mx='auto'>
+		<Stack mx='auto' gap={4}>
 			{profile && profile.admission_notification_uuid && (
 				<Collapsible.Root unmountOnExit defaultOpen={true}>
 					<Collapsible.Content>
@@ -220,6 +229,100 @@ export const StudentDashboard = () => {
 					</Collapsible.Trigger>
 				</Collapsible.Root>
 			)}
+			<SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
+				{/* Créditos Totales */}
+				<Card.Root
+					borderWidth='1px'
+					borderColor='gray.100'
+					shadow='sm'
+					rounded='xl'
+				>
+					<Card.Body p={5}>
+						<Flex align='center' gap={4}>
+							<Flex
+								w={12}
+								h={12}
+								align='center'
+								justify='center'
+								rounded='full'
+								bg='blue.50'
+							>
+								<Icon as={FiLayers} boxSize={6} color='blue.500' />
+							</Flex>
+							<Flex direction='column'>
+								<Text fontSize='sm' fontWeight='medium' color='gray.600'>
+									Créditos Totales
+								</Text>
+								<Text fontSize='2xl' fontWeight='bold' color='blue.600'>
+									{dataMyCredits.program}
+								</Text>
+							</Flex>
+						</Flex>
+					</Card.Body>
+				</Card.Root>
+
+				{/* Créditos Usados */}
+				<Card.Root
+					borderWidth='1px'
+					borderColor='gray.100'
+					shadow='sm'
+					rounded='xl'
+				>
+					<Card.Body p={5}>
+						<Flex align='center' gap={4}>
+							<Flex
+								w={12}
+								h={12}
+								align='center'
+								justify='center'
+								rounded='full'
+								bg='yellow.50'
+							>
+								<Icon as={FiTrendingUp} boxSize={6} color='yellow.500' />
+							</Flex>
+							<Flex direction='column'>
+								<Text fontSize='sm' fontWeight='medium' color='gray.600'>
+									Créditos Usados
+								</Text>
+								<Text fontSize='2xl' fontWeight='bold' color='yellow.600'>
+									{remainingCredits}
+								</Text>
+							</Flex>
+						</Flex>
+					</Card.Body>
+				</Card.Root>
+
+				{/* Créditos Restantes */}
+				<Card.Root
+					borderWidth='1px'
+					borderColor='gray.100'
+					shadow='sm'
+					rounded='xl'
+				>
+					<Card.Body p={5}>
+						<Flex align='center' gap={4}>
+							<Flex
+								w={12}
+								h={12}
+								align='center'
+								justify='center'
+								rounded='full'
+								bg='green.50'
+							>
+								<Icon as={FiCheckCircle} boxSize={6} color='green.500' />
+							</Flex>
+							<Flex direction='column'>
+								<Text fontSize='sm' fontWeight='medium' color='gray.600'>
+									Créditos Restantes
+								</Text>
+								<Text fontSize='2xl' fontWeight='bold' color='green.600'>
+									{dataMyCredits.total_credits}
+								</Text>
+							</Flex>
+						</Flex>
+					</Card.Body>
+				</Card.Root>
+			</SimpleGrid>
 			<Stack gap={4} mb={8}>
 				{activeEnrollments.length > 0 && (
 					<Alert
@@ -265,7 +368,8 @@ export const StudentDashboard = () => {
 						title='Recordatorio importante 💡'
 					>
 						Como es tu primera inscripción, recuerda que el siguiente mes
-						deberás realizar el pago por concepto de derecho de admisión.
+						deberás realizar el pago por concepto de &quot;derecho de admisión -
+						II&quot;.
 					</Alert>
 				)}
 
@@ -312,13 +416,13 @@ export const StudentDashboard = () => {
 				)}
 			</Stack>
 
-			{dataMyEnrollments && dataMyEnrollments.length > 0 && (
+			{recentEnrollments.length > 0 && (
 				<Box>
 					<Heading size='md' mb={4}>
-						Mis Inscripciones ({dataMyEnrollments.length})
+						Mis Matriculas ({dataMyEnrollments.length})
 					</Heading>
-					<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-						{dataMyEnrollments.map((enrollment) => {
+					<SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
+						{recentEnrollments.map((enrollment) => {
 							const status = enrollmentStatusMap[enrollment.status] || {
 								label: 'Desconocido',
 								color: 'gray',
@@ -370,8 +474,23 @@ export const StudentDashboard = () => {
 							);
 						})}
 					</SimpleGrid>
+
+					{/* Botón para ver más si hay más de 2 */}
+					{dataMyEnrollments.length > 3 && (
+						<Flex justify='end' mt={1}>
+							<Button
+								variant='gost'
+								onClick={() => navigate('/mycourses')}
+								_hover={{
+									color: 'blue.500',
+								}}
+							>
+								Ver todos
+							</Button>
+						</Flex>
+					)}
 				</Box>
 			)}
-		</Box>
+		</Stack>
 	);
 };

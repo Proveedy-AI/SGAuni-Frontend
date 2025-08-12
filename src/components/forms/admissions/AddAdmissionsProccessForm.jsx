@@ -148,6 +148,7 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 						placeholder='Selecciona una fecha'
 						size={{ base: '330px', md: '625px' }}
 						buttonSize='sm'
+						minDate={new Date()}
 					/>
 				</Field>
 
@@ -162,6 +163,7 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 						placeholder='Selecciona una fecha'
 						size={{ base: '330px', md: '625px' }}
 						buttonSize='sm'
+						minDate={new Date()}
 					/>
 				</Field>
 			</Stack>

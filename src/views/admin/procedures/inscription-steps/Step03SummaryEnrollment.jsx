@@ -727,6 +727,7 @@ export const Step03SummaryEnrollment = ({
 						}
 						description={description}
 						onNext={onNext}
+						onConfirmEnrollment={handleConfirmEnrollment}
 						enrollmentItem={enrollmentItem}
 					/>
 				)}

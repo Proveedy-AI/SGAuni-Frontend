@@ -56,24 +56,40 @@ export const AdmissionApplicantDetail = () => {
 	const statusEnum = [
 		{
 			id: 1,
-			label: 'En Revisión',
-			bg: '#FDD9C6',
+			label: 'Incompleto',
 			color: 'orange',
 			icon: FiClock,
 		},
 		{
 			id: 2,
-			label: 'Aprobado',
-			bg: 'green',
-			color: 'white',
+			label: 'Completado',
+			color: 'blue',
 			icon: FiCheckCircle,
 		},
-		{ id: 3, label: 'Rechazado', bg: 'red', color: 'white', icon: FiXCircle },
+		{
+			id: 4,
+			label: 'Aprobado',
+			color: 'green',
+			icon: FiCheckCircle,
+		},
+		{
+			id: 3,
+			label: 'Evaluado',
+			color: 'purple',
+			icon: FiCheckCircle,
+		},
+		{
+			id: 5,
+			label: 'Rechazado',
+			color: 'red',
+			icon: FiXCircle,
+		},
 	];
 
 	const statusEnumSelected = statusEnum.find(
 		(item) => item.id === dataApplicant?.status
 	);
+
 	const documentTypes = [
 		{ value: 1, label: 'DNI' },
 		{ value: 2, label: 'Pasaporte' },
@@ -151,10 +167,7 @@ export const AdmissionApplicantDetail = () => {
 									display='flex'
 									alignItems='center'
 									alignSelf={{ base: 'flex-start', md: 'auto' }}
-									border='1px solid'
-									borderColor={`${statusEnumSelected.color}.200`}
-									bg={`${statusEnumSelected.bg}.50`}
-									color={`${statusEnumSelected.color}.700`}
+									colorPalette={statusEnumSelected.color}
 								>
 									<Box as={statusEnumSelected.icon} w={4} h={4} mr={1} />
 									{statusEnumSelected.label}

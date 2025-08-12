@@ -39,50 +39,38 @@ const Row = memo(
 			}
 		};
 
-    const statusEnum = [
-      {
+		const statusEnum = [
+			{
 				id: 1,
-				value: 'Incompleto',
 				label: 'Incompleto',
-				bg: '#FDD9C6',
-				color: '#F86A1E',
+				value: 'Incompleto',
+				color: 'orange',
 			},
-      {
-        id: 2,
-        value: 'Completado',
-        label: 'Completado',
-        bg: '#D0EDD0',
-        color: '#2D9F2D',
-      },
-      {
-        id: 3,
-        value: 'Pendiente',
-        label: 'Pendiente',
-        bg: '#AEAEAE',
-        color: '#F5F5F5',
-      },
-      {
-        id: 4,
-        value: 'Evaluado',
-        label: 'Evaluado',
-        bg: '#F7CDCE',
-        color: '#E0383B',
-      },
-      {
-        id: 5,
-        value: 'Admitido',
-        label: 'Admitido',
-        bg: '#D0EDD0',
-        color: '#2D9F2D',
-      },
-      {
-        id: 6,
-        value: 'Rechazado',
-        label: 'Rechazado',
-        bg: '#FDD9C6',
-        color: '#F86A1E',
-      },
-    ]
+			{
+				id: 2,
+				label: 'Completado',
+				value: 'Completado',
+				color: 'blue',
+			},
+			{
+				id: 4,
+				label: 'Aprobado',
+				value: 'Aprobado',
+				color: 'green',
+			},
+			{
+				id: 3,
+				label: 'Evaluado',
+				value: 'Evaluado',
+				color: 'purple',
+			},
+			{
+				id: 5,
+				label: 'Rechazado',
+				value: 'Rechazado',
+				color: 'red',
+			},
+		];
 
 		return (
 			<Table.Row
@@ -105,22 +93,15 @@ const Row = memo(
 				<Table.Cell>{item.person_full_name}</Table.Cell>
 				<Table.Cell>
 					<Badge
-						bg={
-							statusEnum.find(
-								(status) => status.value === item.status_display
-							)?.bg
-						}
-						color={
-							statusEnum.find(
-								(status) => status.value === item.status_display
-							)?.color
+						colorPalette={
+							statusEnum.find((status) => status.value === item.status_display)
+								?.color
 						}
 						fontWeight='semibold'
 					>
 						{
-							statusEnum.find(
-								(status) => status.value === item.status_display
-							)?.label
+							statusEnum.find((status) => status.value === item.status_display)
+								?.label
 						}
 					</Badge>
 				</Table.Cell>
@@ -194,7 +175,7 @@ export const AdmissionApplicantsByProgramTable = ({
 	const [sortConfig, setSortConfig] = useState(null);
 	const sortedData = useSortedData(data, sortConfig);
 
-  const {
+	const {
 		currentPage,
 		startIndex,
 		visibleRows,

@@ -11,44 +11,43 @@ import {
 	Text,
 } from '@chakra-ui/react';
 import {
-	FiCalendar,
+	FiBookOpen,
 	FiCheckCircle,
-	FiEdit3,
-	FiFileText,
 	FiFolder,
+	FiUsers,
 } from 'react-icons/fi';
 import { useNavigate } from 'react-router';
 
-export const CoordinatorDashboard = () => {
+export const TeacherDashboard = () => {
 	const { data: profile } = useReadUserLogged();
 	const navigate = useNavigate();
 	const mainResults = [
 		{
-			title: 'Programas de admisión',
-			subtitle: 'Pendiente aprobación',
+			title: 'Evaluaciones',
+			subtitle: 'Por calificar',
 			count: '05',
-			textColor: 'blue.600',
+			textColor: 'green.600',
 			icon: FiCheckCircle,
-			iconColor: 'blue.500',
-			bg: 'blue.100',
+			iconColor: 'green.500',
+			bg: 'green.100',
 		},
 		{
-			title: 'Procesos de matrícula',
-			subtitle: 'Pendiente aprobación',
+			title: 'Programas académicos',
+			subtitle: 'Cursos por configurar',
 			count: '02',
 			textColor: 'purple.600',
-			icon: FiFileText,
+			icon: FiBookOpen,
 			iconColor: 'purple.500',
 			bg: 'purple.100',
 		},
 		{
-			title: 'Horarios',
-			subtitle: 'Pendiente aprobación',
+			title: 'Postulantes',
+			subtitle: 'Por calificar',
 			count: '10',
-			textColor: 'orange.600',
-			icon: FiCalendar,
-			iconColor: 'orange.500',
-			bg: 'orange.100',
+			textColor: 'yellow.600',
+			icon: FiUsers,
+			iconColor: 'yellow.500',
+			bg: 'yellow.100',
 		},
 	];
 
@@ -63,13 +62,13 @@ export const CoordinatorDashboard = () => {
 			link: 'contracts/mylist',
 		},
 		{
-			title: 'Solicitudes de Beneficios:',
-			subtitle: 'Solicitudes de beneficios estudiantiles.',
-			icon: FiEdit3,
+			title: 'Mis clases:',
+			subtitle: 'Ver y gestionar mis clases.',
+			icon: FiBookOpen,
 			bg: 'purple.100',
 			borderColor: 'purple.200',
 			iconColor: 'purple.600',
-			link: '/benefits/request',
+			link: '/myclasses/myprograms',
 		},
 	];
 
@@ -80,7 +79,7 @@ export const CoordinatorDashboard = () => {
 					p={6}
 					mb={4}
 					borderRadius='xl'
-					bgImage="url('/img/dashboar-coord.png')"
+					bgImage="url('/img/fondo-dashboard-1.jpg')"
 					bgSize='cover'
 					bgPosition='center'
 					mx='auto'
@@ -134,7 +133,7 @@ export const CoordinatorDashboard = () => {
 				<Card.Root bg={'blue.50'} mt={10} borderColor={'blue.50'} shadow='none'>
 					<Card.Header pb={0}>
 						<HStack gap={2}>
-							<Heading size='lg'>Principales resultados</Heading>
+							<Heading size='lg'>Principales acciones</Heading>
 						</HStack>
 					</Card.Header>
 
@@ -150,7 +149,11 @@ export const CoordinatorDashboard = () => {
 									<Card.Body p={4}>
 										<Flex justify='space-between' align='flex-start'>
 											<Flex align='flex-start' gap={3}>
-												<Box p={2} rounded='lg' bg={item.bg || 'whiteAlpha.300'}>
+												<Box
+													p={2}
+													rounded='lg'
+													bg={item.bg || 'whiteAlpha.300'}
+												>
 													<Icon
 														as={item.icon}
 														boxSize={5}
@@ -225,7 +228,6 @@ export const CoordinatorDashboard = () => {
 					</SimpleGrid>
 				</Box>
 			</Box>
-			
 		</Flex>
 	);
 };

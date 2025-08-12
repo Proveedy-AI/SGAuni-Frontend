@@ -88,7 +88,7 @@ export const FractionationTable = ({
 	useEffect(() => {
 		setCurrentPage(1);
 	}, [resetPageTrigger]);
-
+const validRows = visibleRows?.filter((item) => item && item.id) ?? [];
 	return (
 		<Box
 			bg={{ base: 'white', _dark: 'its.gray.500' }}
@@ -154,8 +154,8 @@ export const FractionationTable = ({
 					<Table.Body>
 						{isLoading || (isFetchingNextPage && hasNextPage) ? (
 							<SkeletonTable columns={6} />
-						) : visibleRows?.length > 0 ? (
-							visibleRows.map((item, index) => (
+						) : validRows?.length > 0 ? (
+							validRows.map((item, index) => (
 								<Row
 									key={item.id}
 									item={item}

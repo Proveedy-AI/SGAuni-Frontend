@@ -19,7 +19,7 @@ import {
 } from 'react-icons/fi';
 import { useNavigate } from 'react-router';
 
-export const CoordinatorDashboard = () => {
+export const DirectorDashboard = () => {
 	const { data: profile } = useReadUserLogged();
 	const navigate = useNavigate();
 	const mainResults = [
@@ -63,13 +63,13 @@ export const CoordinatorDashboard = () => {
 			link: 'contracts/mylist',
 		},
 		{
-			title: 'Solicitudes de Beneficios:',
-			subtitle: 'Solicitudes de beneficios estudiantiles.',
+			title: 'Solicitudes de Fraccionamientos:',
+			subtitle: 'Solicitudes de fraccionamientos.',
 			icon: FiEdit3,
 			bg: 'purple.100',
 			borderColor: 'purple.200',
 			iconColor: 'purple.600',
-			link: '/benefits/request',
+			link: '/commitment-letters/request',
 		},
 	];
 

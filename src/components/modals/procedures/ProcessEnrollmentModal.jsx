@@ -38,6 +38,7 @@ import { uploadToS3 } from '@/utils/uploadToS3';
 export const ProcessEnrollmentModal = ({
 	paymentPlan,
 	baseAmount,
+	onConfirmEnrollment,
 	description,
 	discountValue,
 	amountCredits,
@@ -118,6 +119,7 @@ export const ProcessEnrollmentModal = ({
 						title: 'Solicitud de pago fue exitoso',
 						type: 'success',
 					});
+					onConfirmEnrollment();
 					onNext();
 					setisSelectCaja(false);
 					setSelectedMethod(null);
@@ -589,4 +591,5 @@ ProcessEnrollmentModal.propTypes = {
 	amountCredits: PropTypes.number,
 	onNext: PropTypes.func,
 	enrollmentItem: PropTypes.object,
+	onConfirmEnrollment: PropTypes.func,
 };
