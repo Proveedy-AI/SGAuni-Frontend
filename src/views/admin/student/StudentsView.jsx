@@ -46,7 +46,6 @@ export const StudentsView = () => {
 	const filterParams = useMemo(() => {
 		const params = {};
 		if (selectedProgram) params.program = selectedProgram.value;
-		if (name) params.name = name;
 		if (debouncedSearch) params.name = debouncedSearch;
 		if (scholarshipStatus) params.scholarship = scholarshipStatus.value;
 		if (selectedStatus) params.status = selectedStatus.value;
@@ -56,7 +55,6 @@ export const StudentsView = () => {
 		selectedProgram,
 		debouncedSearch,
 		scholarshipStatus,
-		name,
 		selectedStatus,
 	]);
 
