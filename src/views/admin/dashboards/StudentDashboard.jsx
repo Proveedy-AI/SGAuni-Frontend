@@ -419,7 +419,7 @@ export const StudentDashboard = () => {
 			{recentEnrollments.length > 0 && (
 				<Box>
 					<Heading size='md' mb={4}>
-						Mis Inscripciones ({dataMyEnrollments.length})
+						Mis Matriculas ({dataMyEnrollments.length})
 					</Heading>
 					<SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
 						{recentEnrollments.map((enrollment) => {
