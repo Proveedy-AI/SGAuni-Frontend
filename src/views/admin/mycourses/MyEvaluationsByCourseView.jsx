@@ -11,7 +11,8 @@ import {
   Grid,
   GridItem,
   Spacer,
-  Table
+  Table,
+  TableScrollArea
 } from "@chakra-ui/react";
 import { FaBookOpen, FaUser } from "react-icons/fa";
 import { useParams, useNavigate } from "react-router";
@@ -43,40 +44,78 @@ export const MyEvaluationsByCourseView = () => {
   const statBg = useColorModeValue("blue.50", "blue.800");
 
   const getGradeColor = (grade) => {
+    if (!grade) return "gray.400";
     if (grade >= 11) return "blue.400";
     return "red.400";
   };
 
-  const getGradeBadgeVariant = (grade) => {
-    if (grade === null) return "outline";
-    return "solid";
+  const getStatusConfig = (grade) => {
+    if (grade === null || grade === undefined) {
+      return {
+        label: "Sin calificar",
+        bg: "gray.500",
+        color: "white"
+      };
+    }
+    
+    if (grade < 11) {
+      return {
+        label: "Desaprobado",
+        bg: "red.50",
+        color: "red.600"
+      };
+    }
+    
+    return {
+      label: "Aprobado", 
+      bg: "blue.50",
+      color: "blue.600"
+    };
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "Sin fecha";
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
+  const getFinalGradeStatusConfig = (finalGrade) => {
+    if (finalGrade === null || finalGrade === undefined) {
+      return {
+        label: "En curso",
+        bg: "gray.500", 
+        color: "white"
+      };
+    }
+    
+    if (finalGrade < 11) {
+      return {
+        label: "Desaprobado",
+        bg: "red.50",
+        color: "red.600"
+      };
+    }
+    
+    return {
+      label: "Aprobado",
+      bg: "blue.50", 
+      color: "blue.600"
+    };
   };
 
   const data = dataMyEvaluations?.data;
 
   const calculateWeightedAverage = (evaluations) => {
-    const evaluatedItems = evaluations?.filter(evaluation => evaluation.grade_obtained !== null && evaluation.weight_percentage > 0) || [];
+    if (!evaluations) return 0;
+    
+    const evaluatedItems = evaluations.filter(evaluation => evaluation.grade_obtained !== null);
     if (evaluatedItems.length === 0) return 0;
     
     const totalWeight = evaluatedItems.reduce((sum, evaluation) => sum + evaluation.weight_percentage, 0);
-    const weightedSum = evaluatedItems.reduce((sum, evaluation) => sum + (evaluation.grade_obtained * evaluation.weight_percentage), 0);
+    const weightedSum = evaluatedItems.reduce((sum, evaluation) => 
+      sum + (evaluation.grade_obtained * evaluation.weight_percentage), 0);
     
     return totalWeight > 0 ? (weightedSum / totalWeight).toFixed(1) : 0;
   };
 
   const pendingEvaluations = data?.evaluations?.filter(evaluation => evaluation.grade_obtained === null).length || 0;
   const completedEvaluations = data?.evaluations?.filter(evaluation => evaluation.grade_obtained !== null).length || 0;
-  const currentAverage = data?.grade_summary?.calculated_average?.toFixed(1) || calculateWeightedAverage(data?.evaluations);
+  const currentAverage = data?.final_grade || calculateWeightedAverage(data?.evaluations);
+  const totalEvaluations = data?.course_info?.number_of_evaluations || data?.evaluations?.length || 0;
 
   // Mostrar loader mientras se cargan los datos
   if (isLoadingMyEvaluations) {
@@ -153,11 +192,11 @@ export const MyEvaluationsByCourseView = () => {
           <GridItem>
             <Stat.Root bg={statBg} p={4} borderRadius="lg" border="1px solid" borderColor={borderColor}>
               <Stat.Label>Promedio Final</Stat.Label>
-              <Stat.ValueUnit color={getGradeColor(data.grade_summary?.final_grade || currentAverage)}>
-                {data.grade_summary?.final_grade?.toFixed(1) || currentAverage}
+              <Stat.ValueUnit color={getGradeColor(data?.final_grade || currentAverage)}>
+                {data?.final_grade?.toFixed(1) || currentAverage || "0.0"}
               </Stat.ValueUnit>
               <Stat.HelpText>
-                {data.grade_summary?.final_grade ? 'Nota final oficial' : 'Promedio calculado'}
+                {data?.final_grade ? 'Nota final oficial' : 'Promedio calculado'}
               </Stat.HelpText>
             </Stat.Root>
           </GridItem>
@@ -166,7 +205,7 @@ export const MyEvaluationsByCourseView = () => {
               <Stat.Label>Evaluaciones Completadas</Stat.Label>
               <Stat.ValueUnit color="green.500">{completedEvaluations}</Stat.ValueUnit>
               <Stat.HelpText>
-                De {data.evaluations?.length || 0} totales
+                De {totalEvaluations} totales
               </Stat.HelpText>
             </Stat.Root>
           </GridItem>
@@ -181,12 +220,12 @@ export const MyEvaluationsByCourseView = () => {
           </GridItem>
           <GridItem>
             <Stat.Root bg={cardBg} p={4} borderRadius="lg" border="1px solid" borderColor={borderColor}>
-              <Stat.Label>Peso Total Usado</Stat.Label>
-              <Stat.ValueUnit color="blue.500">
-                {data.grade_summary?.total_weight_used || 0}%
+              <Stat.Label>Estado del Curso</Stat.Label>
+              <Stat.ValueUnit color={getFinalGradeStatusConfig(data?.final_grade).color}>
+                {getFinalGradeStatusConfig(data?.final_grade).label}
               </Stat.ValueUnit>
               <Stat.HelpText>
-                Del total evaluado
+                {data?.course_info?.qualification_type || 'Sistema de calificación'}
               </Stat.HelpText>
             </Stat.Root>
           </GridItem>
@@ -194,97 +233,81 @@ export const MyEvaluationsByCourseView = () => {
 
         {/* Tabla de Evaluaciones */}
         <Card.Root bg={bgColor} borderColor={borderColor}>
-          <Card.Header bg={headerBg}>
-            <Heading size="md" color="blue.700">
+          <Card.Header p={0} bg={headerBg}>
+            <Heading p={4} size="md" color="blue.700">
               Detalle de Evaluaciones
             </Heading>
           </Card.Header>
           <Card.Body p={0}>
             <Box overflowX="auto">
-              <Table.Root variant="simple" size="sm">
-                <Table.Header>
-                  <Table.Row>
-                    <Table.Cell fontWeight="bold" color="blue.700" textAlign="center" width="300px">
-                      Evaluación
-                    </Table.Cell>
-                    <Table.Cell fontWeight="bold" color="blue.700" textAlign="center">
-                      Calificación
-                    </Table.Cell>
-                    <Table.Cell fontWeight="bold" color="blue.700" textAlign="center">
-                      Peso (%)
-                    </Table.Cell>
-                    <Table.Cell fontWeight="bold" color="blue.700" textAlign="center">
-                      Fecha
-                    </Table.Cell>
-                    <Table.Cell fontWeight="bold" color="blue.700" textAlign="center">
-                      Tipo
-                    </Table.Cell>
-                    <Table.Cell fontWeight="bold" color="blue.700" textAlign="center">
-                      Estado
-                    </Table.Cell>
-                  </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                  {data.evaluations?.map((evaluation) => (
-                    <Table.Row key={evaluation.id} borderColor={borderColor}>
-                      <Table.Cell>
-                        <Text fontWeight="medium" color="gray.700">
-                          {evaluation.evaluation_name}
-                        </Text>
+              <TableScrollArea>
+                <Table.Root variant="simple" size="sm">
+                  <Table.Header>
+                    <Table.Row fontWeight="bold" color="blue.700" textAlign="center">
+                      <Table.Cell minW="240px" textAlign="center" borderRight="1px solid" borderRightColor={borderColor}>
+                        Evaluación
                       </Table.Cell>
-                      <Table.Cell textAlign="center">
-                        {evaluation.grade_obtained !== null ? (
-                          <Badge 
-                            bg={getGradeColor(evaluation.grade_obtained)}
-                            variant={getGradeBadgeVariant(evaluation.grade_obtained)}
-                            p={1}
-                            boxSize={6}
-                            textAlign={"center"}
-                            justifyContent="center"
-                            color="white"
-                            borderRadius="md"
-                          >
-                            {evaluation.grade_obtained}
-                          </Badge>
-                        ) : (
-                          <Badge bg="gray.300" variant="outline" p={2} borderRadius="md">
-                            No evaluado
-                          </Badge>
-                        )}
+                      <Table.Cell width="120px" textAlign="center" borderRight="1px solid" borderRightColor={borderColor}>
+                        Calificación
                       </Table.Cell>
-                      <Table.Cell textAlign="center">
-                        <Text fontWeight="medium">
-                          {evaluation.weight_percentage > 0 ? `${evaluation.weight_percentage}%` : '-'}
-                        </Text>
+                      <Table.Cell width="120px" textAlign="center" borderRight="1px solid" borderRightColor={borderColor}>
+                        Estado
                       </Table.Cell>
-                      <Table.Cell textAlign="center">
-                        <Text fontSize="sm" color="gray.600">
-                          {formatDate(evaluation.evaluation_date)}
-                        </Text>
-                      </Table.Cell>
-                      <Table.Cell textAlign="center">
-                        <Badge variant="outline" colorScheme="blue">
-                          {evaluation.qualification_type || 'N/A'}
-                        </Badge>
-                      </Table.Cell>
-                      <Table.Cell textAlign="center">
-                        <Badge 
-                          bg={evaluation.grade_obtained !== null ? "green.300" : "orange.300"}
-                          variant="subtle"
-                          color={evaluation.grade_obtained !== null ? "green.700" : "orange.700"}
-                        >
-                          {evaluation.grade_obtained !== null ? "Evaluado" : "Pendiente"}
-                        </Badge>
-                        {evaluation.grade_conceptual && (
-                          <Text fontSize="xs" color="gray.500" mt={1}>
-                            {evaluation.grade_conceptual}
-                          </Text>
-                        )}
+                      <Table.Cell width="120px" textAlign="center" borderRight="1px solid" borderRightColor={borderColor}>
+                        Peso (%)
                       </Table.Cell>
                     </Table.Row>
-                  )) || []}
-                </Table.Body>
-              </Table.Root>
+                  </Table.Header>
+                  <Table.Body>
+                    {data?.evaluations?.map((evaluation, index) => {
+                      const statusConfig = getStatusConfig(evaluation.grade_obtained);
+                      return (
+                        <Table.Row key={evaluation.component_id || index} borderColor={borderColor}>
+                          <Table.Cell borderRight="1px solid" borderRightColor={borderColor}>
+                            <Text fontWeight="medium" color="gray.700">
+                              {evaluation.evaluation_name}
+                            </Text>
+                          </Table.Cell>
+                          <Table.Cell textAlign="center" borderRight="1px solid" borderRightColor={borderColor}>
+                            {evaluation.grade_obtained && (
+                              <Badge 
+                                bg={getGradeColor(evaluation.grade_obtained)}
+                                variant="solid"
+                                p={1}
+                                boxSize={6}
+                                textAlign="center"
+                                justifyContent="center"
+                                color="white"
+                                borderRadius="md"
+                              >
+                                {evaluation.grade_obtained}
+                              </Badge>
+                            )}
+                          </Table.Cell>
+                          <Table.Cell textAlign="center" borderRight="1px solid" borderRightColor={borderColor}>
+                            <Badge 
+                              bg={statusConfig.bg}
+                              color={statusConfig.color}
+                              variant="subtle"
+                              fontSize="xs"
+                              px={2}
+                              py={1}
+                              borderRadius="md"
+                            >
+                              {statusConfig.label}
+                            </Badge>
+                          </Table.Cell>
+                          <Table.Cell textAlign="center" borderRight="1px solid" borderRightColor={borderColor}>
+                            <Text fontWeight="medium" color="blue.600">
+                              {evaluation.weight_percentage}%
+                            </Text>
+                          </Table.Cell>
+                        </Table.Row>
+                      );
+                    }) || []}
+                  </Table.Body>
+                </Table.Root>
+              </TableScrollArea>
             </Box>
           </Card.Body>
         </Card.Root>

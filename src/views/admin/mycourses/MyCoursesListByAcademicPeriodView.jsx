@@ -199,7 +199,7 @@ export const MyCoursesListByAcademicPeriodView = () => {
                       >
                         <Table.Cell borderRight={"1px solid"} borderColor={borderColor}>
                           <Text fontSize="sm" color="blue.600" fontWeight="medium" textAlign="center">
-                            {course.schedules?.[0]?.cycle || "N/A"}
+                            {course.cycle || "N/A"}
                           </Text>
                         </Table.Cell>
                         <Table.Cell borderRight={"1px solid"} borderColor={borderColor}>
@@ -232,7 +232,7 @@ export const MyCoursesListByAcademicPeriodView = () => {
                         </Table.Cell>
                         <Table.Cell textAlign="center" borderRight={"1px solid"} borderColor={borderColor}>
                           <Text fontSize="sm" fontWeight="medium">
-                            {course.schedules?.[0]?.credits || "N/A"}
+                            {course.credits}
                           </Text>
                         </Table.Cell>
                         <Table.Cell textAlign="center" borderRight={"1px solid"} borderColor={borderColor}>
