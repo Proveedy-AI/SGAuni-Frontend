@@ -25,9 +25,12 @@ import { useNavigate } from 'react-router';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { useUpdateNotifications } from '@/hooks';
 import { LuCheckCheck } from 'react-icons/lu';
+import { useReadMyPrograms } from '@/hooks/person/useReadMyPrograms';
 
 export const StudentDashboard = () => {
 	const { data: dataMyEnrollments } = useReadMyEnrollments();
+	const { data: dataMyPrograms } = useReadMyPrograms();
+	console.log('dataMyPrograms', dataMyPrograms);
 	const { data: profile } = useReadUserLogged();
 	const { mutate: updateNotifications } = useUpdateNotifications();
 
@@ -124,9 +127,9 @@ export const StudentDashboard = () => {
 		},
 	};
 
-	const recentEnrollments = dataMyEnrollments?.slice(-2) || [];
+	const recentEnrollments = dataMyEnrollments?.slice(-3) || [];
 	return (
-		<Box maxW='90%' mx='auto'>
+		<Box  mx='auto'>
 			{profile && profile.admission_notification_uuid && (
 				<Collapsible.Root unmountOnExit defaultOpen={true}>
 					<Collapsible.Content>
@@ -320,7 +323,7 @@ export const StudentDashboard = () => {
 					<Heading size='md' mb={4}>
 						Mis Inscripciones ({dataMyEnrollments.length})
 					</Heading>
-					<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+					<SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
 						{recentEnrollments.map((enrollment) => {
 							const status = enrollmentStatusMap[enrollment.status] || {
 								label: 'Desconocido',
@@ -375,7 +378,7 @@ export const StudentDashboard = () => {
 					</SimpleGrid>
 
 					{/* Botón para ver más si hay más de 2 */}
-					{dataMyEnrollments.length > 1 && (
+					{dataMyEnrollments.length > 3 && (
 						<Flex justify='end' mt={1}>
 							<Button
 								variant='gost'
