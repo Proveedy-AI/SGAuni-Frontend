@@ -13,7 +13,6 @@ import {
 import {
 	FiBookOpen,
 	FiCheckCircle,
-	FiEdit3,
 	FiFolder,
 	FiUsers,
 } from 'react-icons/fi';
