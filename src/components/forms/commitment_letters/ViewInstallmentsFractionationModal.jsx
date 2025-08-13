@@ -41,7 +41,7 @@ export const ViewInstallmentsFractionationModal = ({ item }) => {
 	};
 	return (
 		<ModalSimple
-			title='Vista previa de la solicitud'
+			title='Cuotas del plan de fraccionamiento'
 			placement='center'
 			size='5xl'
 			trigger={
