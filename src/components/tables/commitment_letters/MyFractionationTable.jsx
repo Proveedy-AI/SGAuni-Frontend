@@ -1,14 +1,16 @@
 import PropTypes from 'prop-types';
-import { memo, useEffect, useState } from 'react';
-import { Badge, Box, Table } from '@chakra-ui/react';
+import { memo, useState } from 'react';
+import { Badge, Box, HStack, Table } from '@chakra-ui/react';
 import { Pagination } from '@/components/ui';
 
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
-import { usePaginatedInfiniteData } from '@/components/navigation';
-import { ViewFractionationRequestsModal } from '@/components/forms/commitment_letters';
+import {
+	ViewFractionationRequestsModal,
+	ViewInstallmentsFractionationModal,
+} from '@/components/forms/commitment_letters';
 
 const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 	const statusDisplay = [
@@ -29,14 +31,23 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 					? data.length - (startIndex + index)
 					: startIndex + index + 1}
 			</Table.Cell>
-			<Table.Cell>{item.student_name}</Table.Cell>
+
 			<Table.Cell>{item.enrollment_name}</Table.Cell>
 			<Table.Cell>{item.plan_type_display}</Table.Cell>
 			<Table.Cell>{item.upfront_percentage * 100}</Table.Cell>
+			<Table.Cell>{item.number_of_installments}</Table.Cell>
 			<Table.Cell>
 				<Badge bg={matchStatus?.bg} color={matchStatus?.color}>
 					{matchStatus?.label || 'N/A'}
 				</Badge>
+			</Table.Cell>
+			<Table.Cell>
+				<HStack>
+					<ViewInstallmentsFractionationModal
+						item={item}
+						matchStatus={matchStatus}
+					/>
+				</HStack>
 			</Table.Cell>
 			<Table.Cell>
 				<ViewFractionationRequestsModal item={item} matchStatus={matchStatus} />
@@ -56,38 +67,14 @@ Row.propTypes = {
 	data: PropTypes.array,
 };
 
-export const MyFractionationTable = ({
-	data,
-	fetchData,
-	isLoading,
-	isFetchingNextPage,
-	fetchNextPage,
-	hasNextPage,
-	resetPageTrigger,
-}) => {
+export const MyFractionationTable = ({ data, fetchData, isLoading }) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
+	const [currentPage, setCurrentPage] = useState(1);
+	const startIndex = (currentPage - 1) * pageSize;
+	const endIndex = startIndex + pageSize;
 	const [sortConfig, setSortConfig] = useState(null);
-
 	const sortedData = useSortedData(data, sortConfig);
-
-	const {
-		currentPage,
-		startIndex,
-		visibleRows,
-		loadUntilPage,
-		setCurrentPage,
-	} = usePaginatedInfiniteData({
-		data: sortedData,
-		pageSize,
-		fetchNextPage,
-		hasNextPage,
-		isFetchingNextPage,
-	});
-
-	useEffect(() => {
-		setCurrentPage(1);
-	}, [resetPageTrigger]);
-
+	const visibleRows = sortedData?.slice(startIndex, endIndex);
 	return (
 		<Box
 			bg={{ base: 'white', _dark: 'its.gray.500' }}
@@ -108,15 +95,8 @@ export const MyFractionationTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='20%'>
-								<SortableHeader
-									label='Estudiante'
-									columnKey='student_full_name'
-									sortConfig={sortConfig}
-									onSort={setSortConfig}
-								/>
-							</Table.ColumnHeader>
-							<Table.ColumnHeader w='20%'>
+
+							<Table.ColumnHeader w='25%'>
 								<SortableHeader
 									label='Matrícula'
 									columnKey='enrollment_name'
@@ -124,7 +104,7 @@ export const MyFractionationTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='20%'>
+							<Table.ColumnHeader w='15%'>
 								<SortableHeader
 									label='Tipo'
 									columnKey='plan_type_display'
@@ -132,7 +112,7 @@ export const MyFractionationTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='20%'>
+							<Table.ColumnHeader w='15%'>
 								<SortableHeader
 									label='Min. Adelanto %'
 									columnKey='upfront_percentage'
@@ -140,7 +120,15 @@ export const MyFractionationTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='20%'>
+							<Table.ColumnHeader w='15%'>
+								<SortableHeader
+									label='N° Cuotas'
+									columnKey='number_of_installments'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader w='15%'>
 								<SortableHeader
 									label='Estado'
 									columnKey='status_display'
@@ -148,11 +136,12 @@ export const MyFractionationTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
+							<Table.ColumnHeader w='15%'>Cuotas</Table.ColumnHeader>
 							<Table.ColumnHeader w='10%'>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{isLoading || (isFetchingNextPage && hasNextPage) ? (
+						{isLoading ? (
 							<SkeletonTable columns={7} />
 						) : visibleRows?.length > 0 ? (
 							visibleRows.map((item, index) => (
@@ -182,7 +171,7 @@ export const MyFractionationTable = ({
 				pageSize={pageSize}
 				currentPage={currentPage}
 				pageSizeOptions={pageSizeOptions}
-				onPageChange={loadUntilPage}
+				onPageChange={setCurrentPage}
 				onPageSizeChange={(size) => {
 					setPageSize(size);
 					setCurrentPage(1);

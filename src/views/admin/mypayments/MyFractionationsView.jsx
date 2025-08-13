@@ -1,5 +1,5 @@
 import { MyFractionationTable } from '@/components/tables/commitment_letters/MyFractionationTable';
-import { useReadFractionation } from '@/hooks/fractionation_requests/useReadFractionation';
+import { useReadMyFractionation } from '@/hooks';
 
 import {
 	Box,
@@ -18,12 +18,9 @@ export const MyFractionationsView = () => {
 
 	const {
 		data: dataFractionation,
-		fetchNextPage: fetchNextFractionation,
-		hasNextPage: hasNextFractionation,
-		isFetchingNextPage: isFetchingNextFractionation,
 		isLoading: loadingFractionation,
 		refetch: fetchFractionation,
-	} = useReadFractionation({}, {});
+	} = useReadMyFractionation({}, {});
 
 	/*const dataFractionation = [
 		{
@@ -48,12 +45,8 @@ export const MyFractionationsView = () => {
 		},
 	];*/
 
-	const allFractionations = dataFractionation?.pages?.flatMap(
-		(page) => page.results ?? []
-	);
-
-	const filteredFractionations = allFractionations?.filter((item) =>
-		item?.student_name
+	const filteredFractionations = dataFractionation?.filter((item) =>
+		item?.enrollment_name
 			?.toLowerCase()
 			.includes(searchBenefitsValue.toLowerCase())
 	);
@@ -89,9 +82,6 @@ export const MyFractionationsView = () => {
 
 			<MyFractionationTable
 				isLoading={loadingFractionation}
-				isFetchingNextPage={isFetchingNextFractionation}
-				hasNextPage={hasNextFractionation}
-				fetchNextPage={fetchNextFractionation}
 				data={filteredFractionations}
 				refetch={fetchFractionation}
 			/>
