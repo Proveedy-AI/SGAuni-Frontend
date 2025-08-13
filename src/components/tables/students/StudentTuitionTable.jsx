@@ -35,7 +35,7 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 					? data.length - (startIndex + index)
 					: startIndex + index + 1}
 			</Table.Cell>
-			<Table.Cell>{item.student_full_name}</Table.Cell>
+			
 			<Table.Cell>{item.program_period}</Table.Cell>
 			<Table.Cell>{item.program_name}</Table.Cell>
 			<Table.Cell>
@@ -95,14 +95,7 @@ export const StudentTuitionTable = ({ data, fetchData, isLoading }) => {
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='20%'>
-								<SortableHeader
-									label='Estudiante'
-									columnKey='student_full_name'
-									sortConfig={sortConfig}
-									onSort={setSortConfig}
-								/>
-							</Table.ColumnHeader>
+
 							<Table.ColumnHeader w='20%'>
 								<SortableHeader
 									label='Periodo'
