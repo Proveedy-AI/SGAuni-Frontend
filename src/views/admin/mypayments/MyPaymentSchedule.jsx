@@ -1,7 +1,5 @@
-import { ReactSelect } from '@/components';
 import { StudentScheduleTable } from '@/components/tables/commitment_letters';
-import { Field } from '@/components/ui';
-import { formatDateString } from '@/components/ui/dateHelpers';
+
 import { useReadMyEnrollments } from '@/hooks';
 import {
 	Box,
@@ -10,7 +8,6 @@ import {
 	Flex,
 	Heading,
 	Icon,
-	Input,
 	SimpleGrid,
 	Stack,
 } from '@chakra-ui/react';
@@ -91,11 +88,6 @@ export const MyPaymentSchedule = () => {
 		setSelectedStatus(null);
 	};
 
-	const StatusOptions = [
-		{ value: 1, label: 'Pendiente' },
-		{ value: 2, label: 'Pagado' },
-		{ value: 3, label: 'Expirado' },
-	];
 	return (
 		<Stack gap={4}>
 			<Card.Root>
@@ -120,36 +112,10 @@ export const MyPaymentSchedule = () => {
 				</Card.Header>
 				<Card.Body>
 					<Stack gap={4} mb={4}>
-						<SimpleGrid columns={{ base: 1, sm: 2, md: 2, xl: 2 }} gap={6}>
-							<Field label='Fecha límite:'>
-								<Input
-									type='date'
-									value={selectedDeadline ? selectedDeadline.value : ''}
-									onChange={(e) =>
-										setSelectedDeadline(
-											e.target.value
-												? {
-														value: e.target.value,
-														label: formatDateString(e.target.value),
-													}
-												: null
-										)
-									}
-									style={{ width: '100%', padding: '4px', fontSize: '14px' }}
-								/>
-							</Field>
-							<Field label='Estado:'>
-								<ReactSelect
-									value={selectedStatus}
-									onChange={setSelectedStatus}
-									variant='flushed'
-									size='xs'
-									isSearchable
-									isClearable
-									options={StatusOptions}
-								/>
-							</Field>
-						</SimpleGrid>
+						<SimpleGrid
+							columns={{ base: 1, sm: 2, md: 2, xl: 2 }}
+							gap={6}
+						></SimpleGrid>
 					</Stack>
 				</Card.Body>
 			</Card.Root>
