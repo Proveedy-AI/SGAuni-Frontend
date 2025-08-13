@@ -45,18 +45,13 @@ export const StudentsView = () => {
 
 	const filterParams = useMemo(() => {
 		const params = {};
-		if (selectedProgram) params.program = selectedProgram.value;
+		if (selectedProgram) params.admission_program = selectedProgram.value;
 		if (debouncedSearch) params.name = debouncedSearch;
 		if (scholarshipStatus) params.scholarship = scholarshipStatus.value;
 		if (selectedStatus) params.status = selectedStatus.value;
 
 		return params;
-	}, [
-		selectedProgram,
-		debouncedSearch,
-		scholarshipStatus,
-		selectedStatus,
-	]);
+	}, [selectedProgram, debouncedSearch, scholarshipStatus, selectedStatus]);
 
 	const { data: dataPrograms, isLoading: isLoadingPrograms } =
 		useReadAdmissionsPrograms({ status: 4 });
@@ -68,7 +63,7 @@ export const StudentsView = () => {
 		isFetchingNextPage: isFetchingNextPageStudents,
 		isLoading: loadingStudents,
 		refetch: fetchStudents,
-	} = useReadStudents({ filterParams }, {});
+	} = useReadStudents(filterParams, {});
 
 	const allStudents =
 		dataStudents?.pages?.flatMap((page) => page.results) ?? [];
@@ -124,7 +119,6 @@ export const StudentsView = () => {
 							<Field label='Estudiante:'>
 								<InputGroup flex='1' startElement={<FiSearch />}>
 									<Input
-										
 										bg={'white'}
 										size='sm'
 										variant='outline'
