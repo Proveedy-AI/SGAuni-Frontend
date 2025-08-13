@@ -157,7 +157,7 @@ export const MyFractionationTable = ({ data, fetchData, isLoading }) => {
 							))
 						) : (
 							<Table.Row>
-								<Table.Cell colSpan={7} textAlign='center' py={2}>
+								<Table.Cell colSpan={8} textAlign='center' py={2}>
 									No hay datos disponibles.
 								</Table.Cell>
 							</Table.Row>
