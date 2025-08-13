@@ -200,8 +200,8 @@ const groupTitles = {
 		courses: 'Cursos',
 		benefits: 'Becas y Beneficios',
 		classes: 'Clases',
-
-		
+		procedures: 'Trámites',
+		students: 'Estudiantes',
 	},
 	subCategory: {
 		program: 'Programas',
@@ -238,5 +238,10 @@ const groupTitles = {
 		mycourses: 'Mis Cursos (Estudiante)',
 		'data-proccess': 'Procesamiento de Datos',
 		myclasses: 'Mis Clases (Docente)',
+		teacher: 'Docente',
+		enrolled: 'Matriculados',
+		myprocedures: 'Mis trámites (Estudiante)',
+		students: 'Estudiantes',
+		programsEnrollments: 'Programas de Matrícula',
 	},
 };
