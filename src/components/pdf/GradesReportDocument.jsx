@@ -1,3 +1,4 @@
+import { Table, TR, TH, TD } from '@ag-media/react-pdf-table';
 import { Document, Page, Text, View, Image, StyleSheet, PDFViewer } from '@react-pdf/renderer';
 import PropTypes from 'prop-types';
 
@@ -78,54 +79,18 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   tableHeader: {
-    flexDirection: 'row',
     backgroundColor: '#E0E0E0',
-    borderWidth: 1,
-    borderColor: '#000',
-    padding: 5,
-  },
-  tableRow: {
-    flexDirection: 'row',
-    borderWidth: 1,
-    borderColor: '#000',
-    borderTopWidth: 0,
-    minHeight: 25,
-    alignItems: 'center',
-  },
-  tableRowEven: {
-    backgroundColor: '#F8F8F8',
-  },
-  cellNumber: {
-    width: '8%',
-    textAlign: 'center',
-    fontSize: 10,
+    fontSize: 8,
     fontWeight: 'bold',
-    borderRightWidth: 1,
-    borderRightColor: '#000',
-    padding: 3,
+    paddingVertical: 5,
+    justifyContent: 'center',
+    paddingHorizontal: 3,
   },
-  cellName: {
-    width: '42%',
+  tableCell: {
     fontSize: 10,
-    paddingLeft: 5,
-    paddingRight: 5,
-    borderRightWidth: 1,
-    borderRightColor: '#000',
-    padding: 3,
-  },
-  cellGradeNumber: {
-    width: '15%',
-    textAlign: 'center',
-    fontSize: 10,
-    borderRightWidth: 1,
-    borderRightColor: '#000',
-    padding: 3,
-  },
-  cellGradeWords: {
-    width: '35%',
-    textAlign: 'center',
-    fontSize: 10,
-    padding: 3,
+    paddingVertical: 5,
+    borderColor: '#000',
+    paddingHorizontal: 3,
   },
   footerContainer: {
     marginTop: 40,
@@ -217,37 +182,41 @@ export const GradesReportDocument = ({ dataGradesReport }) => {
               </View>
 
               {/* Tabla de estudiantes y notas */}
-              <View style={styles.table}>
-                {/* Header de la tabla */}
-                <View style={styles.tableHeader}>
-                  <Text style={styles.cellNumber}>N°</Text>
-                  <Text style={styles.cellName}>APELLIDOS Y NOMBRES</Text>
-                  <Text style={styles.cellGradeNumber}>NÚMEROS</Text>
-                  <Text style={styles.cellGradeWords}>LETRAS</Text>
-                </View>
-
-                {/* Filas de estudiantes */}
-                {studentsList.map((studentGrade, index) => {
-                  return (
-                    <View 
-                      key={index} 
-                      style={[
-                        styles.tableRow, 
-                        index % 2 === 1 ? styles.tableRowEven : null
-                      ]}
-                    >
-                      <Text style={styles.cellNumber}>{index + 1}</Text>
-                      <Text style={styles.cellName}>{studentGrade.student_full_name}</Text>
-                      <Text style={styles.cellGradeNumber}>
-                        {studentGrade.numeric_grade || ''}
-                      </Text>
-                      <Text style={styles.cellGradeWords}>
-                        {studentGrade.grade_in_words || ''}
-                      </Text>
-                    </View>
-                  );
-                })}
-              </View>
+              <Table 
+                style={styles.table}
+                weightings={[5, 15, 15, 30, 10, 25]}
+              >
+                <TH>
+                  <TD style={styles.tableHeader}>N°</TD>
+                  <TD style={styles.tableHeader}>DOCUMENTO</TD>
+                  <TD style={styles.tableHeader}>CÓDIGO</TD>
+                  <TD style={styles.tableHeader}>APELLIDOS Y NOMBRES</TD>
+                  <TD style={styles.tableHeader}>NÚMEROS</TD>
+                  <TD style={styles.tableHeader}>LETRAS</TD>
+                </TH>
+                {studentsList.map((studentGrade, index) => (
+                  <TR key={index} >
+                    <TD style={{...styles.tableCell, justifyContent: 'center'}}>
+                      {index + 1}
+                    </TD>
+                    <TD style={{...styles.tableCell, justifyContent: 'center'}}>
+                      {studentGrade.document_number}
+                    </TD>
+                    <TD style={{...styles.tableCell, justifyContent: 'center'}}>
+                      {studentGrade.student_code}
+                    </TD>
+                    <TD style={styles.tableCell}>
+                      {studentGrade.student_full_name}
+                    </TD>
+                    <TD style={{...styles.tableCell, justifyContent: 'center'}}>
+                      {studentGrade.numeric_grade || ''}
+                    </TD>
+                    <TD style={{...styles.tableCell, justifyContent: 'center'}}>
+                      {studentGrade.grade_in_words || ''}
+                    </TD>
+                  </TR>
+                ))}
+              </Table>
 
               {/* Footer con fechas y firmas */}
               <View style={styles.dateLabel}>
