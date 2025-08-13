@@ -11,9 +11,9 @@ const s3Client = new S3Client({
 });
 
 // Función para subir el archivo
-export const uploadToS3 = async (file, folder, name) => {
+export const uploadToS3 = async (file, folder, name, format='pdf') => {
 	const timestamp = new Date().toISOString().split('T')[0];
-	const fileName = `${file.name.split('.')[0]}-${name}-${timestamp}.pdf`;
+	const fileName = `${file.name.split('.')[0]}-${name}-${timestamp}.${format}`;
 	const key = `${folder}/${fileName}`;
 
 	// Parámetros para el comando

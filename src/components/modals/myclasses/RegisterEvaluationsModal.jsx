@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
-import { Button, Modal } from "@/components/ui"
+import { Button, Modal, toaster } from "@/components/ui"
 import { useState } from "react";
-import { FiFile, FiEdit2 } from "react-icons/fi";
+import { FiFile } from "react-icons/fi";
 import { 
   Box, 
   Stack, 
@@ -11,63 +11,116 @@ import {
   Badge,
   Input,
 } from '@chakra-ui/react';
+import { useCreateBulkEvaluations } from '@/hooks/evaluations';
 
-export const RegisterEvaluationsModal = ({ student, evaluationComponents }) => {
-  console.log(student?.enrollment_course_selection);
+export const RegisterEvaluationsModal = ({ fetchData, student, evaluationComponents }) => {
+  const { mutate: registerEvaluation, isPending } = useCreateBulkEvaluations();
+  console.log(evaluationComponents)
+
   const [open, setOpen] = useState(false);
   const [grades, setGrades] = useState({});
-  const [editMode, setEditMode] = useState({});
+  const [errors, setErrors] = useState({});
 
   // Inicializar grades con las notas existentes cuando se abre el modal
   const initializeGrades = () => {
     const initialGrades = {};
-    const initialEditMode = {};
     
     if (student?.califications) {
       student.califications.forEach(qualification => {
-        initialGrades[qualification.component_id] = qualification.grade_obtained || '';
-        // Si tiene nota existente, empieza en modo NO editable (false)
-        // Si no tiene nota, empieza en modo editable (true)
-        initialEditMode[qualification.component_id] = qualification.grade_obtained === null;
+        // Usar evaluation_component (no component_id) y grade (no grade_obtained)
+        initialGrades[qualification.evaluation_component] = qualification.grade || '';
       });
     }
     
     setGrades(initialGrades);
-    setEditMode(initialEditMode);
+    setErrors({});
+  };
+
+  const validate = (componentId, value) => {
+    const numValue = parseFloat(value);
+    
+    if (value === '' || value === null || value === undefined) {
+      return null; // Permitir valores vacíos
+    }
+    
+    if (isNaN(numValue) || numValue < 0 || numValue > 20) {
+      return 'La nota debe estar entre 0 y 20';
+    }
+    
+    return null;
   };
 
   const handleGradeChange = (componentId, value) => {
+    const error = validate(componentId, value);
+    
     setGrades(prev => ({
       ...prev,
-      [componentId]: value === '' ? '' : parseFloat(value)
+      [componentId]: value === '' ? '' : value
     }));
-  };
-
-  const toggleEditMode = (componentId) => {
-    setEditMode(prev => ({
+    
+    setErrors(prev => ({
       ...prev,
-      [componentId]: !prev[componentId]
+      [componentId]: error
     }));
   };
 
   const handleSubmit = () => {
-    const califications = [];
+    // Validar todos los campos antes de enviar
+    const newErrors = {};
+    let hasErrors = false;
+
+    Object.entries(grades).forEach(([componentId, value]) => {
+      if (value !== '' && value !== null && value !== undefined) {
+        const error = validate(componentId, value);
+        if (error) {
+          newErrors[componentId] = error;
+          hasErrors = true;
+        }
+      }
+    });
+
+    // Actualizar errores si los hay
+    if (hasErrors) {
+      setErrors(prev => ({ ...prev, ...newErrors }));
+      toaster.create({
+        title: "Error en las notas",
+        description: "Por favor corrige los errores antes de guardar.",
+        type: "error"
+      });
+      return; // No continuar con el submit
+    }
+
+    const payload = [];
     
     Object.entries(grades).forEach(([componentId, value]) => {
       if (value !== '' && value !== null && value !== undefined) {
-        califications.push({
+        payload.push({
           evaluation_component_id: parseInt(componentId),
           value: parseFloat(value)
         });
       }
     });
 
-    const payload = {
-      califications
-    };
+    const courseSelectionId = student?.enrollment_course_selection;
 
-    console.log('Payload a enviar:', payload);
-    // Aquí iría la lógica para enviar al API
+    registerEvaluation({ courseSelectionId, payload }, {
+      onSuccess: () => {
+        toaster.create({
+          title: "Evaluaciones registradas",
+          description: "Las evaluaciones se han registrado correctamente.",
+          type: "success"
+        })
+        setOpen(false);
+        fetchData();
+      },
+      onError: (error) => {
+        toaster.create({
+          title: "Error al registrar evaluaciones",
+          description: error.message,
+          type: "error"
+        });
+      }
+    });
   };
 
   const handleModalOpen = () => {
@@ -96,6 +149,7 @@ export const RegisterEvaluationsModal = ({ student, evaluationComponents }) => {
       onOpenChange={(e) => setOpen(e.open)}
       onSave={handleSubmit}
       onClose={() => setOpen(false)}
+      isLoading={isPending}
     >
       <VStack spacing={6} align='stretch' maxHeight={'700px'} overflowY='auto'>
         {/* Información del estudiante */}
@@ -137,10 +191,8 @@ export const RegisterEvaluationsModal = ({ student, evaluationComponents }) => {
           
           <Stack spacing={4}>
             {evaluationComponents?.map((component) => {
-              const qualification = student?.califications?.find(q => q.component_id === component.id);
-              const hasExistingGrade = qualification?.grade_obtained !== null && qualification?.grade_obtained !== undefined;
-              const isEditable = hasExistingGrade ? editMode[component.id] === true : true;
               const currentGrade = grades[component.id] || '';
+              const currentError = errors[component.id];
 
               return (
                 <Box
@@ -161,20 +213,11 @@ export const RegisterEvaluationsModal = ({ student, evaluationComponents }) => {
                           {component.weight}%
                         </Badge>
                       </HStack>
-                      
-                      {hasExistingGrade && !isEditable && (
-                        <HStack>
-                          <Text fontSize='sm' color='gray.600'>Nota actual:</Text>
-                          <Badge colorScheme='green' variant='solid'>
-                            {qualification.grade_obtained}
-                          </Badge>
-                        </HStack>
-                      )}
                     </VStack>
 
-                    <HStack spacing={3}>
+                    <VStack align='end' spacing={2}>
                       {/* Input de nota */}
-                      <Box>
+                      <Box textAlign='end'>
                         <Input
                           type="number"
                           value={currentGrade}
@@ -182,25 +225,17 @@ export const RegisterEvaluationsModal = ({ student, evaluationComponents }) => {
                           min={0}
                           max={20}
                           step={0.5}
-                          disabled={!isEditable}
                           w='100px'
                           placeholder="0.0"
+                          borderColor={currentError ? 'red.500' : 'gray.200'}
                         />
+                        {currentError && (
+                          <Text fontSize='xs' color='red.500' mt={1}>
+                            {currentError}
+                          </Text>
+                        )}
                       </Box>
-
-                      {/* Botón de editar - solo se muestra si hay nota existente */}
-                      {hasExistingGrade && (
-                        <Button
-                          size='sm'
-                          variant='outline'
-                          colorScheme={isEditable ? 'red' : 'blue'}
-                          onClick={() => toggleEditMode(component.id)}
-                        >
-                          <FiEdit2 />
-                          {isEditable ? 'Cancelar' : 'Editar'}
-                        </Button>
-                      )}
-                    </HStack>
+                    </VStack>
                   </HStack>
                 </Box>
               );
@@ -224,7 +259,7 @@ export const RegisterEvaluationsModal = ({ student, evaluationComponents }) => {
               • No es necesario completar todas las evaluaciones
             </Text>
             <Text fontSize='sm' color='yellow.700'>
-              • Para editar una nota existente, presiona el botón &quot;Editar&quot;
+              • Los inputs mostrarán las notas existentes si las hay
             </Text>
           </VStack>
         </Box>
@@ -234,6 +269,7 @@ export const RegisterEvaluationsModal = ({ student, evaluationComponents }) => {
 }
 
 RegisterEvaluationsModal.propTypes = {
+  fetchData: PropTypes.func,
   student: PropTypes.object,
   evaluationComponents: PropTypes.array,
 };

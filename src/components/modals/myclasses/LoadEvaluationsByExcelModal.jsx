@@ -94,7 +94,8 @@ export const LoadEvaluationsByExcelModal = ({ dataCourseGroup, fetchData }) => {
         fileUrl = await uploadToS3(
           excelFile,
           'sga_uni/evaluations/uploads',
-          'evaluaciones_excel'
+          'excel_evaluaciones',
+          'xlsx'
         );
       }
 
@@ -103,11 +104,10 @@ export const LoadEvaluationsByExcelModal = ({ dataCourseGroup, fetchData }) => {
       }
 
       const payload = {
-        courseGroupId: dataCourseGroup.id,
-        excel_url: fileUrl
+        grade_excel_path: fileUrl
       };
 
-      uploadEvaluations(payload, {
+      uploadEvaluations({courseGroupId: dataCourseGroup.id, payload}, {
         onSuccess: () => {
           toaster.create({
             title: 'Evaluaciones cargadas',
@@ -117,7 +117,7 @@ export const LoadEvaluationsByExcelModal = ({ dataCourseGroup, fetchData }) => {
           setOpen(false);
           setExcelFile(null);
           setAcceptedWarning(false);
-          if (fetchData) fetchData();
+          fetchData();
         },
         onError: (error) => {
           toaster.create({

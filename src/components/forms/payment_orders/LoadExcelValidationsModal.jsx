@@ -34,7 +34,8 @@ export const LoadExcelValidationsModal = ({ fetchData }) => {
 				pathDocUrl = await uploadToS3(
 					excelPath,
 					'sga_uni/vouchers/validation',
-					'excel_ocef'
+					'excel_ocef',
+          'xlsx'
 				);
 			}
 

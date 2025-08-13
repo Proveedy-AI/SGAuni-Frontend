@@ -4,7 +4,7 @@ import { Box, Table, Text, Badge, Group } from '@chakra-ui/react';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { RegisterEvaluationsModal } from '@/components/modals/myclasses';
 
-const Row = memo(({ student, evaluationComponents, statusOptions, statusColors }) => {
+const Row = memo(({ fetchData, student, evaluationComponents, statusOptions, statusColors }) => {
   const statusOption = statusOptions.find(opt => opt.value === student.qualification_status);
   const statusColor = statusColors.find(c => c.id === student.qualification_status) || { bg: 'gray.200', color: 'gray.800' };
 
@@ -40,13 +40,13 @@ const Row = memo(({ student, evaluationComponents, statusOptions, statusColors }
       {evaluationComponents && evaluationComponents.length > 0 && (
         <Table.Cell textAlign="center">
           <Text fontWeight="bold" color={(student.final_grade || 0) >= 11 ? "green.600" : "red.600"}>
-            {student.final_grade ? student.final_grade.toFixed(2) : '0.00'}
+            {student?.final_grade}
           </Text>
         </Table.Cell>
       )}
       <Table.Cell>
         <Group>
-          <RegisterEvaluationsModal student={student} evaluationComponents={evaluationComponents} />
+          <RegisterEvaluationsModal fetchData={fetchData} student={student} evaluationComponents={evaluationComponents} />
         </Group>
       </Table.Cell>
     </Table.Row>
@@ -56,6 +56,7 @@ const Row = memo(({ student, evaluationComponents, statusOptions, statusColors }
 Row.displayName = 'StudentRow';
 
 Row.propTypes = {
+  fetchData: PropTypes.func,
   student: PropTypes.object.isRequired,
   evaluationComponents: PropTypes.array,
   statusOptions: PropTypes.array.isRequired,
@@ -63,6 +64,7 @@ Row.propTypes = {
 };
 
 export const StudentsEvaluationsTable = ({ 
+  fetchData,
   students, 
   evaluationComponents,
   isLoading,
@@ -70,16 +72,16 @@ export const StudentsEvaluationsTable = ({
 }) => {
   const statusOptions = [
     { value: 1, label: 'En Curso' },
-    { value: 2, label: 'Calificado' },
-    { value: 3, label: 'No Calificado' },
+    { value: 2, label: 'Parcialmente calificado' },
+    { value: 3, label: 'Totalmente calificado' },
     { value: 4, label: 'Aprobado' },
     { value: 5, label: 'Reprobado' },
   ];
 
   const statusColors = [
     { id: 1, bg: '#AEAEAE', color: '#F5F5F5' },
-    { id: 2, bg: '#C0D7F5', color: '#0661D8' },
-    { id: 3, bg: '#FDD9C6', color: '#F86A1E' },
+    { id: 2, bg: '#FDD9C6', color: '#F86A1E' },
+    { id: 3, bg: '#C0D7F5', color: '#0661D8' },
     { id: 4, bg: '#D0EDD0', color: '#2D9F2D' },
     { id: 5, bg: '#F7CDCE', color: '#E0383B' },
   ];
@@ -199,6 +201,7 @@ export const StudentsEvaluationsTable = ({
               students.map((student) => (
                 <Row
                   key={student.uuid || student.id}
+                  fetchData={fetchData}
                   student={student}
                   evaluationComponents={evaluationComponents}
                   statusOptions={statusOptions}
@@ -220,6 +223,7 @@ export const StudentsEvaluationsTable = ({
 };
 
 StudentsEvaluationsTable.propTypes = {
+  fetchData: PropTypes.func,
   students: PropTypes.array,
   evaluationComponents: PropTypes.array,
   isLoading: PropTypes.bool,

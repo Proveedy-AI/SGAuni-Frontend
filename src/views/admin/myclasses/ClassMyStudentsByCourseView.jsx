@@ -48,7 +48,7 @@ export const ClassMyStudentsByCourseView = () => {
 
   const has_configured = dataEvaluationSummary?.data?.evaluation_configured || false;
   
-	const { data: studentsData, isLoading: loadingStudents } =
+	const { data: studentsData, isLoading: loadingStudents, refetch: fetchStudents } =
 		useReadStudentsByCourseId(
       dataCourseGroup?.id,
       { enabled: !!dataCourseGroup?.id }
@@ -66,7 +66,6 @@ export const ClassMyStudentsByCourseView = () => {
 			: true;
 		return matchesName && matchesStatus;
 	});
-
 
 	const StatusOptions = [
 		{ value: 1, label: 'En Curso' },
@@ -87,8 +86,6 @@ export const ClassMyStudentsByCourseView = () => {
     data: dataGradesReport,
     isLoading: loadingGradesReport,
   } = useGenerateGradesReport(decrypted);
-
-  console.log(dataGradesReport);
 
   const isDownloadable = (!loadingGradesReport) && (studentsData?.students?.length > 0);
 
@@ -201,7 +198,7 @@ export const ClassMyStudentsByCourseView = () => {
 						>
 							<LoadEvaluationsByExcelModal 
                 dataCourseGroup={dataCourseGroup}
-                fetchData={refetchEvaluationSummary}
+                fetchData={fetchStudents}
               />
 
 							<ConfigurateCalificationCourseModal
@@ -217,6 +214,7 @@ export const ClassMyStudentsByCourseView = () => {
 			</Card.Root>
 
 			<StudentsEvaluationsTable
+        fetchData={fetchStudents}
 				students={filteredStudents}
 				evaluationComponents={evaluationComponents}
 				isLoading={loadingStudents}

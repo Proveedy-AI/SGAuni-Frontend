@@ -21,10 +21,12 @@ export const LoadExcelGeneratePaymentOrderModal = ({ fetchData }) => {
 		{ enable: open }
 	);
 
+  console.log(enrollmentsPrograms)
+
 	const enrollmentOptions = enrollmentsPrograms?.results
 		? enrollmentsPrograms.results.map((program) => ({
 				value: program.uuid,
-				label: program.name,
+				label: `${program.name || program.program_name} - ${program.enrollment_period_name}`,
 			}))
 		: [];
 
@@ -49,7 +51,8 @@ export const LoadExcelGeneratePaymentOrderModal = ({ fetchData }) => {
 				pathDocUrl = await uploadToS3(
 					excelPath,
 					'sga_uni/vouchers/validation',
-					'excel_ocef'
+					'excel_ocef',
+          'xlsx'
 				);
 			}
 
@@ -57,9 +60,9 @@ export const LoadExcelGeneratePaymentOrderModal = ({ fetchData }) => {
 				throw new Error('Error al subir el archivo a S3.');
 			}
 
-			const payload = { ordern_excel_url: pathDocUrl };
+			const payload = { order_excel_url: pathDocUrl };
 
-			validate(selectedProgram?.value, payload, {
+			validate({ uuid: selectedProgram?.value, payload }, {
 				onSuccess: () => {
 					toaster.create({
 						title: 'Validación exitosa',
