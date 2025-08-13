@@ -328,5 +328,4 @@ export const PreviewMyOrdenDetailsModal = ({ data }) => {
 
 PreviewMyOrdenDetailsModal.propTypes = {
 	data: PropTypes.object.isRequired,
-	statusMap: PropTypes.object.isRequired,
 };

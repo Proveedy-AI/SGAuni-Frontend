@@ -13,6 +13,8 @@ import { LuGraduationCap } from 'react-icons/lu';
 import { useParams } from 'react-router';
 import { GeneralDataStudent } from './sections/GeneralDataStudent';
 import { EnrollmentStudent } from './sections/EnrollmentStudent';
+import { AcademicRegister } from './sections/AcademicRegister';
+import { PaymentStudent } from './sections/PaymentStudent';
 
 export const StudentDetailView = () => {
 	const { id } = useParams();
@@ -173,7 +175,7 @@ export const StudentDetailView = () => {
 										value={4}
 										color={tab === 4 ? 'uni.secondary' : ''}
 									>
-										Postulaciones
+										Pagos
 									</Tabs.Trigger>
 								</Tabs.List>
 							</Box>
@@ -196,17 +198,10 @@ export const StudentDetailView = () => {
 							</Stack>
 						</Tabs.Content>
 						<Tabs.Content value={3}>
-							<Stack>
-								<Stack
-									direction={{ base: 'column', sm: 'row' }}
-									align={{ base: 'start', sm: 'center' }}
-									justify='space-between'
-								>
-									<Heading size='md'>Gestión de Enfoques de Programas</Heading>
-								</Stack>
-
-								{/* Cargar la tabla de Enfoques de Programas */}
-							</Stack>
+							<AcademicRegister />
+						</Tabs.Content>
+						<Tabs.Content value={4}>
+							<PaymentStudent dataPerson={dataPerson} />
 						</Tabs.Content>
 					</Tabs.Root>
 				</Stack>
