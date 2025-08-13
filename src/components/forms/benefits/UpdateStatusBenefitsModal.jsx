@@ -75,16 +75,22 @@ export const UpdateStatusBenefitsModal = ({ data, fetchData }) => {
 				);
 			}
 
-			const payload = {
-				comments: selectedStatus === 3 ? comments.trim() : '',
-				status: selectedStatus,
-				founding_source: selectedStatus === 4 ? type?.value : null,
-				other_founding_source:
-					selectedStatus === 4 ? other_founding_source : '',
-				discount_percentage:
-					selectedStatus === 4 ? discount_percentage / 100 : '',
-				review_document_url: selectedStatus === 4 ? s3Url : '',
-			};
+			const payload =
+				selectedStatus === 4
+					? {
+							comments: selectedStatus === 3 ? comments.trim() : '',
+							status: selectedStatus,
+							founding_source: selectedStatus === 4 ? type?.value : null,
+							other_founding_source:
+								selectedStatus === 4 ? other_founding_source : '',
+							discount_percentage:
+								selectedStatus === 4 ? discount_percentage / 100 : '',
+							review_document_url: selectedStatus === 4 ? s3Url : '',
+						}
+					: {
+							status: selectedStatus,
+							comments: comments.trim(),
+						};
 
 			aproveeBenefits(
 				{ id: data.request_benefit, payload },
