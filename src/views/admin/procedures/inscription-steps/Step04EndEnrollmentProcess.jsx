@@ -11,9 +11,14 @@ import { FiCalendar, FiCheckCircle, FiHome } from 'react-icons/fi';
 import { Button } from '@/components/ui';
 import { useNavigate } from 'react-router';
 
-export const Step04EndEnrollmentProcess = ({ step, id, mySelections }) => {
+export const Step04EndEnrollmentProcess = ({ currentEnrollment, step, mySelections }) => {
+  console.log(currentEnrollment?.enrollment_period_program)
 	const { data: dataRegistrationInfo, isLoading: loadingRegistrationInfo } =
-		useReadEnrollmentReceipt(id, {}, { enabled: !!id && step === 4 });
+		useReadEnrollmentReceipt(
+      currentEnrollment?.enrollment_period_program, 
+      {}, 
+      { enabled: !!currentEnrollment?.enrollment_period_program && step === 4 }
+    );
 
 	const courses_groups = mySelections?.map((course_group) => {
 		return {
@@ -215,7 +220,7 @@ export const Step04EndEnrollmentProcess = ({ step, id, mySelections }) => {
 };
 
 Step04EndEnrollmentProcess.propTypes = {
+  currentEnrollment: PropTypes.object,
 	step: PropTypes.number,
-	id: PropTypes.number,
 	mySelections: PropTypes.array,
 };

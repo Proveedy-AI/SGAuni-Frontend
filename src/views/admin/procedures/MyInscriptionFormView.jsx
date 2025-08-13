@@ -126,14 +126,24 @@ export const MyInscriptionFormView = () => {
 	const [currentStep, setCurrentStep] = useState(1);
 	const [selectedCourse, setSelectedCourse] = useState(null);
 
+  const currentEnrollment = EncryptedStorage.load('selectedEnrollmentProccess');
+
 	const { data: coursesToEnroll, isLoading: isLoadingCoursesToEnroll } =
-		useReadAvailableCourses();
+		useReadAvailableCourses(
+      currentEnrollment?.uuid,
+      {},
+      {}
+    );
 
 	const {
 		data: mySelections,
 		isLoading: isLoadingMySelections,
 		refetch: refetchMySelections,
-	} = useReadMySelections();
+	} = useReadMySelections(
+    currentEnrollment?.uuid,
+    {},
+    {}
+  );
 
 	// Loading state
 	if (isLoadingCoursesToEnroll || isLoadingMySelections) {
@@ -201,6 +211,7 @@ export const MyInscriptionFormView = () => {
 			<Box>
 				{currentStep === 1 && (
 					<Step01CourseList
+						currentEnrollment={currentEnrollment}
 						courses={coursesToEnroll?.available_courses}
 						mySelections={mySelections?.selections}
 						selectedCourse={selectedCourse}
@@ -216,6 +227,7 @@ export const MyInscriptionFormView = () => {
 
 				{currentStep === 3 && (
 					<Step03SummaryEnrollment
+            currentEnrollment={currentEnrollment}
 						isSomeRequestPending={isSomeRequestPending}
 						selectedGroups={mySelections}
 						onBack={() => setCurrentStep(currentStep - 1)}
@@ -225,8 +237,8 @@ export const MyInscriptionFormView = () => {
 
 				{currentStep === 4 && (
 					<Step04EndEnrollmentProcess
+						currentEnrollment={currentEnrollment}
 						step={currentStep}
-						id={decrypted}
 						mySelections={mySelections?.selections}
 					/>
 				)}

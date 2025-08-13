@@ -18,6 +18,7 @@ import {
 } from '@/hooks/course-selections';
 
 export const Step01CourseList = ({
+  currentEnrollment,
 	courses,
 	mySelections,
 	selectedCourse,
@@ -30,56 +31,10 @@ export const Step01CourseList = ({
 	const { data: courseGroups, isLoading: isLoadingGroups } =
 		useReadCourseGroupsById(
 			selectedCourse?.course_id,
+      currentEnrollment?.uuid,
 			{},
 			{ enabled: !!selectedCourse }
 		);
-
-	// const groupWithLocalData = [
-	//   ...(Array.isArray(courseGroups) ? courseGroups : []),
-	//   {
-	//       id: 101,
-	//       group_code: "EX_1",
-	//       course_id: 1,
-	//       course_name: "Estructuras de Datos",
-	//       teacher_name: "Pedrizi",
-	//       capacity: 45,
-	//       enrolled_count: 1,
-	//       schedule_info: [
-	//           {
-	//             day: "Martes",
-	//             day_number: 2,
-	//             start_time: "08:00",
-	//             end_time: "12:00",
-	//             duration: "08:00 - 12:00"
-	//           }
-	//       ]
-	//   },
-	//   {
-	//       id: 102,
-	//       group_code: "EXA_2",
-	//       course_id: 1,
-	//       course_name: "Estructuras de Datos",
-	//       teacher_name: "Armandizi",
-	//       capacity: 45,
-	//       enrolled_count: 1,
-	//       schedule_info: [
-	//           {
-	//             day: "Miercoles",
-	//             day_number: 3,
-	//             start_time: "08:00",
-	//             end_time: "10:00",
-	//             duration: "08:00 - 10:00"
-	//           },
-	//           {
-	//             day: "Jueves",
-	//             day_number: 3,
-	//             start_time: "08:00",
-	//             end_time: "10:00",
-	//             duration: "08:00 - 10:00"
-	//           }
-	//       ]
-	//   }
-	// ];
 
 	const { mutateAsync: createSelection, isPending: loadingGroupSelection } =
 		useCreateCourseSelection();
@@ -101,7 +56,7 @@ export const Step01CourseList = ({
 	};
 
 	const handleSelectGroup = async (groupId) => {
-		await createSelection(groupId, {
+		await createSelection({ courseGroupId: groupId, uuid: currentEnrollment?.uuid }, {
 			onSuccess: () => {
 				toaster.create({
 					title: 'Grupo añadido a la matrícula',
@@ -497,6 +452,7 @@ export const Step01CourseList = ({
 };
 
 Step01CourseList.propTypes = {
+  currentEnrollment: PropTypes.object,
 	courses: PropTypes.array.isRequired,
 	mySelections: PropTypes.array,
 	selectedCourse: PropTypes.object,
