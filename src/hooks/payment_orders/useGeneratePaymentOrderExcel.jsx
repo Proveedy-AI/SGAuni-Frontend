@@ -6,7 +6,7 @@ export const useGeneratePaymentOrderExcel = () => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useMutation({
-		mutationFn: async (uuid, payload) => {
+		mutationFn: async ({ uuid, payload }) => {
 			const res = await axiosPrivate.post(
 				`/api/v1/enrollment-programs/payment-orders/${uuid}/`,
 				payload

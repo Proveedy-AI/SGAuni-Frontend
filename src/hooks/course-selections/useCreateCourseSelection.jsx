@@ -5,8 +5,8 @@ export const useCreateCourseSelection = () => {
   const axiosPrivate = useAxiosPrivate();
 
   return useMutation({
-    mutationFn: async (courseGroupId) => {
-      const res = await axiosPrivate.post(`/api/v1/course-selections/select-course/${courseGroupId}/`);
+    mutationFn: async ({ courseGroupId, uuid }) => {
+      const res = await axiosPrivate.post(`/api/v1/course-selections/select-course/${courseGroupId}/enrollment/${uuid}/`);
       return res.data;
     },
   });

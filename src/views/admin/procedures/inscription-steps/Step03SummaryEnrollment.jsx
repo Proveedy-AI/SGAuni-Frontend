@@ -40,6 +40,7 @@ import { HiSparkles } from 'react-icons/hi2';
 import FailedCoursesCard from './FailedCoursesCard';
 
 export const Step03SummaryEnrollment = ({
+  currentEnrollment,
 	selectedGroups,
 	onBack,
 	onNext,
@@ -56,8 +57,7 @@ export const Step03SummaryEnrollment = ({
 	const { data: MyCredits } = useReadMyCredits();
 	const { data: dataUser } = useReadUserLogged();
 	const { data: PaymentRules } = useReadPaymentRules({});
-
-	const { mutate: confirmCourses } = useConfirmCourseSelection();
+	const { mutate: confirmCourses } = useConfirmCourseSelection(currentEnrollment?.uuid);
 	const totalCourses = selectedGroups?.total_selections;
 	// Calcular créditos totales (asumiendo que cada curso tiene una propiedad credits)
 	const selections = Array.isArray(selectedGroups?.selections)
@@ -737,6 +737,7 @@ export const Step03SummaryEnrollment = ({
 };
 
 Step03SummaryEnrollment.propTypes = {
+  currentEnrollment: PropTypes.object,
 	selectedGroups: PropTypes.object,
 	onBack: PropTypes.func,
 	onNext: PropTypes.func,
