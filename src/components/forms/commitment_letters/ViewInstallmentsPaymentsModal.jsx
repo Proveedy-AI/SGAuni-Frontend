@@ -44,7 +44,7 @@ export const ViewInstallmentsPaymentsModal = ({ item }) => {
 			placement='center'
 			size='5xl'
 			trigger={
-				<Button disabled={!Installments?.length} colorPalette='green' size='xs'>
+				<Button disabled={!Installments?.results?.length} colorPalette='green' size='xs'>
 					<FiCalendar /> Cronograma
 				</Button>
 			}
@@ -79,7 +79,7 @@ export const ViewInstallmentsPaymentsModal = ({ item }) => {
 										color='green.700'
 										borderColor='green.200'
 									>
-										{Installments?.length || 0} Cuotas
+										{Installments?.results?.length || 0} Cuotas
 									</Badge>
 								</Flex>
 							</Flex>
@@ -98,7 +98,7 @@ export const ViewInstallmentsPaymentsModal = ({ item }) => {
 							</Table.Header>
 
 							<Table.Body>
-								{Installments?.map((item, index) => {
+								{Installments?.results?.map((item, index) => {
 									const { colorScheme, label } = getStatusBadgeProps(
 										item.status
 									);
@@ -118,7 +118,7 @@ export const ViewInstallmentsPaymentsModal = ({ item }) => {
 										</Table.Row>
 									);
 								})}
-								{Installments?.length === 0 && (
+								{Installments?.results?.length === 0 && (
 									<Table.Row>
 										<Table.Cell colSpan={5} textAlign='center'>
 											Sin datos disponibles
