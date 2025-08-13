@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Badge, Box, Card, Table } from '@chakra-ui/react';
 import { PreviewMyOrdenDetailsModal } from '@/components/modals';
 import { formatDateString } from '@/components/ui/dateHelpers';
+import SkeletonTable from '@/components/ui/SkeletonTable';
 
 export const PaymentStudent = ({ dataPerson }) => {
 	const { data: dataPayment, isLoading: isLoadingPayment } =
@@ -38,7 +39,9 @@ export const PaymentStudent = ({ dataPerson }) => {
 						</Table.Row>
 
 						<Table.Body>
-							{dataPayment && dataPayment.length > 0 ? (
+							{isLoadingPayment ? (
+								<SkeletonTable columns={8} />
+							) : dataPayment && dataPayment.length > 0 ? (
 								dataPayment.map((item, index) => (
 									<Table.Row key={item.id}>
 										<Table.Cell>{index + 1}</Table.Cell>
