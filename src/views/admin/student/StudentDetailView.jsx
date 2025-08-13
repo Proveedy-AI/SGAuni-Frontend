@@ -167,6 +167,12 @@ export const StudentDetailView = () => {
 										value={3}
 										color={tab === 3 ? 'uni.secondary' : ''}
 									>
+										Registro Académico
+									</Tabs.Trigger>
+									<Tabs.Trigger
+										value={4}
+										color={tab === 4 ? 'uni.secondary' : ''}
+									>
 										Postulaciones
 									</Tabs.Trigger>
 								</Tabs.List>

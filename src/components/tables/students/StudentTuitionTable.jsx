@@ -7,6 +7,7 @@ import { usePaginationSettings } from '@/components/navigation/usePaginationSett
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
+import { CoursesSelections } from '@/views/admin/student/modals/CoursesSelections';
 
 const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 	const statusDisplay = [
@@ -35,7 +36,7 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 					? data.length - (startIndex + index)
 					: startIndex + index + 1}
 			</Table.Cell>
-			
+
 			<Table.Cell>{item.program_period}</Table.Cell>
 			<Table.Cell>{item.program_name}</Table.Cell>
 			<Table.Cell>
@@ -50,7 +51,9 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 					{matchStatus?.label || 'N/A'}
 				</Badge>
 			</Table.Cell>
-			<Table.Cell></Table.Cell>
+			<Table.Cell>
+				<CoursesSelections />
+			</Table.Cell>
 		</Table.Row>
 	);
 });
