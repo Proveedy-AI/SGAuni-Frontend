@@ -8,36 +8,49 @@ import { SortableHeader } from '@/components/ui/SortableHeader';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
 import {
-	ViewFractionationRequestsModal,
+	ViewInstallmentsFractionationModal,
+	ViewInstallmentsPaymentsModal,
 } from '@/components/forms/commitment_letters';
-import { ViewInstallmentsPaymentsModal } from '@/components/forms/commitment_letters/ViewInstallmentsPaymentsModal';
 
 const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 	const statusDisplay = [
-		{ id: 1, label: 'Borrador', bg: '#AEAEAE', color: '#F5F5F5' },
-		{ id: 2, label: 'En revisión', bg: '#d0daedff', color: '#2d689fff' },
-		{ id: 3, label: 'Rechazado', bg: '#F7CDCE', color: '#E0383B' },
-		{ id: 4, label: 'Aprobado', bg: '#D0EDD0', color: '#2D9F2D' },
+		{ id: 7, label: 'No Matriculado', color: 'gray' },
+		{ id: 1, label: 'Pago Pendiente', color: 'orange' },
+		{ id: 2, label: 'Pago Parcial', color: 'blue' },
+		{ id: 3, label: 'Pago Vencido', color: 'red' },
+		{ id: 4, label: 'Elegible', color: 'yellow' },
+		{ id: 5, label: 'Matriculado', color: 'green' },
+		{ id: 6, label: 'Cancelado', color: 'purple' },
 	];
 
-	const matchStatus = statusDisplay.find(
-		(status) => status.id === item.status_review
-	);
+	const matchStatus = statusDisplay.find((status) => status.id === item.status);
 
 	return (
-		<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
+		<Table.Row
+			key={item.id}
+			bg={index % 2 === 0 ? 'gray.100' : 'white'} // tu color alternado aquí
+			_hover={{
+				bg: 'blue.100',
+				cursor: 'pointer',
+			}}
+		>
 			<Table.Cell>
 				{sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
 					? data.length - (startIndex + index)
 					: startIndex + index + 1}
 			</Table.Cell>
 
-			<Table.Cell>{item.enrollment_name}</Table.Cell>
-			<Table.Cell>{item.plan_type_display}</Table.Cell>
-			<Table.Cell>{item.upfront_percentage * 100}</Table.Cell>
-			<Table.Cell>{item.number_of_installments}</Table.Cell>
+			<Table.Cell>{item.program_period}</Table.Cell>
+			<Table.Cell>{item.program_name}</Table.Cell>
 			<Table.Cell>
-				<Badge bg={matchStatus?.bg} color={matchStatus?.color}>
+				{item.is_first_enrollment ? (
+					<Badge colorPalette='green'>Sí</Badge>
+				) : (
+					<Badge colorPalette='red'>No</Badge>
+				)}
+			</Table.Cell>
+			<Table.Cell>
+				<Badge colorPalette={matchStatus?.color}>
 					{matchStatus?.label || 'N/A'}
 				</Badge>
 			</Table.Cell>
@@ -48,9 +61,6 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 						matchStatus={matchStatus}
 					/>
 				</HStack>
-			</Table.Cell>
-			<Table.Cell>
-				<ViewFractionationRequestsModal item={item} matchStatus={matchStatus} />
 			</Table.Cell>
 		</Table.Row>
 	);
@@ -67,7 +77,7 @@ Row.propTypes = {
 	data: PropTypes.array,
 };
 
-export const MyFractionationTable = ({ data, fetchData, isLoading }) => {
+export const StudentScheduleTable = ({ data, fetchData, isLoading }) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [currentPage, setCurrentPage] = useState(1);
 	const startIndex = (currentPage - 1) * pageSize;
@@ -75,6 +85,7 @@ export const MyFractionationTable = ({ data, fetchData, isLoading }) => {
 	const [sortConfig, setSortConfig] = useState(null);
 	const sortedData = useSortedData(data, sortConfig);
 	const visibleRows = sortedData?.slice(startIndex, endIndex);
+
 	return (
 		<Box
 			bg={{ base: 'white', _dark: 'its.gray.500' }}
@@ -84,7 +95,7 @@ export const MyFractionationTable = ({ data, fetchData, isLoading }) => {
 			boxShadow='md'
 		>
 			<Table.ScrollArea>
-				<Table.Root size='sm' w='full' striped>
+				<Table.Root size='sm' w='full'>
 					<Table.Header>
 						<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
 							<Table.ColumnHeader w='5%'>
@@ -96,39 +107,32 @@ export const MyFractionationTable = ({ data, fetchData, isLoading }) => {
 								/>
 							</Table.ColumnHeader>
 
-							<Table.ColumnHeader w='25%'>
+							<Table.ColumnHeader w='20%'>
 								<SortableHeader
-									label='Matrícula'
-									columnKey='enrollment_name'
+									label='Periodo'
+									columnKey='program_period'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+
+							<Table.ColumnHeader w='20%'>
+								<SortableHeader
+									label='Programa'
+									columnKey='program_name'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
 							<Table.ColumnHeader w='15%'>
 								<SortableHeader
-									label='Tipo'
-									columnKey='plan_type_display'
+									label='Primera Inscripción'
+									columnKey='is_first_enrollment'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='15%'>
-								<SortableHeader
-									label='Min. Adelanto %'
-									columnKey='upfront_percentage'
-									sortConfig={sortConfig}
-									onSort={setSortConfig}
-								/>
-							</Table.ColumnHeader>
-							<Table.ColumnHeader w='15%'>
-								<SortableHeader
-									label='N° Cuotas'
-									columnKey='number_of_installments'
-									sortConfig={sortConfig}
-									onSort={setSortConfig}
-								/>
-							</Table.ColumnHeader>
-							<Table.ColumnHeader w='15%'>
+							<Table.ColumnHeader w='20%'>
 								<SortableHeader
 									label='Estado'
 									columnKey='status_display'
@@ -136,13 +140,12 @@ export const MyFractionationTable = ({ data, fetchData, isLoading }) => {
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='15%'>Cuotas</Table.ColumnHeader>
-							<Table.ColumnHeader w='10%'>Acciones</Table.ColumnHeader>
+							<Table.ColumnHeader w='10%'>Acciones </Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
 						{isLoading ? (
-							<SkeletonTable columns={8} />
+							<SkeletonTable columns={7} />
 						) : visibleRows?.length > 0 ? (
 							visibleRows.map((item, index) => (
 								<Row
@@ -157,7 +160,7 @@ export const MyFractionationTable = ({ data, fetchData, isLoading }) => {
 							))
 						) : (
 							<Table.Row>
-								<Table.Cell colSpan={8} textAlign='center' py={2}>
+								<Table.Cell colSpan={7} textAlign='center' py={2}>
 									No hay datos disponibles.
 								</Table.Cell>
 							</Table.Row>
@@ -181,12 +184,8 @@ export const MyFractionationTable = ({ data, fetchData, isLoading }) => {
 	);
 };
 
-MyFractionationTable.propTypes = {
+StudentScheduleTable.propTypes = {
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
 	isLoading: PropTypes.bool,
-	fetchNextPage: PropTypes.func,
-	hasNextPage: PropTypes.bool,
-	isFetchingNextPage: PropTypes.bool,
-	resetPageTrigger: PropTypes.func,
 };
