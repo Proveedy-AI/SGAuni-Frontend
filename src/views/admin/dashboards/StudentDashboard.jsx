@@ -33,7 +33,7 @@ import { LuCheckCheck } from 'react-icons/lu';
 export const StudentDashboard = () => {
 	const { data: dataMyEnrollments } = useReadMyEnrollments();
 	const { data: dataMyCredits } = useReadMyCredits();
-	console.log('dataMyCredits', dataMyCredits);
+
 	const { data: profile } = useReadUserLogged();
 	const { mutate: updateNotifications } = useUpdateNotifications();
 

@@ -1,5 +1,5 @@
 // Dashboard.tsx
-import { Box, Flex, Spinner, Heading } from '@chakra-ui/react';
+import { Box, Flex, Spinner, Heading, Stack } from '@chakra-ui/react';
 import { dashboardsByPermission } from './dashboards';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { FooterDashboard } from '@/layouts/FooterDashboard';
@@ -34,7 +34,7 @@ export const Dashboard = () => {
 
 	return (
 		<Flex direction='column' minH='100vh'>
-			<Box flex='1' py='8' px='0' w='full'>
+			<Stack flex='1' py='8' px='0' w='full' gap={8}>
 				{allowedDashboards.length > 0 ? (
 					allowedDashboards
 				) : (
@@ -42,7 +42,7 @@ export const Dashboard = () => {
 						<Heading size='md'>No tienes dashboards disponibles.</Heading>
 					</Box>
 				)}
-			</Box>
+			</Stack>
 			<FooterDashboard />
 		</Flex>
 	);
