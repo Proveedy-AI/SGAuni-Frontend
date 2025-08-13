@@ -369,5 +369,5 @@ export const AcademicTranscriptDocument = ({ data }) => {
 }
 
 AcademicTranscriptDocument.propTypes = {
-  data: PropTypes.object.isRequired,
+  data: PropTypes.object,
 };
