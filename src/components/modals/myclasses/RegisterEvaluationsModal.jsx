@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 
 export const RegisterEvaluationsModal = ({ student, evaluationComponents }) => {
+  console.log(student?.enrollment_course_selection);
   const [open, setOpen] = useState(false);
   const [grades, setGrades] = useState({});
   const [editMode, setEditMode] = useState({});

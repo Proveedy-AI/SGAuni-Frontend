@@ -3,25 +3,25 @@ import { Button, Modal } from "@/components/ui";
 import { VStack } from "@chakra-ui/react";
 import { useState } from "react";
 import { FiDownload } from 'react-icons/fi';
-import { GradesReportDocument } from '@/components/pdf';
+import { AcademicTranscriptDocument } from '@/components/pdf/AcademicTranscriptDocument';
 
-export const GenerateGradesReportPdfModal = ({ dataGradesReport, isLoading }) => {
+export const GenerateAcademicTranscriptPdfModal = ({ data, isActive }) => {
   const [open, setOpen] = useState(false);
 
   return (
     <Modal
-      title="Generar Acta de Notas"
+      title="Descargar Boleta de Notas"
       placement='center'
       trigger={
         <Button
           size='sm'
+          bg="blue.500"
+          color="white"
           variant='outline'
-          colorPalette='blue'
           onClick={() => setOpen(true)}
-          disabled={!isLoading}
+          disabled={!isActive}
         >
-          <FiDownload />
-          Descargar Acta de Notas
+          <FiDownload /> Descargar Boleta de Notas
         </Button>
       }
       open={open}
@@ -29,14 +29,15 @@ export const GenerateGradesReportPdfModal = ({ dataGradesReport, isLoading }) =>
       size='6xl'
       hiddenFooter={true}
     >
-      <VStack spacing={4} align='stretch'>
-        <GradesReportDocument dataGradesReport={dataGradesReport} />
+      <VStack spacing={4} align='stretch' maxHeight={'700px'} overflowY='auto'>
+        <AcademicTranscriptDocument data={data} />
       </VStack>
     </Modal>
   );
 };
 
-GenerateGradesReportPdfModal.propTypes = {
-  dataGradesReport: PropTypes.array,
-  isLoading: PropTypes.bool,
+GenerateAcademicTranscriptPdfModal.propTypes = {
+  data: PropTypes.object,
+  isActive: PropTypes.bool,
 };
+

@@ -10,7 +10,7 @@ import {
 	SimpleGrid,
 	Icon,
 } from '@chakra-ui/react';
-import { useReadCourseGroupById, useReadEvaluationSummaryByCourse } from '@/hooks/course_groups';
+import { useGenerateGradesReport, useReadCourseGroupById, useReadEvaluationSummaryByCourse } from '@/hooks/course_groups';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { useReadStudentsByCourseId } from '@/hooks/students';
 import { useState } from 'react';
@@ -20,6 +20,7 @@ import { FiBook, FiTrash, FiUsers } from 'react-icons/fi';
 import { MdGroup, MdPerson } from 'react-icons/md';
 import { StudentsEvaluationsTable } from '@/components/tables/myclasses/StudentsEvaluationsTable';
 import { ConfigurateCalificationCourseModal, LoadEvaluationsByExcelModal } from '@/components/modals/myclasses';
+import { GenerateGradesReportPdfModal } from '@/components/modals/myclasses/GenerateGradesReportPdfModal';
 
 export const ClassMyStudentsByCourseView = () => {
 	const { courseId } = useParams();
@@ -82,9 +83,18 @@ export const ClassMyStudentsByCourseView = () => {
 		setSelectedStatus(null);
 	};
 
+  const {
+    data: dataGradesReport,
+    isLoading: loadingGradesReport,
+  } = useGenerateGradesReport(decrypted);
+
+  console.log(dataGradesReport);
+
+  const isDownloadable = (!loadingGradesReport) && (studentsData?.students?.length > 0);
+
 	return (
 		<Box p={4}>
-			<Card.Root mb={6}>
+			<Card.Root mb={6} overflow='hidden'>
 				<Card.Header>
 					<Flex align='center' gap={2}>
 						<Icon as={FiBook} boxSize={5} color='blue.600' />
@@ -120,7 +130,7 @@ export const ClassMyStudentsByCourseView = () => {
 				</Card.Body>
 			</Card.Root>
 
-			<Card.Root>
+			<Card.Root mb={6} overflow='hidden'>
 				<Card.Header>
 					<Flex
 						direction={{ base: 'column', md: 'row' }}
@@ -136,11 +146,11 @@ export const ClassMyStudentsByCourseView = () => {
 						</Flex>
 
 						<Stack
-							direction='row'
 							spacing={2}
-							align='center'
 							justify='flex-end'
 							w={{ base: '100%', md: 'auto' }}
+              overflow='hidden'
+              direction={{ base: 'column', md: 'row' }}
 						>
 							{hasActiveFilters && (
 								<Button
@@ -153,6 +163,11 @@ export const ClassMyStudentsByCourseView = () => {
 									Limpiar Filtros
 								</Button>
 							)}
+
+              <GenerateGradesReportPdfModal 
+                dataGradesReport={dataGradesReport}
+                isLoading={isDownloadable}
+              />
 						</Stack>
 					</Flex>
 				</Card.Header>
