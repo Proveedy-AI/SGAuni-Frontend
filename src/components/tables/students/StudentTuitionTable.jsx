@@ -8,55 +8,75 @@ import { SortableHeader } from '@/components/ui/SortableHeader';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
 import { CoursesSelections } from '@/views/admin/student/modals/CoursesSelections';
+import { useReadCoursesByPeriod } from '@/hooks/students';
 
-const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
-	const statusDisplay = [
-		{ id: 7, label: 'No Matriculado', color: 'gray' },
-		{ id: 1, label: 'Pago Pendiente', color: 'orange' },
-		{ id: 2, label: 'Pago Parcial', color: 'blue' },
-		{ id: 3, label: 'Pago Vencido', color: 'red' },
-		{ id: 4, label: 'Elegible', color: 'yellow' },
-		{ id: 5, label: 'Matriculado', color: 'green' },
-		{ id: 6, label: 'Cancelado', color: 'purple' },
-	];
+const Row = memo(
+	({ item, startIndex, index, sortConfig, data, dataStudent }) => {
+		const statusDisplay = [
+			{ id: 7, label: 'No Matriculado', color: 'gray' },
+			{ id: 1, label: 'Pago Pendiente', color: 'orange' },
+			{ id: 2, label: 'Pago Parcial', color: 'blue' },
+			{ id: 3, label: 'Pago Vencido', color: 'red' },
+			{ id: 4, label: 'Elegible', color: 'yellow' },
+			{ id: 5, label: 'Matriculado', color: 'green' },
+			{ id: 6, label: 'Cancelado', color: 'purple' },
+		];
+		const normalize = (str) => str?.trim().toLowerCase();
 
-	const matchStatus = statusDisplay.find((status) => status.id === item.status);
+		const matchingProgramId = dataStudent?.admission_programs?.find(
+			(p) => normalize(p.program__name) === normalize(item?.program_name)
+		)?.program;
+		const { data: dataCoursesByPeriod } = useReadCoursesByPeriod(
+			dataStudent?.uuid,
+			matchingProgramId
+		);
 
-	return (
-		<Table.Row
-			key={item.id}
-			bg={index % 2 === 0 ? 'gray.100' : 'white'} // tu color alternado aquí
-			_hover={{
-				bg: 'blue.100',
-				cursor: 'pointer',
-			}}
-		>
-			<Table.Cell>
-				{sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
-					? data.length - (startIndex + index)
-					: startIndex + index + 1}
-			</Table.Cell>
+		const matchingPeriod = dataCoursesByPeriod?.data?.find(
+			(entry) =>
+				entry.academic_period === item?.program_period &&
+				normalize(entry.academic_period) === normalize(item?.program_period)
+		);
 
-			<Table.Cell>{item.program_period}</Table.Cell>
-			<Table.Cell>{item.program_name}</Table.Cell>
-			<Table.Cell>
-				{item.is_first_enrollment ? (
-					<Badge colorPalette='green'>Sí</Badge>
-				) : (
-					<Badge colorPalette='red'>No</Badge>
-				)}
-			</Table.Cell>
-			<Table.Cell>
-				<Badge colorPalette={matchStatus?.color}>
-					{matchStatus?.label || 'N/A'}
-				</Badge>
-			</Table.Cell>
-			<Table.Cell>
-				<CoursesSelections />
-			</Table.Cell>
-		</Table.Row>
-	);
-});
+		const matchStatus = statusDisplay.find(
+			(status) => status.id === item.status
+		);
+
+		return (
+			<Table.Row
+				key={item.id}
+				bg={index % 2 === 0 ? 'gray.100' : 'white'} // tu color alternado aquí
+				_hover={{
+					bg: 'blue.100',
+					cursor: 'pointer',
+				}}
+			>
+				<Table.Cell>
+					{sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
+						? data.length - (startIndex + index)
+						: startIndex + index + 1}
+				</Table.Cell>
+
+				<Table.Cell>{item.program_period}</Table.Cell>
+				<Table.Cell>{item.program_name}</Table.Cell>
+				<Table.Cell>
+					{item.is_first_enrollment ? (
+						<Badge colorPalette='green'>Sí</Badge>
+					) : (
+						<Badge colorPalette='red'>No</Badge>
+					)}
+				</Table.Cell>
+				<Table.Cell>
+					<Badge colorPalette={matchStatus?.color}>
+						{matchStatus?.label || 'N/A'}
+					</Badge>
+				</Table.Cell>
+				<Table.Cell>
+					<CoursesSelections dataCoursesByPeriod={matchingPeriod} />
+				</Table.Cell>
+			</Table.Row>
+		);
+	}
+);
 
 Row.displayName = 'Row';
 
@@ -67,9 +87,15 @@ Row.propTypes = {
 	index: PropTypes.number,
 	sortConfig: PropTypes.object,
 	data: PropTypes.array,
+	dataStudent: PropTypes.object,
 };
 
-export const StudentTuitionTable = ({ data, fetchData, isLoading }) => {
+export const StudentTuitionTable = ({
+	dataStudent,
+	data,
+	fetchData,
+	isLoading,
+}) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [currentPage, setCurrentPage] = useState(1);
 	const startIndex = (currentPage - 1) * pageSize;
@@ -141,6 +167,7 @@ export const StudentTuitionTable = ({ data, fetchData, isLoading }) => {
 						) : visibleRows?.length > 0 ? (
 							visibleRows.map((item, index) => (
 								<Row
+									dataStudent={dataStudent}
 									key={item.id}
 									item={item}
 									data={data}
@@ -180,4 +207,5 @@ StudentTuitionTable.propTypes = {
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
 	isLoading: PropTypes.bool,
+	dataStudent: PropTypes.object.isRequired,
 };

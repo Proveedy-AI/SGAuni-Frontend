@@ -132,7 +132,7 @@ export const StudentsView = () => {
 								<ReactSelect
 									placeholder='Seleccionar'
 									value={selectedProgram}
-									onChange={setSelectedProgram}
+									onChange={(value) => setSelectedProgram(value)}
 									isLoading={isLoadingPrograms}
 									variant='flushed'
 									size='xs'

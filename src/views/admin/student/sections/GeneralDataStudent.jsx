@@ -1,4 +1,3 @@
-import { DocumentCard } from '@/components/card/DocumentCard';
 import { formatDateString } from '@/components/ui/dateHelpers';
 import {
 	Badge,
@@ -16,7 +15,7 @@ import { FiFileText, FiLock, FiMapPin, FiPhone, FiUser } from 'react-icons/fi';
 import { LuGraduationCap } from 'react-icons/lu';
 import PropTypes from 'prop-types';
 
-export const GeneralDataStudent = ({ dataPerson, dataDocuments }) => {
+export const GeneralDataStudent = ({ dataPerson }) => {
 	const documentTypes = [
 		{ value: 1, label: 'DNI' },
 		{ value: 2, label: 'Pasaporte' },
@@ -37,9 +36,6 @@ export const GeneralDataStudent = ({ dataPerson, dataDocuments }) => {
 	const genderLabel =
 		gender.find((dt) => dt.value === dataPerson?.gender)?.label || '—';
 
-	const handleDownload = (filePath) => {
-		window.open(filePath, '_blank');
-	};
 	return (
 		<SimpleGrid columns={{ base: 1, lg: 1 }} gap={6}>
 			<Box>
@@ -586,39 +582,7 @@ export const GeneralDataStudent = ({ dataPerson, dataDocuments }) => {
 				</SimpleGrid>
 			</Box>
 
-			<Card.Root shadow={'md'}>
-				<Card.Header pb={0}>
-					<HStack gap={2}>
-						<Icon as={FiFileText} boxSize={5} />
-						<Heading size='md'>Documentos</Heading>
-					</HStack>
-				</Card.Header>
-
-				<Card.Body>
-					{dataDocuments?.results?.length === 0 ? (
-						<Box
-							colSpan={{ base: 1, md: 2 }}
-							p={6}
-							borderWidth='1px'
-							borderRadius='lg'
-							textAlign='center'
-							color='gray.500'
-						>
-							No hay documentos disponibles.
-						</Box>
-					) : (
-						<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-							{dataDocuments?.results?.map((doc) => (
-								<DocumentCard
-									key={doc.id}
-									doc={doc}
-									handleDownload={handleDownload}
-								/>
-							))}
-						</SimpleGrid>
-					)}
-				</Card.Body>
-			</Card.Root>
+	
 		</SimpleGrid>
 	);
 };
@@ -627,5 +591,4 @@ GeneralDataStudent.propTypes = {
 	dataPerson: PropTypes.object.isRequired,
 	myEnrollment: PropTypes.array.isRequired,
 	isLoadingEnrollment: PropTypes.bool.isRequired,
-	dataDocuments: PropTypes.object.isRequired,
 };

@@ -4,7 +4,11 @@ import { Card, Heading, HStack, Icon, SimpleGrid } from '@chakra-ui/react';
 import { FiClipboard } from 'react-icons/fi';
 import PropTypes from 'prop-types';
 
-export const EnrollmentStudent = ({ myEnrollment, isLoadingEnrollment }) => {
+export const EnrollmentStudent = ({
+	dataStudent,
+	myEnrollment,
+	isLoadingEnrollment,
+}) => {
 	return (
 		<SimpleGrid columns={{ base: 1, lg: 1 }} gap={6}>
 			<Card.Root shadow={'md'}>
@@ -17,6 +21,7 @@ export const EnrollmentStudent = ({ myEnrollment, isLoadingEnrollment }) => {
 
 				<Card.Body>
 					<StudentTuitionTable
+						dataStudent={dataStudent}
 						data={myEnrollment}
 						isLoading={isLoadingEnrollment}
 					/>
@@ -27,8 +32,7 @@ export const EnrollmentStudent = ({ myEnrollment, isLoadingEnrollment }) => {
 };
 
 EnrollmentStudent.propTypes = {
-	dataPerson: PropTypes.object.isRequired,
 	myEnrollment: PropTypes.array.isRequired,
 	isLoadingEnrollment: PropTypes.bool.isRequired,
-	dataDocuments: PropTypes.object.isRequired,
+	dataStudent: PropTypes.object.isRequired,
 };

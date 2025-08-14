@@ -3,7 +3,6 @@ import { Avatar } from '@/components/ui';
 import ApplicantSkeleton from '@/components/ui/ApplicantSkeleton';
 import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
 import { useReadPersonById } from '@/hooks';
-import { useReadDocuments } from '@/hooks/documents';
 import { useReadEnrollmentsList } from '@/hooks/enrollments/useReadEnrollmentsList';
 import { useReadStudentById } from '@/hooks/students';
 import { Badge, Box, Flex, Heading, Stack, Tabs, Text } from '@chakra-ui/react';
@@ -15,6 +14,7 @@ import { GeneralDataStudent } from './sections/GeneralDataStudent';
 import { EnrollmentStudent } from './sections/EnrollmentStudent';
 import { AcademicRegister } from './sections/AcademicRegister';
 import { PaymentStudent } from './sections/PaymentStudent';
+import { DocumentStudent } from './sections/DocumentStudent';
 
 export const StudentDetailView = () => {
 	const { id } = useParams();
@@ -33,10 +33,6 @@ export const StudentDetailView = () => {
 		useReadEnrollmentsList({ student: decrypted });
 
 	const myEnrollment = dataEnrollments?.results || [];
-
-	const { data: dataDocuments } = useReadDocuments({
-		application: dataStudent?.application,
-	});
 
 	const statusEnum = [
 		{
@@ -177,31 +173,35 @@ export const StudentDetailView = () => {
 									>
 										Pagos
 									</Tabs.Trigger>
+									<Tabs.Trigger
+										value={5}
+										color={tab === 5 ? 'uni.secondary' : ''}
+									>
+										Documentos
+									</Tabs.Trigger>
 								</Tabs.List>
 							</Box>
 						</>
 						<Tabs.Content value={1}>
 							<Stack>
-								<GeneralDataStudent
-									dataPerson={dataPerson}
-									dataDocuments={dataDocuments}
-								/>
+								<GeneralDataStudent dataPerson={dataPerson} />
 							</Stack>
 						</Tabs.Content>
 						<Tabs.Content value={2}>
-							<Stack>
-								{/* Cargar la tabla de Tipos de Programas */}
-								<EnrollmentStudent
-									myEnrollment={myEnrollment}
-									isLoadingEnrollment={isLoadingEnrollment}
-								/>
-							</Stack>
+							<EnrollmentStudent
+								dataStudent={dataStudent}
+								myEnrollment={myEnrollment}
+								isLoadingEnrollment={isLoadingEnrollment}
+							/>
 						</Tabs.Content>
 						<Tabs.Content value={3}>
-							<AcademicRegister />
+							<AcademicRegister dataStudent={dataStudent} />
 						</Tabs.Content>
 						<Tabs.Content value={4}>
 							<PaymentStudent dataPerson={dataPerson} />
+						</Tabs.Content>
+						<Tabs.Content value={5}>
+							<DocumentStudent dataStudent={dataStudent} />
 						</Tabs.Content>
 					</Tabs.Root>
 				</Stack>
