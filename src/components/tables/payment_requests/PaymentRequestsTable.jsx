@@ -22,29 +22,25 @@ const Row = memo(
 				id: 1,
 				label: 'Pendiente',
 				value: 'Pending',
-				bg: '#AEAEAE',
-				color: '#F5F5F5',
+				bg: 'orange',
 			},
 			{
 				id: 2,
 				label: 'Generado',
 				value: 'Available',
-				bg: '#C6E7FC80',
-				color: '#0661D8',
+				bg: 'blue',
 			},
 			{
 				id: 3,
 				label: 'Verificado',
 				value: 'Verified',
-				bg: '#D0EDD0',
-				color: '#2D9F2D',
+				bg: 'green',
 			},
 			{
 				id: 4,
 				label: 'Expirado',
 				value: 'Expired',
-				bg: '#F7CDCE',
-				color: '#E0383B',
+				bg: 'red',
 			},
 		];
 
@@ -71,9 +67,8 @@ const Row = memo(
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					<Badge
-						bg={statusDisplay.find((status) => status.id === item.status)?.bg}
-						color={
-							statusDisplay.find((status) => status.id === item.status)?.color
+						colorPalette={
+							statusDisplay.find((status) => status.id === item.status)?.bg
 						}
 					>
 						{statusDisplay.find((status) => status.id === item.status)?.label ||
