@@ -272,6 +272,9 @@ export const MyPaymentAddRequests = () => {
 				setSelectedMethod(null);
 				setAmountValue('');
 				setnumDocCarpeta('');
+				setDescription('');
+				setAcceptTerms(false);
+				setSelectedProcessType(null);
 				setSelectedDocumentType(null);
 				setSelectedPurpose(null);
 			},
