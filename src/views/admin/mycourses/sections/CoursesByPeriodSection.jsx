@@ -65,7 +65,7 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
 						<strong>Total Créditos:</strong>{' '}
 						{data.courses.reduce((sum, course) => {
 							// Obtener créditos del primer schedule si existe
-							return sum + (course.schedules?.[0]?.credits || 0);
+							return sum + (course?.credits || 0);
 						}, 0)}
 					</Text>
 				</HStack>

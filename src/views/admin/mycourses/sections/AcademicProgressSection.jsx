@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { Badge, Box, Card, Flex, HStack, Icon, SimpleGrid, Text } from "@chakra-ui/react";
 import { FiBookOpen, FiTrendingUp } from "react-icons/fi";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LuGoal } from 'react-icons/lu';
 
 export const AcademicProgressSection = ({ academicProgress, isLoading }) => {
   if (isLoading || !academicProgress) {
@@ -65,11 +66,18 @@ export const AcademicProgressSection = ({ academicProgress, isLoading }) => {
           </SimpleGrid>
         </Card.Root>
 
-        <Flex direction={{ base: 'column', md: 'row' }} gap={4}>
+        <Flex direction={{ base: 'column', xl: 'row' }} gap={4}>
 
-          <Card.Root flex={1} p={6} align='stretch' borderRadius='md'>
-            <Card.Header p={0} align='stretch'><b>Resumen de créditos</b></Card.Header>
-            <Card.Body p={0} spacing={2} align='stretch' gapY={2} py={3}>
+          <Card.Root maxW={{ base: '100%', xl: '33%' }} flex={1} align='stretch' borderRadius='md'>
+            <Card.Header py={3} align='stretch' borderBottom='1px solid' borderColor='gray.200'>
+              <HStack spacing={2}>
+                <Icon as={LuGoal} color='blue.500' />
+                <Text fontSize='lg' fontWeight='bold' color='blue.700'>
+                  Resumen de Créditos
+                </Text>
+              </HStack>
+            </Card.Header>
+            <Card.Body px={6} spacing={2} align='stretch' gapY={2} py={3}>
               <HStack justify='space-between' align='center'>
                 <Text fontSize='sm' color='blue.600'>
                   Aprobados
@@ -115,7 +123,7 @@ export const AcademicProgressSection = ({ academicProgress, isLoading }) => {
             <Card.Footer
               borderTop='1px solid'
               borderColor='gray.200'
-              p={0}
+              px={6}
             >
               <Box flex={1} gapY={2} py={2}>
                  <HStack justify='space-between' align='center' py={1}>
@@ -143,7 +151,7 @@ export const AcademicProgressSection = ({ academicProgress, isLoading }) => {
               <HStack spacing={2}>
                 <Icon as={FiTrendingUp} color='blue.500' />
                 <Text fontSize='lg' fontWeight='bold' color='blue.700'>
-                  Gráfico de comparación entre Período Académico y Promedio
+                  Gráfico comparativo entre Período Académico y Promedio
                 </Text>
               </HStack>
             </Card.Header>
