@@ -170,7 +170,7 @@ export const ApplicantsLayout = () => {
 
 					{/* Botón Siguiente o Completar */}
 					{step < steps.length &&
-						(step === steps.length - 1 ? (
+						(step === steps.length - 1 && dataApplicant.status === 1 ? (
 							<Button
 								colorPalette='gray'
 								variant='ghost'
