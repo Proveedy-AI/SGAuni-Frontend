@@ -80,15 +80,22 @@ export const PaymentApplicant = ({ onValidationChange }) => {
 
 	// Obtener órdenes usando filtros del backend
 	const { data: carpetaOrderData } = useReadPaymentOrders({
-		request: carpetaRequest?.id
+		request: carpetaRequest?.id,
 	});
 	const { data: admisionOrderData } = useReadPaymentOrders({
-		request: admisionRequest?.id
+		request: admisionRequest?.id,
 	});
 
 	// Extraer la primera orden encontrada (si existe)
-	const carpetaOrder = carpetaOrderData?.pages?.[0]?.results?.[0];
-	const admisionOrder = admisionOrderData?.pages?.[0]?.results?.[0];
+	const carpetaOrder =
+		carpetaOrderData?.pages?.[0]?.results?.find(
+			(order) => order.request === carpetaRequest?.id
+		) || null;
+
+	const admisionOrder =
+		admisionOrderData?.pages?.[0]?.results?.find(
+			(order) => order.request === admisionRequest?.id
+		) || null;
 
 	const paymentRules = PaymentRules?.results?.filter(
 		(req) => req.applies_to_applicants === true
