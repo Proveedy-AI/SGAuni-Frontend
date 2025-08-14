@@ -13,6 +13,7 @@ import { useNavigate } from "react-router";
 import PropTypes from "prop-types";
 import { toaster, useColorModeValue } from "@/components/ui";
 import { Box, Card, Flex, Heading, Icon, SimpleGrid, Text } from "@chakra-ui/react";
+import { useGetProfile } from "@/hooks/auth";
 
 const ProcedureCard = ({ procedure, onClick }) => {
   const cardBg = useColorModeValue("white", "gray.800");
@@ -93,6 +94,9 @@ export const MyProceduresView = () => {
   const navigate = useNavigate();
   const bgColor = useColorModeValue("blue.50", "blue.900");
 
+  const { data: profile } = useGetProfile();
+  console.log(profile)
+
   const proceduresData = [
   {
     id: 1,
@@ -156,7 +160,7 @@ export const MyProceduresView = () => {
     href: "/myprocedures/thesis-process",
     icon: FiAward,
     description: "Gestiona tu proceso de tesis",
-    isActive: false,
+    isActive: true,
   }
 ];
 

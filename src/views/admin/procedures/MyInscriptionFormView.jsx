@@ -123,7 +123,7 @@ export const MyInscriptionFormView = () => {
 		setEnrollmentItem(stored);
 	}, []);
 
-	const [currentStep, setCurrentStep] = useState(1);
+	const [currentStep, setCurrentStep] = useState(4);
 	const [selectedCourse, setSelectedCourse] = useState(null);
 
   const currentEnrollment = EncryptedStorage.load('selectedEnrollmentProccess');
