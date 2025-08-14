@@ -40,7 +40,7 @@ import { HiSparkles } from 'react-icons/hi2';
 import FailedCoursesCard from './FailedCoursesCard';
 
 export const Step03SummaryEnrollment = ({
-  currentEnrollment,
+	currentEnrollment,
 	selectedGroups,
 	onBack,
 	onNext,
@@ -57,12 +57,20 @@ export const Step03SummaryEnrollment = ({
 	const { data: MyCredits } = useReadMyCredits();
 	const { data: dataUser } = useReadUserLogged();
 	const { data: PaymentRules } = useReadPaymentRules({});
-	const { mutate: confirmCourses } = useConfirmCourseSelection(currentEnrollment?.uuid);
+	const { mutate: confirmCourses } = useConfirmCourseSelection(
+		currentEnrollment?.uuid
+	);
 	const totalCourses = selectedGroups?.total_selections;
 	// Calcular créditos totales (asumiendo que cada curso tiene una propiedad credits)
 	const selections = Array.isArray(selectedGroups?.selections)
 		? selectedGroups.selections
 		: [];
+	useEffect(() => {
+		const stored = EncryptedStorage.load('selectedEnrollmentProccess');
+		setEnrollmentItem(stored);
+	}, []);
+
+	const creditsInfo = MyCredits?.result?.[enrollmentItem?.program_id];
 
 	// Total de créditos
 	const totalCredits = selections?.reduce(
@@ -91,7 +99,7 @@ export const Step03SummaryEnrollment = ({
 
 	const PriceCreditsToPay = selectedGroups?.price_credit;
 	const semesterBaseAmount = totalCredits * PriceCreditsToPay;
-	const fullProgramAmount = MyCredits?.total_credits * PriceCreditsToPay;
+	const fullProgramAmount = creditsInfo?.total_credits * PriceCreditsToPay;
 	const CourseFailedAmount = failedCoursesCredits * PriceCreditsToPay;
 	const semesterDiscountAmount =
 		semesterBaseAmount * DiscountSemestreComplete?.discount_percentage;
@@ -221,11 +229,6 @@ export const Step03SummaryEnrollment = ({
 		setPaymentPlan(plan);
 	};
 	// Color modes
-
-	useEffect(() => {
-		const stored = EncryptedStorage.load('selectedEnrollmentProccess');
-		setEnrollmentItem(stored);
-	}, []);
 
 	return (
 		<VStack
@@ -683,7 +686,7 @@ export const Step03SummaryEnrollment = ({
 						paymentPlan === 4
 							? totalCredits
 							: paymentPlan === 5
-								? MyCredits?.total_credits
+								? creditsInfo?.total_credits
 								: totalCredits
 					}
 					pricePerCredit={parseFloat(PriceCreditsToPay)}
@@ -723,7 +726,7 @@ export const Step03SummaryEnrollment = ({
 								? totalCredits
 								: paymentPlan === 9
 									? failedCoursesCredits
-									: MyCredits?.total_credits
+									: creditsInfo?.total_credits
 						}
 						description={description}
 						onNext={onNext}
@@ -737,7 +740,7 @@ export const Step03SummaryEnrollment = ({
 };
 
 Step03SummaryEnrollment.propTypes = {
-  currentEnrollment: PropTypes.object,
+	currentEnrollment: PropTypes.object,
 	selectedGroups: PropTypes.object,
 	onBack: PropTypes.func,
 	onNext: PropTypes.func,

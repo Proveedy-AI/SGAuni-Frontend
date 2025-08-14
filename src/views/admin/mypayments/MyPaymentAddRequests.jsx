@@ -85,6 +85,8 @@ export const MyPaymentAddRequests = () => {
 		}
 	}, [selectedDocumentType, dataUser]);
 
+	const creditsInfo = MyCredits?.result?.[selectedProgram?.programId];
+
 	const rawDiscounts = globalDiscountsRaw ?? {};
 	const globalDiscounts = Object.values(rawDiscounts)
 		.map((item) => {
@@ -255,7 +257,7 @@ export const MyPaymentAddRequests = () => {
 						acepted_terms: acceptTerms,
 						discount_value: discountValue || '',
 						amount_credits_total:
-							selectedPurpose?.value === 5 ? MyCredits?.total_credits : '',
+							selectedPurpose?.value === 5 ? creditsInfo?.total_credits : '',
 					};
 
 		paymentRequests(payload, {
@@ -344,7 +346,7 @@ export const MyPaymentAddRequests = () => {
 				credits = parseFloat(DataEnrollmentProgram?.credits || '0');
 			} else */
 			if (currentRule.use_credits_from === 2) {
-				credits = parseFloat(MyCredits?.total_credits || '0');
+				credits = parseFloat(creditsInfo?.total_credits || '0');
 			}
 
 			const baseAmount = credits * priceCredit;
@@ -361,7 +363,7 @@ export const MyPaymentAddRequests = () => {
 	}, [
 		selectedPurpose?.value,
 		DataProgram,
-		MyCredits,
+		creditsInfo,
 		//DataEnrollmentProgram,
 		selectedProgram,
 		PaymentRules,
@@ -593,7 +595,7 @@ export const MyPaymentAddRequests = () => {
 									DataProgram && (
 										<TuitionSummaryCard
 											title='Cálculo de Matrícula'
-											credits={MyCredits?.total_credits}
+											credits={creditsInfo?.total_credits || 0}
 											pricePerCredit={parseFloat(DataProgram.price_credit)}
 											discounts={discounts}
 											setDiscountValue={setDiscountValue}

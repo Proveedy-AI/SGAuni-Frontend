@@ -169,7 +169,7 @@ export const Step01CourseList = ({
 							</Table.Row>
 						</Table.Header>
 						<Table.Body>
-							{courses.map((course) => (
+							{courses?.map((course) => (
 								<Table.Row
 									key={course.course_id}
 									bg={
