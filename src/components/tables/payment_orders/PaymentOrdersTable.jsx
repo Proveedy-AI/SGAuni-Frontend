@@ -27,11 +27,11 @@ const Row = memo(
 		data,
 	}) => {
 		const statusDisplay = [
-			{ id: 1, label: 'Pendiente', bg: '#AEAEAE', color: '#F5F5F5' },
-			{ id: 2, label: 'Generado', bg: '#C6E7FC', color: '#0661D8' },
-			{ id: 3, label: 'Verificado', bg: '#D0EDD0', color: '#2D9F2D' },
-			{ id: 4, label: 'Expirado', bg: '#F7CDCE', color: '#E0383B' },
-			{ id: 5, label: 'Cancelado', bg: '#F0E0E0', color: '#B0B0B0' },
+			{ id: 1, label: 'Pendiente', bg: 'orange', color: '#F5F5F5' },
+			{ id: 2, label: 'Generado', bg: 'blue', color: '#0661D8' },
+			{ id: 3, label: 'Verificado', bg: 'green', color: '#2D9F2D' },
+			{ id: 4, label: 'Expirado', bg: 'red', color: '#E0383B' },
+			{ id: 5, label: 'Cancelado', bg: 'red', color: '#B0B0B0' },
 		];
 
 		const selectedStatus = statusDisplay.find(
@@ -62,7 +62,7 @@ const Row = memo(
 				<Table.Cell>{item.email}</Table.Cell>
 				<Table.Cell>{item.total_amount}</Table.Cell>
 				<Table.Cell>
-					<Badge bg={selectedStatus?.bg} color={selectedStatus?.color}>
+					<Badge colorPalette={selectedStatus?.bg}>
 						{selectedStatus?.label || 'N/A'}
 					</Badge>
 				</Table.Cell>
