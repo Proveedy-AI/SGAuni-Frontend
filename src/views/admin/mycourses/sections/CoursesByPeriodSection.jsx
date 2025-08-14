@@ -269,7 +269,7 @@ export const CoursesByPeriodSection = ({
   const borderColor = useColorModeValue('gray.200', 'gray.600');
 
 	return (
-    <Box my={5}>
+    <Box>
       <Heading my={3}>
         <Stack
           justify={'space-between'}
