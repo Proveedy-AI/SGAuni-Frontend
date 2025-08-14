@@ -142,20 +142,6 @@ export const StudentsView = () => {
 								/>
 							</Field>
 
-							<Field label='Beca otorgada:'>
-								<ReactSelect
-									placeholder='Seleccionar'
-									value={scholarshipStatus}
-									onChange={(option) => setScholarshipStatus(option)}
-									variant='flushed'
-									size='xs'
-									isClearable
-									options={[
-										{ label: 'Sí', value: true },
-										{ label: 'No', value: false },
-									]}
-								/>
-							</Field>
 							<Field label='Estado:'>
 								<ReactSelect
 									placeholder='Seleccionar'

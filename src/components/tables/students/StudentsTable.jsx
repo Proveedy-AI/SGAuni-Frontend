@@ -14,10 +14,10 @@ import { Encryptor } from '@/components/CrytoJS/Encryptor';
 const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 	const navigate = useNavigate();
 	const statusDisplay = [
-		{ id: 1, label: 'Activo', bg: '#D0EDD0', color: '#2D9F2D' },
-		{ id: 2, label: 'Suspendido', bg: '#d0daedff', color: '#2d689fff' },
-		{ id: 3, label: 'Graduado', bg: '#F7CDCE', color: '#E0383B' },
-		{ id: 4, label: 'Retirado', bg: '#D0EDD0', color: '#2D9F2D' },
+		{ id: 1, label: 'Activo', bg: 'green', color: '#2D9F2D' },
+		{ id: 2, label: 'Suspendido', bg: 'orange', color: '#2d689fff' },
+		{ id: 3, label: 'Graduado', bg: 'blue', color: '#E0383B' },
+		{ id: 4, label: 'Retirado', bg: 'red', color: '#2D9F2D' },
 	];
 	const encrypted = Encryptor.encrypt(item.id);
 	const encoded = encodeURIComponent(encrypted);
@@ -45,18 +45,11 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 					: startIndex + index + 1}
 			</Table.Cell>
 			<Table.Cell>{item.student_name}</Table.Cell>
-			<Table.Cell>{item.admission_program_name}</Table.Cell>
-			<Table.Cell>{item.admission_period}</Table.Cell>
-			<Table.Cell>{item.admission_year}</Table.Cell>
+			<Table.Cell>{item.document_number}</Table.Cell>
+			<Table.Cell>{item.student_code}</Table.Cell>
+
 			<Table.Cell>
-				{item.has_scholarship ? (
-					<Badge colorPalette='green'>Sí</Badge>
-				) : (
-					<Badge colorPalette='red'>No</Badge>
-				)}
-			</Table.Cell>
-			<Table.Cell>
-				<Badge bg={matchStatus?.bg} color={matchStatus?.color}>
+				<Badge colorPalette={matchStatus?.bg}>
 					{matchStatus?.label || 'N/A'}
 				</Badge>
 			</Table.Cell>
@@ -138,36 +131,21 @@ export const StudentsTable = ({
 							</Table.ColumnHeader>
 							<Table.ColumnHeader w='20%'>
 								<SortableHeader
-									label='Admisión'
-									columnKey='admission_program_name'
+									label='N° Documento'
+									columnKey='document_number'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
 							<Table.ColumnHeader w='15%'>
 								<SortableHeader
-									label='Periodo de Admisión'
-									columnKey='admission_period'
+									label='Código Uni'
+									columnKey='student_code'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='20%'>
-								<SortableHeader
-									label='Año de Admisión'
-									columnKey='admission_year'
-									sortConfig={sortConfig}
-									onSort={setSortConfig}
-								/>
-							</Table.ColumnHeader>
-							<Table.ColumnHeader w='15%'>
-								<SortableHeader
-									label='Beca'
-									columnKey='has_scholarship'
-									sortConfig={sortConfig}
-									onSort={setSortConfig}
-								/>
-							</Table.ColumnHeader>
+
 							<Table.ColumnHeader w='20%'>
 								<SortableHeader
 									label='Estado'
