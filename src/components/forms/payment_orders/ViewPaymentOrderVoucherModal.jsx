@@ -62,7 +62,7 @@ export const ViewPaymentOrderVoucherModal = ({ item, fetchPaymentOrders }) => {
 					size='5xl'
 					open={open}
 					onOpenChange={(e) => setOpen(e.open)}
-					disabledSave={item.status === 3}
+					disabledSave={item.status === 3 || item.status === 5}
 					onSave={handleValidate}
 					isSaving={isSaving}
 					saveLabel='Validar voucher'
