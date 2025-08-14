@@ -26,14 +26,9 @@ import { useNavigate } from 'react-router';
 
 export const ApplicantDashboard = () => {
 	const { data: dataMyRequests } = useReadMyRequestBenefits();
-	console.log('dataMyRequests', dataMyRequests);
 	const { data: dataMyApplicants } = useReadMyApplicants();
-	console.log('dataMyApplicants', dataMyApplicants);
 	const { data: dataMyPaymentVouchers } = useReadMyPaymentVouchers();
-	console.log('dataMyPaymentVouchers', dataMyPaymentVouchers);
 	const { data: dataMyPaymentRequests } = useReadMyPaymentRequest();
-
-	console.log('dataMyPaymentRequests', dataMyPaymentRequests);
 
 	const totalRequests = dataMyPaymentRequests?.length || 0;
 	const approvedRequests =
