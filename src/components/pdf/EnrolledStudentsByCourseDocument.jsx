@@ -1,171 +1,112 @@
-import { 
-  Document, 
-  Page, 
-  Text, 
-  View, 
-  StyleSheet, 
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
   Image,
-  PDFViewer,
+  PDFViewer
 } from '@react-pdf/renderer';
+import { Table, TR, TH, TD } from '@ag-media/react-pdf-table';
 import PropTypes from 'prop-types';
 
 const styles = StyleSheet.create({
   page: {
     fontSize: 10,
-    paddingTop: 30,
-    paddingLeft: 30,
-    paddingRight: 30,
-    paddingBottom: 30,
+    padding: 30,
     backgroundColor: '#ffffff',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
-    borderBottomWidth: 2,
+    marginBottom: 10,
+    borderBottomWidth: 1,
     borderBottomColor: '#8B0000',
-    paddingBottom: 15,
+    paddingBottom: 8,
   },
   logo: {
-    width: 60,
-    height: 60,
-    marginRight: 15,
-  },
-  headerText: {
-    flex: 1,
+    width: 50,
+    height: 50,
+    marginRight: 10,
   },
   universityName: {
-    fontSize: 16,
-    fontWeight: 700,
+    fontSize: 14,
+    fontWeight: 'bold',
     color: '#2c3e50',
-    marginBottom: 2,
   },
   facultyName: {
-    fontSize: 10,
+    fontSize: 9,
     color: '#7f8c8d',
-    fontWeight: 400,
   },
   title: {
-    fontSize: 18,
-    fontWeight: 700,
+    fontSize: 14,
+    fontWeight: 'bold',
     textAlign: 'center',
-    marginVertical: 20,
+    marginVertical: 12,
     color: '#2c3e50',
     textTransform: 'uppercase',
-    letterSpacing: 1,
   },
   infoSection: {
-    marginBottom: 25,
-  },
-  infoGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 15,
-  },
-  infoColumn: {
-    width: '50%',
-    paddingRight: 10,
+    marginBottom: 12,
   },
   infoRow: {
     flexDirection: 'row',
-    marginBottom: 8,
-    alignItems: 'center',
+    fontSize: 9,
+    marginBottom: 2,
+    paddingVertical: 2,
   },
   infoLabel: {
-    fontSize: 9,
-    fontWeight: 700,
+    fontWeight: 'bold',
+    width: 70,
     color: '#34495e',
-    width: 80,
-    textTransform: 'uppercase',
   },
-  infoValue: {
-    fontSize: 9,
+  infoFirstValue:{
+    flex: 0.5,
     color: '#2c3e50',
-    fontWeight: 400,
-    flex: 1,
   },
-  tableContainer: {
-    marginTop: 20,
+  infoSecondValue:{
+    flex: 1,
+    color: '#2c3e50',
+  },
+  table: {
+    marginTop: 15,
+    borderColor: '#000',
   },
   tableHeader: {
-    flexDirection: 'row',
-    backgroundColor: '#f8f9fa',
-    borderWidth: 1,
-    borderColor: '#000000',
-    paddingVertical: 8,
-    paddingHorizontal: 5,
-  },
-  tableHeaderCell: {
+    backgroundColor: '#E0E0E0', // gray.50
     fontSize: 8,
-    fontWeight: 700,
-    color: '#000000',
-    textAlign: 'center',
+    fontWeight: 'bold',
     textTransform: 'uppercase',
-    paddingHorizontal: 8,
-    paddingVertical: 6,
-    display: 'flex',
-    justifyContent: 'center',
-    flexDirection: 'column',
-  },
-  tableRow: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: '#000000',
-    borderLeftWidth: 1,
-    borderLeftColor: '#000000',
-    borderRightWidth: 1,
-    borderRightColor: '#000000',
-    paddingVertical: 6,
-    paddingHorizontal: 5,
-    minHeight: 30,
+    textAlign: 'center',
+    paddingVertical: 4,
+    paddingHorizontal: 3,
+    justifyContent: 'center'
   },
   tableCell: {
     fontSize: 8,
-    color: '#000000',
-    paddingHorizontal: 8,
-    paddingVertical: 6,
+    paddingVertical: 4,
+    paddingHorizontal: 3,
+    borderColor: '#000',
     textAlign: 'left',
-    display: 'flex',
-    justifyContent: 'center',
-    flexDirection: 'column',
   },
-  // Anchos de columnas
-  colNumber: { width: '8%' },
-  colCode: { width: '15%' },
-  colDocument: { width: '15%' },
-  colName: { width: '35%' },
-  colEmail: { width: '27%' },
-  
   footer: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 20,
     left: 30,
     right: 30,
     textAlign: 'center',
-    fontSize: 8,
+    fontSize: 7,
     color: '#7f8c8d',
     borderTopWidth: 1,
     borderTopColor: '#dee2e6',
-    paddingTop: 10,
+    paddingTop: 5,
   },
 });
 
 const PDFContent = ({ data, students }) => {
   const faviconUrl = `${window.location.origin}/favicon.png`;
 
-  const NumberLabels = {
-    1: 'PRIMER',
-    2: 'SEGUNDO',
-    3: 'TERCER',
-    4: 'CUARTO',
-    5: 'QUINTO',
-    6: 'SEXTO',
-    7: 'SÉPTIMO',
-    8: 'OCTAVO',
-    9: 'NOVENO',
-    10: 'DÉCIMO'
-  }
-
+  const NumberLabels = { 1: 'PRIMER', 2: 'SEGUNDO' };
   const year = data?.period?.split('-')[0];
   const number = data?.period?.split('-')[1];
   const numberLabel = NumberLabels[number];
@@ -173,9 +114,10 @@ const PDFContent = ({ data, students }) => {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
+        {/* Header */}
         <View style={styles.header}>
           <Image style={styles.logo} src={faviconUrl} />
-          <View style={styles.headerText}>
+          <View>
             <Text style={styles.universityName}>UNIVERSIDAD NACIONAL DE INGENIERÍA</Text>
             <Text style={styles.facultyName}>Escuela Central de Posgrado</Text>
           </View>
@@ -183,98 +125,62 @@ const PDFContent = ({ data, students }) => {
 
         <Text style={styles.title}>ALUMNOS MATRICULADOS POR CURSO</Text>
 
+        {/* Info Section */}
         <View style={styles.infoSection}>
-          <View style={styles.infoGrid}>
-            <View style={styles.infoColumn}>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>PERÍODO</Text>
-                <Text style={styles.infoValue}>{data?.period || '2025-1-FIEECS'}</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>UNIDAD</Text>
-                <Text style={styles.infoValue}>FIEECS</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>PROGRAMA</Text>
-                <Text style={styles.infoValue}>P52</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>CURSO</Text>
-                <Text style={styles.infoValue}>{data?.course_code || 'GP-031'}</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>SECCIÓN</Text>
-                <Text style={styles.infoValue}>{data?.group_code || 'A'}</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>PROFESOR</Text>
-                <Text style={styles.infoValue}>{data?.teacher_name?.toUpperCase() || 'CASTILLO OCHOA MANUEL ENRIQUE'}</Text>
-              </View>
-            </View>
-            <View style={styles.infoColumn}>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}></Text>
-                <Text style={styles.infoValue}>{year} {numberLabel} SEMESTRE FIEECS</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}></Text>
-                <Text style={styles.infoValue}>Unidad de Posgrado de la Facultad de Ingeniería Económica, Estadística y Ciencias Sociales</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}></Text>
-                <Text style={styles.infoValue}>MAESTRÍA EN GERENCIA PÚBLICA</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}></Text>
-                <Text style={styles.infoValue}>TEORÍA POLÍTICA Y GOBERNABILIDAD</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}></Text>
-                <Text style={styles.infoValue}>A</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}></Text>
-                <Text style={styles.infoValue}></Text>
-              </View>
-            </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>PERÍODO</Text>
+            <Text style={styles.infoFirstValue}>{data?.period || ''}</Text>
+            <Text style={styles.infoSecondValue}>{year} {numberLabel} SEMESTRE</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>UNIDAD</Text>
+            <Text style={styles.infoFirstValue}>FIEECS</Text>
+            <Text style={styles.infoSecondValue}>Unidad de Posgrado de la Facultad de Ingeniería Económica, Estadística y Ciencias Sociales</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>PROGRAMA</Text>
+            <Text style={styles.infoFirstValue}>{data?.program_code?.toUpperCase() || ''}</Text>
+            <Text style={styles.infoSecondValue}>{data?.program?.toUpperCase() || ''}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>CURSO</Text>
+            <Text style={styles.infoFirstValue}>{data?.course_code || ''}</Text>
+            <Text style={styles.infoSecondValue}>{data?.course_name?.toUpperCase() || ''}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>SECCIÓN</Text>
+            <Text style={styles.infoFirstValue}>{data?.group_code?.toUpperCase() || ''}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>PROFESOR</Text>
+            <Text style={styles.infoFirstValue}>{data?.teacher_name?.toUpperCase() || ''}</Text>
           </View>
         </View>
 
-        <View style={styles.tableContainer}>
-          <View style={styles.tableHeader}>
-            <Text style={[styles.tableHeaderCell, styles.colNumber]}>N°</Text>
-            <Text style={[styles.tableHeaderCell, styles.colCode]}>CÓDIGO</Text>
-            <Text style={[styles.tableHeaderCell, styles.colDocument]}>DOCUMENTO</Text>
-            <Text style={[styles.tableHeaderCell, styles.colName]}>NOMBRE COMPLETO</Text>
-            <Text style={[styles.tableHeaderCell, styles.colEmail]}>CORREO ELECTRÓNICO</Text>
-          </View>
-
+        {/* Table */}
+        <Table style={styles.table} weightings={[5, 15, 15, 40, 25]}>
+          <TH>
+            <TD style={styles.tableHeader}>N°</TD>
+            <TD style={styles.tableHeader}>CÓDIGO</TD>
+            <TD style={styles.tableHeader}>DOCUMENTO</TD>
+            <TD style={styles.tableHeader}>NOMBRE COMPLETO</TD>
+            <TD style={styles.tableHeader}>CORREO ELECTRÓNICO</TD>
+          </TH>
           {students?.map((student, index) => (
-            <View key={index} style={styles.tableRow}>
-              <View style={[styles.tableCell, styles.colNumber]}>
-                <Text>{index + 1}</Text>
-              </View>
-              <View style={[styles.tableCell, styles.colCode]}>
-                <Text>{student.code || ''}</Text>
-              </View>
-              <View style={[styles.tableCell, styles.colDocument]}>
-                <Text>{student.document || ''}</Text>
-              </View>
-              <View style={[styles.tableCell, styles.colName]}>
-                <Text>{student.full_name?.toUpperCase() || ''}</Text>
-              </View>
-              <View style={[styles.tableCell, styles.colEmail]}>
-                <Text>{student.email || ''}</Text>
-              </View>
-            </View>
+            <TR key={index}>
+              <TD style={{ ...styles.tableCell, justifyContent: 'center' }}>{index + 1}</TD>
+              <TD style={{ ...styles.tableCell, justifyContent: 'center' }}>{student.code || ''}</TD>
+              <TD style={{ ...styles.tableCell, justifyContent: 'center' }}>{student.document || ''}</TD>
+              <TD style={styles.tableCell}>{student.full_name?.toUpperCase() || ''}</TD>
+              <TD style={styles.tableCell}>{student.email || ''}</TD>
+            </TR>
           ))}
-        </View>
+        </Table>
 
+        {/* Footer */}
         <Text style={styles.footer}>
           Documento generado automáticamente el {new Date().toLocaleDateString('es-ES', { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
+            year: 'numeric', month: 'long', day: 'numeric' 
           })} - Sistema de Gestión Académica UNI
         </Text>
       </Page>
@@ -286,6 +192,7 @@ PDFContent.propTypes = {
   data: PropTypes.shape({
     period: PropTypes.string,
     program: PropTypes.string,
+    program_code: PropTypes.string,
     course_name: PropTypes.string,
     course_code: PropTypes.string,
     group_code: PropTypes.string,
