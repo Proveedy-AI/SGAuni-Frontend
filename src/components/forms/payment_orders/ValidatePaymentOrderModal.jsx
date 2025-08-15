@@ -9,7 +9,7 @@ import { useUpdatePaymentOrder } from "@/hooks/payment_orders";
 export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
   const [open, setOpen] = useState(false);
 
-  const { mutateAsync: updatePaymentOrder, isSaving } = useUpdatePaymentOrder();
+  const { mutateAsync: updatePaymentOrder, isLoading } = useUpdatePaymentOrder();
 
   const handleValidate = async () => {
     const payload = {
@@ -79,7 +79,7 @@ export const ValidatePaymentOrderModal = ({ item, fetchPaymentOrders }) => {
                 <Button
                   colorPalette={'green'}
                   variant={'solid'}
-                  isLoading={isSaving}
+                  loading={isLoading}
                   size='sm'
                   onClick={handleValidate}
                 >

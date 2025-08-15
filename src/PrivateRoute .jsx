@@ -150,12 +150,13 @@ export const ProtectedRoute = ({
 	}
 
 	let userHasDebts = false;
+	console.log(requiredDebt)
 	if (requiredDebt) {
-		userHasDebts = profile?.student?.status === 'Bloqueado' || false;
+		userHasDebts = profile?.student?.status === 2;
+		
 		if (userHasDebts) {
 			return <ApplicantHasDebts />;
 		}
-	
 	}
 
 	return <Outlet />;

@@ -5,7 +5,15 @@ import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
 import { useReadPersonById } from '@/hooks';
 import { useReadEnrollmentsList } from '@/hooks/enrollments/useReadEnrollmentsList';
 import { useReadStudentById } from '@/hooks/students';
-import { Badge, Box, Flex, Heading, Stack, Tabs, Text } from '@chakra-ui/react';
+import {
+	Box,
+	ButtonGroup,
+	Flex,
+	Heading,
+	Stack,
+	Tabs,
+	Text,
+} from '@chakra-ui/react';
 import { useState } from 'react';
 import { FiCheckCircle, FiClock, FiXCircle } from 'react-icons/fi';
 import { LuGraduationCap } from 'react-icons/lu';
@@ -15,6 +23,7 @@ import { EnrollmentStudent } from './sections/EnrollmentStudent';
 import { AcademicRegister } from './sections/AcademicRegister';
 import { PaymentStudent } from './sections/PaymentStudent';
 import { DocumentStudent } from './sections/DocumentStudent';
+import { ChangeStatusStudent } from './modals/ChangeStatusStudent';
 
 export const StudentDetailView = () => {
 	const { id } = useParams();
@@ -22,8 +31,11 @@ export const StudentDetailView = () => {
 	const decoded = decodeURIComponent(id);
 	const decrypted = Encryptor.decrypt(decoded);
 
-	const { data: dataStudent, isLoading: isApplicantLoading } =
-		useReadStudentById(decrypted);
+	const {
+		data: dataStudent,
+		isLoading: isApplicantLoading,
+		refetch: refetchStudent,
+	} = useReadStudentById(decrypted);
 
 	const { data: dataPerson, isLoading: isPersonLoading } = useReadPersonById(
 		dataStudent?.person
@@ -111,23 +123,26 @@ export const StudentDetailView = () => {
 								</Box>
 							</Flex>
 
-							{/* Badge de estado */}
-							{statusEnumSelected && (
-								<Badge
-									px={3}
-									py={1}
-									display='flex'
-									alignItems='center'
-									alignSelf={{ base: 'flex-start', md: 'auto' }}
-									border='1px solid'
-									borderColor={`${statusEnumSelected.color}.200`}
-									bg={`${statusEnumSelected.bg}.50`}
-									color={`${statusEnumSelected.color}.700`}
-								>
-									<Box as={statusEnumSelected.icon} w={4} h={4} mr={1} />
-									{statusEnumSelected.label}
-								</Badge>
-							)}
+							<Flex
+								align={{ base: 'flex-start', md: 'center' }}
+								gap={3}
+								wrap='wrap'
+							>
+								<ButtonGroup isAttached size='sm' variant='outline'>
+									<ChangeStatusStudent
+										statusEnumSelected={statusEnumSelected}
+										refetchStudent={refetchStudent}
+										newStatus={1} // Activo
+										studentId={dataStudent?.id}
+									/>
+									<ChangeStatusStudent
+										statusEnumSelected={statusEnumSelected}
+										refetchStudent={refetchStudent}
+										newStatus={2} // Suspendido
+										studentId={dataStudent?.id}
+									/>
+								</ButtonGroup>
+							</Flex>
 						</Flex>
 					</Box>
 					<Tabs.Root
