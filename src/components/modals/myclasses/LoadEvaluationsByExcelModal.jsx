@@ -94,7 +94,7 @@ export const LoadEvaluationsByExcelModal = ({ dataCourseGroup, fetchData, fetchG
         fileUrl = await uploadToS3(
           excelFile,
           'sga_uni/evaluations/uploads',
-          'excel_evaluaciones',
+          `evaluaciones`,
           'xlsx'
         );
       }
@@ -102,6 +102,8 @@ export const LoadEvaluationsByExcelModal = ({ dataCourseGroup, fetchData, fetchG
       if (!fileUrl) {
         throw new Error('Error al subir el archivo');
       }
+
+      console.log(fileUrl)
 
       const payload = {
         grade_excel_path: fileUrl
