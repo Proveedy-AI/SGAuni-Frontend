@@ -59,11 +59,12 @@ export const MyCoursesListByAcademicPeriodView = () => {
 	const { data: dataAcademicProgress, isLoading: isLoadingAcademicProgress } =
 		useReadAcademicProgress(studentUUID);
 
-  const filteredAcademicProgressByProgram = dataAcademicProgress?.programs?.find(
-    (data) => data?.program?.id === programEnrolled?.value
-  );
+	const filteredAcademicProgressByProgram =
+		dataAcademicProgress?.programs?.find(
+			(data) => data?.program?.id === programEnrolled?.value
+		);
 
-  console.log(filteredAcademicProgressByProgram);
+	console.log(filteredAcademicProgressByProgram);
 
 	return (
 		<Box p={6} maxW='full' mx='auto'>
@@ -94,10 +95,10 @@ export const MyCoursesListByAcademicPeriodView = () => {
 				handleRowClick={handleRowClick}
 				handleClickToProcessEnrollment={handleClickToProcessEnrollment}
 			/>
-      <AcademicProgressSection
-        academicProgress={filteredAcademicProgressByProgram}
-        isLoading={isLoadingAcademicProgress}
-      />
+			<AcademicProgressSection
+				academicProgress={filteredAcademicProgressByProgram}
+				isLoading={isLoadingAcademicProgress}
+			/>
 		</Box>
 	);
 };
