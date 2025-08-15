@@ -1,6 +1,7 @@
 import { Alert } from '@/components/ui';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { 
-  Badge, 
+  //Badge, 
   Box, 
   Heading, 
   HStack, 
@@ -9,21 +10,20 @@ import {
   Text, 
   VStack, 
   Card,
-  Separator
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import {
-  FiBookOpen,
+  //FiBookOpen,
   FiFileText,
-  FiUsers,
   FiClock,
-  FiUser,
-  FiEdit,
+  //FiUser,
   FiAward,
   FiAlertTriangle,
   FiInfo,
   FiTarget,
-  FiTrendingUp,
+  //FiTrendingUp,
+  FiCheck,
+  FiStar,
 } from 'react-icons/fi';
 
 // Componente para mostrar pasos del proceso
@@ -50,80 +50,179 @@ StepCard.propTypes = {
   icon: PropTypes.elementType.isRequired,
 };
 
+// Componente para felicitaciones de graduación
+const GraduationCongratulations = ({ programs, studentName }) => {
+
+  return (
+    <VStack spacing={4} mb={6}>
+      {programs.length > 0 ? 
+        programs.map((program, index) => (
+          <Card.Root 
+            key={index} 
+            bg="green.50" 
+            border="2px solid" 
+            borderColor="green.300"
+            boxShadow="md"
+            overflow="hidden"
+          >
+            <Card.Header>
+              <HStack spacing={3}>
+                <Icon as={FiStar} boxSize={8} color="green.600" />
+                <VStack align="start" spacing={1}>
+                  <Heading size="md" color="green.700">
+                    ¡Felicitaciones {studentName}!
+                  </Heading>
+                  <Text color="green.600" fontSize="sm" fontWeight="medium">
+                    Has completado exitosamente tu programa académico
+                  </Text>
+                </VStack>
+              </HStack>
+            </Card.Header>
+            <Card.Body>
+              <VStack align="start" spacing={3}>
+                <HStack spacing={2}>
+                  <Icon as={FiCheck} color="green.500" />
+                  <Text fontWeight="bold">
+                    Programa: {program.program_name || `Programa ID: ${program.program}`}
+                  </Text>
+                </HStack>
+                
+                <Text color="gray.700">
+                  Te invitamos a acercarte a la <strong>Facultad de Ingeniería Económica, 
+                  Estadística y Ciencias Sociales (FIEECS)</strong> para consultar sobre tu 
+                  <strong> titulación con tesis</strong> y los siguientes beneficios disponibles:
+                </Text>
+
+                <VStack align="start" spacing={2} pl={4}>
+                  {program.applies_diploma && (
+                    <HStack spacing={2}>
+                      <Icon as={FiAward} color="blue.500" />
+                      <Text fontSize="sm">
+                        <strong>Diploma:</strong> Tienes derecho a obtener tu diploma de graduación
+                      </Text>
+                    </HStack>
+                  )}
+                  
+                  {program.applies_certificate && (
+                    <HStack spacing={2}>
+                      <Icon as={FiFileText} color="purple.500" />
+                      <Text fontSize="sm">
+                        <strong>Certificado:</strong> Puedes solicitar tu certificado de estudios
+                      </Text>
+                    </HStack>
+                  )}
+                  
+                  {!program.applies_diploma && !program.applies_certificate && (
+                    <HStack spacing={2}>
+                      <Icon as={FiInfo} color="gray.500" />
+                      <Text fontSize="sm" color="gray.600">
+                        Consulta en la facultad sobre los documentos disponibles para tu programa
+                      </Text>
+                    </HStack>
+                  )}
+                </VStack>
+
+                <Alert 
+                  status="success" 
+                  borderRadius="md"
+                  title="Próximos pasos"
+                  icon={<FiTarget />}
+                >
+                  Dirígete a la oficina de la FIEECS para iniciar tu proceso de titulación 
+                  y conocer los requisitos específicos para tu programa.
+                </Alert>
+              </VStack>
+            </Card.Body>
+          </Card.Root>
+        )
+      ) : (
+        <Box
+          w="full"
+          bg="gray.100"
+          border="2px solid"
+          borderColor="gray.200"
+          borderRadius={5}
+          boxShadow="md"
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          p={6}
+          overflow="hidden"
+        >
+          <Icon as={FiInfo} boxSize={12} color="gray.600" />
+          <Text textAlign="center" color="gray.600" fontSize="sm" fontWeight="medium">
+            NO HAY PROGRAMAS GRADUADOS
+          </Text>
+          <Text textAlign="center" color="gray.600" fontSize="sm" fontWeight="medium">
+            No has completado ningún programa académico.
+          </Text>
+        </Box>
+      )}
+    </VStack>
+  );
+};
+
+GraduationCongratulations.propTypes = {
+  programs: PropTypes.array.isRequired,
+  studentName: PropTypes.string.isRequired,
+};
+
 
 export const MyThesisProcess = () => {
-  // Pasos para Grado de Bachiller
-  const bachelorSteps = [
-    {
-      number: 1,
-      title: "Plan de Trabajo de Investigación",
-      description: "Elaboración y presentación del plan inicial",
-      icon: FiFileText,
-    },
-    {
-      number: 2,
-      title: "Asignación de Asesor",
-      description: "Designación de asesor y registro oficial",
-      icon: FiUser,
-    },
-    {
-      number: 3,
-      title: "Elaboración del Trabajo",
-      description: "Desarrollo del trabajo de investigación",
-      icon: FiEdit,
-    },
-    {
-      number: 4,
-      title: "Conformación de Jurado",
-      description: "Formación del jurado evaluador",
-      icon: FiUsers,
-    },
-    {
-      number: 5,
-      title: "Sustentación",
-      description: "Defensa del trabajo de investigación",
-      icon: FiAward,
-    }
-  ];
-
   // Pasos para Título Profesional
-  const professionalSteps = [
-    {
-      number: 1,
-      title: "Plan de Tesis",
-      description: "Registro y aprobación del plan de tesis",
-      icon: FiTarget,
-    },
-    {
-      number: 2,
-      title: "Asignación de Asesor",
-      description: "Designación de asesor especializado",
-      icon: FiUser,
-    },
-    {
-      number: 3,
-      title: "Elaboración de Tesis",
-      description: "Desarrollo individual de la tesis",
-      icon: FiBookOpen,
-    },
-    {
-      number: 4,
-      title: "Evaluación Externa",
-      description: "Revisión por especialista externo",
-      icon: FiTrendingUp,
-    },
-    {
-      number: 5,
-      title: "Sustentación Final",
-      description: "Presentación y defensa de la tesis",
-      icon: FiAward,
-    }
-  ];
+  // const professionalSteps = [
+  //   {
+  //     number: 1,
+  //     title: "Plan de Tesis",
+  //     description: "Registro y aprobación del plan de tesis",
+  //     icon: FiTarget,
+  //   },
+  //   {
+  //     number: 2,
+  //     title: "Asignación de Asesor",
+  //     description: "Designación de asesor especializado",
+  //     icon: FiUser,
+  //   },
+  //   {
+  //     number: 3,
+  //     title: "Elaboración de Tesis",
+  //     description: "Desarrollo individual de la tesis",
+  //     icon: FiBookOpen,
+  //   },
+  //   {
+  //     number: 4,
+  //     title: "Evaluación Externa",
+  //     description: "Revisión por especialista externo",
+  //     icon: FiTrendingUp,
+  //   },
+  //   {
+  //     number: 5,
+  //     title: "Sustentación Final",
+  //     description: "Presentación y defensa de la tesis",
+  //     icon: FiAward,
+  //   }
+  // ];
+
+  const { data: dataUser } = useReadUserLogged();
+  console.log(dataUser)
+  console.log(dataUser?.student?.admission_programs)
+
+  const admissionPrograms = dataUser?.student?.admission_programs || [];
+  console.log(admissionPrograms);
+
+  const filteredGraduatePrograms = admissionPrograms ? admissionPrograms.filter(
+    (program) => program.academic_status === 2 //academic_type: graduated 
+  ) : [];
+
+  console.log(filteredGraduatePrograms);
+
+  const studentName = dataUser?.first_name || dataUser?.user?.first_name || '';
 
   return (
     <Box p={6} maxW="full" mx="auto">
       {/* Header */}
-      <VStack spacing={6} align="stretch">
+      <VStack spacing={6} align="stretch" overflow="hidden">
         <Box textAlign="center">
           <Heading size="lg" color="blue.700" mb={2}>
             Proceso de Tesis - FIEECS UNI
@@ -139,37 +238,20 @@ export const MyThesisProcess = () => {
           borderRadius="lg"
           title="Requisito Previo Importante"
           icon={<FiInfo />}
+          py={4}
         >
-          Para iniciar el proceso de tesis, el estudiante debe tener el estado de <strong>egresado</strong>, 
-          habiendo cumplido con el total de créditos aprobados de su programa académico.
+          Para iniciar el proceso de tesis, el estudiante debe tener al menos un programa académico <strong>egresado</strong>, 
+          habiendo cumplido con el total de créditos aprobados de dicho programa.
         </Alert>
 
-        {/* Opciones de modalidad */}
-        <SimpleGrid columns={{ base: 1, md: 3 }} gap={6}>
-          <Card.Root bg="green.50" border="1px solid" borderColor="green.200">
-            <Card.Header>
-              <HStack spacing={3}>
-                <Icon as={FiAward} boxSize={6} color="green.600" />
-                <Text fontWeight="bold" color="green.700">
-                  Grado de Bachiller
-                </Text>
-              </HStack>
-            </Card.Header>
-            <Card.Body>
-              <VStack align="start" spacing={2}>
-                <Text fontSize="sm" color="gray.600">
-                  Trabajo de Investigación
-                </Text>
-                <Badge colorScheme="green" variant="subtle">
-                  Mínimo 50 páginas
-                </Badge>
-                <Badge colorScheme="blue" variant="outline">
-                  Desde 9no ciclo
-                </Badge>
-              </VStack>
-            </Card.Body>
-          </Card.Root>
+        {/* Felicitaciones por programas graduados */}
+        <GraduationCongratulations 
+          programs={filteredGraduatePrograms}
+          studentName={studentName}
+        />
 
+        {/* Opciones de modalidad */}
+        {/* <SimpleGrid columns={{ base: 1, md: 2 }} gap={6} py={2}>
           <Card.Root bg="blue.50" border="1px solid" borderColor="blue.200">
             <Card.Header>
               <HStack spacing={3}>
@@ -217,32 +299,10 @@ export const MyThesisProcess = () => {
               </VStack>
             </Card.Body>
           </Card.Root>
-        </SimpleGrid>
-
-        <Separator />
-
-        <Box>
-          <Heading size="md" color="green.700" mb={4}>
-            <HStack spacing={3}>
-              <Icon as={FiAward} boxSize={6} />
-              <Text>Proceso para Grado de Bachiller</Text>
-            </HStack>
-          </Heading>
-          {bachelorSteps.map((step, index) => (
-            <StepCard 
-              key={index}
-              number={step.number}
-              title={step.title}
-              description={step.description}
-              icon={step.icon}
-              details={step.details}
-            />
-          ))}
-        </Box>
-
+        </SimpleGrid> */}
 
         {/* Proceso Título Profesional */}
-        <Box>
+        {/* <Box>
           <Heading size="md" color="blue.700" mb={4}>
             <HStack spacing={3}>
               <Icon as={FiBookOpen} boxSize={6} />
@@ -259,9 +319,7 @@ export const MyThesisProcess = () => {
               details={step.details}
             />
           ))}
-        </Box>
-
-        <Separator />
+        </Box> */}
 
         {/* Requisitos y documentación */}
         <Box>
