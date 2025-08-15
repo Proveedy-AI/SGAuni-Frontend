@@ -10,7 +10,7 @@ import {
 } from '@/hooks/evaluations';
 import { uploadToS3 } from '@/utils/uploadToS3';
 
-export const LoadEvaluationsByExcelModal = ({ dataCourseGroup, fetchData }) => {
+export const LoadEvaluationsByExcelModal = ({ dataCourseGroup, fetchData, fetchGradesReport }) => {
   const [open, setOpen] = useState(false);
   const [excelFile, setExcelFile] = useState(null);
   const [acceptedWarning, setAcceptedWarning] = useState(false);
@@ -118,6 +118,7 @@ export const LoadEvaluationsByExcelModal = ({ dataCourseGroup, fetchData }) => {
           setExcelFile(null);
           setAcceptedWarning(false);
           fetchData();
+          fetchGradesReport();
         },
         onError: (error) => {
           toaster.create({
@@ -294,4 +295,5 @@ export const LoadEvaluationsByExcelModal = ({ dataCourseGroup, fetchData }) => {
 LoadEvaluationsByExcelModal.propTypes = {
   dataCourseGroup: PropTypes.object,
   fetchData: PropTypes.func,
+  fetchGradesReport: PropTypes.func,
 };

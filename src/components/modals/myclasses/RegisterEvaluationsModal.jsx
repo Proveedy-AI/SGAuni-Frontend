@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { useCreateBulkEvaluations } from '@/hooks/evaluations';
 
-export const RegisterEvaluationsModal = ({ fetchData, student, evaluationComponents }) => {
+export const RegisterEvaluationsModal = ({ fetchData, fetchGradesReport, student, evaluationComponents }) => {
   const { mutate: registerEvaluation, isPending } = useCreateBulkEvaluations();
   console.log(evaluationComponents)
 
@@ -112,6 +112,7 @@ export const RegisterEvaluationsModal = ({ fetchData, student, evaluationCompone
         })
         setOpen(false);
         fetchData();
+        fetchGradesReport();
       },
       onError: (error) => {
         toaster.create({
@@ -270,6 +271,7 @@ export const RegisterEvaluationsModal = ({ fetchData, student, evaluationCompone
 
 RegisterEvaluationsModal.propTypes = {
   fetchData: PropTypes.func,
+  fetchGradesReport: PropTypes.func,
   student: PropTypes.object,
   evaluationComponents: PropTypes.array,
 };
