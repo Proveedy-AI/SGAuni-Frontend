@@ -1,4 +1,5 @@
 // dashboard/AdminDashboard.jsx
+import { useReadDataDashTeacher } from '@/hooks/users';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import {
 	Box,
@@ -10,46 +11,15 @@ import {
 	SimpleGrid,
 	Text,
 } from '@chakra-ui/react';
-import {
-	FiBookOpen,
-	FiCheckCircle,
-	FiFolder,
-	FiUsers,
-} from 'react-icons/fi';
+import { FiBookOpen, FiFolder } from 'react-icons/fi';
 import { useNavigate } from 'react-router';
+import * as FiIcons from 'react-icons/fi';
 
 export const TeacherDashboard = () => {
 	const { data: profile } = useReadUserLogged();
 	const navigate = useNavigate();
-	const mainResults = [
-		{
-			title: 'Evaluaciones',
-			subtitle: 'Por calificar',
-			count: '05',
-			textColor: 'green.600',
-			icon: FiCheckCircle,
-			iconColor: 'green.500',
-			bg: 'green.100',
-		},
-		{
-			title: 'Programas académicos',
-			subtitle: 'Cursos por configurar',
-			count: '02',
-			textColor: 'purple.600',
-			icon: FiBookOpen,
-			iconColor: 'purple.500',
-			bg: 'purple.100',
-		},
-		{
-			title: 'Postulantes',
-			subtitle: 'Por calificar',
-			count: '10',
-			textColor: 'yellow.600',
-			icon: FiUsers,
-			iconColor: 'yellow.500',
-			bg: 'yellow.100',
-		},
-	];
+
+	const { data: dataInfo } = useReadDataDashTeacher();
 
 	const otherLinks = [
 		{
@@ -139,7 +109,7 @@ export const TeacherDashboard = () => {
 
 					<Card.Body>
 						<SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
-							{mainResults.map((item, index) => (
+							{dataInfo?.data?.map((item, index) => (
 								<Card.Root
 									key={index}
 									borderWidth='2px'
@@ -155,7 +125,7 @@ export const TeacherDashboard = () => {
 													bg={item.bg || 'whiteAlpha.300'}
 												>
 													<Icon
-														as={item.icon}
+														as={FiIcons[item.icon]} // convierte el string en el componente real
 														boxSize={5}
 														color={item.iconColor}
 													/>

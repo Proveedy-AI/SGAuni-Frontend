@@ -6,3 +6,4 @@ export * from './useReadRolesAndPermissions';
 export * from './useReadUserById';
 
 export * from './profile';
+export * from './useReadDataDashTeacher';

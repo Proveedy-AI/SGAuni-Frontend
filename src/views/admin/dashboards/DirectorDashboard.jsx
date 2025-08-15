@@ -1,4 +1,5 @@
 // dashboard/AdminDashboard.jsx
+import { useReadDataDashCoord } from '@/hooks/users/useReadDataDashCoord';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import {
 	Box,
@@ -10,47 +11,15 @@ import {
 	SimpleGrid,
 	Text,
 } from '@chakra-ui/react';
-import {
-	FiCalendar,
-	FiCheckCircle,
-	FiEdit3,
-	FiFileText,
-	FiFolder,
-} from 'react-icons/fi';
+import { FiEdit3, FiFolder } from 'react-icons/fi';
 import { useNavigate } from 'react-router';
+import * as FiIcons from 'react-icons/fi';
 
 export const DirectorDashboard = () => {
 	const { data: profile } = useReadUserLogged();
 	const navigate = useNavigate();
-	const mainResults = [
-		{
-			title: 'Programas de admisión',
-			subtitle: 'Pendiente aprobación',
-			count: '05',
-			textColor: 'blue.600',
-			icon: FiCheckCircle,
-			iconColor: 'blue.500',
-			bg: 'blue.100',
-		},
-		{
-			title: 'Procesos de matrícula',
-			subtitle: 'Pendiente aprobación',
-			count: '02',
-			textColor: 'purple.600',
-			icon: FiFileText,
-			iconColor: 'purple.500',
-			bg: 'purple.100',
-		},
-		{
-			title: 'Horarios',
-			subtitle: 'Pendiente aprobación',
-			count: '10',
-			textColor: 'orange.600',
-			icon: FiCalendar,
-			iconColor: 'orange.500',
-			bg: 'orange.100',
-		},
-	];
+
+	const { data: dataInfo } = useReadDataDashCoord();
 
 	const otherLinks = [
 		{
@@ -140,7 +109,7 @@ export const DirectorDashboard = () => {
 
 					<Card.Body>
 						<SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
-							{mainResults.map((item, index) => (
+							{dataInfo?.data?.map((item, index) => (
 								<Card.Root
 									key={index}
 									borderWidth='2px'
@@ -150,9 +119,13 @@ export const DirectorDashboard = () => {
 									<Card.Body p={4}>
 										<Flex justify='space-between' align='flex-start'>
 											<Flex align='flex-start' gap={3}>
-												<Box p={2} rounded='lg' bg={item.bg || 'whiteAlpha.300'}>
+												<Box
+													p={2}
+													rounded='lg'
+													bg={item.bg || 'whiteAlpha.300'}
+												>
 													<Icon
-														as={item.icon}
+														as={FiIcons[item.icon]} // convierte el string en el componente real
 														boxSize={5}
 														color={item.iconColor}
 													/>
@@ -225,7 +198,6 @@ export const DirectorDashboard = () => {
 					</SimpleGrid>
 				</Box>
 			</Box>
-			
 		</Flex>
 	);
 };
