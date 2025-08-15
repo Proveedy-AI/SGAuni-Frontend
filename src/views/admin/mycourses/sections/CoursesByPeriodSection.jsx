@@ -65,7 +65,7 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
 						<strong>Total Créditos:</strong>{' '}
 						{data.courses.reduce((sum, course) => {
 							// Obtener créditos del primer schedule si existe
-							return sum + (course.schedules?.[0]?.credits || 0);
+							return sum + (course?.credits || 0);
 						}, 0)}
 					</Text>
 				</HStack>
@@ -269,7 +269,7 @@ export const CoursesByPeriodSection = ({
   const borderColor = useColorModeValue('gray.200', 'gray.600');
 
 	return (
-    <Box my={5}>
+    <Box>
       <Heading my={3}>
         <Stack
           justify={'space-between'}

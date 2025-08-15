@@ -7,6 +7,7 @@ import {
   Image,
   PDFViewer,
 } from '@react-pdf/renderer';
+import { Table, TR, TH, TD } from '@ag-media/react-pdf-table';
 import PropTypes from 'prop-types';
 
 const styles = StyleSheet.create({
@@ -66,95 +67,43 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginRight: 20,
   },
-  promotionValue: {
-    fontSize: 12,
-  },
   studentInfoSection: {
     marginBottom: 25,
   },
   infoTable: {
-    borderWidth: 1,
-    borderColor: '#000',
+    marginBottom: 10,
   },
-  infoRow: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: '#000',
-    minHeight: 25,
-    alignItems: 'center',
-  },
-  infoRowLast: {
-    borderBottomWidth: 0,
-  },
-  infoLabel: {
-    width: '25%',
-    fontSize: 11,
+  infoTableHeader: {
+    backgroundColor: '#F5F5F5',
+    fontSize: 9,
     fontWeight: 'bold',
-    padding: 8,
-    borderRightWidth: 1,
-    borderRightColor: '#000',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
   },
-  infoValue: {
-    width: '75%',
-    fontSize: 11,
-    padding: 8,
+  infoTableCell: {
+    fontSize: 9,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
   },
   coursesSection: {
     marginBottom: 25,
   },
-  coursesTable: {
-    borderWidth: 1,
-    borderColor: '#000',
+  table: {
+    marginBottom: 20,
   },
   tableHeader: {
-    flexDirection: 'row',
     backgroundColor: '#E8E8E8',
-    borderBottomWidth: 1,
-    borderBottomColor: '#000',
-    minHeight: 30,
-    alignItems: 'center',
-  },
-  headerCell: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: 'bold',
-    textAlign: 'center',
-    padding: 5,
-    borderRightWidth: 1,
-    borderRightColor: '#000',
+    paddingVertical: 8,
+    justifyContent: 'center',
+    paddingHorizontal: 5,
   },
-  headerCellLast: {
-    borderRightWidth: 0,
+  tableCell: {
+    fontSize: 9,
+    paddingVertical: 6,
+    paddingHorizontal: 5,
   },
-  tableRow: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: '#000',
-    minHeight: 25,
-    alignItems: 'center',
-  },
-  tableRowLast: {
-    borderBottomWidth: 0,
-  },
-  cell: {
-    fontSize: 10,
-    padding: 5,
-    borderRightWidth: 1,
-    borderRightColor: '#000',
-    textAlign: 'center',
-  },
-  cellLeft: {
-    textAlign: 'left',
-    paddingLeft: 8,
-  },
-  cellLast: {
-    borderRightWidth: 0,
-  },
-  cellCode: { width: '10%' },
-  cellSemester: { width: '10%' },
-  cellPeriod: { width: '12%' },
-  cellCourse: { width: '45%' },
-  cellCredits: { width: '13%' },
-  cellGrade: { width: '10%' },
   summarySection: {
     marginTop: 20,
     marginBottom: 40,
@@ -261,77 +210,87 @@ export const AcademicTranscriptDocument = ({ data }) => {
 
           {/* Student Information */}
           <View style={styles.studentInfoSection}>
-            <View style={styles.infoTable}>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>APELLIDOS:</Text>
-                <Text style={styles.infoValue}>{studentInfo.last_names || ''}</Text>
-              </View>
-              
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>NOMBRES:</Text>
-                <Text style={styles.infoValue}>{studentInfo.first_names || ''}</Text>
-              </View>
-              
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>ESPECIALIDAD:</Text>
-                <Text style={styles.infoValue}>{studentInfo.program_name || ''}</Text>
-              </View>
-              
-              <View style={[styles.infoRow, styles.infoRowLast]}>
-                <Text style={styles.infoLabel}>CÓDIGO:</Text>
-                <Text style={styles.infoValue}>{studentInfo.student_code || ''}</Text>
-              </View>
-            </View>
+            <Table 
+              style={styles.infoTable}
+              weightings={[25, 75]}
+            >
+              <TR>
+                <TD style={styles.infoTableHeader}>DOCUMENTO:</TD>
+                <TD style={styles.infoTableCell}>{studentInfo.document_number || ''}</TD>
+              </TR>
+              <TR>
+                <TD style={styles.infoTableHeader}>APELLIDOS:</TD>
+                <TD style={styles.infoTableCell}>{studentInfo.last_names || ''}</TD>
+              </TR>
+              <TR>
+                <TD style={styles.infoTableHeader}>NOMBRES:</TD>
+                <TD style={styles.infoTableCell}>{studentInfo.first_names || ''}</TD>
+              </TR>
+              <TR>
+                <TD style={styles.infoTableHeader}>ESPECIALIDAD:</TD>
+                <TD style={styles.infoTableCell}>{studentInfo.program_name || ''}</TD>
+              </TR>
+              <TR>
+                <TD style={styles.infoTableHeader}>CÓDIGO:</TD>
+                <TD style={styles.infoTableCell}>{studentInfo.student_code || ''}</TD>
+              </TR>
+            </Table>
           </View>
 
           {/* Courses Table */}
           <View style={styles.coursesSection}>
-            <View style={styles.coursesTable}>
-              {/* Table Header */}
-              <View style={styles.tableHeader}>
-                <Text style={[styles.headerCell, styles.cellCode]}>CÓDIGO</Text>
-                <Text style={[styles.headerCell, styles.cellSemester]}>SEMESTRE</Text>
-                <Text style={[styles.headerCell, styles.cellPeriod]}>PERÍODO</Text>
-                <Text style={[styles.headerCell, styles.cellCourse]}>NOMBRE DE LA ASIGNATURA</Text>
-                <Text style={[styles.headerCell, styles.cellCredits]}>CRÉDITOS</Text>
-                <Text style={[styles.headerCell, styles.cellGrade, styles.headerCellLast]}>NOTA</Text>
-              </View>
+            <Table 
+              style={styles.table}
+              weightings={[10, 15, 12, 40, 13, 10]}
+            >
+              <TH>
+                <TD style={styles.tableHeader}>CÓDIGO</TD>
+                <TD style={styles.tableHeader}>SEMESTRE</TD>
+                <TD style={styles.tableHeader}>PERÍODO</TD>
+                <TD style={styles.tableHeader}>NOMBRE DE LA ASIGNATURA</TD>
+                <TD style={styles.tableHeader}>CRÉDITOS</TD>
+                <TD style={styles.tableHeader}>NOTA</TD>
+              </TH>
 
-              {/* Table Rows */}
               {courses.map((course, index) => (
-                <View 
-                  key={index} 
-                  style={styles.tableRow}
-                >
-                  <Text style={[styles.cell, styles.cellCode]}>{course.course_code || ''}</Text>
-                  <Text style={[styles.cell, styles.cellSemester]}>{course.cycle || ''}</Text>
-                  <Text style={[styles.cell, styles.cellPeriod]}>{course.period_name || ''}</Text>
-                  <Text style={[styles.cell, styles.cellCourse, styles.cellLeft]}>
+                <TR key={index}>
+                  <TD style={{ ...styles.tableCell, justifyContent: 'center' }}>
+                    {course.course_code || ''}
+                  </TD>
+                  <TD style={{ ...styles.tableCell, justifyContent: 'center' }}>
+                    {course.cycle || ''}
+                  </TD>
+                  <TD style={{ ...styles.tableCell, justifyContent: 'center' }}>
+                    {course.period_name || ''}
+                  </TD>
+                  <TD style={styles.tableCell}>
                     {course.course_name || ''}
-                  </Text>
-                  <Text style={[styles.cell, styles.cellCredits]}>{course.credits || ''}</Text>
-                  <Text style={[styles.cell, styles.cellGrade, styles.cellLast]}>
+                  </TD>
+                  <TD style={{ ...styles.tableCell, justifyContent: 'center' }}>
+                    {course.credits || ''}
+                  </TD>
+                  <TD style={{ ...styles.tableCell, justifyContent: 'center' }}>
                     {course.final_grade || ''}
-                  </Text>
-                </View>
+                  </TD>
+                </TR>
               ))}
 
               {/* Total Credits Row */}
-              <View style={styles.tableRow}>
-                <Text style={[styles.cell, styles.cellCode]}></Text>
-                <Text style={[styles.cell, styles.cellSemester]}></Text>
-                <Text style={[styles.cell, styles.cellPeriod]}></Text>
-                <Text style={[styles.cell, styles.cellCourse, styles.cellLeft, { fontWeight: 'bold' }]}>
+              <TR>
+                <TD style={{ ...styles.tableCell, justifyContent: 'center' }}></TD>
+                <TD style={{ ...styles.tableCell, justifyContent: 'center' }}></TD>
+                <TD style={{ ...styles.tableCell, justifyContent: 'center' }}></TD>
+                <TD style={{ ...styles.tableCell, fontWeight: 'bold' }}>
                   TOTAL CRÉDITOS
-                </Text>
-                <Text style={[styles.cell, styles.cellCredits, { fontWeight: 'bold' }]}>
+                </TD>
+                <TD style={{ ...styles.tableCell, justifyContent: 'center', fontWeight: 'bold' }}>
                   {academicSummary.total_credits || 0}
-                </Text>
-                <Text style={[styles.cell, styles.cellGrade, styles.cellLast, { fontWeight: 'bold' }]}>
+                </TD>
+                <TD style={{ ...styles.tableCell, justifyContent: 'center', fontWeight: 'bold' }}>
                   {academicSummary.weighted_average ? academicSummary.weighted_average.toFixed(1) : '0.0'}
-                </Text>
-              </View>
-            </View>
+                </TD>
+              </TR>
+            </Table>
           </View>
 
           {/* Footer */}
