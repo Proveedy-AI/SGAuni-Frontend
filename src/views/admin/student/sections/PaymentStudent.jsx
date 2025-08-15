@@ -20,7 +20,6 @@ export const PaymentStudent = ({ dataPerson }) => {
 		3: 'green',
 		4: 'yellow',
 	};
-	console.log(dataPayment);
 	return (
 		<Card.Root>
 			<Card.Body>

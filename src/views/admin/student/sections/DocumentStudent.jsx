@@ -1,4 +1,12 @@
-import { Box, Card, Heading, HStack, Icon, SimpleGrid, Stack } from '@chakra-ui/react';
+import {
+	Box,
+	Card,
+	Heading,
+	HStack,
+	Icon,
+	SimpleGrid,
+	Stack,
+} from '@chakra-ui/react';
 import { FiFileText } from 'react-icons/fi';
 import PropTypes from 'prop-types';
 import { useReadDocuments } from '@/hooks/documents';
@@ -8,9 +16,10 @@ import { useEffect, useMemo, useState } from 'react';
 
 export const DocumentStudent = ({ dataStudent }) => {
 	const [selectProgram, setSelectProgram] = useState(null);
-	const { data: dataDocuments } = useReadDocuments({
-		application: selectProgram?.value,
-	});
+	const { data: dataDocuments } = useReadDocuments(
+		{ application: selectProgram?.value },
+		{ enabled: !!selectProgram?.value }
+	);
 
 	const handleDownload = (filePath) => {
 		window.open(filePath, '_blank');
@@ -61,7 +70,7 @@ export const DocumentStudent = ({ dataStudent }) => {
 			</Card.Header>
 
 			<Card.Body>
-				{dataDocuments?.results?.length === 0 ? (
+				{dataDocuments?.results?.length === 0 || !dataDocuments ? (
 					<Box
 						colSpan={{ base: 1, md: 2 }}
 						p={6}
