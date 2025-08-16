@@ -360,7 +360,6 @@ export const ChangeDataStudentProfileForm = ({
 									>
 										<Radio value='1'>Masculino</Radio>
 										<Radio value='2'>Femenino</Radio>
-										<Radio value='3'>Otro</Radio>
 									</RadioGroup>
 								</Field>
 								<Separator />
