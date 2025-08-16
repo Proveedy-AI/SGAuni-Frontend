@@ -85,6 +85,7 @@ export const ClassMyStudentsByCourseView = () => {
   const {
     data: dataGradesReport,
     isLoading: loadingGradesReport,
+    refetch: fetchGradesReport
   } = useGenerateGradesReport(decrypted);
 
   const isDownloadable = (!loadingGradesReport) && (studentsData?.students?.length > 0);
@@ -199,6 +200,7 @@ export const ClassMyStudentsByCourseView = () => {
 							<LoadEvaluationsByExcelModal 
                 dataCourseGroup={dataCourseGroup}
                 fetchData={fetchStudents}
+                fetchGradesReport={fetchGradesReport}
               />
 
 							<ConfigurateCalificationCourseModal
@@ -215,6 +217,7 @@ export const ClassMyStudentsByCourseView = () => {
 
 			<StudentsEvaluationsTable
         fetchData={fetchStudents}
+        fetchGradesReport={fetchGradesReport}
 				students={filteredStudents}
 				evaluationComponents={evaluationComponents}
 				isLoading={loadingStudents}
