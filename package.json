@@ -50,7 +50,8 @@
     "sgauni": "file:",
     "socket.io-client": "^4.8.1",
     "use-debounce": "^10.0.5",
-    "use-mask-input": "^3.4.2"
+    "use-mask-input": "^3.4.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

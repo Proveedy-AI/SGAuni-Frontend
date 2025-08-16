@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { ControlledModal, toaster } from '@/components/ui';
 import { Stack, Text } from '@chakra-ui/react';
 import { useExportSuneduStudentExcel } from '@/hooks/admissions_programs';
+import * as XLSX from 'xlsx';
 
 export const ConfirmDownloadSuneduModal = ({
 	admissionProcess,
@@ -10,26 +11,57 @@ export const ConfirmDownloadSuneduModal = ({
 }) => {
 	const { mutate: downloadSunedu, isPending } = useExportSuneduStudentExcel();
 
-	const loadExcel = (data) => {
-		const url = window.URL.createObjectURL(
-			new Blob([data], {
+	// 👇 fusiona plantilla con los datos recibidos
+	const loadExcelWithTemplate = async (blob) => {
+		try {
+			// 1. Convertir blob a ArrayBuffer
+			const buffer = await blob.arrayBuffer();
+
+			// 2. Leer workbook recibido del backend
+			const receivedWb = XLSX.read(buffer, { type: 'array' });
+
+			// 3. Leer plantilla desde /public/templates
+			const templateResp = await fetch(
+				'/templates/FORMATO-006-POSTULANTES.xlsx'
+			);
+			const templateBuffer = await templateResp.arrayBuffer();
+			const templateWb = XLSX.read(templateBuffer, { type: 'array' });
+
+			// 4. Reemplazar la Hoja1 de la plantilla con la Hoja1 del backend
+			const sheetName = templateWb.SheetNames[0];
+			const backendSheet = receivedWb.Sheets[receivedWb.SheetNames[0]];
+			templateWb.Sheets[sheetName] = backendSheet;
+
+			// 5. Exportar Excel final
+			const excelBuffer = XLSX.write(templateWb, {
+				bookType: 'xlsx',
+				type: 'array',
+			});
+
+			const finalBlob = new Blob([excelBuffer], {
 				type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-			})
-		);
-		const link = document.createElement('a');
-		link.href = url;
-		link.setAttribute(
-			'download',
-			`estudiantes_admitidos_sunedu_${admissionProcess?.uuid}.xlsx`
-		);
-		document.body.appendChild(link);
-		link.click();
+			});
+
+			const link = document.createElement('a');
+			link.href = window.URL.createObjectURL(finalBlob);
+			link.download = `estudiantes_admitidos_sunedu_${admissionProcess?.uuid}.xlsx`;
+			link.click();
+		} catch (err) {
+			console.error(err);
+			toaster.create({
+				title: 'Error procesando Excel',
+				type: 'error',
+			});
+		}
 	};
 
 	const handleDownload = () => {
 		downloadSunedu(admissionProcess?.uuid, {
 			onSuccess: (data) => {
-				loadExcel(data);
+				// ⚠️ Aquí asumimos que tu API devuelve JSON con estudiantes
+				console.log(data);
+				loadExcelWithTemplate(data);
+
 				toaster.create({
 					title: 'Descarga exitosa',
 					type: 'success',
@@ -65,7 +97,7 @@ export const ConfirmDownloadSuneduModal = ({
 };
 
 ConfirmDownloadSuneduModal.propTypes = {
-	admissionProcess: PropTypes.object.isRequired,
-	open: PropTypes.bool.isRequired,
-	setOpen: PropTypes.func.isRequired,
+	admissionProcess: PropTypes.object,
+	open: PropTypes.bool,
+	setOpen: PropTypes.func,
 };
