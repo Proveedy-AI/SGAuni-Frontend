@@ -44,6 +44,21 @@ export const AssignWeigthProgramFocus = ({ item, fetchData }) => {
 		(evaluator) => evaluator.postgraduate_focus === item.id
 	);
 
+	const assignedValues = evaluatorsAssigned.map((e) =>
+		String(e.evaluation_type)
+	);
+
+	const availableOptions = roleOptions.filter(
+		(option) => !assignedValues.includes(option.value)
+	);
+
+	const totalAssignedWeight = evaluatorsAssigned.reduce(
+		(acc, ev) => acc + (Number(ev.evaluation_weight) || 0),
+		0
+	);
+
+	const maxRemaining = Math.max(0, 101 - totalAssignedWeight);
+
 	const { mutateAsync: assignEvaluator, isPending: isSaving } =
 		useCreateProgramWeight();
 	const { mutateAsync: updateAssignment } = useUpdateProgramsWeight();
@@ -161,7 +176,7 @@ export const AssignWeigthProgramFocus = ({ item, fetchData }) => {
 							required
 						>
 							<ReactSelect
-								options={roleOptions}
+								options={availableOptions}
 								value={evaluatorRequest.evaluation_type}
 								onChange={(value) =>
 									setEvaluatorRequest((prev) => ({
@@ -178,13 +193,21 @@ export const AssignWeigthProgramFocus = ({ item, fetchData }) => {
 							required
 						>
 							<Input
+								type='number'
+								min={0}
+								max={maxRemaining} // 👈 restricción
 								value={evaluatorRequest.evaluation_weight}
-								onChange={(e) =>
-									setEvaluatorRequest((prev) => ({
-										...prev,
-										evaluation_weight: e.target.value,
-									}))
-								}
+								onChange={(e) => {
+									const value = Number(e.target.value);
+									if (value <= maxRemaining) {
+										setEvaluatorRequest((prev) => ({
+											...prev,
+											evaluation_weight: value,
+										}));
+									}
+								}}
+								placeholder={`Máximo permitido: ${maxRemaining}%`}
+								disabled={maxRemaining === 0} // 👈 si ya es 100, deshabilitar
 							/>
 						</Field>
 						<IconButton
@@ -227,9 +250,7 @@ export const AssignWeigthProgramFocus = ({ item, fetchData }) => {
 												(opt) => opt.value === String(item.evaluation_type)
 											)?.label || item.evaluation_type}
 										</Table.Cell>
-										<Table.Cell>
-											{item.evaluation_weight * 100}
-										</Table.Cell>
+										<Table.Cell>{item.evaluation_weight * 100}</Table.Cell>
 
 										<Table.Cell>
 											<Flex gap={2}>
