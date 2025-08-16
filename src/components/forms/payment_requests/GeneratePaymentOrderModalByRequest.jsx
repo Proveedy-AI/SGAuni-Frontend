@@ -1,6 +1,7 @@
-import { Alert, Field, Modal, toaster } from '@/components/ui';
+import { Alert, Field, Modal, toaster, Tooltip } from '@/components/ui';
 import {
 	Badge,
+	Box,
 	Card,
 	Flex,
 	Heading,
@@ -114,9 +115,22 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 					title='Generar Orden de Pago'
 					placement='center'
 					trigger={
-						<IconButton colorPalette='purple' size='xs' disabled={item?.status !== 1}>
-							<FiArrowUp />
-						</IconButton>
+						<Box>
+							<Tooltip
+								content='Generar orden de pago'
+								positioning={{ placement: 'bottom-center' }}
+								showArrow
+								openDelay={0}
+							>
+								<IconButton
+									colorPalette='purple'
+									size='xs'
+									disabled={item?.status !== 1}
+								>
+									<FiArrowUp />
+								</IconButton>
+							</Tooltip>
+						</Box>
 					}
 					size='5xl'
 					open={open}
