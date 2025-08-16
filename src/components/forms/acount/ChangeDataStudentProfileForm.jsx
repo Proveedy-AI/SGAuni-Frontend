@@ -192,6 +192,24 @@ export const ChangeDataStudentProfileForm = ({
 		);
 	}, [dataDistrict, profile]);
 
+	useEffect(() => {
+		preloadSelectValue(
+			dataProvinces,
+			profile.province,
+			provinceOptions,
+			'province'
+		);
+	}, [dataProvinces, profile]);
+
+	useEffect(() => {
+		preloadSelectValue(
+			dataUbigeo,
+			profile.address_ubigeo,
+			UbigeosOptions,
+			'address_ubigeo'
+		);
+	}, [dataUbigeo, profile]);
+
 	return (
 		<>
 			<Grid
