@@ -120,7 +120,7 @@ export const LoadExcelGeneratePaymentOrderModal = ({ fetchData }) => {
 					Generar Ordenes con Excel
 				</Button>
 			}
-			title='Generar Ordenes de Pago para propositos de créditos'
+			title='Generar Ordenes de Pago para conceptos de créditos'
 			placement='center'
 			size='2xl'
 			loading={isLoading}
@@ -160,7 +160,7 @@ export const LoadExcelGeneratePaymentOrderModal = ({ fetchData }) => {
 				>
 					<VStack align='start' gap={1}>
 						<Text>
-							• La generacion de ordenes de pago es exclusiva para propositos de
+							• La generacion de ordenes de pago es exclusiva para conceptos de
 							créditos
 						</Text>
 						<Text>• Formato requerido: .xlsx o .xls</Text>

@@ -83,7 +83,7 @@ export const SettingsDataProccess = () => {
 								Reglas
 							</Tabs.Trigger>
 							<Tabs.Trigger value={2} color={tab === 2 ? 'uni.secondary' : ''}>
-								Propositos
+								Conceptos
 							</Tabs.Trigger>
 						</Tabs.List>
 					</Box>
@@ -125,7 +125,7 @@ export const SettingsDataProccess = () => {
 							align={{ base: 'start', sm: 'center' }}
 							justify='space-between'
 						>
-							<Heading size='md'>Gestión Propositos de Pago</Heading>
+							<Heading size='md'>Gestión Conceptos de Pago</Heading>
 
 							<HStack>
 								<InputGroup flex='1' startElement={<FiSearch />}>

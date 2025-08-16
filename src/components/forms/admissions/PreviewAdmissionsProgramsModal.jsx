@@ -24,6 +24,7 @@ import {
 import { useState } from 'react';
 import { formatDateString } from '@/components/ui/dateHelpers';
 import { FaGraduationCap } from 'react-icons/fa';
+import { da } from 'date-fns/locale';
 
 export const PreviewAdmissionsProgramsModal = ({ data, statusMap }) => {
 	const [open, setOpen] = useState(false);
@@ -41,7 +42,7 @@ export const PreviewAdmissionsProgramsModal = ({ data, statusMap }) => {
 					>
 						<IconButton
 							size='xs'
-							colorPalette='gray'
+							colorPalette='blue'
 							css={{
 								_icon: {
 									width: '5',
@@ -72,12 +73,13 @@ export const PreviewAdmissionsProgramsModal = ({ data, statusMap }) => {
 					<Flex justify='space-between' align='flex-start'>
 						<Box>
 							<Text fontSize='2xl' fontWeight='bold'>
-								{data.program_name}
+								{data.program_name || data.postgraduate_name}
 							</Text>
 							<Flex align='center' gap={2} mt={2}>
 								<Icon as={FaGraduationCap} color='blue.600' boxSize={4} />
 								<Text fontSize='md' color='gray.600'>
-									{data.study_mode_display}
+									{data.study_mode_display || data.postgraduate_type
+}
 								</Text>
 							</Flex>
 						</Box>
