@@ -75,7 +75,7 @@ export const ChangeDataStudentProfileForm = ({
 			label: country.name,
 		})) || [];
 	const { data: dataDepartments, isLoading: isLoadingDepartments } =
-		useReadDepartments();
+		useReadDepartments({ country: profile?.residenceCountry?.value || null });
 
 	const departmentOptions =
 		dataDepartments?.results?.map((department) => ({
@@ -84,7 +84,7 @@ export const ChangeDataStudentProfileForm = ({
 		})) || [];
 
 	const { data: dataProvinces, isLoading: isLoadingProvinces } =
-		useReadProvince();
+		useReadProvince({ department: profile?.department?.value || null });
 
 	const provinceOptions =
 		dataProvinces?.results?.map((province) => ({
@@ -101,11 +101,16 @@ export const ChangeDataStudentProfileForm = ({
 		})) || [];
 
 	const { data: dataUbigeo, isLoading: loadingUbigeo } = useReadUbigeos();
-	const UbigeosOptions =
-		dataUbigeo?.results?.map((ubigeo) => ({
-			value: ubigeo.id,
-			label: ubigeo.code + ' - ' + ubigeo.district_name,
-		})) || [];
+	const districtId = profile?.district?.value;
+	const filteredUbigeos =
+		dataUbigeo?.results?.filter(
+			(ubigeo) => ubigeo.district === districtId
+		) || [];
+
+	const UbigeosOptions = filteredUbigeos.map((ubigeo) => ({
+		value: ubigeo.id,
+		label: `${ubigeo.code} - ${ubigeo.district_name}`,
+	}));
 
 	const { data: dataDisabilites, isLoading: loadingDisabilites } =
 		useReadDisabilities();
@@ -115,7 +120,9 @@ export const ChangeDataStudentProfileForm = ({
 			label: disability.name,
 		})) || [];
 
-	const { data: dataDistrict, isLoading: loadingDisctrict } = useReadDistrict();
+	const { data: dataDistrict, isLoading: loadingDisctrict } = useReadDistrict({
+		province: profile?.province?.value || null,
+	});
 
 	const DistrictOptions =
 		dataDistrict?.results?.map((district) => ({
