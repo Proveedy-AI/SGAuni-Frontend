@@ -36,14 +36,22 @@ const FieldWithInputText = ({
 	field,
 	value,
 	updateProfileField,
+	type = 'text',
 }) => {
+	const isInvalid = type === 'email' && value && !value.includes('@');
+
 	return (
-		<Field label={label}>
+		<Field
+			label={label}
+			invalid={isInvalid}
+			errorText={isInvalid ? 'El correo debe contener @' : undefined}
+		>
 			<Input
 				value={value}
 				onChange={(e) => updateProfileField(field, e.target.value)}
 				variant='flushed'
 				placeholder={placeholder}
+				type={type}
 			/>
 		</Field>
 	);
@@ -55,6 +63,7 @@ FieldWithInputText.propTypes = {
 	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	updateProfileField: PropTypes.func,
 	placeholder: PropTypes.string,
+	type: PropTypes.string,
 };
 
 export const ChangeDataStudentProfileForm = ({
@@ -103,9 +112,8 @@ export const ChangeDataStudentProfileForm = ({
 	const { data: dataUbigeo, isLoading: loadingUbigeo } = useReadUbigeos();
 	const districtId = profile?.district?.value;
 	const filteredUbigeos =
-		dataUbigeo?.results?.filter(
-			(ubigeo) => ubigeo.district === districtId
-		) || [];
+		dataUbigeo?.results?.filter((ubigeo) => ubigeo.district === districtId) ||
+		[];
 
 	const UbigeosOptions = filteredUbigeos.map((ubigeo) => ({
 		value: ubigeo.id,
@@ -381,6 +389,7 @@ export const ChangeDataStudentProfileForm = ({
 								<Box>
 									<FieldWithInputText
 										label='Correo Personal:'
+										type='email'
 										placeholder='Correo Personal'
 										field='personal_email'
 										value={profile.personal_email}
@@ -629,6 +638,7 @@ export const ChangeDataStudentProfileForm = ({
 								<Box>
 									<FieldWithInputText
 										label='Correo institucional:'
+										type='email'
 										field='uni_email'
 										placeholder='Ingresar correo'
 										value={profile.uni_email}
