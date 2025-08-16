@@ -427,7 +427,7 @@ export default function ChakraInscriptionForm() {
 				emergencyContact: formData.emergencyContact,
 				emergencyPhone: formData.emergencyPhone,
 				birth_country: Number(formData.birthCountry),
-				residence_country: Number(formData.residenceCountry),
+				residenceCountry: Number(formData.residenceCountry),
 				department: Number(formData.department),
 				province: Number(formData.province),
 				postalCode: formData.postalCode,
