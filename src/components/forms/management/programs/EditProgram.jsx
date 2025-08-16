@@ -47,7 +47,7 @@ export const EditProgram = ({
 				postgraduate_focus: ProgramFocusOptions?.find(
 					(p) => String(p.value) === String(item.postgraduate_focus)
 				),
-				minPaymentPercentage: item.min_payment_percentage * 100, 
+				minPaymentPercentage: item.min_payment_percentage * 100,
 				maxInstallments: item.max_installments,
 			}));
 		}
@@ -289,13 +289,22 @@ export const EditProgram = ({
 									type='number'
 									name='price_credit'
 									placeholder='Precio por crédito'
+									step='0.01'
 									value={programRequest.price_credit}
-									onChange={(e) =>
+									onChange={(e) => {
+										const value = e.target.value;
+										// Limita a 2 decimales
+										const formatted = value.includes('.')
+											? value.split('.')[0] +
+												'.' +
+												value.split('.')[1].slice(0, 2)
+											: value;
+
 										setProgramRequest({
 											...programRequest,
-											price_credit: e.target.value,
-										})
-									}
+											price_credit: formatted,
+										});
+									}}
 								/>
 							</Field>
 							<Field
@@ -309,13 +318,17 @@ export const EditProgram = ({
 									type='number'
 									name='total_program_credits'
 									placeholder='Total de créditos del programa'
+									step='1'
 									value={programRequest.total_program_credits}
-									onChange={(e) =>
+									onChange={(e) => {
+										const value = e.target.value;
+										// Elimina decimales si los escriben
+										const onlyInteger = value.replace(/\D/g, '');
 										setProgramRequest({
 											...programRequest,
-											total_program_credits: e.target.value,
-										})
-									}
+											total_program_credits: onlyInteger,
+										});
+									}}
 								/>
 							</Field>
 						</SimpleGrid>
@@ -363,13 +376,17 @@ export const EditProgram = ({
 							>
 								<Input
 									type='number'
+									step='1'
 									value={programRequest.maxInstallments}
-									onChange={(e) =>
+									onChange={(e) => {
+										const value = e.target.value;
+										// Elimina decimales si los escriben
+										const onlyInteger = value.replace(/\D/g, '');
 										setProgramRequest({
 											...programRequest,
-											maxInstallments: e.target.value,
-										})
-									}
+											maxInstallments: onlyInteger,
+										});
+									}}
 								/>
 							</Field>
 						</SimpleGrid>
