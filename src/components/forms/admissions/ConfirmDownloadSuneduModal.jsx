@@ -8,7 +8,7 @@ export const ConfirmDownloadSuneduModal = ({
 	open,
 	setOpen,
 }) => {
-	const { mutate: downloadSunedu, isSaving } = useExportSuneduStudentExcel();
+	const { mutate: downloadSunedu, isPending } = useExportSuneduStudentExcel();
 
 	const loadExcel = (data) => {
 		const url = window.URL.createObjectURL(
@@ -55,7 +55,7 @@ export const ConfirmDownloadSuneduModal = ({
 			onOpenChange={(e) => setOpen(e.open)}
 			size='xl'
 			onSave={handleDownload}
-			loading={isSaving}
+			loading={isPending}
 		>
 			<Stack css={{ '--field-label-width': '140px' }}>
 				<Text>¿Desea descargar los estudiantes admitidos por SUNEDU?</Text>
