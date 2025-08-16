@@ -94,7 +94,7 @@ export const ProgramTypesTable = ({ data, fetchData, isLoading }) => {
 							</Table.ColumnHeader>
 							<Table.ColumnHeader w='20%'>
 								<SortableHeader
-									label='Nota mínima aprobatoria'
+									label='Nota mínima ingreso'
 									columnKey='min_grade'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}

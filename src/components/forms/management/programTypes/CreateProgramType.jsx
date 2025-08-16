@@ -21,11 +21,11 @@ export const AddProgramType = ({ fetchData }) => {
 		const newErrors = {};
 		if (!programType.name.trim()) newErrors.name = 'El nombre es requerido';
 		if (!programType.code.trim()) newErrors.code = 'El código es requerido';
-    if (!programType.min_grade) {
-      newErrors.min_grade = 'La nota mínima es requerida';
-    } else if (programType.min_grade < 0 || programType.min_grade > 20) {
-      newErrors.min_grade = 'La nota mínima debe estar entre 0 y 20';
-    }
+		if (!programType.min_grade) {
+			newErrors.min_grade = 'La nota mínima es requerida';
+		} else if (programType.min_grade < 0 || programType.min_grade > 20) {
+			newErrors.min_grade = 'La nota mínima debe estar entre 0 y 20';
+		}
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
 	};
@@ -127,12 +127,18 @@ export const AddProgramType = ({ fetchData }) => {
 						required
 						type='number'
 						name='min_grade'
+						step='0.01'
 						placeholder='Nota mínima'
-            maxvalue={20}
+						maxvalue={20}
 						value={programType.min_grade}
-						onChange={(e) =>
-							setProgramType({ ...programType, min_grade: e.target.value })
-						}
+						onChange={(e) => {
+							const value = e.target.value;
+							// Limita a 2 decimales
+							const formatted = value.includes('.')
+								? value.split('.')[0] + '.' + value.split('.')[1].slice(0, 2)
+								: value;
+							setProgramType({ ...programType, min_grade: formatted });
+						}}
 					/>
 				</Field>
 			</Stack>
