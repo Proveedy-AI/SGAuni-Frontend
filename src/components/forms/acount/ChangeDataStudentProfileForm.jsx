@@ -318,22 +318,6 @@ export const ChangeDataStudentProfileForm = ({
 									/>
 								</Box>
 
-								{/* Género */}
-								<Field label='Género' required>
-									<RadioGroup
-										value={profile.gender?.toString() || ''}
-										onChange={(e) =>
-											updateProfileField('gender', e.target.value)
-										}
-										spaceX={4}
-									>
-										<Radio value='1'>Masculino</Radio>
-										<Radio value='2'>Femenino</Radio>
-										<Radio value='3'>Otro</Radio>
-									</RadioGroup>
-								</Field>
-
-								<Separator />
 								<Box>
 									<Field label='Foto de Documento:'>
 										<CompactFileUpload
@@ -350,6 +334,21 @@ export const ChangeDataStudentProfileForm = ({
 										/>
 									</Field>
 								</Box>
+								{/* Género */}
+								<Field label='Género' required>
+									<RadioGroup
+										value={profile.gender?.toString() || ''}
+										onChange={(e) =>
+											updateProfileField('gender', e.target.value)
+										}
+										spaceX={4}
+									>
+										<Radio value='1'>Masculino</Radio>
+										<Radio value='2'>Femenino</Radio>
+										<Radio value='3'>Otro</Radio>
+									</RadioGroup>
+								</Field>
+								<Separator />
 							</VStack>
 						</Card.Body>
 					</Card.Root>
