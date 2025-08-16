@@ -416,7 +416,7 @@ export const ChangeDataStudentProfileForm = ({
 								{profile.has_disability && (
 									<Box>
 										<FieldWithInputText
-											label='Otros:'
+											label='Descripción de Discapacidad:'
 											field='other_disability'
 											placeholder='Ingresar discapacidad'
 											value={profile.other_disability}

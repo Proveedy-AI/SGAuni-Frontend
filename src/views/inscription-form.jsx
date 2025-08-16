@@ -1545,7 +1545,7 @@ export default function ChakraInscriptionForm() {
 																		/>
 																	</Field>
 
-																	<Field label='Otra discapacidad o necesidad especial'>
+																	<Field label='Descripción de Discapacidad:'>
 																		<Textarea
 																			value={formData.other_disability}
 																			onChange={(e) =>
