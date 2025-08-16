@@ -170,7 +170,7 @@ export const PaymentRequestsTable = ({
 							</Table.ColumnHeader>
 							<Table.ColumnHeader alignContent={'start'}>
 								<SortableHeader
-									label='Propósito de pago'
+									label='Concepto de pago'
 									columnKey='purpose_display'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}

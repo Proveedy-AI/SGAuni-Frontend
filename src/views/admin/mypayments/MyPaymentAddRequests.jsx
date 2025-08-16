@@ -223,7 +223,7 @@ export const MyPaymentAddRequests = () => {
 			newErrors.selectedDocumentType = 'Seleccione un tipo de documento';
 		if (!numDocCarpeta)
 			newErrors.numDocCarpeta = 'Ingrese el número de documento';
-		if (!selectedPurpose) newErrors.selectedPurpose = 'Seleccione un propósito';
+		if (!selectedPurpose) newErrors.selectedPurpose = 'Seleccione un concepto de pago';
 		if (!selectedMethod)
 			newErrors.selectedMethod = 'Seleccione un método de pago';
 		if (!amountValue) newErrors.amountValue = 'El monto es requerido';
@@ -457,7 +457,7 @@ export const MyPaymentAddRequests = () => {
 										/>
 									</Field>
 									<Field
-										label='Propósito:'
+										label='Concepto de pago:'
 										invalid={!!errors.selectedPurpose}
 										errorText={errors.selectedPurpose}
 									>
@@ -530,7 +530,7 @@ export const MyPaymentAddRequests = () => {
 											) : !amountValue &&
 											  currentRule?.amount_type_display !== 'Calcular' ? (
 												<Alert Icon={<FiAlertCircle />} status='error'>
-													El monto para este propósito no fue definido, contacte
+													El monto para este concepto de pago no fue definido, contacte
 													a un administrador.
 												</Alert>
 											) : (

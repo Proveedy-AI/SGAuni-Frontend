@@ -195,7 +195,7 @@ export const PaymentRequestsView = () => {
 							</Field>
 						</SimpleGrid>
 						<SimpleGrid columns={{ base: 1, sm: 2, md: 3, xl: 3 }} gap={6}>
-							<Field label='Propósito:'>
+							<Field label='Concepto de pago:'>
 								<ReactSelect
 									placeholder='Seleccionar'
 									value={selectedPurpose}

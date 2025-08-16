@@ -90,7 +90,7 @@ export const UpdatePaymentRules = ({
 		)
 			newErrors.use_credits_from = 'Seleccione créditos a usar';
 		if (!purposeRequest.payment_purpose)
-			newErrors.payment_purpose = 'Seleccione un propósito de pago';
+			newErrors.payment_purpose = 'Seleccione un concepto de pago';
 
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
@@ -193,7 +193,7 @@ export const UpdatePaymentRules = ({
 					<Card.Body>
 						<SimpleGrid columns={2} gap={4}>
 							<Field
-								label='Propósito de pago'
+								label='Concepto de pago'
 								errorText={errors.payment_purpose}
 								invalid={!!errors.payment_purpose}
 								required
