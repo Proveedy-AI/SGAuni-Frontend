@@ -28,8 +28,11 @@ const Row = memo(
 		startIndex,
 		index,
 		sortConfig,
+		dataRole,
+		forceOpen,
 		data,
 		dataPermissions,
+		onClose
 	}) => {
 		const [open, setOpen] = useState(false);
 
@@ -66,9 +69,12 @@ const Row = memo(
 							<UpdateSettingsRoleForm data={item} fetchData={fetchData} />
 
 							<AssignSettingsRolePermissionsForm
+								forceOpen={forceOpen}
+								dataRole={dataRole}
 								dataPermissions={dataPermissions}
 								data={item}
 								fetchData={fetchData}
+								onClose={onClose}
 							/>
 
 							<ConfirmModal
@@ -119,13 +125,19 @@ Row.propTypes = {
 	sortConfig: PropTypes.object,
 	data: PropTypes.array,
 	dataPermissions: PropTypes.array,
+	dataRole: PropTypes.object,
+	forceOpen: PropTypes.bool,
+	onClose: PropTypes.func,
 };
 
 export const SettingsRolesTable = ({
 	data,
+	dataRole,
+	forceOpen,
 	fetchData,
 	isLoading,
 	dataPermissions,
+	onClose
 }) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [currentPage, setCurrentPage] = useState(1);
@@ -176,11 +188,14 @@ export const SettingsRolesTable = ({
 									key={item.id}
 									item={item}
 									data={data}
+									dataRole={dataRole}
+									forceOpen={forceOpen}
 									dataPermissions={dataPermissions}
 									sortConfig={sortConfig}
 									fetchData={fetchData}
 									startIndex={startIndex}
 									index={index}
+									onClose={onClose}
 								/>
 							))
 						) : (
@@ -214,4 +229,7 @@ SettingsRolesTable.propTypes = {
 	fetchData: PropTypes.func,
 	isLoading: PropTypes.bool,
 	dataPermissions: PropTypes.array,
+	dataRole: PropTypes.object,
+	forceOpen: PropTypes.bool,
+	onClose: PropTypes.func,
 };
