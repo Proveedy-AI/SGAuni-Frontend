@@ -37,14 +37,14 @@ export const AssignModalityRules = ({ item, fetchData }) => {
 
 	const handleSaveRules = async () => {
 		if (selectedRuleIds.length === 0) {
-      toaster.create({
-        title: 'Por favor, seleccione al menos una regla.',
-        type: 'warning',
-      });
-      return;
-    }
-    
-    const payload = {
+			toaster.create({
+				title: 'Por favor, seleccione al menos una regla.',
+				type: 'warning',
+			});
+			return;
+		}
+
+		const payload = {
 			modalityId: modalityId,
 			rulesId: selectedRuleIds,
 		};
@@ -98,20 +98,22 @@ export const AssignModalityRules = ({ item, fetchData }) => {
 				</Flex>
 			) : (
 				<Stack>
-					<Field label='Roles'>
+					<Field label='Identificador - Regla'>
 						<VStack align='start'>
-							{dataModalityRules?.results?.map((rule) => (
-								<Field key={rule.id} orientation='horizontal'>
-									<Checkbox
-										checked={selectedRuleIds.includes(rule.id)}
-										onChange={(e) =>
-											handleCheckboxChange(rule.id, e.target.checked)
-										}
-									>
-										{rule.field_name}
-									</Checkbox>
-								</Field>
-							))}
+							{dataModalityRules?.results
+								?.sort((a, b) => a.id - b.id) // orden ascendente por ID
+								.map((rule) => (
+									<Field key={rule.id} orientation='horizontal'>
+										<Checkbox
+											checked={selectedRuleIds.includes(rule.id)}
+											onChange={(e) =>
+												handleCheckboxChange(rule.id, e.target.checked)
+											}
+										>
+											{rule.id} - {rule.field_name}
+										</Checkbox>
+									</Field>
+								))}
 						</VStack>
 					</Field>
 				</Stack>

@@ -3,7 +3,7 @@ import { memo, useMemo, useState } from 'react';
 import { Box, Group, HStack, Table } from '@chakra-ui/react';
 import { Pagination } from '@/components/ui';
 import {
-	DeleteModalityRule,
+	//DeleteModalityRule,
 	EditModalityRule,
 	ViewModalityRule,
 } from '../forms/management/modalitiesRules';
@@ -19,7 +19,9 @@ const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 					? data.length - (startIndex + index)
 					: startIndex + index + 1}
 			</Table.Cell>
+			
 			<Table.Cell>{item.field_name}</Table.Cell>
+			<Table.Cell> {item.id}</Table.Cell>
 			<Table.Cell>
 				<HStack justify='space-between'>
 					<Group>
@@ -50,7 +52,7 @@ export const ModalityRulesTable = ({ data, fetchData, isLoading }) => {
 	const startIndex = (currentPage - 1) * pageSize;
 	const endIndex = startIndex + pageSize;
 	const [sortConfig, setSortConfig] = useState(null);
-
+	console.log(data);
 	const sortedData = useMemo(() => {
 		if (!sortConfig) return data;
 
@@ -91,10 +93,19 @@ export const ModalityRulesTable = ({ data, fetchData, isLoading }) => {
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
+
 							<Table.ColumnHeader w='80%'>
 								<SortableHeader
 									label='Regla'
 									columnKey='field_name'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader w='15%'>
+								<SortableHeader
+									label='Identificador'
+									columnKey='id'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
@@ -145,5 +156,5 @@ export const ModalityRulesTable = ({ data, fetchData, isLoading }) => {
 ModalityRulesTable.propTypes = {
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
-	isLoading: PropTypes.bool
+	isLoading: PropTypes.bool,
 };
