@@ -24,7 +24,6 @@ import {
 import { useState } from 'react';
 import { formatDateString } from '@/components/ui/dateHelpers';
 import { FaGraduationCap } from 'react-icons/fa';
-import { da } from 'date-fns/locale';
 
 export const PreviewAdmissionsProgramsModal = ({ data, statusMap }) => {
 	const [open, setOpen] = useState(false);
