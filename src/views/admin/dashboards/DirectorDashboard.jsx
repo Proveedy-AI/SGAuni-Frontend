@@ -21,6 +21,10 @@ export const DirectorDashboard = () => {
 
 	const { data: dataInfo } = useReadDataDashCoord();
 
+	const gotoRoute = (link) => {
+		navigate(link);
+	};
+
 	const otherLinks = [
 		{
 			title: 'Contratos:',
@@ -41,6 +45,12 @@ export const DirectorDashboard = () => {
 			link: '/commitment-letters/request',
 		},
 	];
+
+	const routeMap = {
+		admission_programs: '/admissions/proccess',
+		enrollment_programs: '/enrollments/proccess',
+		schedules: '/enrollments/proccess',
+	};
 
 	return (
 		<Flex direction='column' minH='70vh' justify='space-between'>
@@ -115,6 +125,7 @@ export const DirectorDashboard = () => {
 									borderWidth='2px'
 									_hover={{ boxShadow: 'md', cursor: 'pointer' }}
 									transition='box-shadow 0.2s'
+									onClick={() => gotoRoute(routeMap[item.category] || '/')}
 								>
 									<Card.Body p={4}>
 										<Flex justify='space-between' align='flex-start'>
