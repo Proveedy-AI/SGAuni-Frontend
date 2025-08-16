@@ -25,7 +25,7 @@ const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 					<Group>
 						<ViewModalityRule item={item} />
 						<EditModalityRule fetchData={fetchData} item={item} />
-						<DeleteModalityRule item={item} fetchData={fetchData} />
+						{/*<DeleteModalityRule item={item} fetchData={fetchData} />*/}
 					</Group>
 				</HStack>
 			</Table.Cell>

@@ -46,7 +46,7 @@ export const SettingsModalities = () => {
 				</Heading>
 
 				{tab === 1 && <AddModalityForm fetchData={fetchModalities} />}
-				{tab === 2 && <AddModalityRuleForm fetchData={fetchModalityRules} />}
+				{tab === 2 /*<AddModalityRuleForm fetchData={fetchModalityRules} />*/}
 			</Stack>
 			<Tabs.Root
 				value={tab}
