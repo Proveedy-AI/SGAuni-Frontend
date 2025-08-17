@@ -5,6 +5,7 @@ import {
 	Radio,
 	RadioGroup,
 	toaster,
+	Tooltip,
 } from '@/components/ui';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { CustomSelect } from '@/components/ui/CustomSelect';
@@ -57,7 +58,7 @@ import {
 	FaPhone,
 	FaWhatsapp,
 } from 'react-icons/fa';
-import { FiUser } from 'react-icons/fi';
+import { FiHelpCircle, FiUser } from 'react-icons/fi';
 import { useNavigate, useParams } from 'react-router';
 
 const STEPS = [
@@ -972,7 +973,23 @@ export default function ChakraInscriptionForm() {
 																	fontWeight='medium'
 																>
 																	<Icon as={FaEnvelope} w={4} h={4} />
-																	Correo Electrónico
+																	Correo Electrónico{' '}
+																	<Tooltip
+																		content={'Las credenciales de acceso se enviarán a este correo'}
+																		positioning={{ placement: 'top-center' }}
+																		showArrow
+																		openDelay={0}
+																	>
+																		<span>
+																			<FiHelpCircle
+																				style={{
+																					display: 'inline',
+																					verticalAlign: 'middle',
+																					cursor: 'pointer',
+																				}}
+																			/>
+																		</span>
+																	</Tooltip>
 																</Flex>
 															}
 															errorText={errors.email}
