@@ -45,6 +45,7 @@ import {
 	FaArrowRight,
 	FaCalendarAlt,
 	FaCheckCircle,
+	FaClock,
 	FaEnvelope,
 	FaEye,
 	FaFileAlt,
@@ -54,6 +55,7 @@ import {
 	FaMapMarkerAlt,
 	FaPaperPlane,
 	FaPhone,
+	FaWhatsapp,
 } from 'react-icons/fa';
 import { FiUser } from 'react-icons/fi';
 import { useNavigate, useParams } from 'react-router';
@@ -1885,7 +1887,7 @@ export default function ChakraInscriptionForm() {
 								{/* Help Section */}
 								<Card.Root mt={8} bg='gray.50'>
 									<Card.Body p={6}>
-										<VStack spacing={4} textAlign='center'>
+										<VStack gap={4} textAlign='center'>
 											<Heading size='md' color='gray.800'>
 												¿Necesita Ayuda?
 											</Heading>
@@ -1893,20 +1895,45 @@ export default function ChakraInscriptionForm() {
 												Si tiene alguna duda durante el proceso de inscripción,
 												puede contactarnos:
 											</Text>
-											<Flex
-												direction={{ base: 'column', md: 'row' }}
-												gap={4}
-												fontSize='sm'
-											>
+
+											<VStack gap={3} fontSize='sm' color='gray.700'>
+												<HStack>
+													<Icon
+														as={FaMapMarkerAlt}
+														w={4}
+														h={4}
+														color='#8B2635'
+													/>
+													<Text>
+														Puerta N° 03 – UNI, Pabellón Ex – IPL, Tercer Piso –
+														Frente a la Facultad de Arquitectura, Urbanismo y
+														Artes
+													</Text>
+												</HStack>
+
+												<HStack>
+													<Icon as={FaClock} w={4} h={4} color='#8B2635' />
+													<Text>
+														Horario de Atención: Lunes a Viernes; 08:30 a 13:00
+														y 14:00 a 17:30 horas
+													</Text>
+												</HStack>
+
 												<HStack>
 													<Icon as={FaEnvelope} w={4} h={4} color='#8B2635' />
-													<Text>admision@fieecs.uni.edu.pe</Text>
+													<Text>info.posgrado.fieecs@uni.edu.pe</Text>
 												</HStack>
+
 												<HStack>
 													<Icon as={FaPhone} w={4} h={4} color='#8B2635' />
-													<Text>(01) 481-1070 ext. 123</Text>
+													<Text>(01) 481 1070 anexo 5408</Text>
 												</HStack>
-											</Flex>
+
+												<HStack>
+													<Icon as={FaWhatsapp} w={4} h={4} color='#8B2635' />
+													<Text>+51 986 699 381</Text>
+												</HStack>
+											</VStack>
 										</VStack>
 									</Card.Body>
 								</Card.Root>
