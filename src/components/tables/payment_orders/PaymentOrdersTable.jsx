@@ -60,7 +60,10 @@ const Row = memo(
 				<Table.Cell>{item.id_orden}</Table.Cell>
 				<Table.Cell>{item.document_num}</Table.Cell>
 				<Table.Cell>{item.email}</Table.Cell>
+				<Table.Cell>{item.sub_amount}</Table.Cell>
+				<Table.Cell>{item.discount_value}</Table.Cell>
 				<Table.Cell>{item.total_amount}</Table.Cell>
+
 				<Table.Cell>
 					<Badge colorPalette={selectedStatus?.bg}>
 						{selectedStatus?.label || 'N/A'}
@@ -191,7 +194,23 @@ export const PaymentOrdersTable = ({
 							</Table.ColumnHeader>
 							<Table.ColumnHeader alignContent={'start'}>
 								<SortableHeader
-									label='Monto Total'
+									label='Sub Total (S/.)'
+									columnKey='sub_total'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader alignContent={'start'}>
+								<SortableHeader
+									label='Dscto %'
+									columnKey='discount_value'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader alignContent={'start'}>
+								<SortableHeader
+									label='Total (S/.)'
 									columnKey='total_amount'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
