@@ -782,7 +782,8 @@ const AddExcelScheduleModal = ({ open, setOpen, data }) => {
 			uploadedFileUrl = await uploadToS3(
 				file,
 				'sga_uni/schedule',
-				'schedule_excel'
+				'schedule_excel',
+				'xlsx'
 			);
 
 			const payload = {
