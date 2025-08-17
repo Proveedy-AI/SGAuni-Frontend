@@ -1,13 +1,15 @@
 //import { UpdateSettingsCountryForm } from '@/components/forms';
 import { HistoryStatusEnrollmentProgramsView } from '@/components/forms/enrollment_proccess/HistoryStatusEnrollmentProgramsView';
-import { DeleteTuitionProgramsModal, ScheduleEnrollmentProgramsModal } from '@/components/modals/tuition';
+import {
+	DeleteTuitionProgramsModal,
+	ScheduleEnrollmentProgramsModal,
+} from '@/components/modals/tuition';
+import { SendAEnrollmentProgramtoConfirmForm } from '@/components/modals/tuition/SendAEnrollmentProgramtoConfirmForm';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
-import { Pagination, toaster, Tooltip } from '@/components/ui';
+import { Pagination, Tooltip } from '@/components/ui';
 import { formatDateString } from '@/components/ui/dateHelpers';
-import { SendConfirmationModal } from '@/components/ui/SendConfirmationModal';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
-import { useCreateEnrollmentsProgramsReview } from '@/hooks/enrollments_programs/useCreateEnrollmentsProgramsReview';
 
 import useSortedData from '@/utils/useSortedData';
 import { Box, HStack, IconButton, Table } from '@chakra-ui/react';
@@ -28,35 +30,11 @@ const Row = memo(
 		setModalData,
 		setActionType,
 	}) => {
-		const [openSend, setOpenSend] = useState(false);
-
 		const statusMap = {
 			Borrador: { label: 'Borrador', color: 'gray' },
 			Pendiente: { label: 'Pendiente', color: 'orange.500' },
 			Aprobado: { label: 'Aprobado', color: 'green' },
 			Rechazado: { label: 'Rechazado', color: 'red' },
-		};
-		const { mutate: createProgramsReview, isPending: LoadingProgramsReview } =
-			useCreateEnrollmentsProgramsReview();
-
-		const handleSend = () => {
-			createProgramsReview(item.id, {
-				onSuccess: () => {
-					toaster.create({
-						title: 'Programa enviado correctamente',
-						type: 'success',
-					});
-					fetchData();
-					setOpenSend(false);
-				},
-				onError: (error) => {
-					console.log(error);
-					toaster.create({
-						title: error.message,
-						type: 'error',
-					});
-				},
-			});
 		};
 
 		return (
@@ -82,12 +60,9 @@ const Row = memo(
 				<Table.Cell>
 					<HStack>
 						<ScheduleEnrollmentProgramsModal data={item} />
-						<SendConfirmationModal
+						<SendAEnrollmentProgramtoConfirmForm
 							item={item}
-							onConfirm={handleSend}
-							openSend={openSend}
-							setOpenSend={setOpenSend}
-							loading={LoadingProgramsReview}
+							fetchData={fetchData}
 						/>
 
 						<Tooltip
