@@ -17,6 +17,7 @@ import {
 	FiCalendar,
 	FiCheckCircle,
 	FiSend,
+	FiUser,
 } from 'react-icons/fi';
 import { useCreateProgramsReview } from '@/hooks/admissions_review_programs';
 import { LuFileCheck } from 'react-icons/lu';
@@ -191,7 +192,7 @@ export const SendAdmissionProgramtoConfirmForm = ({ fetchData, item }) => {
 									</HStack>
 								)}
 								<HStack spacing={2} fontSize='sm' color='gray.600'>
-									<FiCalendar size={16} color='#9333EA' />
+									<FiUser size={16} color='#9333EA' />
 									<Text>Director a enviar:</Text>
 									<Text fontWeight='medium' color='gray.800'>
 										{item.director_name}
