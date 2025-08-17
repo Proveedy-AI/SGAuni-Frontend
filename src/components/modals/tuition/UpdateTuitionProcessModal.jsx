@@ -47,10 +47,6 @@ export const UpdateTuitionProcessModal = ({
 		formData.academicPeriod.trim()
 	);
 
-	const isDuplicatedValid = data
-		? formData.academicPeriod.toLowerCase().includes(' - copia')
-		: true;
-
 	useEffect(() => {
 		if (open) {
 			if (data) {
@@ -103,7 +99,7 @@ export const UpdateTuitionProcessModal = ({
 				academic_period_name: formData.academicPeriod,
 				start_date: formData.startDate,
 				end_date: formData.endDate,
-				elective_period: data.elective_period
+				elective_period: data.elective_period,
 			};
 
 			if (existingNames.includes(normalizedName)) {
@@ -261,17 +257,14 @@ export const UpdateTuitionProcessModal = ({
 			}}
 			onSave={handleSave}
 			loading={isCreating || isUpdating || isDuplicating}
-			disabledSave={ isCreating || isUpdating || isDuplicating || toasterShown}
+			disabledSave={isCreating || isUpdating || isDuplicating || toasterShown}
 			positionerProps={{ style: { padding: '0 40px' } }}
 		>
 			<Stack gap={4}>
 				<Stack>
 					<Field
 						label='Nombre del Período Académico'
-						invalid={
-							(actionType === 'duplicate' && !isDuplicatedValid) ||
-							(touched.academicPeriod && !isAcademicPeriodValid)
-						}
+						invalid={touched.academicPeriod && !isAcademicPeriodValid}
 					>
 						<Input
 							type='text'
@@ -284,12 +277,6 @@ export const UpdateTuitionProcessModal = ({
 						{touched.academicPeriod && !isAcademicPeriodValid && (
 							<FieldErrorText>Formato inválido. Ej: 2025-1.</FieldErrorText>
 						)}
-						{actionType === 'duplicate' &&
-							!formData.academicPeriod.toLowerCase().includes(' - copia') && (
-								<FieldErrorText>
-									El nombre del período debe incluir &quot; - Copia&quot;
-								</FieldErrorText>
-							)}
 					</Field>
 				</Stack>
 
