@@ -8,7 +8,9 @@ import {
 	Icon,
 	IconButton,
 	Input,
+	SimpleGrid,
 	Stack,
+	Text,
 } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
@@ -20,12 +22,16 @@ import {
 import {
 	FiAlertTriangle,
 	FiArrowUp,
+	FiCreditCard,
 	FiDollarSign,
+	FiFileText,
 	FiPlus,
+	FiUser,
 } from 'react-icons/fi';
 import { PaymentOrdersTable } from '@/components/tables/payment_orders';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { format } from 'date-fns';
+import { LuGraduationCap } from 'react-icons/lu';
 
 export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 	const contentRef = useRef();
@@ -48,6 +54,30 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 	const [orderIdInput, setOrderIdInput] = useState('');
 	const [discountInput, setDiscountInput] = useState('');
 	const [dueDateInput, setDueDateInput] = useState('');
+
+	useEffect(() => {
+		if (!item?.purpose) return;
+
+		// función para calcular el último día de un mes
+		const getLastDayOfMonth = (date) => {
+			return new Date(date.getFullYear(), date.getMonth() + 1, 0);
+		};
+
+		let today = new Date();
+		let dueDate = getLastDayOfMonth(today); // por defecto este mes
+
+		// ejemplo: reglas distintas según el propósito
+		if (item.purpose === 4 || item.purpose === 9) {
+			// propósito 4 → fin de este mes
+			dueDate = getLastDayOfMonth(dueDate);
+			setDueDateInput(dueDate.toISOString().split('T')[0]);
+		} else if (item.purpose === 5) {
+			// propósito 5 → fin del próximo mes
+			dueDate = getLastDayOfMonth(dueDate);
+			setDueDateInput(dueDate.toISOString().split('T')[0]);
+		}
+
+	}, [item?.purpose, open]);
 
 	const handleReset = () => {
 		setOrderIdInput('');
@@ -101,7 +131,9 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 			},
 			onError: (error) => {
 				toaster.create({
-					title: error.response?.data?.[0] || 'Error en la creación de la orden de pago',
+					title:
+						error.response?.data?.[0] ||
+						'Error en la creación de la orden de pago',
 					type: 'error',
 				});
 			},
@@ -136,11 +168,7 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 								showArrow
 								openDelay={0}
 							>
-								<IconButton
-									disabled={item?.status !== 1}
-									colorPalette='purple'
-									size='xs'
-								>
+								<IconButton colorPalette='purple' size='xs'>
 									<FiArrowUp />
 								</IconButton>
 							</Tooltip>
@@ -171,6 +199,16 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 									<Icon as={FiPlus} w={5} h={5} color='purple.600' />
 									<Heading size='sm'>Generar Orden de Pago</Heading>
 								</Flex>
+
+								{item?.status === 3 && (
+									<Alert
+										title='Orden Verificado'
+										status='success'
+										Icon={<FiAlertTriangle />}
+									>
+										La orden ha sido verificada.
+									</Alert>
+								)}
 								{item?.description && (
 									<Alert
 										title='Información Importante'
@@ -180,6 +218,151 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 										{formatMonetaryNumbers(item.description)}
 									</Alert>
 								)}
+								<Card.Root
+									w='full'
+									mx='auto'
+									bg='card'
+									border='1px solid'
+									borderColor='border'
+								>
+									{/* Header */}
+									<Card.Header pb={4}>
+										<Box
+											display='flex'
+											alignItems='center'
+											justifyContent='space-between'
+										>
+											<Card.Title
+												fontSize='xl'
+												fontWeight='semibold'
+												color='primary'
+												fontFamily='sans'
+											>
+												Información de Pago
+											</Card.Title>
+											<Badge variant='subtle' colorPalette='purple'>
+												{item.purpose_display}
+											</Badge>
+										</Box>
+									</Card.Header>
+
+									{/* Body */}
+									<Card.Body>
+										<SimpleGrid columns={2} rowGap={6} columnGap={8}>
+											{/* Monto */}
+											<Box
+												display='flex'
+												justifyContent='space-between'
+												bg='muted'
+												rounded='lg'
+											>
+												<Box display='flex' alignItems='center' gap={2} mb={1}>
+													<FiCreditCard
+														size={20}
+														color='var(--chakra-colors-primary)'
+													/>
+													<Text fontSize='sm' color='muted.600' mt={1}>
+														Monto
+													</Text>
+												</Box>
+
+												<Text
+													fontSize='2xl'
+													fontWeight='bold'
+													color='primary'
+													fontFamily='mono'
+												>
+													S/ {item.amount}
+												</Text>
+											</Box>
+
+											{/* Programa */}
+											<Box
+												display='flex'
+												justifyContent='space-between'
+												bg='muted'
+												rounded='lg'
+											>
+												<Box display='flex' alignItems='center' gap={2} mb={1}>
+													<LuGraduationCap
+														size={18}
+														color='var(--chakra-colors-secondary)'
+													/>
+													<Text fontSize='sm' fontWeight='medium'>
+														Programa
+													</Text>
+												</Box>
+												<Text fontSize='sm' color='muted.600'>
+													{item.enrollment_process_program_name ||
+														item.admission_process_program_name}
+												</Text>
+											</Box>
+
+											{/* Proceso */}
+											<Box
+												display='flex'
+												justifyContent='space-between'
+												bg='muted'
+												rounded='lg'
+											>
+												<Box display='flex' alignItems='center' gap={2} mb={1}>
+													<FiFileText
+														size={18}
+														color='var(--chakra-colors-secondary)'
+													/>
+													<Text fontSize='sm' fontWeight='medium'>
+														Proceso
+													</Text>
+												</Box>
+												<Text fontSize='sm' color='muted.600'>
+													{item.enrollment_process_name
+														? `Matrícula  ${item.enrollment_process_name}`
+														: item.admission_process_name
+															? `Admisión  ${item.admission_process_name}`
+															: 'Sin información'}
+												</Text>
+											</Box>
+
+											{/* Documento */}
+											<Box
+												display='flex'
+												justifyContent='space-between'
+												bg='muted'
+												rounded='lg'
+											>
+												<Box display='flex' alignItems='center' gap={2} mb={1}>
+													<FiUser
+														size={18}
+														color='var(--chakra-colors-secondary)'
+													/>
+													<Text fontSize='sm' fontWeight='medium'>
+														Documento
+													</Text>
+												</Box>
+												<Text fontSize='sm' color='muted.600' fontFamily='mono'>
+													{item.num_document}
+												</Text>
+											</Box>
+										</SimpleGrid>
+
+										{/* Método de pago */}
+										<Box
+											mt={6}
+											pt={3}
+											borderTop='1px'
+											borderColor='border'
+											display='flex'
+											justifyContent='space-between'
+										>
+											<Text fontSize='sm' color='muted.600'>
+												Método de pago
+											</Text>
+											<Badge variant='outline' fontSize='xs'>
+												{item.payment_method_display}
+											</Badge>
+										</Box>
+									</Card.Body>
+								</Card.Root>
 							</Card.Header>
 							<Card.Body>
 								<Flex
