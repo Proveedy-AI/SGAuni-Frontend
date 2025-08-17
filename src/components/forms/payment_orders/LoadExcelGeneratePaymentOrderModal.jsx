@@ -21,8 +21,6 @@ export const LoadExcelGeneratePaymentOrderModal = ({ fetchData }) => {
 		{ enable: open }
 	);
 
-  console.log(enrollmentsPrograms)
-
 	const enrollmentOptions = enrollmentsPrograms?.results
 		? enrollmentsPrograms.results.map((program) => ({
 				value: program.uuid,
@@ -52,7 +50,7 @@ export const LoadExcelGeneratePaymentOrderModal = ({ fetchData }) => {
 					excelPath,
 					'sga_uni/vouchers/validation',
 					'excel_ocef',
-          'xlsx'
+					'xlsx'
 				);
 			}
 
@@ -62,19 +60,22 @@ export const LoadExcelGeneratePaymentOrderModal = ({ fetchData }) => {
 
 			const payload = { order_excel_url: pathDocUrl };
 
-			validate({ uuid: selectedProgram?.value, payload }, {
-				onSuccess: () => {
-					toaster.create({
-						title: 'Validación exitosa',
-						description: 'El archivo Excel ha sido subido correctamente.',
-						type: 'success',
-					});
-					setOpen(false);
-					fetchData();
-					setExcelPath(null);
-					setIsLoading(false);
-				},
-			});
+			validate(
+				{ uuid: selectedProgram?.value, payload },
+				{
+					onSuccess: () => {
+						toaster.create({
+							title: 'Validación exitosa',
+							description: 'El archivo Excel ha sido subido correctamente.',
+							type: 'success',
+						});
+						setOpen(false);
+						fetchData();
+						setExcelPath(null);
+						setIsLoading(false);
+					},
+				}
+			);
 		} catch (err) {
 			toaster.create({
 				title: 'Error inesperado',
@@ -166,6 +167,7 @@ export const LoadExcelGeneratePaymentOrderModal = ({ fetchData }) => {
 						<Text>• Formato requerido: .xlsx o .xls</Text>
 						<Text>• Columnas: Descargar Guía de formato correcto</Text>
 						<Text>• Primera fila debe contener los encabezados</Text>
+						<Text>• El monto definido esta en S/ (Soles)</Text>
 					</VStack>
 				</Alert>
 
