@@ -71,7 +71,10 @@ export const Pagination = ({
 						{pageSizeOptions.find((opt) => opt.value === pageSize)?.label ??
 							'Seleccionar filas'}
 					</SelectTrigger>
-					<SelectContent bg={{ base: 'white', _dark: 'its.gray.500' }}>
+					<SelectContent
+						bg={{ base: 'white', _dark: 'its.gray.500' }}
+						zIndex={1600}
+					>
 						{options.map((option) => (
 							<SelectItem
 								key={option.value}
