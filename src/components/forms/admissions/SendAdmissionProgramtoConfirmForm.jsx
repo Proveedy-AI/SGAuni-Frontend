@@ -46,7 +46,7 @@ export const SendAdmissionProgramtoConfirmForm = ({ fetchData, item }) => {
 			},
 		});
 	};
-
+	console.log(item);
 	return (
 		<Modal
 			title='Enviar Proceso de Admisión para Aprobación'
@@ -56,9 +56,9 @@ export const SendAdmissionProgramtoConfirmForm = ({ fetchData, item }) => {
 				<Box>
 					<Tooltip
 						content={
-							item.status === 2 || item.status_review === 2
+							item.status === 2
 								? 'Ya fue enviado para aprobación'
-								: item.status === 4 || item.status_review === 4
+								: item.status === 4
 									? 'Aprobado'
 									: 'Enviar para aprobación'
 						}
@@ -69,9 +69,8 @@ export const SendAdmissionProgramtoConfirmForm = ({ fetchData, item }) => {
 						<IconButton
 							disabled={
 								item.status === 4 ||
-								item.status === 2 ||
-								item.status_review === 2 ||
-								item.status_review === 4
+								item.status === 2 
+								
 							}
 							colorPalette='green'
 							size='xs'
@@ -165,22 +164,8 @@ export const SendAdmissionProgramtoConfirmForm = ({ fetchData, item }) => {
 								</Box>
 							)}
 
-							{item.course_name && (
-								<Box
-									bg='green.50'
-									border='1px solid'
-									borderColor='green.200'
-									borderRadius='md'
-									p={3}
-									fontWeight='bold'
-									color='green.700'
-								>
-									{item.course_name}
-								</Box>
-							)}
-
 							<VStack
-								spacing={3}
+								gap={3}
 								align='start'
 								mt={4}
 								pt={2}
@@ -205,6 +190,13 @@ export const SendAdmissionProgramtoConfirmForm = ({ fetchData, item }) => {
 										</Text>
 									</HStack>
 								)}
+								<HStack spacing={2} fontSize='sm' color='gray.600'>
+									<FiCalendar size={16} color='#9333EA' />
+									<Text>Director a enviar:</Text>
+									<Text fontWeight='medium' color='gray.800'>
+										{item.director_name}
+									</Text>
+								</HStack>
 							</VStack>
 						</Card.Body>
 					</Card.Root>
