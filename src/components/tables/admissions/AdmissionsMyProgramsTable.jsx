@@ -7,14 +7,13 @@ import {
 } from '@/components/forms/admissions';
 import { AssignModalityToProgramForm } from '@/components/forms/admissions/AssignModalityProgramsForm';
 import { HistoryStatusProgramsView } from '@/components/forms/admissions/HistoryStatusProgramsView';
+import { SendAdmissionProgramtoConfirmForm } from '@/components/forms/admissions/SendAdmissionProgramtoConfirmForm';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { ConfirmModal, Pagination, toaster } from '@/components/ui';
 import { formatDateString } from '@/components/ui/dateHelpers';
-import { SendConfirmationModal } from '@/components/ui/SendConfirmationModal';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import { useDeleteAdmissionsPrograms } from '@/hooks/admissions_programs';
-import { useCreateProgramsReview } from '@/hooks/admissions_review_programs/useCreateProgramsReview';
 import useSortedData from '@/utils/useSortedData';
 import { Box, HStack, IconButton, Span, Table, Text } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
@@ -24,13 +23,9 @@ import { FiTrash2 } from 'react-icons/fi';
 const Row = memo(
 	({ item, fetchData, startIndex, index, permissions, sortConfig, data }) => {
 		const [open, setOpen] = useState(false);
-		const [openSend, setOpenSend] = useState(false);
 
 		const { mutate: deleteAdmisionsPrograms, isPending } =
 			useDeleteAdmissionsPrograms();
-
-		const { mutate: createProgramsReview, isPending: LoadingProgramsReview } =
-			useCreateProgramsReview();
 
 		const handleDelete = () => {
 			deleteAdmisionsPrograms(item.id, {
@@ -51,29 +46,9 @@ const Row = memo(
 			});
 		};
 
-		const handleSend = () => {
-			createProgramsReview(item.id, {
-				onSuccess: () => {
-					toaster.create({
-						title: 'Programa enviado correctamente',
-						type: 'success',
-					});
-					fetchData();
-					setOpenSend(false);
-				},
-				onError: (error) => {
-					console.log(error);
-					toaster.create({
-						title: error.message,
-						type: 'error',
-					});
-				},
-			});
-		};
-
 		const statusMap = {
 			Borrador: { label: 'Borrador', color: 'gray' },
-			"En revision": { label: 'En revisión', color: 'orange.500' },
+			'En revision': { label: 'En revisión', color: 'orange.500' },
 			Aprobado: { label: 'Aprobado', color: 'green' },
 			Rechazado: { label: 'Rechazado', color: 'red' },
 		};
@@ -100,12 +75,9 @@ const Row = memo(
 				<Table.Cell>
 					<HStack>
 						{permissions?.includes('admissions.myprograms.send') && (
-							<SendConfirmationModal
+							<SendAdmissionProgramtoConfirmForm
+								fetchData={fetchData}
 								item={item}
-								onConfirm={handleSend}
-								openSend={openSend}
-								setOpenSend={setOpenSend}
-								loading={LoadingProgramsReview}
 							/>
 						)}
 						<PreviewAdmissionsProgramsModal statusMap={statusMap} data={item} />
