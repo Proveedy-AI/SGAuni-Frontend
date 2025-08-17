@@ -32,9 +32,11 @@ export const SettingsDataProccess = () => {
 		label: item.name,
 	}));
 
-	const filteredCountryList = dataPurposes?.results?.filter((item) =>
-		item?.name?.toLowerCase().includes(searchCountryValue.toLowerCase())
-	);
+	const filteredCountryList = dataPurposes?.results
+		?.filter((item) =>
+			item?.name?.toLowerCase().includes(searchCountryValue.toLowerCase())
+		)
+		?.sort((a, b) => a.id - b.id); // orden ascendente por id
 
 	return (
 		<Box spaceY='5'>
