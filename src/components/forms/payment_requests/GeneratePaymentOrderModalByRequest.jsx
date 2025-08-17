@@ -30,7 +30,7 @@ import { format } from 'date-fns';
 export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
-	const { mutateAsync: generatePaymentOrder, isSaving } =
+	const { mutateAsync: generatePaymentOrder, isPending } =
 		useCreatePaymentOrder();
 	const {
 		data: dataPaymentOrders,
@@ -101,10 +101,24 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 			},
 			onError: (error) => {
 				toaster.create({
-					title: error.response?.data?.[0] || 'Error en la creación del examen',
+					title: error.response?.data?.[0] || 'Error en la creación de la orden de pago',
 					type: 'error',
 				});
 			},
+		});
+	};
+
+	const formatMonetaryNumbers = (text) => {
+		if (!text) return text;
+
+		return text.replace(/(-?\s*S\/\s*)(\d+(?:\.\d+)?)/g, (_, prefix, num) => {
+			const value = Number(num);
+			if (isNaN(value)) return prefix + num;
+
+			return `${prefix}${value.toLocaleString('en-US', {
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+			})}`;
 		});
 	};
 
@@ -123,9 +137,9 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 								openDelay={0}
 							>
 								<IconButton
+									disabled={item?.status !== 1}
 									colorPalette='purple'
 									size='xs'
-									disabled={item?.status !== 1}
 								>
 									<FiArrowUp />
 								</IconButton>
@@ -163,7 +177,7 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 										status='info'
 										Icon={<FiAlertTriangle />}
 									>
-										{item?.description}
+										{formatMonetaryNumbers(item.description)}
 									</Alert>
 								)}
 							</Card.Header>
@@ -222,7 +236,7 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 										<IconButton
 											size='sm'
 											bg='green'
-											loading={isSaving}
+											loading={isPending}
 											disabled={
 												(item?.payment_method !== 2 && !orderIdInput) ||
 												!dueDateInput ||

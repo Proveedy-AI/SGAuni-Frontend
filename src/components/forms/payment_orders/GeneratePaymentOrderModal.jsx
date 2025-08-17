@@ -92,7 +92,7 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 		const payload = {
 			request: selectedRequest.value,
 			id_orden: orderIdInput || null,
-      status: 2,
+			status: 2,
 			discount_value: (Number(discountInput) / 100).toString(),
 			due_date: dueDateInput,
 		};
@@ -115,6 +115,20 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 		});
 	};
 
+	const formatMonetaryNumbers = (text) => {
+		if (!text) return text;
+
+		return text.replace(/(-?\s*S\/\s*)(\d+(?:\.\d+)?)/g, (_, prefix, num) => {
+			const value = Number(num);
+			if (isNaN(value)) return prefix + num;
+
+			return `${prefix}${value.toLocaleString('en-US', {
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+			})}`;
+		});
+	};
+	
 	return (
 		<Stack css={{ '--field-label-width': '180px' }}>
 			<Field orientation={{ base: 'vertical', sm: 'horizontal' }}>
@@ -170,7 +184,7 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 									status='info'
 									Icon={<FiAlertTriangle />}
 								>
-									{selectedRequest?.description}
+									{formatMonetaryNumbers(selectedRequest.description)}
 								</Alert>
 							)}
 							<SimpleGrid columns={{ base: 1, sm: 2 }} gap={4} w='100%'>
