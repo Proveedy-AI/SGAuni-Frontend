@@ -1,16 +1,25 @@
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
-import { Pagination, Tooltip } from '@/components/ui';
+import { ConfirmModal, Pagination, toaster, Tooltip } from '@/components/ui';
 import { SortableHeader } from '@/components/ui/SortableHeader';
-import { Box, Button, IconButton, Table } from '@chakra-ui/react';
+import {
+	Badge,
+	Box,
+	Button,
+	IconButton,
+	Span,
+	Table,
+	Text,
+} from '@chakra-ui/react';
 import { memo, useState } from 'react';
 import { DeleteTuitionProcessModal } from '@/components/modals/tuition';
 import { useNavigate } from 'react-router';
-import { FiCopy, FiEdit2 } from 'react-icons/fi';
+import { FiCheckCircle, FiCopy, FiEdit2 } from 'react-icons/fi';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import useSortedData from '@/utils/useSortedData';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import PropTypes from 'prop-types';
 import { formatDateString } from '@/components/ui/dateHelpers';
+import { useCompleteEnrollment } from '@/hooks/enrollments_proccess';
 
 const Row = memo(
 	({
@@ -28,6 +37,8 @@ const Row = memo(
 		const navigate = useNavigate();
 		const encrypted = Encryptor.encrypt(item.id);
 		const encoded = encodeURIComponent(encrypted);
+		const [open, setOpen] = useState(false);
+		const { mutate: completeEnrollment, isPending } = useCompleteEnrollment();
 
 		const handleRowClick = () => {
 			if (permissions?.includes('enrollments.myprogramsEnrollments.view')) {
@@ -37,6 +48,40 @@ const Row = memo(
 			) {
 				navigate(`/enrollments/programs/${encoded}`);
 			}
+		};
+
+		const getStatusColor = (status) => {
+			switch (status) {
+				case 1: // Activo
+					return 'green';
+				case 2: // Cancelado
+					return 'red';
+				case 3: // Completado
+					return 'blue';
+				case 4: // Borrador
+					return 'gray';
+				default:
+					return 'gray';
+			}
+		};
+
+		const handleComplete = (uuid) => {
+			completeEnrollment(uuid, {
+				onSuccess: () => {
+					toaster.create({
+						title: 'Proceso completado correctamente',
+						type: 'success',
+					});
+					fetchData();
+					setOpen(false);
+				},
+				onError: (error) => {
+					toaster.create({
+						title: error.message,
+						type: 'error',
+					});
+				},
+			});
 		};
 
 		return (
@@ -60,9 +105,50 @@ const Row = memo(
 				<Table.Cell>{item.academic_period_name}</Table.Cell>
 				<Table.Cell>{formatDateString(item.start_date)}</Table.Cell>
 				<Table.Cell>{formatDateString(item.end_date)}</Table.Cell>
+				<Table.Cell>
+					{' '}
+					<Badge
+						colorPalette={getStatusColor(item.status_enrollment_period)}
+						variant='subtle'
+						px={2}
+						py={1}
+						borderRadius='md'
+					>
+						{item.status_enrollment_period_display}
+					</Badge>
+				</Table.Cell>
 
 				<Table.Cell onClick={(e) => e.stopPropagation()}>
 					<Box css={{ display: 'flex' }} gap={2}>
+						{permissions?.includes(
+							'enrollments.proccessEnrollments.complete'
+						) && (
+							<ConfirmModal
+								placement='center'
+								trigger={
+									<Box>
+										<IconButton px={2} colorPalette='blue' size='xs'>
+											<FiCheckCircle />
+											Completar
+										</IconButton>
+									</Box>
+								}
+								open={open}
+								onOpenChange={(e) => setOpen(e.open)}
+								onConfirm={() => handleComplete(item.uuid)}
+								loading={isPending}
+								confirmLabel={'Si, Finalizar'}
+							>
+								<Text textAlign={'center'}>
+									¿Estás seguro que quieres finalizar el proceso de Matrícula
+									<Span fontWeight='semibold' px='1'>
+										{item.academic_period_name}
+									</Span>
+									y completar el periodo?
+								</Text>
+							</ConfirmModal>
+						)}
+
 						<Tooltip
 							content='Editar'
 							positioning={{ placement: 'bottom-center' }}
@@ -166,7 +252,7 @@ export const TuitionListTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader minW={'200px'}>
+							<Table.ColumnHeader minW={'30%'}>
 								<SortableHeader
 									label='Período Académico'
 									columnKey='academic_period_name'
@@ -174,16 +260,22 @@ export const TuitionListTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader minW={'200px'}>
-								Fecha Inicio
+							<Table.ColumnHeader minW={'30%'}>Fecha Inicio</Table.ColumnHeader>
+							<Table.ColumnHeader minW={'30%%'}>Fecha Fin</Table.ColumnHeader>
+							<Table.ColumnHeader minW={'30%%'}>
+								<SortableHeader
+									label='Estado'
+									columnKey='status_enrollment_period_display'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader minW={'200px'}>Fecha Fin</Table.ColumnHeader>
-							<Table.ColumnHeader minW={'10px'}>Acciones</Table.ColumnHeader>
+							<Table.ColumnHeader minW={'20%'}>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
 						{isLoading ? (
-							<SkeletonTable columns={5} />
+							<SkeletonTable columns={6} />
 						) : visibleRows?.length > 0 ? (
 							visibleRows.map((item, index) => (
 								<Row
@@ -202,7 +294,7 @@ export const TuitionListTable = ({
 							))
 						) : (
 							<Table.Row>
-								<Table.Cell colSpan={5} textAlign='center' py={2}>
+								<Table.Cell colSpan={6} textAlign='center' py={2}>
 									No hay datos disponibles.
 								</Table.Cell>
 							</Table.Row>
