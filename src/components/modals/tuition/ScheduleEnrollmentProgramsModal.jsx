@@ -738,7 +738,7 @@ AddCourseModal.propTypes = {
 	fetchData: PropTypes.func,
 };
 
-const AddExcelScheduleModal = ({ open, setOpen, data }) => {
+const AddExcelScheduleModal = ({ open, setOpen, data, fetchData }) => {
 	const [file, setFile] = useState(null);
 	const fileInputRef = useRef(null);
 	const [loading, setLoading] = useState(false);
@@ -783,7 +783,8 @@ const AddExcelScheduleModal = ({ open, setOpen, data }) => {
 			uploadedFileUrl = await uploadToS3(
 				file,
 				'sga_uni/schedule',
-				'schedule_excel'
+				'schedule_excel',
+				'xlsx'
 			);
 
 			const payload = {
@@ -809,6 +810,7 @@ const AddExcelScheduleModal = ({ open, setOpen, data }) => {
 									setOpen(false);
 									setLoading(false);
 									setFile(null);
+									fetchData();
 								},
 								onError: (error) => {
 									toaster.create({
@@ -970,11 +972,12 @@ const AddExcelScheduleModal = ({ open, setOpen, data }) => {
 };
 
 AddExcelScheduleModal.propTypes = {
-	open: PropTypes.bool.isRequired,
-	setOpen: PropTypes.func.isRequired,
+	open: PropTypes.bool,
+	setOpen: PropTypes.func,
 	data: PropTypes.shape({
-		id: PropTypes.number.isRequired,
-	}).isRequired,
+		id: PropTypes.number,
+	}),
+	fetchData: PropTypes.func,
 };
 
 const CalendarView = ({ data }) => {
@@ -1356,6 +1359,7 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 					data={data}
 					open={addExcelOpen}
 					setOpen={setAddExcelOpen}
+					fetchData={refetchCourseSchedule}
 				/>
 			</HStack>
 
