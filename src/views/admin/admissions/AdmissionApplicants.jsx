@@ -23,9 +23,9 @@ export const AdmissionApplicants = () => {
 
 	// Según permisos agregamos el filtro
 	if (permissions.includes('admissions.applicants.viewcoord')) {
-		queryParams.coordinator = profile.id;
+		queryParams.coordinator = profile?.id;
 	} else if (permissions.includes('admissions.applicants.viewdirector')) {
-		queryParams.director = profile.id;
+		queryParams.director = profile?.id;
 	}
 
 	const {
