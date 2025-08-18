@@ -135,7 +135,7 @@ export const MyPostponeEnrollmentProcessView = () => {
     const encrypted = Encryptor.encrypt(enrollment.id); // id enrollment
     const encoded = encodeURIComponent(encrypted);
     EncryptedStorage.save('selectedEnrollmentProccess', enrollment);
-    navigate(`/myprocedures/postpone-enrollment/${encoded}`);
+    navigate(`/myprocedures/postpone-process/${encoded}`);
   };
 
   return (

@@ -46,7 +46,7 @@ export const MyPostponeFormView = () => {
           { label: 'Trámites', to: '/myprocedures' },
           {
             label: 'Proceso de Postergación',
-            to: '/myprocedures/postpone-enrollment',
+            to: '/myprocedures/postpone-process',
           },
           { label: enrollment ? enrollment?.program_name : 'Cargando...' },
         ]}

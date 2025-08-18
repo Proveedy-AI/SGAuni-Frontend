@@ -150,7 +150,7 @@ export const MyProceduresView = () => {
   {
     id: 7,
     label: "Postergar matrícula",
-    href: "/myprocedures/postpone-enrollment",
+    href: "/myprocedures/postpone-process",
     icon: FiUserX,
     description: "Solicita postergar tu matrícula",
     isActive: true,
@@ -169,7 +169,7 @@ export const MyProceduresView = () => {
     href: "/myprocedures/reintegration-process",
     icon: FiUserPlus,
     description: "Solicita tu proceso de reintegro",
-    isActive: false,
+    isActive: true,
   }
 ];
 
