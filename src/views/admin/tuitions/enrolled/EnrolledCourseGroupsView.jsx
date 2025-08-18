@@ -1,7 +1,10 @@
 import PropTypes from 'prop-types';
 import { ReactSelect } from '@/components';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
-import { GenerateStudentEnrolledListPdfModal, GenerateSuneduListPdfModal } from '@/components/modals/tuition/enrolled';
+import {
+	GenerateStudentEnrolledListPdfModal,
+	GenerateSuneduListPdfModal,
+} from '@/components/modals/tuition/enrolled';
 import { EnrolledCourseGroupsTable } from '@/components/tables/tuition/enrolled';
 import {
 	Button,
@@ -32,7 +35,12 @@ import { useState } from 'react';
 import { FiBookOpen, FiSearch, FiTrash } from 'react-icons/fi';
 import { useParams } from 'react-router';
 
-export const EnrolledCourseGroupsMenu = ({ isDownloadable, dataEnrolledStudents, EnrollmentProgramOptions, UUIDEnrollmentProcess }) => {
+export const EnrolledCourseGroupsMenu = ({
+	isDownloadable,
+	dataEnrolledStudents,
+	EnrollmentProgramOptions,
+	UUIDEnrollmentProcess,
+}) => {
 	const [openDownloadEnrollmentModal, setOpenDownloadEnrollmentModal] =
 		useState(false);
 	const [openStudentsSuneduModal, setOpenStudentsSuneduModal] = useState(false);
@@ -78,20 +86,20 @@ export const EnrolledCourseGroupsMenu = ({ isDownloadable, dataEnrolledStudents,
 				options={EnrollmentProgramOptions}
 			/>
 
-      <GenerateSuneduListPdfModal
-        open={openStudentsSuneduModal}
-        setOpen={setOpenStudentsSuneduModal}
-        UUIDEnrollmentProcess={UUIDEnrollmentProcess}
-      />
+			<GenerateSuneduListPdfModal
+				open={openStudentsSuneduModal}
+				setOpen={setOpenStudentsSuneduModal}
+				UUIDEnrollmentProcess={UUIDEnrollmentProcess}
+			/>
 		</Box>
 	);
 };
 
 EnrolledCourseGroupsMenu.propTypes = {
 	isDownloadable: PropTypes.bool,
-  EnrollmentProgramOptions: PropTypes.array,
-  dataEnrolledStudents: PropTypes.array,
-  UUIDEnrollmentProcess: PropTypes.string
+	EnrollmentProgramOptions: PropTypes.array,
+	dataEnrolledStudents: PropTypes.array,
+	UUIDEnrollmentProcess: PropTypes.string,
 };
 
 export const EnrolledCourseGroupsView = () => {
@@ -135,6 +143,7 @@ export const EnrolledCourseGroupsView = () => {
 	const allCourseGroups =
 		dataCourseGroups?.pages?.flatMap((page) => page.results) ?? [];
 
+		console.log(allCourseGroups)
 	const filteredCourseGroupsByEnrollmentPeriod =
 		allCourseGroups.filter((group) => group.enrollment_period === decrypted) ??
 		[];
@@ -157,8 +166,6 @@ export const EnrolledCourseGroupsView = () => {
 
 	const { data: dataEnrollmentProcess, isLoading: isLoadingEnrollmentProcess } =
 		useReadEnrollmentById(decrypted);
-
-  console.log(dataEnrollmentProcess)
 
 	const { data: dataEnrolledStudents, isLoading: isLoadingEnrolledStudents } =
 		useReadEnrollmentReport({ enrollment_period_id: decrypted }, {});
@@ -203,12 +210,12 @@ export const EnrolledCourseGroupsView = () => {
 									Limpiar Filtros
 								</Button>
 							)}
-							<EnrolledCourseGroupsMenu 
-                isDownloadable={isDownloadable}
-                dataEnrolledStudents={dataEnrolledStudents}
-                EnrollmentProgramOptions={EnrollmentProgramOptions}
-                UUIDEnrollmentProcess={dataEnrollmentProcess?.uuid}
-              />
+							<EnrolledCourseGroupsMenu
+								isDownloadable={isDownloadable}
+								dataEnrolledStudents={dataEnrolledStudents}
+								EnrollmentProgramOptions={EnrollmentProgramOptions}
+								UUIDEnrollmentProcess={dataEnrollmentProcess?.uuid}
+							/>
 						</Stack>
 					</Flex>
 				</Card.Header>
