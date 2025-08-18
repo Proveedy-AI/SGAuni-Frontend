@@ -132,7 +132,7 @@ const Row = memo(
 				<Table.Cell onClick={(e) => e.stopPropagation()}>
 					<HStack>
 						<ViewAdmissionProgramExams item={item} fetchData={fetchData} />
-						{permissions?.includes('admissions.create.evaluation') && (
+						{permissions?.includes('admissions.applicants.create.evaluation') && (
 							<CreateProgramExamToAdmissionProgram
 								item={item}
 								fetchData={fetchData}
