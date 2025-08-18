@@ -231,7 +231,7 @@ export const PaymentOrdersTable = ({
 					</Table.Header>
 					<Table.Body>
 						{isLoading ? (
-							<SkeletonTable columns={8} />
+							<SkeletonTable columns={10} />
 						) : visibleRows?.length > 0 ? (
 							visibleRows?.map((item, index) => (
 								<Row
