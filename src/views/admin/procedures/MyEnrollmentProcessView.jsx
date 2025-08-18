@@ -142,7 +142,7 @@ export const MyEnrollmentProcessView = () => {
 		useReadMyEnrollments();
 
 	const eligibleEnrollments = myEnrollments?.filter(
-		(enrollment) => enrollment.status === 4
+		(enrollment) => enrollment.status === 2
 	);
 
 	const bgColor = useColorModeValue('blue.50', 'blue.900');
