@@ -220,14 +220,14 @@ export const PaymentRequestsView = () => {
 									options={TypeOptions}
 								/>
 							</Field>
-							<Field label='Postulante:'>
+							<Field label='Solicitante:'>
 								<InputGroup flex='1' startElement={<FiSearch />}>
 									<Input
 										ml='1'
 										size='sm'
 										bg={'white'}
 										maxWidth={'550px'}
-										placeholder='Buscar por DNI de postulante...'
+										placeholder='Buscar por DNI de solicitante...'
 										value={selectedApplicantDocumentNumber}
 										onChange={(e) =>
 											setSelectedApplicantDocumentNumber(e.target.value)

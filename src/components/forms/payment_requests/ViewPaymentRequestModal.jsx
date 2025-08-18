@@ -39,8 +39,9 @@ export const ViewPaymentRequestModal = ({ item }) => {
 							spacing={4}
 							w='full'
 						>
-							<Stack flex={1} spacing={4}>
-								<Field label='Propósito de la solicitud'>
+							<Stack flex={1} gap={4}>
+								
+								<Field label='Nombre completo'>
 									<Text
 										w='full'
 										py={2}
@@ -48,7 +49,18 @@ export const ViewPaymentRequestModal = ({ item }) => {
 										border='1px solid #E2E8F0'
 										borderRadius='md'
 									>
-										{item.purpose_display}
+										{item.full_name}
+									</Text>
+								</Field>
+								<Field label='Correo'>
+									<Text
+										w='full'
+										py={2}
+										px={3}
+										border='1px solid #E2E8F0'
+										borderRadius='md'
+									>
+										{item.email}
 									</Text>
 								</Field>
 								<Field label='Tipo de documento'>
@@ -62,7 +74,7 @@ export const ViewPaymentRequestModal = ({ item }) => {
 										{item.document_type_display}
 									</Text>
 								</Field>
-								<Field label='DNI del postulante'>
+								<Field label='N° Documento'>
 									<Text
 										w='full'
 										py={2}
@@ -74,7 +86,18 @@ export const ViewPaymentRequestModal = ({ item }) => {
 									</Text>
 								</Field>
 							</Stack>
-							<Stack flex={1} spacing={4}>
+							<Stack flex={1} gap={4}>
+								<Field label='Propósito de la solicitud'>
+									<Text
+										w='full'
+										py={2}
+										px={3}
+										border='1px solid #E2E8F0'
+										borderRadius='md'
+									>
+										{item.purpose_display}
+									</Text>
+								</Field>
 								<Field label='Método de pago'>
 									<Text
 										w='full'
