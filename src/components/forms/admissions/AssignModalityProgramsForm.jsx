@@ -25,7 +25,7 @@ import {
 	useUpdateModalityAssignment,
 } from '@/hooks';
 
-export const AssignModalityToProgramForm = ({ data }) => {
+export const AssignModalityToProgramForm = ({ data, permissions }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 
@@ -203,7 +203,8 @@ export const AssignModalityToProgramForm = ({ data }) => {
 									!selectedModality ||
 									!vacancies ||
 									isPending ||
-									data.status === 4
+									(!permissions?.includes('admissions.programs.admin') &&
+										data?.status === 4)
 								}
 								loading={isPending}
 								colorPalette='purple'
@@ -274,7 +275,11 @@ export const AssignModalityToProgramForm = ({ data }) => {
 											<Flex gap={2}>
 												<IconButton
 													size='xs'
-													disabled={data.status === 4}
+													disabled={
+														!permissions?.includes(
+															'admissions.programs.admin'
+														) && data?.status === 4
+													}
 													colorPalette='red'
 													onClick={() => handleDelete(item.id)}
 													aria-label='Eliminar'
@@ -347,4 +352,5 @@ export const AssignModalityToProgramForm = ({ data }) => {
 AssignModalityToProgramForm.propTypes = {
 	data: PropTypes.object,
 	fetchData: PropTypes.func,
+	permissions: PropTypes.array,
 };

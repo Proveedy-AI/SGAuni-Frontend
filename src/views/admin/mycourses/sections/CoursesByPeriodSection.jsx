@@ -26,8 +26,8 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
 	const summaryBg = useColorModeValue('gray.50', 'gray.700');
 
 	const getGradeColor = (grade) => {
-		if (grade >= 11) return 'blue.400';
-		return 'red.400';
+		if (grade >= 11) return 'blue';
+		return 'red';
 	};
 
 	const formatSchedule = (schedules) => {
@@ -200,13 +200,9 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
 									>
 										{course.final_grade && (
 											<Badge
-												bg={getGradeColor(course.final_grade)}
+												colorPalette={getGradeColor(course.final_grade)}
 												variant='solid'
-												p={1}
-												boxSize={6}
-												textAlign={'center'}
-												justifyContent='center'
-												color='white'
+												px={2}
 												borderRadius='md'
 											>
 												{course.final_grade}
@@ -261,128 +257,129 @@ export const CoursesByPeriodSection = ({
 	dataAcademicTranscript,
 	isDownloadable,
 	isLoadingCoursesByPeriod,
-  dataCoursesByPeriod,
-  handleRowClick,
-  handleClickToProcessEnrollment
+	dataCoursesByPeriod,
+	handleRowClick,
+	handleClickToProcessEnrollment,
 }) => {
-
-  const borderColor = useColorModeValue('gray.200', 'gray.600');
+	const borderColor = useColorModeValue('gray.200', 'gray.600');
 
 	return (
-    <Box>
-      <Heading my={3}>
-        <Stack
-          justify={'space-between'}
-          align='center'
-          direction={{ base: 'column', md: 'row' }}
-        >
-          <Text fontWeight='bold' color='blue.700'>
-            Mis Cursos
-          </Text>
-          <GenerateAcademicTranscriptPdfModal
-            data={dataAcademicTranscript}
-            isActive={isDownloadable}
-          />
-        </Stack>
-      </Heading>
+		<Box>
+			<Heading my={3}>
+				<Stack
+					justify={'space-between'}
+					align='center'
+					direction={{ base: 'column', md: 'row' }}
+				>
+					<Text fontWeight='bold' color='blue.700'>
+						Mis Cursos
+					</Text>
+					<GenerateAcademicTranscriptPdfModal
+						data={dataAcademicTranscript}
+						isActive={isDownloadable}
+					/>
+				</Stack>
+			</Heading>
 
-      {isLoadingCoursesByPeriod ? (
-        <Box p={6} maxW='full' mx='auto' textAlign='center'>
-          <Spinner size='lg' />
-          <Text mt={4}>Cargando cursos...</Text>
-        </Box>
-      ) : (
-        <VStack spacing={6} align='stretch'>
-          { !dataCoursesByPeriod?.data || dataCoursesByPeriod.data.length === 0 ? (
-            <Card.Root p={8} maxW='full' mx='auto' textAlign='center'>
-              <VStack spacing={6}>
-                <Box
-                  p={4}
-                  borderRadius='full'
-                  bg={{ base: 'blue.50', _dark: 'blue.900' }}
-                  border='2px solid'
-                  borderColor={{ base: 'blue.100', _dark: 'blue.700' }}
-                >
-                  <Icon
-                    as={FiBookOpen}
-                    boxSize={12}
-                    color={{ base: 'blue.500', _dark: 'blue.300' }}
-                  />
-                </Box>
+			{isLoadingCoursesByPeriod ? (
+				<Box p={6} maxW='full' mx='auto' textAlign='center'>
+					<Spinner size='lg' />
+					<Text mt={4}>Cargando cursos...</Text>
+				</Box>
+			) : (
+				<VStack spacing={6} align='stretch'>
+					{!dataCoursesByPeriod?.data ||
+					dataCoursesByPeriod.data.length === 0 ? (
+						<Card.Root p={8} maxW='full' mx='auto' textAlign='center'>
+							<VStack spacing={6}>
+								<Box
+									p={4}
+									borderRadius='full'
+									bg={{ base: 'blue.50', _dark: 'blue.900' }}
+									border='2px solid'
+									borderColor={{ base: 'blue.100', _dark: 'blue.700' }}
+								>
+									<Icon
+										as={FiBookOpen}
+										boxSize={12}
+										color={{ base: 'blue.500', _dark: 'blue.300' }}
+									/>
+								</Box>
 
-                <VStack spacing={3}>
-                  <Heading
-                    size='lg'
-                    color={{ base: 'gray.700', _dark: 'gray.200' }}
-                  >
-                    No tienes cursos registrados
-                  </Heading>
-                  <Text
-                    fontSize='md'
-                    textAlign={'justify'}
-                    color='gray.500'
-                    maxW='md'
-                    mx='auto'
-                  >
-                    Parece que aún no estás inscrito en ningún curso. Puedes
-                    comenzar el proceso de matrícula para inscribirte en tus
-                    cursos.
-                  </Text>
-                </VStack>
+								<VStack spacing={3}>
+									<Heading
+										size='lg'
+										color={{ base: 'gray.700', _dark: 'gray.200' }}
+									>
+										No tienes cursos registrados
+									</Heading>
+									<Text
+										fontSize='md'
+										textAlign={'justify'}
+										color='gray.500'
+										maxW='md'
+										mx='auto'
+									>
+										Parece que aún no estás inscrito en ningún curso. Puedes
+										comenzar el proceso de matrícula para inscribirte en tus
+										cursos.
+									</Text>
+								</VStack>
 
-                <Box
-                  p={4}
-                  bg={{ base: 'gray.50', _dark: 'gray.700' }}
-                  borderRadius='md'
-                  border='1px solid'
-                  borderColor={borderColor}
-                  maxW='md'
-                >
-                  <HStack spacing={3} justify='center'>
-                    <Icon as={FiCalendar} color='blue.500' />
-                    <Text fontSize='sm' color='gray.600'>
-                      Una vez completada la matrícula, tus cursos aparecerán aquí
-                    </Text>
-                  </HStack>
-                </Box>
+								<Box
+									p={4}
+									bg={{ base: 'gray.50', _dark: 'gray.700' }}
+									borderRadius='md'
+									border='1px solid'
+									borderColor={borderColor}
+									maxW='md'
+								>
+									<HStack spacing={3} justify='center'>
+										<Icon as={FiCalendar} color='blue.500' />
+										<Text fontSize='sm' color='gray.600'>
+											Una vez completada la matrícula, tus cursos aparecerán
+											aquí
+										</Text>
+									</HStack>
+								</Box>
 
-                <Button
-                  size='lg'
-                  bg='blue.500'
-                  onClick={() => handleClickToProcessEnrollment}
-                  _hover={{
-                    bg: 'blue.600',
-                  }}
-                >
-                  <FiArrowRight /> Ir al Proceso de Matrícula
-                </Button>
+								<Button
+									size='lg'
+									bg='blue.500'
+									onClick={() => handleClickToProcessEnrollment}
+									_hover={{
+										bg: 'blue.600',
+									}}
+								>
+									<FiArrowRight /> Ir al Proceso de Matrícula
+								</Button>
 
-                <Text fontSize='xs' color='gray.400' mt={2}>
-                  ¿Necesitas ayuda? Contacta con la oficina de registros
-                  académicos
-                </Text>
-              </VStack>
-            </Card.Root>
-          ) : (
-            dataCoursesByPeriod.data.map((periodData, periodIndex) => (
-              <CoursesListByPeriodCard
-                key={periodIndex}
-                data={periodData}
-                handleRowClick={handleRowClick}
-              />
-            ))
-          )}
-        </VStack>
-      )}
-    </Box>
-  );
+								<Text fontSize='xs' color='gray.400' mt={2}>
+									¿Necesitas ayuda? Contacta con la oficina de registros
+									académicos
+								</Text>
+							</VStack>
+						</Card.Root>
+					) : (
+						dataCoursesByPeriod.data.map((periodData, periodIndex) => (
+							<CoursesListByPeriodCard
+								key={periodIndex}
+								data={periodData}
+								handleRowClick={handleRowClick}
+							/>
+						))
+					)}
+				</VStack>
+			)}
+		</Box>
+	);
 };
 
 CoursesByPeriodSection.propTypes = {
-  dataAcademicTranscript: PropTypes.object,
+	dataAcademicTranscript: PropTypes.object,
 	isDownloadable: PropTypes.bool,
 	isLoadingCoursesByPeriod: PropTypes.bool,
-  dataCoursesByPeriod: PropTypes.object,
-  handleRowClick: PropTypes.func,
-  handleClickToProcessEnrollment: PropTypes.func,
+	dataCoursesByPeriod: PropTypes.object,
+	handleRowClick: PropTypes.func,
+	handleClickToProcessEnrollment: PropTypes.func,
 };

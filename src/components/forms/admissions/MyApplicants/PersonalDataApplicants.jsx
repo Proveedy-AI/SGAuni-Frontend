@@ -310,7 +310,7 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 								placeholder='Seleccione Discapacidad'
 							/>
 						</Field>
-						<Field label='Otros:'>
+						<Field label='Descripción de Discapacidad:'>
 							<Input
 								type='text'
 								value={formData.other_disability || ''}

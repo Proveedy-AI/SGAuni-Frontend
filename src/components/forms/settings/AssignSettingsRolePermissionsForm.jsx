@@ -20,9 +20,12 @@ export const AssignSettingsRolePermissionsForm = ({
 	data,
 	fetchData,
 	dataPermissions,
+	forceOpen = false,
+	dataRole = {},
+	onClose,
 }) => {
 	const contentRef = useRef();
-	const roleId = data?.id;
+	const roleId = data?.id || dataRole?.id;
 	const [open, setOpen] = useState(false);
 	const { data: permissionsInRole, isLoading: loadingAssigned } =
 		useReadPermissionHasRole(roleId, {}, { enabled: open && !!roleId });
@@ -30,6 +33,12 @@ export const AssignSettingsRolePermissionsForm = ({
 		useAssignPermission();
 
 	const [selectedPermissions, setSelectedPermissions] = useState([]);
+
+	useEffect(() => {
+		if (forceOpen && dataRole?.id === data?.id) {
+			setOpen(true);
+		}
+	}, [forceOpen, dataRole, data]);
 
 	// Cargar permisos actuales al abrir modal
 	useEffect(() => {
@@ -56,7 +65,7 @@ export const AssignSettingsRolePermissionsForm = ({
 				type: 'success',
 			});
 			fetchData();
-			setOpen(false);
+			handleClose();
 		} catch (error) {
 			toaster.create({
 				title: error?.message || 'Error al actualizar permisos',
@@ -73,6 +82,11 @@ export const AssignSettingsRolePermissionsForm = ({
 		acc[category][subcategory].push(permission);
 		return acc;
 	}, {});
+
+	const handleClose = () => {
+		setOpen(false);
+		onClose?.();
+	};
 
 	return (
 		<Modal
@@ -97,7 +111,7 @@ export const AssignSettingsRolePermissionsForm = ({
 			onSave={handleSavePermissions}
 			loading={isSaving}
 			open={open}
-			onOpenChange={(e) => setOpen(e.open)}
+			onOpenChange={(e) => (e.open ? setOpen(true) : handleClose())}
 		>
 			<Stack
 				gap={2}
@@ -183,6 +197,9 @@ AssignSettingsRolePermissionsForm.propTypes = {
 	data: PropTypes.object,
 	fetchData: PropTypes.func,
 	dataPermissions: PropTypes.array,
+	dataRole: PropTypes.object,
+	forceOpen: PropTypes.bool,
+	onClose: PropTypes.func,
 };
 
 const groupTitles = {

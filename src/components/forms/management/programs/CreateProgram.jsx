@@ -272,14 +272,23 @@ export const AddProgram = ({
 									required
 									type='number'
 									name='price_credit'
+									step='0.01'
 									placeholder='Precio por crédito'
 									value={programRequest.price_credit}
-									onChange={(e) =>
+									onChange={(e) => {
+										const value = e.target.value;
+										// Limita a 2 decimales
+										const formatted = value.includes('.')
+											? value.split('.')[0] +
+												'.' +
+												value.split('.')[1].slice(0, 2)
+											: value;
+
 										setProgramRequest({
 											...programRequest,
-											price_credit: e.target.value,
-										})
-									}
+											price_credit: formatted,
+										});
+									}}
 								/>
 							</Field>
 
@@ -293,14 +302,18 @@ export const AddProgram = ({
 									required
 									type='number'
 									name='total_program_credits'
+									step='1'
 									placeholder='Total créditos del programa'
 									value={programRequest.total_program_credits}
-									onChange={(e) =>
+									onChange={(e) => {
+										const value = e.target.value;
+										// Elimina decimales si los escriben
+										const onlyInteger = value.replace(/\D/g, '');
 										setProgramRequest({
 											...programRequest,
-											total_program_credits: e.target.value,
-										})
-									}
+											total_program_credits: onlyInteger,
+										});
+									}}
 								/>
 							</Field>
 						</SimpleGrid>
@@ -348,13 +361,17 @@ export const AddProgram = ({
 							>
 								<Input
 									type='number'
+									step='1'
 									value={programRequest.maxInstallments}
-									onChange={(e) =>
+									onChange={(e) => {
+										const value = e.target.value;
+										// Elimina decimales si los escriben
+										const onlyInteger = value.replace(/\D/g, '');
 										setProgramRequest({
 											...programRequest,
-											maxInstallments: e.target.value,
-										})
-									}
+											maxInstallments: onlyInteger,
+										});
+									}}
 								/>
 							</Field>
 						</SimpleGrid>

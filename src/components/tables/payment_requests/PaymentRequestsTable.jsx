@@ -22,29 +22,25 @@ const Row = memo(
 				id: 1,
 				label: 'Pendiente',
 				value: 'Pending',
-				bg: '#AEAEAE',
-				color: '#F5F5F5',
+				bg: 'orange',
 			},
 			{
 				id: 2,
 				label: 'Generado',
 				value: 'Available',
-				bg: '#C6E7FC80',
-				color: '#0661D8',
+				bg: 'blue',
 			},
 			{
 				id: 3,
 				label: 'Verificado',
 				value: 'Verified',
-				bg: '#D0EDD0',
-				color: '#2D9F2D',
+				bg: 'green',
 			},
 			{
 				id: 4,
 				label: 'Expirado',
 				value: 'Expired',
-				bg: '#F7CDCE',
-				color: '#E0383B',
+				bg: 'red',
 			},
 		];
 
@@ -58,6 +54,8 @@ const Row = memo(
 				<Table.Cell>
 					{format(parseISO(item.requested_at), 'dd/MM/yyyy')}
 				</Table.Cell>
+				<Table.Cell>{item.full_name}</Table.Cell>
+				<Table.Cell>{item.email}</Table.Cell>
 				<Table.Cell>{item.amount}</Table.Cell>
 				<Table.Cell>{item.purpose_display}</Table.Cell>
 				<Table.Cell>{item.num_document}</Table.Cell>
@@ -71,9 +69,8 @@ const Row = memo(
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
 					<Badge
-						bg={statusDisplay.find((status) => status.id === item.status)?.bg}
-						color={
-							statusDisplay.find((status) => status.id === item.status)?.color
+						colorPalette={
+							statusDisplay.find((status) => status.id === item.status)?.bg
 						}
 					>
 						{statusDisplay.find((status) => status.id === item.status)?.label ||
@@ -167,6 +164,22 @@ export const PaymentRequestsTable = ({
 							</Table.ColumnHeader>
 							<Table.ColumnHeader alignContent={'start'}>
 								<SortableHeader
+									label='Nombre completo'
+									columnKey='full_name'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader alignContent={'start'}>
+								<SortableHeader
+									label='Correo'
+									columnKey='email'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader alignContent={'start'}>
+								<SortableHeader
 									label='Monto (S/.)'
 									columnKey='amount'
 									sortConfig={sortConfig}
@@ -175,7 +188,7 @@ export const PaymentRequestsTable = ({
 							</Table.ColumnHeader>
 							<Table.ColumnHeader alignContent={'start'}>
 								<SortableHeader
-									label='Propósito de pago'
+									label='Concepto de pago'
 									columnKey='purpose_display'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
@@ -228,7 +241,7 @@ export const PaymentRequestsTable = ({
 					</Table.Header>
 					<Table.Body>
 						{isLoading ? (
-							<SkeletonTable columns={10} />
+							<SkeletonTable columns={12} />
 						) : visibleRows?.length > 0 ? (
 							visibleRows?.map((item, index) => (
 								<Row

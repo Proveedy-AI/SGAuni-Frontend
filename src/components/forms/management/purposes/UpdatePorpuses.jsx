@@ -54,7 +54,7 @@ export const UpdatePorpuses = ({ data, fetchData }) => {
 			<Stack css={{ '--field-label-width': '150px' }}>
 				<Field
 					orientation={{ base: 'vertical', sm: 'horizontal' }}
-					label='Propósito:'
+					label='Concepto:'
 				>
 					<Input
 						value={name}

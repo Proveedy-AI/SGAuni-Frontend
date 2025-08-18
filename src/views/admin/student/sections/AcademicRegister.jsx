@@ -1,55 +1,49 @@
 import { useColorModeValue } from '@/components/ui';
 import {
+	useReadAcademicProgress,
+	useReadAcademicTranscript,
+	useReadCoursesByPeriod,
+} from '@/hooks/students';
+import {
 	Badge,
 	Box,
 	Card,
 	Heading,
 	HStack,
 	Icon,
-	Spinner,
+	Stack,
 	Table,
 	Text,
 	VStack,
 } from '@chakra-ui/react';
 import { FiBookOpen, FiCalendar } from 'react-icons/fi';
+import PropTypes from 'prop-types';
+import { useEffect, useMemo, useState } from 'react';
+import { ReactSelect } from '@/components';
+import { GenerateAcademicTranscriptPdfModal } from '@/components/modals/mycourses';
+import { AcademicProgressSection } from '../../mycourses/sections';
 
-export const AcademicRegister = () => {
+export const AcademicRegister = ({ dataStudent }) => {
 	const bgColor = useColorModeValue('white', 'gray.800');
 	const borderColor = useColorModeValue('gray.200', 'gray.600');
+	const [selectProgram, setSelectProgram] = useState(null);
 	const headerBg = useColorModeValue('blue.50', 'blue.900');
 	const periodHeaderBg = useColorModeValue('purple.100', 'purple.800');
 	const hoverBg = useColorModeValue('gray.50', 'gray.700');
 	const summaryBg = useColorModeValue('gray.50', 'gray.700');
 
-	const mockRegistroAcademico = {
-		data: [
-			{
-				academic_period: '2025-1',
-				courses: [
-					{
-						course_code: 'CS101',
-						course_name: 'Introducción a la Programación',
-						credits: 4,
-						cycle: 1,
-						final_grade: 7.5,
-						group_section: 'A1',
-						id_course_selection: 14,
-						is_repeated: false,
-						schedules: [
-							{
-								day: 'Lunes',
-								start_time: '08:00',
-								end_time: '12:00',
-							},
-						],
-						teacher: 'Armando Diaz',
-					},
-				],
-				total_courses: 1,
-			},
-		],
-		total_periods: 1,
-	};
+	const { data: dataCoursesByPeriod } = useReadCoursesByPeriod(
+		dataStudent?.uuid,
+		selectProgram?.value
+	);
+
+	const {
+		data: dataAcademicTranscript,
+		isLoading: isLoadingAcademicTranscript,
+	} = useReadAcademicTranscript(dataStudent?.uuid, selectProgram?.value);
+
+	const { data: dataAcademicProgress, isLoading: isLoadingAcademicProgress } =
+		useReadAcademicProgress(dataStudent?.uuid);
 
 	const formatSchedule = (schedules) => {
 		if (!schedules || schedules.length === 0) return 'Sin horario';
@@ -62,75 +56,113 @@ export const AcademicRegister = () => {
 			.join(', ');
 	};
 
+	const ProgramsOptions = useMemo(
+		() =>
+			dataStudent?.admission_programs?.map((program) => ({
+				label: program.program__name,
+				value: program.program,
+			})) || [],
+		[dataStudent]
+	);
+
+	useEffect(() => {
+		if (ProgramsOptions.length > 0 && !selectProgram) {
+			setSelectProgram(ProgramsOptions[0]);
+		}
+	}, [ProgramsOptions, selectProgram]);
 	const getGradeColor = (grade) => {
-		if (grade >= 11) return 'blue.400';
-		return 'red.400';
+		if (grade >= 11) return 'blue';
+		return 'red';
 	};
+
+	const isDownloadable =
+		!isLoadingAcademicTranscript &&
+		dataCoursesByPeriod?.total_periods?.length !== 0;
+
+	const filteredAcademicProgressByProgram =
+		dataAcademicProgress?.programs?.find(
+			(data) => data?.program?.id === selectProgram?.value
+		);
+
 	return (
-		<Box>
-			{!mockRegistroAcademico ? (
-				<Box p={6} maxW='full' mx='auto' textAlign='center'>
-					<Spinner size='lg' />
-					<Text mt={4}>Cargando cursos...</Text>
-				</Box>
-			) : (
-				<VStack spacing={6} align='stretch'>
-					{!mockRegistroAcademico?.data ||
-					mockRegistroAcademico.data.length === 0 ? (
-						<Card.Root p={8} maxW='full' mx='auto' textAlign='center'>
-							<VStack spacing={6}>
-								<Box
-									p={4}
-									borderRadius='full'
-									bg={{ base: 'blue.50', _dark: 'blue.900' }}
-									border='2px solid'
-									borderColor={{ base: 'blue.100', _dark: 'blue.700' }}
+		<Stack gap={4}>
+			<Stack
+				justify={'space-between'}
+				align='center'
+				direction={{ base: 'column', md: 'row' }}
+			>
+				<ReactSelect
+					placeholder='Filtrar por programa...'
+					value={selectProgram}
+					onChange={(value) => setSelectProgram(value)}
+					variant='flushed'
+					size='xs'
+					isSearchable
+					isClearable
+					options={ProgramsOptions}
+				/>
+				<GenerateAcademicTranscriptPdfModal
+					data={dataAcademicTranscript}
+					isActive={isDownloadable}
+				/>
+			</Stack>
+
+			<VStack gap={6} align='stretch'>
+				{!dataCoursesByPeriod?.data || dataCoursesByPeriod.data.length === 0 ? (
+					<Card.Root p={8} maxW='full' mx='auto' textAlign='center'>
+						<VStack spacing={6}>
+							<Box
+								p={4}
+								borderRadius='full'
+								bg={{ base: 'blue.50', _dark: 'blue.900' }}
+								border='2px solid'
+								borderColor={{ base: 'blue.100', _dark: 'blue.700' }}
+							>
+								<Icon
+									as={FiBookOpen}
+									boxSize={12}
+									color={{ base: 'blue.500', _dark: 'blue.300' }}
+								/>
+							</Box>
+
+							<VStack spacing={3}>
+								<Heading
+									size='lg'
+									color={{ base: 'gray.700', _dark: 'gray.200' }}
 								>
-									<Icon
-										as={FiBookOpen}
-										boxSize={12}
-										color={{ base: 'blue.500', _dark: 'blue.300' }}
-									/>
-								</Box>
-
-								<VStack spacing={3}>
-									<Heading
-										size='lg'
-										color={{ base: 'gray.700', _dark: 'gray.200' }}
-									>
-										No tienes cursos registrados
-									</Heading>
-									<Text
-										fontSize='md'
-										textAlign={'justify'}
-										color='gray.500'
-										maxW='md'
-										mx='auto'
-									>
-										Parece que aún no está inscrito en ningún curso.
-									</Text>
-								</VStack>
-
-								<Box
-									p={4}
-									bg={{ base: 'gray.50', _dark: 'gray.700' }}
-									borderRadius='md'
-									border='1px solid'
-									borderColor={borderColor}
+									No tienes cursos registrados
+								</Heading>
+								<Text
+									fontSize='md'
+									textAlign={'justify'}
+									color='gray.500'
 									maxW='md'
+									mx='auto'
 								>
-									<HStack spacing={3} justify='center'>
-										<Icon as={FiCalendar} color='blue.500' />
-										<Text fontSize='sm' color='gray.600'>
-											Una vez completada la matrícula, los cursos aparecerán
-											aquí
-										</Text>
-									</HStack>
-								</Box>
+									Parece que aún no está inscrito en ningún curso.
+								</Text>
 							</VStack>
-						</Card.Root>
-					) : (
-						mockRegistroAcademico.data.map((periodData, periodIndex) => (
+
+							<Box
+								p={4}
+								bg={{ base: 'gray.50', _dark: 'gray.700' }}
+								borderRadius='md'
+								border='1px solid'
+								borderColor={borderColor}
+								maxW='md'
+							>
+								<HStack spacing={3} justify='center'>
+									<Icon as={FiCalendar} color='blue.500' />
+									<Text fontSize='sm' color='gray.600'>
+										Una vez completada la matrícula, los cursos aparecerán aquí
+									</Text>
+								</HStack>
+							</Box>
+						</VStack>
+					</Card.Root>
+				) : (
+					<>
+						{dataCoursesByPeriod.data.map((periodData, periodIndex) => (
 							<Box key={periodIndex} mb={3}>
 								<Box
 									bg={periodHeaderBg}
@@ -153,10 +185,10 @@ export const AcademicRegister = () => {
 										</Text>
 										<Text fontSize='sm' color='gray.600'>
 											<strong>Total Créditos:</strong>{' '}
-											{periodData.courses.reduce((sum, course) => {
-												// Obtener créditos del primer schedule si existe
-												return sum + (course.schedules?.[0]?.credits || 0);
-											}, 0)}
+											{periodData.courses.reduce(
+												(sum, course) => sum + (course.credits || 0),
+												0
+											)}
 										</Text>
 									</HStack>
 								</Box>
@@ -289,13 +321,11 @@ export const AcademicRegister = () => {
 														>
 															{course.final_grade && (
 																<Badge
-																	bg={getGradeColor(course.final_grade)}
+																	colorPalette={getGradeColor(
+																		course.final_grade
+																	)}
 																	variant='solid'
-																	p={1}
-																	boxSize={6}
-																	textAlign={'center'}
-																	justifyContent='center'
-																	color='white'
+																	px={2}
 																	borderRadius='md'
 																>
 																	{course.final_grade}
@@ -338,10 +368,18 @@ export const AcademicRegister = () => {
 									</Table.ScrollArea>
 								</Box>
 							</Box>
-						))
-					)}
-				</VStack>
-			)}
-		</Box>
+						))}
+					</>
+				)}
+			</VStack>
+			<AcademicProgressSection
+				academicProgress={filteredAcademicProgressByProgram}
+				isLoading={isLoadingAcademicProgress}
+			/>
+		</Stack>
 	);
+};
+
+AcademicRegister.propTypes = {
+	dataStudent: PropTypes.object.isRequired,
 };

@@ -1,4 +1,13 @@
-import { Badge, Box, Card, Flex, Grid, Input, Stack, Text } from '@chakra-ui/react';
+import {
+	Badge,
+	Box,
+	Card,
+	Flex,
+	Grid,
+	Input,
+	Stack,
+	Text,
+} from '@chakra-ui/react';
 import { Field } from '@/components/ui';
 import PropTypes from 'prop-types';
 import { ReactSelect } from '@/components/select';
@@ -10,7 +19,9 @@ const FieldWithInputText = ({
 	errors,
 	value,
 	updateProfileField,
+	type = 'text',
 }) => {
+	const isInvalid = type === 'email' && value && !value.includes('@');
 	return (
 		<Field
 			orientation={{
@@ -18,8 +29,10 @@ const FieldWithInputText = ({
 				sm: 'horizontal',
 			}}
 			label={label}
-			invalid={errors[field]}
-			errorText={errors[field]}
+			invalid={errors[field] || isInvalid}
+			errorText={
+				errors[field] || (isInvalid ? 'El correo debe contener @' : undefined)
+			}
 		>
 			<Input
 				value={value}
@@ -38,6 +51,7 @@ FieldWithInputText.propTypes = {
 	errors: PropTypes.object,
 	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	updateProfileField: PropTypes.func,
+	type: PropTypes.string,
 };
 
 export const ChangeDataProfileForm = ({
@@ -86,6 +100,7 @@ export const ChangeDataProfileForm = ({
 							<FieldWithInputText
 								label='Correo institucional:'
 								field='uni_email'
+								type='email'
 								errors={errors}
 								value={profile.uni_email}
 								updateProfileField={updateProfileField}

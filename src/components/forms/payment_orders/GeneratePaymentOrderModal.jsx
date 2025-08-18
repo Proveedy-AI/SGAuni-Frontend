@@ -1,15 +1,32 @@
 import { Alert, Button, Field, Modal, toaster } from '@/components/ui';
-import { Flex, IconButton, Input, SimpleGrid, Stack } from '@chakra-ui/react';
+import {
+	Badge,
+	Box,
+	Card,
+	Flex,
+	IconButton,
+	Input,
+	SimpleGrid,
+	Stack,
+	Text,
+} from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FaSave, FaTimes } from 'react-icons/fa';
 import { useCreatePaymentOrder } from '@/hooks/payment_orders';
-import { FiAlertTriangle, FiPlus } from 'react-icons/fi';
+import {
+	FiAlertTriangle,
+	FiCreditCard,
+	FiFileText,
+	FiPlus,
+	FiUser,
+} from 'react-icons/fi';
 import { ReactSelect } from '@/components/select';
 
 import { format } from 'date-fns';
 import { useReadPaymentRequest } from '@/hooks/payment_requests';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
+import { LuGraduationCap } from 'react-icons/lu';
 
 export const GeneratePaymentOrderModal = ({ fetchData }) => {
 	const contentRef = useRef();
@@ -18,7 +35,7 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 		useCreatePaymentOrder();
 
 	const { data: dataPaymentRequests } = useReadPaymentRequest(
-		{ status: 1 },
+		{},
 		{ enabled: open }
 	);
 
@@ -34,6 +51,15 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 		value: request.id,
 		label: `${request.purpose_display} - ${request.payment_method_display} - ${request.num_document}`,
 		description: request.description,
+		purpose: request.purpose,
+		purpose_display: request.purpose_display,
+		amount: request.amount,
+		enrollment_process_program_name: request.enrollment_process_program_name,
+		admission_process_program_name: request.admission_process_program_name,
+		enrollment_process_name: request.enrollment_process_name,
+		admission_process_name: request.admission_process_name,
+		num_document: request.num_document,
+		payment_method_display: request.payment_method_display,
 	}));
 
 	const isUniPaymentMethod =
@@ -46,6 +72,28 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 		setDueDateInput('');
 		setSelectedRequest(null);
 	};
+
+	useEffect(() => {
+		if (!selectedRequest) return;
+		// función para calcular el último día de un mes
+		const getLastDayOfMonth = (date) => {
+			return new Date(date.getFullYear(), date.getMonth() + 1, 0);
+		};
+
+		let today = new Date();
+		let dueDate = getLastDayOfMonth(today); // por defecto este mes
+
+		// ejemplo: reglas distintas según el propósito
+		if (selectedRequest.purpose === 4 || selectedRequest.purpose === 9) {
+			// propósito 4 → fin de este mes
+			dueDate = getLastDayOfMonth(dueDate);
+			setDueDateInput(dueDate.toISOString().split('T')[0]);
+		} else if (selectedRequest.purpose === 5) {
+			// propósito 5 → fin del próximo mes
+			dueDate = getLastDayOfMonth(dueDate);
+			setDueDateInput(dueDate.toISOString().split('T')[0]);
+		}
+	}, [selectedRequest, open]);
 
 	useEffect(() => {
 		if (!open) {
@@ -92,7 +140,7 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 		const payload = {
 			request: selectedRequest.value,
 			id_orden: orderIdInput || null,
-      status: 2,
+			status: 2,
 			discount_value: (Number(discountInput) / 100).toString(),
 			due_date: dueDateInput,
 		};
@@ -112,6 +160,20 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 					type: 'error',
 				});
 			},
+		});
+	};
+
+	const formatMonetaryNumbers = (text) => {
+		if (!text) return text;
+
+		return text.replace(/(-?\s*S\/\s*)(\d+(?:\.\d+)?)/g, (_, prefix, num) => {
+			const value = Number(num);
+			if (isNaN(value)) return prefix + num;
+
+			return `${prefix}${value.toLocaleString('en-US', {
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+			})}`;
 		});
 	};
 
@@ -151,6 +213,154 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 									onChange={(option) => setSelectedRequest(option)}
 								/>
 							</Field>
+							{selectedRequest && (
+								<Card.Root
+									w='full'
+									mx='auto'
+									bg='card'
+									border='1px solid'
+									borderColor='border'
+								>
+									{/* Header */}
+									<Card.Header pb={4}>
+										<Box
+											display='flex'
+											alignItems='center'
+											justifyContent='space-between'
+										>
+											<Card.Title
+												fontSize='xl'
+												fontWeight='semibold'
+												color='primary'
+												fontFamily='sans'
+											>
+												Información de Pago
+											</Card.Title>
+											<Badge variant='subtle' colorPalette='purple'>
+												{selectedRequest.purpose_display}
+											</Badge>
+										</Box>
+									</Card.Header>
+
+									{/* Body */}
+									<Card.Body>
+										<SimpleGrid columns={2} rowGap={6} columnGap={8}>
+											{/* Monto */}
+											<Box
+												display='flex'
+												justifyContent='space-between'
+												bg='muted'
+												rounded='lg'
+											>
+												<Box display='flex' alignItems='center' gap={2} mb={1}>
+													<FiCreditCard
+														size={20}
+														color='var(--chakra-colors-primary)'
+													/>
+													<Text fontSize='sm' color='muted.600' mt={1}>
+														Monto
+													</Text>
+												</Box>
+
+												<Text
+													fontSize='2xl'
+													fontWeight='bold'
+													color='primary'
+													fontFamily='mono'
+												>
+													S/ {selectedRequest.amount}
+												</Text>
+											</Box>
+
+											{/* Programa */}
+											<Box
+												display='flex'
+												justifyContent='space-between'
+												bg='muted'
+												rounded='lg'
+											>
+												<Box display='flex' alignItems='center' gap={2} mb={1}>
+													<LuGraduationCap
+														size={18}
+														color='var(--chakra-colors-secondary)'
+													/>
+													<Text fontSize='sm' fontWeight='medium'>
+														Programa
+													</Text>
+												</Box>
+												<Text fontSize='sm' color='muted.600'>
+													{selectedRequest.enrollment_process_program_name ||
+														selectedRequest.admission_process_program_name}
+												</Text>
+											</Box>
+
+											{/* Proceso */}
+											<Box
+												display='flex'
+												justifyContent='space-between'
+												bg='muted'
+												rounded='lg'
+											>
+												<Box display='flex' alignItems='center' gap={2} mb={1}>
+													<FiFileText
+														size={18}
+														color='var(--chakra-colors-secondary)'
+													/>
+													<Text fontSize='sm' fontWeight='medium'>
+														Proceso
+													</Text>
+												</Box>
+												<Text fontSize='sm' color='muted.600'>
+													{selectedRequest.enrollment_process_name
+														? `Matrícula  ${selectedRequest.enrollment_process_name}`
+														: selectedRequest.admission_process_name
+															? `Admisión  ${selectedRequest.admission_process_name}`
+															: 'Sin información'}
+												</Text>
+											</Box>
+
+											{/* Documento */}
+											<Box
+												display='flex'
+												justifyContent='space-between'
+												bg='muted'
+												rounded='lg'
+											>
+												<Box display='flex' alignItems='center' gap={2} mb={1}>
+													<FiUser
+														size={18}
+														color='var(--chakra-colors-secondary)'
+													/>
+													<Text fontSize='sm' fontWeight='medium'>
+														Documento
+													</Text>
+												</Box>
+												<Text fontSize='sm' color='muted.600' fontFamily='mono'>
+													{selectedRequest.num_document}
+												</Text>
+											</Box>
+										</SimpleGrid>
+
+										{/* Método de pago */}
+										<Box
+											mt={6}
+											pt={3}
+											borderTop='1px'
+											borderColor='border'
+											display='flex'
+											justifyContent='space-between'
+										>
+											<Text fontSize='sm' color='muted.600'>
+												Método de pago
+											</Text>
+											<Badge variant='outline' fontSize='xs'>
+												{selectedRequest.payment_method_display}
+											</Badge>
+										</Box>
+									</Card.Body>
+								</Card.Root>
+							)}
+
 							{!isUniPaymentMethod && (
 								<Field
 									label='Id de Orden'
@@ -170,7 +380,7 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 									status='info'
 									Icon={<FiAlertTriangle />}
 								>
-									{selectedRequest?.description}
+									{formatMonetaryNumbers(selectedRequest.description)}
 								</Alert>
 							)}
 							<SimpleGrid columns={{ base: 1, sm: 2 }} gap={4} w='100%'>

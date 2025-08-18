@@ -33,7 +33,11 @@ import {
 } from 'react-icons/fi';
 import { LuClipboardCheck } from 'react-icons/lu';
 
-export const AssignEvaluatorProgramModal = ({ data, fetchData }) => {
+export const AssignEvaluatorProgramModal = ({
+	data,
+	fetchData,
+	permissions,
+}) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 	const [editingId, setEditingId] = useState(null);
@@ -253,7 +257,8 @@ export const AssignEvaluatorProgramModal = ({ data, fetchData }) => {
 								disabled={
 									!evaluatorRequest.coordinator ||
 									!evaluatorRequest.role ||
-									data.status === 4
+									(!permissions?.includes('admissions.programs.admin') &&
+										data?.status === 4)
 								}
 								colorPalette='orange'
 								loading={isSaving}
@@ -342,7 +347,11 @@ export const AssignEvaluatorProgramModal = ({ data, fetchData }) => {
 											<Flex gap={2}>
 												<IconButton
 													size='xs'
-													disabled={data.status === 4}
+													disabled={
+														!permissions?.includes(
+															'admissions.programs.admin'
+														) && data?.status === 4
+													}
 													colorPalette='red'
 													onClick={() => handleDelete(item.id)}
 													aria-label='Eliminar'
@@ -421,4 +430,5 @@ export const AssignEvaluatorProgramModal = ({ data, fetchData }) => {
 AssignEvaluatorProgramModal.propTypes = {
 	data: PropTypes.object,
 	fetchData: PropTypes.func,
+	permissions: PropTypes.array,
 };

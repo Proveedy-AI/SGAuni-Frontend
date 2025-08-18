@@ -8,9 +8,10 @@ import {
 	Text,
 	Link,
 	Icon,
-    Separator,
+	Separator,
 } from '@chakra-ui/react';
 import { FiGlobe, FiMail, FiPhone } from 'react-icons/fi';
+import { FaWhatsapp } from 'react-icons/fa6';
 
 export const FooterDashboard = () => {
 	return (
@@ -22,7 +23,7 @@ export const FooterDashboard = () => {
 			</Card.Header>
 
 			<Card.Body>
-				<SimpleGrid columns={{ base: 1, md: 3 }} gap={4} fontSize='sm'>
+				<SimpleGrid columns={{ base: 1, md: 4 }} gap={4} fontSize='sm'>
 					{/* Correo */}
 					<Flex align='flex-start' gap={2}>
 						<Icon as={FiMail} boxSize={4} color='blue.600' mt={1} />
@@ -46,8 +47,24 @@ export const FooterDashboard = () => {
 							<Text fontWeight='medium' color='gray.700'>
 								Números de contacto:
 							</Text>
-							<Text color='gray.600'>(+51) 913045828</Text>
-							<Text color='gray.600'>(+51) 952395957</Text>
+							<Text color='gray.600'>(01) 481 1070 anexo 5408</Text>
+						</Box>
+					</Flex>
+
+					{/* WhatsApp */}
+					<Flex align='flex-start' gap={2}>
+						<Icon as={FaWhatsapp} boxSize={4} color='#25D366' mt={1} />
+						<Box>
+							<Text fontWeight='medium' color='gray.700'>
+								WhatsApp:
+							</Text>
+							<Link
+								href='https://wa.me/51986699381'
+								color='blue.600'
+								isExternal
+							>
+								+51 986 699 381
+							</Link>
 						</Box>
 					</Flex>
 
@@ -71,7 +88,7 @@ export const FooterDashboard = () => {
 
 				<Separator my={6} />
 
-				<Text  fontSize='xs' color='gray.500' textAlign='center'>
+				<Text fontSize='xs' color='gray.500' textAlign='center'>
 					Facultad de Ingeniería Económica, Estadística y Ciencias Sociales |
 					Universidad Nacional de Ingeniería © Todos los derechos reservados.
 				</Text>

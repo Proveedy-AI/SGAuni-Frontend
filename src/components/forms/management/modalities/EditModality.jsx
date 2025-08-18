@@ -94,7 +94,7 @@ export const EditModality = ({ fetchData, item }) => {
 		const payload = {
 			name: modalityEditable.name,
 			description: modalityEditable.description,
-			postgraduate_type: Number(modalityEditable.postgraduate_type.value),
+			postgraduate_type: Number(modalityEditable?.postgraduate_type?.value) || null,
 			requires_pre_master_exam: modalityEditable.requires_pre_master_exam,
 			pre_master_min_grade: modalityEditable.pre_master_min_grade,
 			requires_essay: modalityEditable.requires_essay,

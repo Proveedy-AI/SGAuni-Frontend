@@ -15,9 +15,9 @@ export const ConfirmMasiveEvaluateApplicantsModal = ({
 	const handleConfirm = () => {
 		if (!isAllEvaluated) {
 			toaster.create({
-				title: 'Postuantes no evaluados',
+				title: 'Postulantes no evaluados',
 				description:
-					'Hay postuantes que aún no han sido evaluados. Por favor, evalúelos antes de proceder.',
+					'Hay postulantes que aún no han sido evaluados. Por favor, evalúelos antes de proceder.',
 				type: 'warning',
 			});
 			return;
@@ -28,14 +28,14 @@ export const ConfirmMasiveEvaluateApplicantsModal = ({
 				toaster.create({
 					title: 'Evaluación masiva exitosa',
 					description:
-						'Todos los estudiantes han sido evaluados correctamente.',
+						'Todos los postulantes han sido evaluados correctamente.',
 					type: 'success',
 				});
 				setOpen(false);
 			},
 			onError: (error) => {
 				toaster.create({
-					title: error.message || 'Error al evaluar a los estudiantes.',
+					title: error.message || 'Error al evaluar a los postulantes.',
 					description: 'Por favor, intente nuevamente más tarde.',
 					type: 'error',
 				});
@@ -45,7 +45,7 @@ export const ConfirmMasiveEvaluateApplicantsModal = ({
 
 	return (
 		<ControlledModal
-			title='Evaluar a todos los estudiantes'
+			title='Evaluar a todos los postulantes'
 			placement='center'
 			open={open}
 			onOpenChange={(e) => setOpen(e.open)}
@@ -55,7 +55,7 @@ export const ConfirmMasiveEvaluateApplicantsModal = ({
 		>
 			<Stack css={{ '--field-label-width': '140px' }}>
 				<Text>
-					Esta acción evaluará automáticamente a todos los estudiantes. Aquellos
+					Esta acción evaluará automáticamente a todos los postulantes. Aquellos
 					que obtengan una calificación aprobatoria serán marcados como
 					ingresantes.
 				</Text>

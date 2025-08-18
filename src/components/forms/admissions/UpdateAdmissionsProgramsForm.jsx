@@ -28,7 +28,11 @@ import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { format } from 'date-fns';
 import { LuGraduationCap } from 'react-icons/lu';
 
-export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
+export const UpdateAdmissionsProgramsForm = ({
+	data,
+	fetchData,
+	permissions,
+}) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 
@@ -157,7 +161,10 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 						<IconButton
 							size='xs'
 							colorPalette='cyan'
-							disabled={data.status === 4}
+							disabled={
+								!permissions?.includes('admissions.programs.admin') &&
+								data?.status === 4
+							}
 							css={{
 								_icon: {
 									width: '5',
@@ -439,4 +446,5 @@ export const UpdateAdmissionsProgramsForm = ({ data, fetchData }) => {
 UpdateAdmissionsProgramsForm.propTypes = {
 	fetchData: PropTypes.func.isRequired,
 	data: PropTypes.object,
+	permissions: PropTypes.array,
 };

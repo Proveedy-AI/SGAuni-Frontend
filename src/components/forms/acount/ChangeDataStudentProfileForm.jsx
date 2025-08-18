@@ -36,14 +36,22 @@ const FieldWithInputText = ({
 	field,
 	value,
 	updateProfileField,
+	type = 'text',
 }) => {
+	const isInvalid = type === 'email' && value && !value.includes('@');
+
 	return (
-		<Field label={label}>
+		<Field
+			label={label}
+			invalid={isInvalid}
+			errorText={isInvalid ? 'El correo debe contener @' : undefined}
+		>
 			<Input
 				value={value}
 				onChange={(e) => updateProfileField(field, e.target.value)}
 				variant='flushed'
 				placeholder={placeholder}
+				type={type}
 			/>
 		</Field>
 	);
@@ -55,6 +63,7 @@ FieldWithInputText.propTypes = {
 	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	updateProfileField: PropTypes.func,
 	placeholder: PropTypes.string,
+	type: PropTypes.string,
 };
 
 export const ChangeDataStudentProfileForm = ({
@@ -75,7 +84,7 @@ export const ChangeDataStudentProfileForm = ({
 			label: country.name,
 		})) || [];
 	const { data: dataDepartments, isLoading: isLoadingDepartments } =
-		useReadDepartments();
+		useReadDepartments({ country: profile?.residenceCountry?.value || null });
 
 	const departmentOptions =
 		dataDepartments?.results?.map((department) => ({
@@ -84,7 +93,7 @@ export const ChangeDataStudentProfileForm = ({
 		})) || [];
 
 	const { data: dataProvinces, isLoading: isLoadingProvinces } =
-		useReadProvince();
+		useReadProvince({ department: profile?.department?.value || null });
 
 	const provinceOptions =
 		dataProvinces?.results?.map((province) => ({
@@ -101,11 +110,15 @@ export const ChangeDataStudentProfileForm = ({
 		})) || [];
 
 	const { data: dataUbigeo, isLoading: loadingUbigeo } = useReadUbigeos();
-	const UbigeosOptions =
-		dataUbigeo?.results?.map((ubigeo) => ({
-			value: ubigeo.id,
-			label: ubigeo.code + ' - ' + ubigeo.district_name,
-		})) || [];
+	const districtId = profile?.district?.value;
+	const filteredUbigeos =
+		dataUbigeo?.results?.filter((ubigeo) => ubigeo.district === districtId) ||
+		[];
+
+	const UbigeosOptions = filteredUbigeos.map((ubigeo) => ({
+		value: ubigeo.id,
+		label: `${ubigeo.code} - ${ubigeo.district_name}`,
+	}));
 
 	const { data: dataDisabilites, isLoading: loadingDisabilites } =
 		useReadDisabilities();
@@ -115,7 +128,9 @@ export const ChangeDataStudentProfileForm = ({
 			label: disability.name,
 		})) || [];
 
-	const { data: dataDistrict, isLoading: loadingDisctrict } = useReadDistrict();
+	const { data: dataDistrict, isLoading: loadingDisctrict } = useReadDistrict({
+		province: profile?.province?.value || null,
+	});
 
 	const DistrictOptions =
 		dataDistrict?.results?.map((district) => ({
@@ -191,6 +206,24 @@ export const ChangeDataStudentProfileForm = ({
 			'district'
 		);
 	}, [dataDistrict, profile]);
+
+	useEffect(() => {
+		preloadSelectValue(
+			dataProvinces,
+			profile.province,
+			provinceOptions,
+			'province'
+		);
+	}, [dataProvinces, profile]);
+
+	useEffect(() => {
+		preloadSelectValue(
+			dataUbigeo,
+			profile.address_ubigeo,
+			UbigeosOptions,
+			'address_ubigeo'
+		);
+	}, [dataUbigeo, profile]);
 
 	return (
 		<>
@@ -300,22 +333,6 @@ export const ChangeDataStudentProfileForm = ({
 									/>
 								</Box>
 
-								{/* Género */}
-								<Field label='Género' required>
-									<RadioGroup
-										value={profile.gender?.toString() || ''}
-										onChange={(e) =>
-											updateProfileField('gender', e.target.value)
-										}
-										spaceX={4}
-									>
-										<Radio value='1'>Masculino</Radio>
-										<Radio value='2'>Femenino</Radio>
-										<Radio value='3'>Otro</Radio>
-									</RadioGroup>
-								</Field>
-
-								<Separator />
 								<Box>
 									<Field label='Foto de Documento:'>
 										<CompactFileUpload
@@ -332,6 +349,20 @@ export const ChangeDataStudentProfileForm = ({
 										/>
 									</Field>
 								</Box>
+								{/* Género */}
+								<Field label='Género' required>
+									<RadioGroup
+										value={profile.gender?.toString() || ''}
+										onChange={(e) =>
+											updateProfileField('gender', e.target.value)
+										}
+										spaceX={4}
+									>
+										<Radio value='1'>Masculino</Radio>
+										<Radio value='2'>Femenino</Radio>
+									</RadioGroup>
+								</Field>
+								<Separator />
 							</VStack>
 						</Card.Body>
 					</Card.Root>
@@ -357,6 +388,7 @@ export const ChangeDataStudentProfileForm = ({
 								<Box>
 									<FieldWithInputText
 										label='Correo Personal:'
+										type='email'
 										placeholder='Correo Personal'
 										field='personal_email'
 										value={profile.personal_email}
@@ -416,7 +448,7 @@ export const ChangeDataStudentProfileForm = ({
 								{profile.has_disability && (
 									<Box>
 										<FieldWithInputText
-											label='Otros:'
+											label='Descripción de Discapacidad:'
 											field='other_disability'
 											placeholder='Ingresar discapacidad'
 											value={profile.other_disability}
@@ -605,6 +637,7 @@ export const ChangeDataStudentProfileForm = ({
 								<Box>
 									<FieldWithInputText
 										label='Correo institucional:'
+										type='email'
 										field='uni_email'
 										placeholder='Ingresar correo'
 										value={profile.uni_email}

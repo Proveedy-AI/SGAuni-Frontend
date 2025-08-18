@@ -13,7 +13,7 @@ export const ToogleRoleUserModal = ({
 	setIsModalOpen,
 }) => {
 	const { data: rolesData = {} } = useReadRoles(); // rolesData.results = lista de roles
-	const { mutateAsync: assignRoles, isPending } = useAssignUserRole();
+	const { mutate: assignRoles, isPending } = useAssignUserRole();
 	const [selectedRoleIds, setSelectedRoleIds] = useState([]);
 
 	// Inicializa los roles seleccionados cuando cambia el usuario
@@ -30,24 +30,27 @@ export const ToogleRoleUserModal = ({
 	};
 
 	// Guarda los cambios
-	const handleSave = async () => {
-		try {
-			await assignRoles({ userId: selectedUser.id, roleIds: selectedRoleIds });
-
-			toaster.create({
-				title: 'Roles actualizados correctamente',
-				type: 'success',
-			});
-
-			fetchUsers();
-			setSelectedUser(null);
-			handleCloseModal('toogleRole');
-		} catch (error) {
-			toaster.create({
-				title: error?.message || 'Error al asignar roles',
-				type: 'error',
-			});
-		}
+	const handleSave = () => {
+		assignRoles(
+			{ userId: selectedUser.id, roleIds: selectedRoleIds },
+			{
+				onSuccess: () => {
+					toaster.create({
+						title: 'Roles actualizados correctamente',
+						type: 'success',
+					});
+					fetchUsers();
+					setSelectedUser(null);
+					handleCloseModal('toogleRole');
+				},
+				onError: (error) => {
+					toaster.create({
+						title: error?.response?.data?.error || 'Error al asignar roles',
+						type: 'error',
+					});
+				},
+			}
+		);
 	};
 
 	return (

@@ -230,6 +230,17 @@ export const StudentDashboard = () => {
 					</Collapsible.Trigger>
 				</Collapsible.Root>
 			)}
+			{profile?.student?.status === 2 && (
+				<Alert
+					status='warning'
+					borderRadius='md'
+					icon={<FiAlertTriangle />}
+					title='¡Advertencia! Su cuenta ha sido suspendida 💡'
+				>
+					Tu cuenta se encuentra actualmente suspendida. Esto puede deberse a
+					pagos pendientes u otras razones administrativas.
+				</Alert>
+			)}
 			<SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
 				{Object.values(dataMyCredits?.result || {}).map((program) => (
 					<React.Fragment key={program.program_id}>
@@ -328,7 +339,7 @@ export const StudentDashboard = () => {
 					</React.Fragment>
 				))}
 			</SimpleGrid>
-			<Stack gap={4} mb={8}>
+			<Stack gap={4} mb={2}>
 				{activeEnrollments.length > 0 && (
 					<Alert
 						status='success'
@@ -367,7 +378,6 @@ export const StudentDashboard = () => {
 				{firstTimeEnrollments.length > 0 && (
 					<Alert
 						status='info'
-						variant='left-accent'
 						borderRadius='md'
 						icon={<FiInfo />}
 						title='Recordatorio importante 💡'
@@ -380,7 +390,7 @@ export const StudentDashboard = () => {
 
 				{shouldShowAlert && (
 					<Alert
-						status='error'
+						status='info'
 						borderRadius='md'
 						icon={<FiInfo />}
 						title='¡Acción requerida!'

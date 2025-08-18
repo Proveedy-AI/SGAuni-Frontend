@@ -319,6 +319,8 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 		dataCourses?.results?.map((course) => ({
 			value: course.id,
 			label: course.name,
+			credits: course.default_credits,
+			cycle: course.level,
 		})) || [];
 
 	const handleInputChange = (e) => {
@@ -479,7 +481,23 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 											(opt) => opt.value === formData.course_id
 										) || null
 									}
-									onChange={(opt) => handleSelectChange('course_id')(opt)}
+									onChange={(opt) => {
+										if (opt) {
+											setFormData((prev) => ({
+												...prev,
+												course_id: opt.value,
+												credits: opt.credits,
+												cycle: opt.cycle,
+											}));
+										} else {
+											setFormData((prev) => ({
+												...prev,
+												course_id: null,
+												credits: null,
+												cycle: null,
+											}));
+										}
+									}}
 									options={coursesOptions}
 									isClearable
 									isSearchable
@@ -782,7 +800,8 @@ const AddExcelScheduleModal = ({ open, setOpen, data }) => {
 			uploadedFileUrl = await uploadToS3(
 				file,
 				'sga_uni/schedule',
-				'schedule_excel'
+				'schedule_excel',
+				'xlsx'
 			);
 
 			const payload = {

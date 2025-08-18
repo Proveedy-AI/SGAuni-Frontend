@@ -32,9 +32,11 @@ export const SettingsDataProccess = () => {
 		label: item.name,
 	}));
 
-	const filteredCountryList = dataPurposes?.results?.filter((item) =>
-		item?.name?.toLowerCase().includes(searchCountryValue.toLowerCase())
-	);
+	const filteredCountryList = dataPurposes?.results
+		?.filter((item) =>
+			item?.name?.toLowerCase().includes(searchCountryValue.toLowerCase())
+		)
+		?.sort((a, b) => a.id - b.id); // orden ascendente por id
 
 	return (
 		<Box spaceY='5'>
@@ -83,7 +85,7 @@ export const SettingsDataProccess = () => {
 								Reglas
 							</Tabs.Trigger>
 							<Tabs.Trigger value={2} color={tab === 2 ? 'uni.secondary' : ''}>
-								Propositos
+								Conceptos
 							</Tabs.Trigger>
 						</Tabs.List>
 					</Box>
@@ -125,7 +127,7 @@ export const SettingsDataProccess = () => {
 							align={{ base: 'start', sm: 'center' }}
 							justify='space-between'
 						>
-							<Heading size='md'>Gestión Propositos de Pago</Heading>
+							<Heading size='md'>Gestión Conceptos de Pago</Heading>
 
 							<HStack>
 								<InputGroup flex='1' startElement={<FiSearch />}>

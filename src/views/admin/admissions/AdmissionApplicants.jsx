@@ -1,5 +1,6 @@
 import { AdmissionApplicantsTable } from '@/components/tables/admissions';
 import { useReadAdmissionsPrograms } from '@/hooks/admissions_programs';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { Box, Heading, InputGroup, Input, Stack } from '@chakra-ui/react';
 import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
@@ -11,6 +12,22 @@ export const AdmissionApplicants = () => {
 		admission_process: null,
 		date: null,
 	});
+	const { data: profile } = useReadUserLogged();
+
+	const roles = profile?.roles || [];
+	const permissions = roles
+		.flatMap((r) => r.permissions || [])
+		.map((p) => p.guard_name);
+
+	let queryParams = { status: 4 };
+
+	// Según permisos agregamos el filtro
+	if (permissions.includes('admissions.applicants.viewcoord')) {
+		queryParams.coordinator = profile?.id;
+	} else if (permissions.includes('admissions.applicants.viewdirector')) {
+		queryParams.director = profile?.id;
+	}
+
 	const {
 		data: dataAdmissionPrograms,
 		fetchNextPage: fetchNextAdmissionPrograms,
@@ -18,9 +35,7 @@ export const AdmissionApplicants = () => {
 		isFetchingNextPage: isFetchingNextAdmissionPrograms,
 		refetch: fetchAdmissionPrograms,
 		isLoading,
-	} = useReadAdmissionsPrograms({
-		status: 4, // Only fetch programs with status 4 (Aprobado)
-	});
+	} = useReadAdmissionsPrograms(queryParams);
 
 	const allAdmissionPrograms =
 		dataAdmissionPrograms?.pages?.flatMap((page) => page.results) ?? [];

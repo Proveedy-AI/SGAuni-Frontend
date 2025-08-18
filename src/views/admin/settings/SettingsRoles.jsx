@@ -17,7 +17,7 @@ export const SettingsRoles = () => {
 
 	const [searchRoleValue, setSearchRoleValue] = useState('');
 	const [searchPermissionValue, setSearchPermissionValue] = useState('');
-
+	const [roleCreated, setRoleCreated] = useState(null);
 	const { data: dataRoles, refetch: fetchRoles, isLoading } = useReadRoles();
 	const {
 		data: dataPermissions,
@@ -64,7 +64,10 @@ export const SettingsRoles = () => {
 				</Heading>
 
 				{tab === 1 ? (
-					<AddSettingsRoleForm fetchData={fetchRoles} />
+					<AddSettingsRoleForm
+						fetchData={fetchRoles}
+						onRoleCreated={(newRole) => setRoleCreated(newRole)}
+					/>
 				) : (
 					<AddSettingsPermissionForm fetchData={refetchPermissions} />
 				)}
@@ -109,9 +112,12 @@ export const SettingsRoles = () => {
 
 						<SettingsRolesTable
 							dataPermissions={filteredPermissions}
+							dataRole={roleCreated}
 							isLoading={isLoading}
 							data={filteredRoles}
 							fetchData={fetchRoles}
+							forceOpen
+							onClose={() => setRoleCreated(null)}
 						/>
 					</Stack>
 				</Tabs.Content>

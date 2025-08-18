@@ -19,9 +19,8 @@ import {
 	AdmissionApplicantDetail,
 	AdmissionApplicants,
 	AdmissionApplicantsByProgram,
-	AdmissionsMyPrograms,
-	AdmissionsProccess,
 	AdmissionsPrograms,
+	AdmissionsProccess,
 	AdmissionEvaluators,
 	AdmissionEvaluatorsByProgram,
 } from './views/admin/admissions';
@@ -78,7 +77,11 @@ import {
 	MyCoursesListByAcademicPeriodView,
 	MyEvaluationsByCourseView,
 } from './views/admin/mycourses';
-import { EnrolledCourseGroupsView, EnrolledProcessView, EnrolledStudentsView } from './views/admin/tuitions/enrolled';
+import {
+	EnrolledCourseGroupsView,
+	EnrolledProcessView,
+	EnrolledStudentsView,
+} from './views/admin/tuitions/enrolled';
 
 function App() {
 	return (
@@ -148,9 +151,12 @@ function App() {
 										<ProtectedRoute requiredPermission='admissions.programs.view' />
 									}
 								>
-									<Route path='programs/:id' element={<AdmissionsPrograms />} />
+									<Route
+										path='programs/:id'
+										element={<AdmissionsPrograms />}
+									/>
 								</Route>
-								<Route
+								{/*<Route
 									element={
 										<ProtectedRoute requiredPermission='admissions.myprograms.view' />
 									}
@@ -159,7 +165,7 @@ function App() {
 										path='myprograms/:id'
 										element={<AdmissionsMyPrograms />}
 									/>
-								</Route>
+								</Route>*/}
 								<Route
 									element={
 										<ProtectedRoute requiredPermission='admissions.applicants.view' />
@@ -264,27 +270,33 @@ function App() {
 								>
 									<Route path='programs/:id' element={<TuitonPrograms />} />
 								</Route>
-              
-              {/* ---------------------------- ENROLLED ROUTES ---------------------------- */}
-                <Route
-                  element={
-                    <ProtectedRoute requiredPermission='enrollments.enrolled.view' />
-                  }
-                >
-                  <Route path='enrolled' element={<EnrolledProcessView />} />
-                  <Route path='programs/:id'>
-                    <Route path ='course-groups'>
-                      <Route index element={<EnrolledCourseGroupsView />} />
-                      <Route path=':courseGroupId' element={<EnrolledStudentsView />} />
-                    </Route>
-                  </Route>
-                </Route>
+
+								{/* ---------------------------- ENROLLED ROUTES ---------------------------- */}
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='enrollments.enrolled.view' />
+									}
+								>
+									<Route path='enrolled' element={<EnrolledProcessView />} />
+									<Route path='programs/:id'>
+										<Route path='course-groups'>
+											<Route index element={<EnrolledCourseGroupsView />} />
+											<Route
+												path=':courseGroupId'
+												element={<EnrolledStudentsView />}
+											/>
+										</Route>
+									</Route>
+								</Route>
 							</Route>
 
 							<Route path='mycourses'>
 								<Route
 									element={
-										<ProtectedRoute requiredPermission='enrollments.mycourses.view' />
+										<ProtectedRoute
+											requiredDebt
+											requiredPermission='enrollments.mycourses.view'
+										/>
 									}
 								>
 									<Route
@@ -314,7 +326,10 @@ function App() {
 							<Route path='myprocedures'>
 								<Route
 									element={
-										<ProtectedRoute requiredPermission='procedures.myprocedures.view' />
+										<ProtectedRoute
+											requiredDebt
+											requiredPermission='procedures.myprocedures.view'
+										/>
 									}
 								>
 									<Route index element={<MyProceduresView />} />
@@ -322,6 +337,7 @@ function App() {
 										<Route index element={<MyEnrollmentProcessView />} />
 										<Route path=':id' element={<MyInscriptionFormView />} />
 									</Route>
+									<Route path='thesis-process' element={<MyThesisProcess />} />
 								</Route>
                 <Route path='thesis-process' element={<MyThesisProcess />} />
                 <Route path='postpone-process'>

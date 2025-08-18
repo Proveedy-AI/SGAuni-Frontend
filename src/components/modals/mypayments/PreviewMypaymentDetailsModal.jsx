@@ -133,7 +133,7 @@ export const PreviewMypaymentDetailsModal = ({ data }) => {
 								<Flex align='center' gap={2} mb={1}>
 									<Icon as={FiDollarSign} boxSize={4} color='green.600' />
 									<Text fontSize='sm' fontWeight='medium' color='gray.700'>
-										Proposito de pago:
+										Concepto de pago:
 									</Text>
 								</Flex>
 								<Text

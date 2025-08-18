@@ -2,19 +2,19 @@
 
 import {
 	AssignEvaluatorProgramModal,
-	PreviewAdmissionsProgramsModal,
 	UpdateAdmissionsProgramsForm,
 } from '@/components/forms/admissions';
 import { AssignModalityToProgramForm } from '@/components/forms/admissions/AssignModalityProgramsForm';
 import { HistoryStatusProgramsView } from '@/components/forms/admissions/HistoryStatusProgramsView';
+import { PreviewAdmissionsProgramsModal } from '@/components/forms/admissions/PreviewAdmissionsProgramsModal';
+import { SendAdmissionProgramtoConfirmForm } from '@/components/forms/admissions/SendAdmissionProgramtoConfirmForm';
+import { UpdateStatusAdmissionsProccessForm } from '@/components/forms/admissions/UpdateStatusAdmissionsProccessForm';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { ConfirmModal, Pagination, toaster } from '@/components/ui';
 import { formatDateString } from '@/components/ui/dateHelpers';
-import { SendConfirmationModal } from '@/components/ui/SendConfirmationModal';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import { useDeleteAdmissionsPrograms } from '@/hooks/admissions_programs';
-import { useCreateProgramsReview } from '@/hooks/admissions_review_programs/useCreateProgramsReview';
 import useSortedData from '@/utils/useSortedData';
 import { Box, HStack, IconButton, Span, Table, Text } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
@@ -24,13 +24,9 @@ import { FiTrash2 } from 'react-icons/fi';
 const Row = memo(
 	({ item, fetchData, startIndex, index, permissions, sortConfig, data }) => {
 		const [open, setOpen] = useState(false);
-		const [openSend, setOpenSend] = useState(false);
 
 		const { mutate: deleteAdmisionsPrograms, isPending } =
 			useDeleteAdmissionsPrograms();
-
-		const { mutate: createProgramsReview, isPending: LoadingProgramsReview } =
-			useCreateProgramsReview();
 
 		const handleDelete = () => {
 			deleteAdmisionsPrograms(item.id, {
@@ -51,29 +47,9 @@ const Row = memo(
 			});
 		};
 
-		const handleSend = () => {
-			createProgramsReview(item.id, {
-				onSuccess: () => {
-					toaster.create({
-						title: 'Programa enviado correctamente',
-						type: 'success',
-					});
-					fetchData();
-					setOpenSend(false);
-				},
-				onError: (error) => {
-					console.log(error);
-					toaster.create({
-						title: error.message,
-						type: 'error',
-					});
-				},
-			});
-		};
-
 		const statusMap = {
 			Borrador: { label: 'Borrador', color: 'gray' },
-			"En revision": { label: 'En revisión', color: 'orange.500' },
+			'En revision': { label: 'En revisión', color: 'orange.500' },
 			Aprobado: { label: 'Aprobado', color: 'green' },
 			Rechazado: { label: 'Rechazado', color: 'red' },
 		};
@@ -99,32 +75,56 @@ const Row = memo(
 				</Table.Cell>
 				<Table.Cell>
 					<HStack>
-						{permissions?.includes('admissions.myprograms.send') && (
-							<SendConfirmationModal
+						{(permissions?.includes('admissions.programs.send') ||
+							permissions?.includes('admissions.programs.admin')) && (
+							<SendAdmissionProgramtoConfirmForm
+								fetchData={fetchData}
 								item={item}
-								onConfirm={handleSend}
-								openSend={openSend}
-								setOpenSend={setOpenSend}
-								loading={LoadingProgramsReview}
 							/>
 						)}
-						<PreviewAdmissionsProgramsModal statusMap={statusMap} data={item} />
-						{permissions?.includes('admissions.myprograms.assignmodality') && (
-							<AssignModalityToProgramForm data={item} fetchData={fetchData} />
+						<PreviewAdmissionsProgramsModal data={item} />
+						{(permissions?.includes('admissions.programs.approve') ||
+							permissions?.includes('admissions.programs.admin')) && (
+							<UpdateStatusAdmissionsProccessForm
+								data={item}
+								fetchData={fetchData}
+							/>
+						)}
+						{(permissions?.includes('admissions.programs.assignmodality') ||
+							permissions?.includes('admissions.programs.admin')) && (
+							<AssignModalityToProgramForm
+								data={item}
+								fetchData={fetchData}
+								permissions={permissions}
+							/>
 						)}
 
-						{permissions?.includes('admissions.myprograms.assignevaluator') && (
-							<AssignEvaluatorProgramModal data={item} fetchData={fetchData} />
+						{(permissions?.includes('admissions.programs.assignevaluator') ||
+							permissions?.includes('admissions.programs.admin')) && (
+							<AssignEvaluatorProgramModal
+								data={item}
+								fetchData={fetchData}
+								permissions={permissions}
+							/>
 						)}
-						{permissions?.includes('admissions.myprograms.edit') && (
-							<UpdateAdmissionsProgramsForm data={item} fetchData={fetchData} />
+						{(permissions?.includes('admissions.programs.edit') ||
+							permissions?.includes('admissions.programs.admin')) && (
+							<UpdateAdmissionsProgramsForm
+								data={item}
+								fetchData={fetchData}
+								permissions={permissions}
+							/>
 						)}
-						{permissions?.includes('admissions.myprograms.delete') && (
+						{(permissions?.includes('admissions.programs.delete') ||
+							permissions?.includes('admissions.programs.admin')) && (
 							<ConfirmModal
 								placement='center'
 								trigger={
 									<IconButton
-										disabled={item.status === 4}
+										disabled={
+											!permissions?.includes('admissions.programs.admin') &&
+											item.status === 4
+										}
 										colorPalette='red'
 										size='xs'
 									>
@@ -198,7 +198,7 @@ export const AdmissionsMyProgramsTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader>
+							<Table.ColumnHeader w={'20%'}>
 								<SortableHeader
 									label='Programa'
 									columnKey='program_name'

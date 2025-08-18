@@ -14,7 +14,7 @@ import { FiAlertTriangle, FiArrowRight } from 'react-icons/fi';
 export const ApplicantHasDebts = () => {
 	const navigate = useNavigate();
 
-	const handleViewDebts = () => {
+	const handleContactSupport = () => {
 		navigate('/mypaymentsdebts/debts');
 	};
 
@@ -58,17 +58,21 @@ export const ApplicantHasDebts = () => {
 					{/* Mensaje */}
 					<Box mb={6}>
 						<Heading size='lg' color='red.700' mb={2}>
-							Deudas Pendientes
+							Cuenta Suspendida
 						</Heading>
 						<Text color='gray.700'>
-							Tienes pagos pendientes que requieren tu atención inmediata para
-							continuar usando todas las funciones del sistema.
+							Tu cuenta se encuentra actualmente suspendida. Esto puede deberse
+							a pagos pendientes u otras razones administrativas.
+						</Text>
+						<Text mt={2} color='gray.700'>
+							Si crees que se trata de un error, por favor contacta a nuestro
+							equipo de soporte para más información.
 						</Text>
 					</Box>
 
 					{/* Botón */}
 					<Button
-						onClick={handleViewDebts}
+						onClick={handleContactSupport}
 						w='full'
 						size='lg'
 						bg='red.600'
@@ -83,15 +87,14 @@ export const ApplicantHasDebts = () => {
 							transform: 'scale(1.05)',
 							boxShadow: 'lg',
 						}}
-						
 					>
-					Ver mis deudas 	<FiArrowRight size={16} /> 
+						Revisar Deudas <FiArrowRight size={16} />
 					</Button>
 
 					{/* Texto adicional */}
 					<Text mt={4} fontSize='sm' color='gray.600'>
-						Una vez regularizadas tus deudas, tendrás acceso completo al
-						sistema.
+						Recupera el acceso regularizando tu situación o confirmando tu
+						estado con soporte.
 					</Text>
 				</Card.Body>
 			</Card.Root>

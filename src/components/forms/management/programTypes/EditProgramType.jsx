@@ -76,7 +76,12 @@ export const EditProgramType = ({ fetchData, item }) => {
 			contentRef={contentRef}
 		>
 			<Stack spacing={4}>
-				<Field label='Nombre del tipo de programa' errorText={errors.name} invalid={!!errors.name} required>
+				<Field
+					label='Nombre del tipo de programa'
+					errorText={errors.name}
+					invalid={!!errors.name}
+					required
+				>
 					<Input
 						value={programRequest.name}
 						onChange={(e) =>
@@ -88,7 +93,12 @@ export const EditProgramType = ({ fetchData, item }) => {
 					/>
 				</Field>
 
-				<Field label='Código del tipo de programa' errorText={errors.code} invalid={!!errors.code} required>
+				<Field
+					label='Código del tipo de programa'
+					errorText={errors.code}
+					invalid={!!errors.code}
+					required
+				>
 					<Input
 						value={programRequest.code}
 						onChange={(e) =>
@@ -99,22 +109,29 @@ export const EditProgramType = ({ fetchData, item }) => {
 						}
 					/>
 				</Field>
-        <Field
-          label='Nota mínima aprobatoria (0 a 20)'
-          errorText={errors.min_grade}
-          invalid={!!errors.min_grade}
-          required
-        >
-          <Input
-            value={programRequest.min_grade}
-            onChange={(e) =>
-              setProgramRequest((prev) => ({
-                ...prev,
-                min_grade: e.target.value,
-              }))
-            }
-          />
-        </Field>
+				<Field
+					label='Nota mínima aprobatoria (0 a 20)'
+					errorText={errors.min_grade}
+					invalid={!!errors.min_grade}
+					required
+				>
+					<Input
+						type='number'
+						step='0.01'
+						value={programRequest.min_grade}
+						onChange={(e) => {
+							const value = e.target.value;
+							// Limita a 2 decimales
+							const formatted = value.includes('.')
+								? value.split('.')[0] + '.' + value.split('.')[1].slice(0, 2)
+								: value;
+							setProgramRequest((prev) => ({
+								...prev,
+								min_grade: formatted,
+							}));
+						}}
+					/>
+				</Field>
 			</Stack>
 		</Modal>
 	);

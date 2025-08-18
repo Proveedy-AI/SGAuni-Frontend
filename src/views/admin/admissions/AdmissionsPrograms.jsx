@@ -1,4 +1,6 @@
-import { AdmissionsProgramsTable } from '@/components/tables/admissions';
+import { AddAdmissionsProgramsForm } from '@/components/forms/admissions';
+import { AdmissionsMyProgramsTable } from '@/components/tables/admissions';
+import { useReadAdmissionById } from '@/hooks/admissions_proccess/useReadAdmissionsbyId';
 import { LiaSlashSolid } from 'react-icons/lia';
 
 import {
@@ -8,7 +10,6 @@ import {
 	Input,
 	Stack,
 	Breadcrumb,
-	Tabs,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
@@ -23,35 +24,36 @@ export const AdmissionsPrograms = () => {
 	const decoded = decodeURIComponent(id);
 	const decrypted = Encryptor.decrypt(decoded);
 	const { data: profile } = useReadUserLogged();
-	const [tab, setTab] = useState(1);
-	const {
-		data: dataAdmissionsPrograms,
-		refetch: fetchAdmissionsPrograms,
-		isLoading,
-	} = useReadAdmissionsPrograms({
-		admission_process: Number(decrypted),
-		director: profile?.id,
-	});
 
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])
 		.map((p) => p.guard_name);
 
+	const { data } = useReadAdmissionById(decrypted);
+
+	let queryParams = { admission_process: Number(decrypted) };
+
+	// Según permisos agregamos el filtro
+	if (permissions.includes('admissions.programs.coord.view')) {
+		queryParams.coordinator = profile?.id;
+	} else if (permissions.includes('admissions.programs.director.view')) {
+		queryParams.director = profile?.id;
+	}
+
+	const {
+		data: dataAdmissionsPrograms,
+		refetch: fetchAdmissionsPrograms,
+		isLoading,
+	} = useReadAdmissionsPrograms(queryParams);
+
 	const [searchValue, setSearchValue] = useState('');
+
 	const allAdmissionPrograms =
 		dataAdmissionsPrograms?.pages?.flatMap((page) => page.results) ?? [];
 
-	const filteredAdmissionsPrograms = allAdmissionPrograms?.filter(
-		(item) =>
-			item.status === 2 &&
-			item.program_name.toLowerCase().includes(searchValue.toLowerCase())
-	);
-
-	const filteredAprovedPrograms = allAdmissionPrograms?.filter(
-		(item) =>
-			item.status === 4 &&
-			item.program_name.toLowerCase().includes(searchValue.toLowerCase())
+	const filteredAdmissionsPrograms = allAdmissionPrograms?.filter((item) =>
+		item.program_name.toLowerCase().includes(searchValue.toLowerCase())
 	);
 
 	return (
@@ -73,7 +75,9 @@ export const AdmissionsPrograms = () => {
 							<LiaSlashSolid />
 						</Breadcrumb.Separator>
 						<Breadcrumb.Item>
-							<Breadcrumb.CurrentLink>Programas</Breadcrumb.CurrentLink>
+							<Breadcrumb.CurrentLink>
+								Programas de Admisión
+							</Breadcrumb.CurrentLink>
 						</Breadcrumb.Item>
 					</Breadcrumb.List>
 				</Breadcrumb.Root>
@@ -93,97 +97,43 @@ export const AdmissionsPrograms = () => {
 					}}
 					color={'uni.secondary'}
 				>
-					{allAdmissionPrograms[0]?.admission_process_name ||
-						'No hay procesos de admisión disponibles'}
+					{data?.admission_process_name}
 				</Heading>
 			</Stack>
-			<Tabs.Root
-				value={tab}
-				onValueChange={(e) => setTab(e.value)}
-				size={{ base: 'sm', md: 'md' }}
+
+			<Stack
+				Stack
+				direction={{ base: 'column', sm: 'row' }}
+				align={{ base: 'center', sm: 'center' }}
+				justify='space-between'
 			>
-				<>
-					<Box
-						overflowX='auto'
-						whiteSpace='nowrap'
-						css={{
-							'&::-webkit-scrollbar': { height: '6px' },
-							'&::-webkit-scrollbar-thumb': {
-								background: '#A0AEC0', // Color del thumb
-								borderRadius: '4px',
-							},
-						}}
-					>
-						<Tabs.List minW='max-content' colorPalette='cyan'>
-							<Tabs.Trigger value={1} color={tab === 1 ? 'uni.secondary' : ''}>
-								Pendientes
-							</Tabs.Trigger>
+				<InputGroup flex='1' startElement={<FiSearch />}>
+					<Input
+						ml='1'
+						size='sm'
+						bg={'white'}
+						maxWidth={'550px'}
+						placeholder='Buscar por programa ...'
+						value={searchValue}
+						onChange={(e) => setSearchValue(e.target.value)}
+					/>
+				</InputGroup>
+				{(permissions?.includes('admissions.programs.create') ||
+					permissions?.includes('admissions.programs.admin')) && (
+					<AddAdmissionsProgramsForm
+						id={decrypted}
+						profileId={profile?.id}
+						fetchData={fetchAdmissionsPrograms}
+					/>
+				)}
+			</Stack>
 
-							<Tabs.Trigger value={2} color={tab === 2 ? 'uni.secondary' : ''}>
-								Aprobados
-							</Tabs.Trigger>
-						</Tabs.List>
-					</Box>
-				</>
-				<Tabs.Content value={1}>
-					<Stack>
-						<Stack
-							Stack
-							direction={{ base: 'column', sm: 'row' }}
-							align={{ base: 'center', sm: 'center' }}
-							justify='space-between'
-						>
-							<InputGroup flex='1' startElement={<FiSearch />}>
-								<Input
-									ml='1'
-									size='sm'
-									bg={'white'}
-									maxWidth={'550px'}
-									placeholder='Buscar por programa ...'
-									value={searchValue}
-									onChange={(e) => setSearchValue(e.target.value)}
-								/>
-							</InputGroup>
-						</Stack>
-
-						<AdmissionsProgramsTable
-							isLoading={isLoading}
-							data={filteredAdmissionsPrograms}
-							fetchData={fetchAdmissionsPrograms}
-							permissions={permissions}
-						/>
-					</Stack>
-				</Tabs.Content>
-				<Tabs.Content value={2}>
-					<Stack>
-						<Stack
-							Stack
-							direction={{ base: 'column', sm: 'row' }}
-							align={{ base: 'center', sm: 'center' }}
-							justify='space-between'
-						>
-							<InputGroup flex='1' startElement={<FiSearch />}>
-								<Input
-									ml='1'
-									size='sm'
-									bg={'white'}
-									maxWidth={'550px'}
-									placeholder='Buscar por programa ...'
-									value={searchValue}
-									onChange={(e) => setSearchValue(e.target.value)}
-								/>
-							</InputGroup>
-						</Stack>
-
-						<AdmissionsProgramsTable
-							isLoading={isLoading}
-							data={filteredAprovedPrograms}
-							fetchData={fetchAdmissionsPrograms}
-							permissions={permissions}
-						/>
-					</Stack>
-				</Tabs.Content>
-			</Tabs.Root>
+			<AdmissionsMyProgramsTable
+				isLoading={isLoading}
+				data={filteredAdmissionsPrograms}
+				fetchData={fetchAdmissionsPrograms}
+				permissions={permissions}
+			/>
 		</Box>
 	);
 };

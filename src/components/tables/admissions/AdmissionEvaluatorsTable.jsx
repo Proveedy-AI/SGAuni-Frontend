@@ -11,7 +11,7 @@ import { Pagination } from "@/components/ui"
 
 const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
     const navigate = useNavigate();
-	const encrypted = Encryptor.encrypt(item.id);
+	const encrypted = Encryptor.encrypt(item.admission_program);
 	const encodedId = encodeURIComponent(encrypted);
 
     const handleRowClick = () => {

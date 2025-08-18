@@ -19,6 +19,7 @@ export const GeneratePdfApliccationsModal = ({ data, open, setOpen }) => {
     'No.',
     'Apellidos y Nombres',
     'Promedio\nConocimiento\n(Ensayo)',
+    'Maestría',
     'Evaluación\nMéritos',
     'Promedio final',
     'Ingresó'

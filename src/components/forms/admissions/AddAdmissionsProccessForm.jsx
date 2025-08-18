@@ -115,7 +115,7 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 							const newName = e.target.value;
 							setName(newName);
 						}}
-						placeholder='2025-I'
+						placeholder='2025-1'
 						size='xs'
 					/>
 				</Field>

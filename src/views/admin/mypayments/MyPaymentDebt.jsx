@@ -252,7 +252,7 @@ export const MyPaymentDebt = () => {
 					<Flex justify='space-between' gap={3} align='center'>
 						<Box>
 							<Card.Title fontSize={'24px'}>
-								Deudas Consolidadas por Propósito
+								Deudas Consolidadas por Concepto de pago
 							</Card.Title>
 							<Card.Description>{description}</Card.Description>
 						</Box>

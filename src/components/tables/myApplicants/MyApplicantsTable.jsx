@@ -1,5 +1,5 @@
 //import { UpdateSettingsCountryForm } from '@/components/forms';
-import { Pagination } from '@/components/ui';
+import { Pagination, toaster } from '@/components/ui';
 import { Badge, Box, Table } from '@chakra-ui/react';
 
 import PropTypes from 'prop-types';
@@ -10,6 +10,7 @@ import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import SkeletonTable from '@/components/ui/SkeletonTable';
+import { PreviewAdmissionsProgramsModal } from '@/components/forms/admissions';
 
 const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 	const navigate = useNavigate();
@@ -30,9 +31,12 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 
 		if (examEnd && isIncomplete && now > examEnd) {
 			// Puedes mostrar una alerta o toast si quieres
-			console.warn(
-				'No se puede acceder: el examen ya terminó y está incompleto.'
-			);
+			toaster.create({
+				title: 'Acceso denegado',
+				description:
+					'No se puede acceder: el Proceso de postulación terminó y está incompleto.',
+				type: 'error',
+			});
 			return;
 		}
 
@@ -75,6 +79,9 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 					);
 				})()}
 			</Table.Cell>
+			<Table.Cell>
+				<PreviewAdmissionsProgramsModal statusMap={statusMap} data={item} />
+			</Table.Cell>
 		</Table.Row>
 	);
 });
@@ -91,13 +98,18 @@ Row.propTypes = {
 	data: PropTypes.array,
 };
 
-export const MyApplicantsTable = ({ data, fetchData, permissions, isLoading }) => {
+export const MyApplicantsTable = ({
+	data,
+	fetchData,
+	permissions,
+	isLoading,
+}) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [currentPage, setCurrentPage] = useState(1);
 	const startIndex = (currentPage - 1) * pageSize;
 	const endIndex = startIndex + pageSize;
 	const [sortConfig, setSortConfig] = useState(null);
-
+	console.log(data);
 	const sortedData = useMemo(() => {
 		if (!sortConfig) return data;
 
@@ -171,7 +183,8 @@ export const MyApplicantsTable = ({ data, fetchData, permissions, isLoading }) =
 								/>
 							</Table.ColumnHeader>
 
-							<Table.ColumnHeader>Estado</Table.ColumnHeader>
+							<Table.ColumnHeader>Estado de Postulacion</Table.ColumnHeader>
+							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>

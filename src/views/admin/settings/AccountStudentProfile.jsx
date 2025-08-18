@@ -121,7 +121,7 @@ export const AccountStudentProfile = () => {
 			personal_email: profile.personal_email,
 			residenceCountry: profile.residenceCountry?.value,
 		};
-		console.log(payload);
+
 		update(payload, {
 			onSuccess: () => {
 				setInitialProfile(profile);

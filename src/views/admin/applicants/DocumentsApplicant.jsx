@@ -92,10 +92,12 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 	useEffect(() => {
 		if (!item || !documentRulesMap) return;
 
+		const excludedKeys = [6, 7]; // los que no quieres considerar
+
 		const allDocs = [
 			...RequiredDocumentsSections.leftColumn,
 			...RequiredDocumentsSections.rightColumn,
-		];
+		].filter((doc) => !excludedKeys.includes(doc.key));
 
 		const missing = allDocs.some((doc) => {
 			const rule = doc.key ? documentRulesMap?.[doc.key] : null;
@@ -106,7 +108,7 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 		});
 
 		onValidationChange?.(!missing); // true si está todo ok
-	}, [documentsData, item]);
+	}, [documentsData, item, documentRulesMap]);
 
 	const handleSubmitDocuments = async () => {
 		const applicationId = item?.id;

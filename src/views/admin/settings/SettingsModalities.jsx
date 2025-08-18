@@ -1,5 +1,5 @@
 import { AddModalityForm } from '@/components/forms/management/modalities';
-import { AddModalityRuleForm } from '@/components/forms/management/modalitiesRules';
+//import { AddModalityRuleForm } from '@/components/forms/management/modalitiesRules';
 import {
 	AdmissionModalitiesTable,
 	ModalityRulesTable,
@@ -28,11 +28,13 @@ export const SettingsModalities = () => {
 		item?.name?.toLowerCase().includes(searchModalityValue.toLowerCase())
 	);
 
-	const filteredModalityRules = dataModalityRules?.results?.filter((item) =>
-		item?.field_name
-			?.toLowerCase()
-			.includes(searchModalityRulesValue.toLowerCase())
-	);
+const filteredModalityRules = dataModalityRules?.results
+  ?.filter((item) =>
+    item?.field_name
+      ?.toLowerCase()
+      .includes(searchModalityRulesValue.toLowerCase())
+  )
+  ?.sort((a, b) => a.id - b.id);
 
 	return (
 		<Box SpaceY='5'>
@@ -46,7 +48,7 @@ export const SettingsModalities = () => {
 				</Heading>
 
 				{tab === 1 && <AddModalityForm fetchData={fetchModalities} />}
-				{tab === 2 && <AddModalityRuleForm fetchData={fetchModalityRules} />}
+				{tab === 2 /*<AddModalityRuleForm fetchData={fetchModalityRules} />*/}
 			</Stack>
 			<Tabs.Root
 				value={tab}

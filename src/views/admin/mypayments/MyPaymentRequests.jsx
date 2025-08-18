@@ -162,7 +162,7 @@ export const MyPaymentRequests = () => {
 							</Field>
 						</SimpleGrid>
 						<SimpleGrid columns={{ base: 1, sm: 2, md: 2, xl: 2 }} gap={6}>
-							<Field label='Propósito:'>
+							<Field label='Concepto de pago:'>
 								<ReactSelect
 									value={selectedPurpose}
 									onChange={setSelectedPurpose}
@@ -202,7 +202,7 @@ export const MyPaymentRequests = () => {
 								<Table.ColumnHeader>N°</Table.ColumnHeader>
 								<Table.ColumnHeader w={'20%'}>Programa</Table.ColumnHeader>
 								<Table.ColumnHeader w={'15%'}>Proceso</Table.ColumnHeader>
-								<Table.ColumnHeader w={'15%'}>Propósito</Table.ColumnHeader>
+								<Table.ColumnHeader w={'15%'}>Concepto de pago</Table.ColumnHeader>
 								<Table.ColumnHeader w={'10%'}>Monto</Table.ColumnHeader>
 								<Table.ColumnHeader>Estado</Table.ColumnHeader>
 								<Table.ColumnHeader w={'15%'}>

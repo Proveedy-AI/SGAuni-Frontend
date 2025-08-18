@@ -20,7 +20,6 @@ export const PaymentStudent = ({ dataPerson }) => {
 		3: 'green',
 		4: 'yellow',
 	};
-	console.log(dataPayment);
 	return (
 		<Card.Root>
 			<Card.Body>
@@ -31,7 +30,7 @@ export const PaymentStudent = ({ dataPerson }) => {
 							<Table.ColumnHeader>N°</Table.ColumnHeader>
 							<Table.ColumnHeader w={'20%'}>Programa</Table.ColumnHeader>
 							<Table.ColumnHeader w={'15%'}>Proceso</Table.ColumnHeader>
-							<Table.ColumnHeader w={'15%'}>Propósito</Table.ColumnHeader>
+							<Table.ColumnHeader w={'15%'}>Concepto de pago</Table.ColumnHeader>
 							<Table.ColumnHeader w={'10%'}>Monto</Table.ColumnHeader>
 							<Table.ColumnHeader>Estado</Table.ColumnHeader>
 							<Table.ColumnHeader w={'15%'}>Fecha Solicitud</Table.ColumnHeader>

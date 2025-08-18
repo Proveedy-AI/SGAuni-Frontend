@@ -51,6 +51,11 @@ export const CreateAndFilterUser = ({
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
 	};
+	const errorMessagesMap = {
+		num_doc: 'El número de documento ya está registrado.',
+		phone: 'El teléfono ya está en uso.',
+		uni_email: 'El correo institucional ya está registrado.',
+	};
 
 	const reset = () => {
 		setUsername('');
@@ -129,11 +134,28 @@ export const CreateAndFilterUser = ({
 				setIsModalOpen((s) => ({ ...s, create: false }));
 			},
 			onError: (error) => {
-				console.log(error);
-				toaster.create({
-					title: error.message || 'Error al crear el usuario',
-					type: 'error',
-				});
+				if (error.response?.data) {
+					const errors = error.response.data;
+
+					// Reemplazar mensajes según el mapa
+					const messages = Object.entries(errors)
+						.map(([field, msgs]) => {
+							return errorMessagesMap[field] || msgs.join(', ');
+						})
+						.join('\n');
+
+					toaster.create({
+						title: 'Error de validación',
+						description: messages,
+						type: 'error',
+					});
+				} else {
+					toaster.create({
+						title: 'Error inesperado',
+						description: error.message,
+						type: 'error',
+					});
+				}
 			},
 		});
 
