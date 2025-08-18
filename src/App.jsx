@@ -70,6 +70,7 @@ import {
 	MyProceduresView,
   MyThesisProcess,
   MyPostponeEnrollmentProcessView,
+  MyPostponeFormView,
 } from './views/admin/procedures';
 import {
 	MyCoursesListByAcademicPeriodView,
@@ -321,7 +322,10 @@ function App() {
 									</Route>
 								</Route>
                 <Route path='thesis-process' element={<MyThesisProcess />} />
-                <Route path='postpone-enrollment' element={<MyPostponeEnrollmentProcessView />} />
+                <Route path='postpone-enrollment'>
+                  <Route index element={<MyPostponeEnrollmentProcessView />} />
+                  <Route path=':id' element={<MyPostponeFormView />} />
+                </Route>
 							</Route>
 
 							<Route path='myclasses' element={<MyClassesLayout />}>

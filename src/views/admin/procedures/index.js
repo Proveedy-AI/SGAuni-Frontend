@@ -3,3 +3,4 @@ export * from './MyEnrollmentProcessView';
 export * from './MyInscriptionFormView';
 export * from './MyThesisProcess';
 export * from './MyPostponeEnrollmentProcessView';
+export * from './MyPostponeFormView';
