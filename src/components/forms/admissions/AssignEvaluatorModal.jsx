@@ -347,7 +347,11 @@ export const AssignEvaluatorProgramModal = ({
 											<Flex gap={2}>
 												<IconButton
 													size='xs'
-													disabled={data.status === 4}
+													disabled={
+														!permissions?.includes(
+															'admissions.programs.admin'
+														) && data?.status === 4
+													}
 													colorPalette='red'
 													onClick={() => handleDelete(item.id)}
 													aria-label='Eliminar'
