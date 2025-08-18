@@ -93,11 +93,19 @@ const Row = memo(
 
 						{(permissions?.includes('admissions.myprograms.assignevaluator') ||
 							permissions?.includes('admissions.programs.admin')) && (
-							<AssignEvaluatorProgramModal data={item} fetchData={fetchData} />
+							<AssignEvaluatorProgramModal
+								data={item}
+								fetchData={fetchData}
+								permissions={permissions}
+							/>
 						)}
 						{(permissions?.includes('admissions.myprograms.edit') ||
 							permissions?.includes('admissions.programs.admin')) && (
-							<UpdateAdmissionsProgramsForm data={item} fetchData={fetchData} />
+							<UpdateAdmissionsProgramsForm
+								data={item}
+								fetchData={fetchData}
+								permissions={permissions}
+							/>
 						)}
 						{(permissions?.includes('admissions.myprograms.delete') ||
 							permissions?.includes('admissions.programs.admin')) && (
@@ -105,7 +113,10 @@ const Row = memo(
 								placement='center'
 								trigger={
 									<IconButton
-										disabled={item.status === 4}
+										disabled={
+											!permissions?.includes('admissions.programs.admin') &&
+											item.status === 4
+										}
 										colorPalette='red'
 										size='xs'
 									>
