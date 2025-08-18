@@ -19,9 +19,8 @@ import {
 	AdmissionApplicantDetail,
 	AdmissionApplicants,
 	AdmissionApplicantsByProgram,
-	AdmissionsMyPrograms,
-	AdmissionsProccess,
 	AdmissionsPrograms,
+	AdmissionsProccess,
 	AdmissionEvaluators,
 	AdmissionEvaluatorsByProgram,
 } from './views/admin/admissions';
@@ -148,9 +147,12 @@ function App() {
 										<ProtectedRoute requiredPermission='admissions.programs.view' />
 									}
 								>
-									<Route path='programs/:id' element={<AdmissionsPrograms />} />
+									<Route
+										path='programs/:id'
+										element={<AdmissionsPrograms />}
+									/>
 								</Route>
-								<Route
+								{/*<Route
 									element={
 										<ProtectedRoute requiredPermission='admissions.myprograms.view' />
 									}
@@ -159,7 +161,7 @@ function App() {
 										path='myprograms/:id'
 										element={<AdmissionsMyPrograms />}
 									/>
-								</Route>
+								</Route>*/}
 								<Route
 									element={
 										<ProtectedRoute requiredPermission='admissions.applicants.view' />

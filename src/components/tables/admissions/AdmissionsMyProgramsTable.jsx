@@ -74,24 +74,33 @@ const Row = memo(
 				</Table.Cell>
 				<Table.Cell>
 					<HStack>
-						{permissions?.includes('admissions.myprograms.send') && (
+						{(permissions?.includes('admissions.programs.send') ||
+							permissions?.includes('admissions.programs.admin')) && (
 							<SendAdmissionProgramtoConfirmForm
 								fetchData={fetchData}
 								item={item}
 							/>
 						)}
 						<PreviewAdmissionsProgramsModal statusMap={statusMap} data={item} />
-						{permissions?.includes('admissions.myprograms.assignmodality') && (
-							<AssignModalityToProgramForm data={item} fetchData={fetchData} />
+						{(permissions?.includes('admissions.programs.assignmodality') ||
+							permissions?.includes('admissions.programs.admin')) && (
+							<AssignModalityToProgramForm
+								data={item}
+								fetchData={fetchData}
+								permissions={permissions}
+							/>
 						)}
 
-						{permissions?.includes('admissions.myprograms.assignevaluator') && (
+						{(permissions?.includes('admissions.myprograms.assignevaluator') ||
+							permissions?.includes('admissions.programs.admin')) && (
 							<AssignEvaluatorProgramModal data={item} fetchData={fetchData} />
 						)}
-						{permissions?.includes('admissions.myprograms.edit') && (
+						{(permissions?.includes('admissions.myprograms.edit') ||
+							permissions?.includes('admissions.programs.admin')) && (
 							<UpdateAdmissionsProgramsForm data={item} fetchData={fetchData} />
 						)}
-						{permissions?.includes('admissions.myprograms.delete') && (
+						{(permissions?.includes('admissions.myprograms.delete') ||
+							permissions?.includes('admissions.programs.admin')) && (
 							<ConfirmModal
 								placement='center'
 								trigger={
@@ -170,7 +179,7 @@ export const AdmissionsMyProgramsTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader>
+							<Table.ColumnHeader w={'20%'}>
 								<SortableHeader
 									label='Programa'
 									columnKey='program_name'

@@ -24,9 +24,6 @@ const Row = memo(
 		const encrypted = Encryptor.encrypt(item.id);
 		const encoded = encodeURIComponent(encrypted);
 		const handleRowClick = () => {
-			if (permissions?.includes('admissions.myprograms.view')) {
-				navigate(`/admissions/myprograms/${encoded}`);
-			}
 			if (permissions?.includes('admissions.programs.view')) {
 				navigate(`/admissions/programs/${encoded}`);
 			}
