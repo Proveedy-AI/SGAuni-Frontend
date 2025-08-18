@@ -1,6 +1,6 @@
 import { EncryptedStorage } from "@/components/CrytoJS/EncryptedStorage";
 import ResponsiveBreadcrumb from "@/components/ui/ResponsiveBreadcrumb";
-import { Button, Checkbox } from "@/components/ui";
+import { Button, Checkbox, toaster } from "@/components/ui";
 import { 
   Box, 
   Card, 
@@ -23,19 +23,36 @@ import {
   FiCheckCircle,
   FiArrowRight
 } from "react-icons/fi";
+import { usePostponeEnrollment } from "@/hooks/enrollments";
 
 export const MyPostponeFormView = () => {
   // const { id } = useParams(); //id de la matrícula (enrollment)
 	// const decoded = decodeURIComponent(id);
+  const { mutate: postponeEnrollment, isPending } = usePostponeEnrollment();
 
   const enrollment = EncryptedStorage.load('selectedEnrollmentProccess');
-  console.log(enrollment);
+  console.log(enrollment?.uuid);
 
   const [hasReadTerms, setHasReadTerms] = useState(false);
 
   const handleConfirmPostponement = () => {
     if (hasReadTerms) {
-      console.log("Proceso de postergación confirmado para:", enrollment);
+      postponeEnrollment(enrollment?.uuid, {
+        onSuccess: () => {
+          toaster.create({
+            title: "Éxito",
+            description: "El proceso de postergación se ha confirmado.",
+            status: "success",
+          });
+        },
+        onError: () => {
+          toaster.create({
+            title: "Error",
+            description: "Hubo un problema al confirmar la postergación. Intenta nuevamente.",
+            status: "error",
+          });
+        }
+      });
     }
   };
 
@@ -253,6 +270,8 @@ export const MyPostponeFormView = () => {
                   disabled={!hasReadTerms}
                   onClick={handleConfirmPostponement}
                   size="lg"
+                  loading={isPending}
+                  loadingText="Confirmando..."
                 >
                   Confirmar Postergación de Matrícula
                 </Button>

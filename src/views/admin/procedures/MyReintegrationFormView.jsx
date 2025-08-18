@@ -27,9 +27,11 @@ import {
   FiFileText,
   FiPlus,
 } from 'react-icons/fi';
+import { useRequestReincorporation } from "@/hooks/enrollments";
 
 export const MyReintegrationFormView = () => {
   const enrollment = EncryptedStorage.load('selectedEnrollmentProccess');
+  const { mutate: reintegrateEnrollment, isLoading } = useRequestReincorporation();
 
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState(null);
@@ -85,22 +87,32 @@ export const MyReintegrationFormView = () => {
     const payload = {
       current_enrollment_program: enrollment.id,
       payment_method: selectedMethod?.value,
-      num_document: numDocCarpeta
+      payment_document: numDocCarpeta
     };
 
     console.log('Payload de reintegración:', payload);
-    
-    // Aquí enviarías el payload a tu API
-    toaster.create({
-      title: 'Solicitud de reintegración enviada exitosamente',
-      type: 'success',
-    });
 
-    // Limpiar formulario
-    setSelectedMethod(null);
-    setnumDocCarpeta('');
-    setSelectedDocumentType(null);
-    setAcceptTerms(false);
+    reintegrateEnrollment(payload, {
+      onSuccess: () => {
+        toaster.create({
+          title: 'Solicitud de reintegración enviada exitosamente',
+          type: 'success',
+        });
+
+        // Limpiar formulario
+        setSelectedMethod(null);
+        setnumDocCarpeta('');
+        setSelectedDocumentType(null);
+        setAcceptTerms(false);
+      },
+      onError: (error) => {
+        toaster.create({
+          title: 'Error al enviar la solicitud de reintegración',
+          type: 'error',
+          description: error.message,
+        });
+      },
+    });
   };
 
   return (
@@ -276,6 +288,7 @@ export const MyReintegrationFormView = () => {
                   disabled={!acceptTerms}
                   width='full'
                   onClick={handleSubmitData}
+                  loading={isLoading}
                 >
                   Enviar Solicitud de Reintegración
                 </Button>

@@ -34,12 +34,11 @@ const EnrollmentCard = ({ enrollment, onStartEnrollment }) => {
 	const StatusColor = [
 		{
 			id: 1,
-			status: 2,
-			bg: 'orange.100',
-			color: 'orange',
-			label: 'Pago pendiente',
+			status: 7,
+			bg: 'red.100',
+			color: 'red',
+			label: 'Cancelado',
 		},
-		{ id: 2, status: 4, bg: 'green.100', color: 'green', label: 'Elegible' },
 	];
 
 	return (
@@ -143,7 +142,7 @@ export const MyReintegrationProcessView = () => {
 	//const { data }
 
 	const filteredEnrollments = dataMyEnrollments?.filter(
-		(enrollment) => enrollment.status === 2 || enrollment.status === 4
+		(enrollment) => enrollment.status === 7
 	);
 
 	console.log(filteredEnrollments);
