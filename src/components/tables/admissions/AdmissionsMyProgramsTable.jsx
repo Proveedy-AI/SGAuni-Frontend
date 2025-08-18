@@ -2,12 +2,13 @@
 
 import {
 	AssignEvaluatorProgramModal,
-	PreviewAdmissionsProgramsModal,
 	UpdateAdmissionsProgramsForm,
 } from '@/components/forms/admissions';
 import { AssignModalityToProgramForm } from '@/components/forms/admissions/AssignModalityProgramsForm';
 import { HistoryStatusProgramsView } from '@/components/forms/admissions/HistoryStatusProgramsView';
+import { PreviewAdmissionsProgramsModal } from '@/components/forms/admissions/PreviewAdmissionsProgramsModal';
 import { SendAdmissionProgramtoConfirmForm } from '@/components/forms/admissions/SendAdmissionProgramtoConfirmForm';
+import { UpdateStatusAdmissionsProccessForm } from '@/components/forms/admissions/UpdateStatusAdmissionsProccessForm';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { ConfirmModal, Pagination, toaster } from '@/components/ui';
 import { formatDateString } from '@/components/ui/dateHelpers';
@@ -81,7 +82,14 @@ const Row = memo(
 								item={item}
 							/>
 						)}
-						<PreviewAdmissionsProgramsModal statusMap={statusMap} data={item} />
+						<PreviewAdmissionsProgramsModal data={item} />
+						{(permissions?.includes('admissions.programs.approve') ||
+							permissions?.includes('admissions.programs.admin')) && (
+							<UpdateStatusAdmissionsProccessForm
+								data={item}
+								fetchData={fetchData}
+							/>
+						)}
 						{(permissions?.includes('admissions.programs.assignmodality') ||
 							permissions?.includes('admissions.programs.admin')) && (
 							<AssignModalityToProgramForm
@@ -91,7 +99,7 @@ const Row = memo(
 							/>
 						)}
 
-						{(permissions?.includes('admissions.myprograms.assignevaluator') ||
+						{(permissions?.includes('admissions.programs.assignevaluator') ||
 							permissions?.includes('admissions.programs.admin')) && (
 							<AssignEvaluatorProgramModal
 								data={item}
@@ -99,7 +107,7 @@ const Row = memo(
 								permissions={permissions}
 							/>
 						)}
-						{(permissions?.includes('admissions.myprograms.edit') ||
+						{(permissions?.includes('admissions.programs.edit') ||
 							permissions?.includes('admissions.programs.admin')) && (
 							<UpdateAdmissionsProgramsForm
 								data={item}
@@ -107,7 +115,7 @@ const Row = memo(
 								permissions={permissions}
 							/>
 						)}
-						{(permissions?.includes('admissions.myprograms.delete') ||
+						{(permissions?.includes('admissions.programs.delete') ||
 							permissions?.includes('admissions.programs.admin')) && (
 							<ConfirmModal
 								placement='center'

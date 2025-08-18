@@ -75,7 +75,9 @@ export const AdmissionsPrograms = () => {
 							<LiaSlashSolid />
 						</Breadcrumb.Separator>
 						<Breadcrumb.Item>
-							<Breadcrumb.CurrentLink>Programas de Admisión</Breadcrumb.CurrentLink>
+							<Breadcrumb.CurrentLink>
+								Programas de Admisión
+							</Breadcrumb.CurrentLink>
 						</Breadcrumb.Item>
 					</Breadcrumb.List>
 				</Breadcrumb.Root>
@@ -116,7 +118,8 @@ export const AdmissionsPrograms = () => {
 						onChange={(e) => setSearchValue(e.target.value)}
 					/>
 				</InputGroup>
-				{permissions?.includes('admissions.myprograms.create') && (
+				{(permissions?.includes('admissions.programs.create') ||
+					permissions?.includes('admissions.programs.admin')) && (
 					<AddAdmissionsProgramsForm
 						id={decrypted}
 						profileId={profile?.id}

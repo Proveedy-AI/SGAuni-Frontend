@@ -37,6 +37,7 @@ export const SendAdmissionProgramtoConfirmForm = ({ fetchData, item }) => {
 					type: 'success',
 				});
 				fetchData();
+				setOpen(false)
 			},
 			onError: (error) => {
 				console.log(error);
