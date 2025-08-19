@@ -139,9 +139,9 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 	};
 
 	const dataMode = [
-		{ label: 'Virtual', value: 1 },
+		{ label: 'Presencial', value: 1 },
 		{ label: 'Semi-Presencial', value: 2 },
-		{ label: 'Presencial', value: 3 },
+		{ label: 'A distancia', value: 3 },
 	];
 
 	const ProgramsOptions = dataPrograms?.results?.map((department) => ({
