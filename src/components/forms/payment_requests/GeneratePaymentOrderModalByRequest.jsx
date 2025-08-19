@@ -293,8 +293,7 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 													</Text>
 												</Box>
 												<Text fontSize='sm' color='muted.600'>
-													{item.enrollment_process_program_name ||
-														item.admission_process_program_name}
+													{item.program_name}
 												</Text>
 											</Box>
 
