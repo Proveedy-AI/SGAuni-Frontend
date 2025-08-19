@@ -1,4 +1,5 @@
 import { Alert } from '@/components/ui';
+import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { 
   //Badge, 
@@ -221,6 +222,12 @@ export const MyThesisProcess = () => {
 
   return (
     <Box p={6} maxW="full" mx="auto">
+      <ResponsiveBreadcrumb
+        items={[
+          { label: 'Trámites', to: '/myprocedures' },
+          { label: 'Proceso de Tesis y Sustentación' },
+        ]}
+      />
       {/* Header */}
       <VStack spacing={6} align="stretch" overflow="hidden">
         <Box textAlign="center">

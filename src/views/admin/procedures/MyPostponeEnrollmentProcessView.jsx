@@ -1,31 +1,31 @@
+import PropTypes from 'prop-types';
+import { useColorModeValue } from '@/components/ui';
+import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
 import { useReadMyEnrollments } from '@/hooks';
 import {
-	Box,
-	Heading,
-	SimpleGrid,
-	Card,
-	Text,
-	Icon,
-	Flex,
 	Badge,
-	VStack,
+	Box,
+	Card,
+	Flex,
+	Heading,
 	HStack,
+	Icon,
+	SimpleGrid,
 	Spinner,
+	Text,
+	VStack,
 } from '@chakra-ui/react';
 import {
 	FiBook,
 	FiCalendar,
-	FiCreditCard,
 	FiCheckCircle,
 	FiClock,
+	FiCreditCard,
 } from 'react-icons/fi';
-import PropTypes from 'prop-types';
-import { useColorModeValue } from '@/components/ui';
-import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
-import { StartEnrollmentProcessModal } from '@/components/modals/procedures';
-import { useNavigate } from 'react-router';
+import { StartPosponeProcessModal } from '@/components/modals/procedures';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
+import { useNavigate } from 'react-router';
 
 const EnrollmentCard = ({ enrollment, onStartEnrollment }) => {
 	const cardBg = useColorModeValue('white', 'gray.800');
@@ -37,9 +37,16 @@ const EnrollmentCard = ({ enrollment, onStartEnrollment }) => {
 			status: 2,
 			bg: 'orange.100',
 			color: 'orange',
-			label: 'Pago pendiente',
+			label: 'Pago parcial',
 		},
 		{ id: 2, status: 4, bg: 'green.100', color: 'green', label: 'Elegible' },
+		{
+			id: 3,
+			status: 1,
+			bg: 'gray.100',
+			color: 'gray',
+			label: 'Pago pendiente',
+		},
 	];
 
 	return (
@@ -91,7 +98,7 @@ const EnrollmentCard = ({ enrollment, onStartEnrollment }) => {
 							</Badge>
 						</VStack>
 					</Flex>
-					<StartEnrollmentProcessModal
+					<StartPosponeProcessModal
 						enrollment={enrollment}
 						onStartEnrollment={onStartEnrollment}
 					/>
@@ -136,14 +143,17 @@ EnrollmentCard.propTypes = {
 	onStartEnrollment: PropTypes.func.isRequired,
 };
 
-export const MyEnrollmentProcessView = () => {
-	const navigate = useNavigate();
-	const { data: myEnrollments, isLoading: isLoadingEnrollments } =
+export const MyPostponeEnrollmentProcessView = () => {
+	const { data: dataMyEnrollments, isLoading: isLoadingMyEnrollments } =
 		useReadMyEnrollments();
+	const navigate = useNavigate();
+	//const { data }
 
-	const eligibleEnrollments = myEnrollments?.filter(
-		(enrollment) => enrollment.status === 2
+	const filteredEnrollments = dataMyEnrollments?.filter(
+		(enrollment) => enrollment.status === 1
 	);
+
+	console.log(filteredEnrollments);
 
 	const bgColor = useColorModeValue('blue.50', 'blue.900');
 
@@ -151,27 +161,27 @@ export const MyEnrollmentProcessView = () => {
 		const encrypted = Encryptor.encrypt(enrollment.id); // id enrollment
 		const encoded = encodeURIComponent(encrypted);
 		EncryptedStorage.save('selectedEnrollmentProccess', enrollment);
-		navigate(`/myprocedures/enrollment-process/${encoded}`);
+		navigate(`/myprocedures/postpone-process/${encoded}`);
 	};
 
 	return (
-		<Box spaceY='5' p={{ base: 4, md: 6 }} maxW='7xl' mx='auto'>
+		<Box spaceY='5' p={{ base: 4, md: 6 }} maxW='8xl' mx='auto'>
 			<ResponsiveBreadcrumb
 				items={[
-					{ label: 'Mis Trámites', to: '/myprocedures' },
-					{ label: 'Proceso de Matrícula' },
+					{ label: 'Trámites', to: '/myprocedures' },
+					{ label: 'Postergar matrícula' },
 				]}
 			/>
 			<Box bg={bgColor} borderRadius='xl' p={{ base: 6, md: 8 }} mb={8}>
 				<Heading as='h1' size='xl' color='blue.800' mb={2} fontWeight='bold'>
-					Proceso de Matrícula
+					Postergar Matrícula
 				</Heading>
 				<Text color='blue.600' fontSize='lg'>
-					Gestiona tus inscripciones y procesos de matrícula académica
+					Gestiona tu solicitud de postergación de matrícula académica
 				</Text>
 			</Box>
 
-			{isLoadingEnrollments ? (
+			{isLoadingMyEnrollments ? (
 				<Flex justify='center' align='center' py={12}>
 					<Spinner size='lg' color='blue.500' />
 					<Text ml={4} color='gray.600'>
@@ -180,16 +190,16 @@ export const MyEnrollmentProcessView = () => {
 				</Flex>
 			) : (
 				<>
-					{eligibleEnrollments && eligibleEnrollments.length > 0 ? (
+					{filteredEnrollments && filteredEnrollments.length > 0 ? (
 						<>
 							<Text fontSize='sm' color='gray.600' mb={6}>
-								{eligibleEnrollments.length} inscripción
-								{eligibleEnrollments.length !== 1 ? 'es' : ''} encontrada
-								{eligibleEnrollments.length !== 1 ? 's' : ''}
+								{filteredEnrollments.length} inscripción
+								{filteredEnrollments.length !== 1 ? 'es' : ''} encontrada
+								{filteredEnrollments.length !== 1 ? 's' : ''}
 							</Text>
 
 							<SimpleGrid columns={{ base: 1, lg: 2 }} mx='auto'>
-								{eligibleEnrollments.map((enrollment) => (
+								{filteredEnrollments.map((enrollment) => (
 									<EnrollmentCard
 										key={enrollment.id}
 										enrollment={enrollment}

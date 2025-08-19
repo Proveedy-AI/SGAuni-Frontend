@@ -7,7 +7,8 @@ import {
   FiTrendingUp,
   FiCreditCard,
   FiUserX,
-  FiAward
+  FiAward,
+  FiUserPlus
 } from "react-icons/fi";
 import { useNavigate } from "react-router";
 import PropTypes from "prop-types";
@@ -149,10 +150,10 @@ export const MyProceduresView = () => {
   {
     id: 7,
     label: "Postergar matrícula",
-    href: "/myprocedures/postpone-enrollment",
+    href: "/myprocedures/postpone-process",
     icon: FiUserX,
     description: "Solicita postergar tu matrícula",
-    isActive: false,
+    isActive: true,
   },
   {
     id: 8,
@@ -160,6 +161,14 @@ export const MyProceduresView = () => {
     href: "/myprocedures/thesis-process",
     icon: FiAward,
     description: "Gestiona tu proceso de tesis",
+    isActive: true,
+  },
+  {
+    id: 9,
+    label: "Proceso de Reintegro",
+    href: "/myprocedures/reintegration-process",
+    icon: FiUserPlus,
+    description: "Solicita tu proceso de reintegro",
     isActive: true,
   }
 ];
