@@ -15,13 +15,13 @@ export const GenerateAcademicTranscriptPdfModal = ({ data, isActive }) => {
       trigger={
         <Button
           size='sm'
-          bg="blue.500"
+          bg="uni.secondary"
           color="white"
           variant='outline'
           onClick={() => setOpen(true)}
           disabled={!isActive}
         >
-          <FiDownload /> Descargar Boleta de Notas
+          <FiDownload /> Descargar Notas
         </Button>
       }
       open={open}

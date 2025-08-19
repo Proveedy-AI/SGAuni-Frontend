@@ -9,12 +9,10 @@ import {
 	HStack,
 	Icon,
 	Spinner,
-	Stack,
 	Table,
 	Text,
 	VStack,
 } from '@chakra-ui/react';
-import { GenerateAcademicTranscriptPdfModal } from '@/components/modals/mycourses';
 import { FiArrowRight, FiBookOpen, FiCalendar } from 'react-icons/fi';
 
 export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
@@ -254,8 +252,6 @@ CoursesListByPeriodCard.propTypes = {
 };
 
 export const CoursesByPeriodSection = ({
-	dataAcademicTranscript,
-	isDownloadable,
 	isLoadingCoursesByPeriod,
 	dataCoursesByPeriod,
 	handleRowClick,
@@ -265,22 +261,6 @@ export const CoursesByPeriodSection = ({
 
 	return (
 		<Box>
-			<Heading my={3}>
-				<Stack
-					justify={'space-between'}
-					align='center'
-					direction={{ base: 'column', md: 'row' }}
-				>
-					<Text fontWeight='bold' color='blue.700'>
-						Mis Cursos
-					</Text>
-					<GenerateAcademicTranscriptPdfModal
-						data={dataAcademicTranscript}
-						isActive={isDownloadable}
-					/>
-				</Stack>
-			</Heading>
-
 			{isLoadingCoursesByPeriod ? (
 				<Box p={6} maxW='full' mx='auto' textAlign='center'>
 					<Spinner size='lg' />
@@ -376,8 +356,6 @@ export const CoursesByPeriodSection = ({
 };
 
 CoursesByPeriodSection.propTypes = {
-	dataAcademicTranscript: PropTypes.object,
-	isDownloadable: PropTypes.bool,
 	isLoadingCoursesByPeriod: PropTypes.bool,
 	dataCoursesByPeriod: PropTypes.object,
 	handleRowClick: PropTypes.func,
