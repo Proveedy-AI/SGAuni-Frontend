@@ -1,6 +1,7 @@
 import { StudentTuitionTable } from '@/components/tables/students/StudentTuitionTable';
 
 import {
+	Box,
 	Card,
 	Heading,
 	HStack,
@@ -54,31 +55,42 @@ export const EnrollmentStudent = ({
 			<Card.Root shadow={'md'}>
 				<Card.Header pb={0}>
 					<Stack
-						justify={'space-between'}
-						align='center'
+						justify='space-between'
+						align={{ base: 'flex-start', md: 'center' }}
 						direction={{ base: 'column', md: 'row' }}
+						spacing={{ base: 3, md: 6 }}
+						w='full'
 					>
+						{/* Título */}
 						<HStack>
 							<Icon as={FiClipboard} boxSize={5} />
 							<Heading size='md'>Matrículas</Heading>
 						</HStack>
 
-						<HStack>
-							<ReactSelect
-								placeholder='Filtrar por programa...'
-								value={selectProgram}
-								onChange={(value) => setSelectProgram(value)}
-								variant='flushed'
-								size='xs'
-								isSearchable
-								isClearable
-								options={ProgramsOptions}
-							/>
+						{/* Filtros y acciones */}
+						<Stack
+							direction={{ base: 'column', sm: 'row' }}
+							spacing={{ base: 2, md: 4 }}
+							w={{ base: 'full', md: 'auto' }}
+						>
+							<Box flex='1' minW={{ base: 'full', sm: '200px', md: '550px' }}>
+								<ReactSelect
+									placeholder='Filtrar por programa...'
+									value={selectProgram}
+									onChange={(value) => setSelectProgram(value)}
+									variant='flushed'
+									size='xs'
+									isSearchable
+									isClearable
+									options={ProgramsOptions}
+								/>
+							</Box>
+
 							<AddEnrollmentStudentForm
 								dataStudent={dataStudent}
 								selectProgram={selectProgram}
 							/>
-						</HStack>
+						</Stack>
 					</Stack>
 				</Card.Header>
 
