@@ -32,6 +32,7 @@ export const EditModality = ({ fetchData, item }) => {
 		pre_master_min_grade: item.pre_master_min_grade,
 		requires_essay: item.requires_essay,
 		requires_interview: item.requires_interview,
+		code: item.code,
 	});
 
 	const [errors, setErrors] = useState({});
@@ -76,6 +77,7 @@ export const EditModality = ({ fetchData, item }) => {
 		) {
 			newErrors.pre_master_min_grade = 'Debe estar entre 0 y 20';
 		}
+		if (!modalityEditable.code) newErrors.code = 'El código es obligatorio';
 
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
@@ -94,11 +96,13 @@ export const EditModality = ({ fetchData, item }) => {
 		const payload = {
 			name: modalityEditable.name,
 			description: modalityEditable.description,
-			postgraduate_type: Number(modalityEditable?.postgraduate_type?.value) || null,
+			postgraduate_type:
+				Number(modalityEditable?.postgraduate_type?.value) || null,
 			requires_pre_master_exam: modalityEditable.requires_pre_master_exam,
 			pre_master_min_grade: modalityEditable.pre_master_min_grade,
 			requires_essay: modalityEditable.requires_essay,
 			requires_interview: modalityEditable.requires_interview,
+			code: modalityEditable.code,
 		};
 
 		await update(
@@ -181,6 +185,17 @@ export const EditModality = ({ fetchData, item }) => {
 							setModalityEditable((prev) => ({
 								...prev,
 								name: e.target.value,
+							}))
+						}
+					/>
+				</Field>
+				<Field label='Código' invalid={!!errors.code} errorText={errors.code}>
+					<Input
+						value={modalityEditable.code}
+						onChange={(e) =>
+							setModalityEditable((prev) => ({
+								...prev,
+								code: e.target.value,
 							}))
 						}
 					/>

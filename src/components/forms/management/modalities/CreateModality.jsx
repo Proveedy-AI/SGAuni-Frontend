@@ -31,6 +31,7 @@ export const AddModalityForm = ({ fetchData }) => {
 		pre_master_min_grade: '',
 		rules_ids: [],
 		postgraduate_type: '',
+		code: '',
 	});
 	const { data: dataModalityRules, isLoading: loadingRules } =
 		useReadModalityRules();
@@ -47,7 +48,7 @@ export const AddModalityForm = ({ fetchData }) => {
 	const validate = () => {
 		const newErrors = {};
 
-		if (!modalityRequest.name) newErrors.name = 'Falta nombre';
+		if (!modalityRequest.name) newErrors.name = 'El nombre es obligatorio';
 		if (!modalityRequest.description)
 			newErrors.description = 'Falta descripción';
 		if (
@@ -62,7 +63,7 @@ export const AddModalityForm = ({ fetchData }) => {
 			newErrors.postgraduate_type = 'Seleccione un tipo de programa';
 		if (!selectedRuleIds || selectedRuleIds.length === 0)
 			newErrors.rules_ids = 'Seleccione al menos una regla';
-
+		if (!modalityRequest.code) newErrors.code = 'El código es obligatorio';
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
 	};
@@ -124,6 +125,7 @@ export const AddModalityForm = ({ fetchData }) => {
 					description: '',
 					postgraduate_type: null,
 					pre_master_min_grade: 0,
+					code: '',
 				});
 				setSelectedRuleIds([]);
 			},
@@ -171,6 +173,18 @@ export const AddModalityForm = ({ fetchData }) => {
 						value={modalityRequest.name}
 						onChange={(e) =>
 							setModalityRequest({ ...modalityRequest, name: e.target.value })
+						}
+					/>
+				</Field>
+				<Field label='Código' invalid={!!errors.code} errorText={errors.code}>
+					<Input
+						required
+						type='text'
+						name='code'
+						placeholder='Ingrese el código de la modalidad'
+						value={modalityRequest.code}
+						onChange={(e) =>
+							setModalityRequest({ ...modalityRequest, code: e.target.value })
 						}
 					/>
 				</Field>
