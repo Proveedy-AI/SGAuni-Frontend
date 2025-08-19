@@ -217,7 +217,7 @@ export const MyPaymentRequests = () => {
 										<Table.Row key={item.id}>
 											<Table.Cell>{index + 1}</Table.Cell>
 											<Table.Cell>
-												{item.admission_process_program_name || item.enrollment_process_program_name}
+												{item.program_name}
 											</Table.Cell>
 											<Table.Cell>
 												{item.admission_process_name || item.enrollment_process_name}
