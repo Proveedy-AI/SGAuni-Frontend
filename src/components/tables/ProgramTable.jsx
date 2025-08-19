@@ -137,7 +137,7 @@ export const ProgramTable = ({
 					</Table.Header>
 					<Table.Body>
 						{isLoading ? (
-							<SkeletonTable columns={4} />
+							<SkeletonTable columns={5} />
 						) : visibleRows?.length > 0 ? (
 							visibleRows.map((item, index) => (
 								<Row
@@ -158,7 +158,7 @@ export const ProgramTable = ({
 							))
 						) : (
 							<Table.Row>
-								<Table.Cell colSpan={4} textAlign='center' py={2}>
+								<Table.Cell colSpan={5} textAlign='center' py={2}>
 									No hay datos disponibles.
 								</Table.Cell>
 							</Table.Row>
