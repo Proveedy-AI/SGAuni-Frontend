@@ -30,6 +30,7 @@ export const AddProgram = ({
 		minPaymentPercentage: null,
 		maxInstallments: null,
 		total_program_credits: '',
+		code: '',
 	});
 
 	const validateFields = () => {
@@ -65,6 +66,7 @@ export const AddProgram = ({
 			newErrors.maxInstallments =
 				'El máximo de cuotas debe ser un número positivo';
 		}
+		if (!programRequest.code.trim()) newErrors.code = 'El código es requerido';
 
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
@@ -90,6 +92,7 @@ export const AddProgram = ({
 			min_payment_percentage: programRequest.minPaymentPercentage / 100,
 			max_installments: programRequest.maxInstallments,
 			total_program_credits: programRequest.total_program_credits,
+			code: programRequest.code,
 		};
 
 		register(payload, {
@@ -170,6 +173,26 @@ export const AddProgram = ({
 										setProgramRequest({
 											...programRequest,
 											name: e.target.value,
+										})
+									}
+								/>
+							</Field>
+							<Field
+								label='Código'
+								invalid={!!errors.code}
+								errorText={errors.code}
+								required
+							>
+								<Input
+									required
+									type='text'
+									name='code'
+									placeholder='Código del programa'
+									value={programRequest.code}
+									onChange={(e) =>
+										setProgramRequest({
+											...programRequest,
+											code: e.target.value,
 										})
 									}
 								/>
@@ -344,6 +367,7 @@ export const AddProgram = ({
 							>
 								<Input
 									type='number'
+									placeholder='Porcentaje mínimo de deuda'
 									value={programRequest.minPaymentPercentage}
 									onChange={(e) =>
 										setProgramRequest({
@@ -362,6 +386,7 @@ export const AddProgram = ({
 								<Input
 									type='number'
 									step='1'
+									placeholder='Máximo de cuotas'
 									value={programRequest.maxInstallments}
 									onChange={(e) => {
 										const value = e.target.value;

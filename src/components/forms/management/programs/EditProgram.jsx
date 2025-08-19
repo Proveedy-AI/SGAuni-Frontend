@@ -31,6 +31,7 @@ export const EditProgram = ({
 		minPaymentPercentage: null,
 		maxInstallments: null,
 		total_program_credits: item.total_program_credits || '', // Aseguramos que sea un string
+		code: item.code || '',
 	});
 
 	useEffect(() => {
@@ -49,6 +50,7 @@ export const EditProgram = ({
 				),
 				minPaymentPercentage: item.min_payment_percentage * 100,
 				maxInstallments: item.max_installments,
+				code: item.code,
 			}));
 		}
 	}, [
@@ -93,6 +95,7 @@ export const EditProgram = ({
 				'El máximo de cuotas debe ser un número positivo';
 		}
 
+		if (!programRequest.code.trim()) newErrors.code = 'El código es requerido';
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
 	};
@@ -114,6 +117,7 @@ export const EditProgram = ({
 			min_payment_percentage: programRequest.minPaymentPercentage / 100,
 			max_installments: programRequest.maxInstallments,
 			total_program_credits: programRequest.total_program_credits,
+			code: programRequest.code,
 		};
 
 		await update(
@@ -186,6 +190,26 @@ export const EditProgram = ({
 										setProgramRequest({
 											...programRequest,
 											name: e.target.value,
+										})
+									}
+								/>
+							</Field>
+							<Field
+								label='Código'
+								invalid={!!errors.code}
+								errorText={errors.code}
+								required
+							>
+								<Input
+									required
+									type='text'
+									name='code'
+									placeholder='Código del programa'
+									value={programRequest.code}
+									onChange={(e) =>
+										setProgramRequest({
+											...programRequest,
+											code: e.target.value,
 										})
 									}
 								/>
