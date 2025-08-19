@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import useAxiosPrivate from "../axios/useAxiosPrivate";
 
 export const useReadAcademicTranscript = (UUIDStudent, programId) => {
-  console.log(UUIDStudent, programId);
   const axiosPrivate = useAxiosPrivate();
   return useQuery({
     queryKey: ['academic-transcript', UUIDStudent, programId],
