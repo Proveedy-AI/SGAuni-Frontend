@@ -82,8 +82,7 @@ export const StudentsView = () => {
 	const statusOptions = [
 		{ id: 1, label: 'Activo', value: 1 },
 		{ id: 2, label: 'Suspendido', value: 2 },
-		{ id: 3, label: 'Graduado', value: 3 },
-		{ id: 4, label: 'Retirado', value: 4 },
+
 	];
 
 	return (
