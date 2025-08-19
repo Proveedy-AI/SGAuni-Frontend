@@ -48,6 +48,9 @@ export const AddEnrollmentStudentForm = ({
 		if (!selectedStatus) {
 			newErrors.selectedStatus = 'El estado del proceso es obligatorio';
 		}
+		if (!dataPrograms?.data) {
+			newErrors.dataPrograms = 'No se encontro periodos de matricula activas';
+		}
 
 		setErrors(newErrors);
 
@@ -192,6 +195,12 @@ export const AddEnrollmentStudentForm = ({
 											{dataPrograms?.data.program_name} -{' '}
 											{dataPrograms?.data.enrollment_period_name}
 										</Text>
+
+										{errors?.dataPrograms && (
+											<Text fontSize='xs' color='red.500' mt={1}>
+												{errors.dataPrograms}
+											</Text>
+										)}
 									</Box>
 								</Flex>
 							</Box>
