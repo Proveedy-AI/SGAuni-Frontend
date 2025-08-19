@@ -72,6 +72,7 @@ import {
   MyPostponeFormView,
   MyReintegrationProcessView,
   MyReintegrationFormView,
+  MyInternalTransferProcessView,
 } from './views/admin/procedures';
 import {
 	MyCoursesListByAcademicPeriodView,
@@ -347,6 +348,9 @@ function App() {
                 <Route path='reintegration-process'>
                   <Route index element={<MyReintegrationProcessView />} />
                   <Route path=":id" element={<MyReintegrationFormView />} />
+                </Route>
+                <Route path='internal-transfer-process'>
+                  <Route index element={<MyInternalTransferProcessView />} />
                 </Route>
 							</Route>
 

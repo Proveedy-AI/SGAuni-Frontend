@@ -6,3 +6,4 @@ export * from './MyPostponeEnrollmentProcessView';
 export * from './MyPostponeFormView';
 export * from './MyReintegrationProcessView';
 export * from './MyReintegrationFormView';
+export * from './MyInternalTransferProcessView';

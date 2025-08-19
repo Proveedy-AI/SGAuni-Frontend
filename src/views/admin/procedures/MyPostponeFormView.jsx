@@ -24,10 +24,12 @@ import {
   FiArrowRight
 } from "react-icons/fi";
 import { usePostponeEnrollment } from "@/hooks/enrollments";
+import { useNavigate } from "react-router";
 
 export const MyPostponeFormView = () => {
   // const { id } = useParams(); //id de la matrícula (enrollment)
 	// const decoded = decodeURIComponent(id);
+  const navigate = useNavigate();
   const { mutate: postponeEnrollment, isPending } = usePostponeEnrollment();
 
   const enrollment = EncryptedStorage.load('selectedEnrollmentProccess');
@@ -44,6 +46,7 @@ export const MyPostponeFormView = () => {
             description: "El proceso de postergación se ha confirmado.",
             status: "success",
           });
+          navigate('/myprocedures/');
         },
         onError: () => {
           toaster.create({

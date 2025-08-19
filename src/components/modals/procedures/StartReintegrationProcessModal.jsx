@@ -19,7 +19,7 @@ export const StartReintegrationProcessModal = ({
   const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 	const { data: dataEnrollmentDetails, isLoading } =
-		useReadCurrentEnrollmentProgram(program.program_id, open);
+		useReadCurrentEnrollmentProgram(program.program, open);
 
   const isEligible = new Date() <= new Date(dataEnrollmentDetails?.data?.registration_end_date);
 

@@ -26,8 +26,10 @@ import {
 	FiPlus,
 } from 'react-icons/fi';
 import { useRequestReincorporation } from '@/hooks/enrollments';
+import { useNavigate } from 'react-router';
 
 export const MyReintegrationFormView = () => {
+  const navigate = useNavigate();
 	const enrollment = EncryptedStorage.load('selectedEnrollmentProccess');
 	const { mutate: reintegrateEnrollment, isLoading } =
 		useRequestReincorporation();
@@ -103,6 +105,7 @@ export const MyReintegrationFormView = () => {
 				setnumDocCarpeta('');
 				setSelectedDocumentType(null);
 				setAcceptTerms(false);
+        navigate('/myprocedures/');
 			},
 			onError: (error) => {
 				toaster.create({

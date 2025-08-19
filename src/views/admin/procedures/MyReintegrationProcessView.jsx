@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import { useColorModeValue } from '@/components/ui';
 import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
-import { useReadMyEnrollments } from '@/hooks';
 import {
 	Box,
 	Card,
@@ -18,7 +17,7 @@ import { StartReintegrationProcessModal } from '@/components/modals/procedures';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
 import { useNavigate } from 'react-router';
-import { useReadMyPrograms } from '@/hooks/person/useReadMyPrograms';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 
 const EnrollmentCard = ({ program, onStartEnrollment }) => {
 	const cardBg = useColorModeValue('white', 'gray.800');
@@ -75,15 +74,13 @@ EnrollmentCard.propTypes = {
 };
 
 export const MyReintegrationProcessView = () => {
-	const { data: dataMyEnrollments, isLoading: isLoadingMyEnrollments } =
-		useReadMyEnrollments();
 	const navigate = useNavigate();
-	//const { data }
-	const { data: dataMyPrograms } = useReadMyPrograms();
 
-	const filteredEnrollments = dataMyEnrollments?.filter(
-		(enrollment) => enrollment.status === 7
-	);
+  const { data: dataUser, isLoading: isLoadingUser } = useReadUserLogged();
+  const filteredPrograms =  dataUser?.student?.admission_programs.filter(
+    (program) => program.academic_status === 4
+  );
+
 
 	const bgColor = useColorModeValue('blue.50', 'blue.900');
 
@@ -111,7 +108,7 @@ export const MyReintegrationProcessView = () => {
 				</Text>
 			</Box>
 
-			{isLoadingMyEnrollments ? (
+			{isLoadingUser ? (
 				<Flex justify='center' align='center' py={12}>
 					<Spinner size='lg' color='blue.500' />
 					<Text ml={4} color='gray.600'>
@@ -120,18 +117,18 @@ export const MyReintegrationProcessView = () => {
 				</Flex>
 			) : (
 				<>
-					{filteredEnrollments && filteredEnrollments.length > 0 ? (
+					{filteredPrograms && filteredPrograms.length > 0 ? (
 						<>
 							<Text fontSize='sm' color='gray.600' mb={6}>
-								{filteredEnrollments.length} proceso
-								{filteredEnrollments.length !== 1 ? 's' : ''} encontrado
-								{filteredEnrollments.length !== 1 ? 's' : ''}
+								{filteredPrograms.length} proceso
+								{filteredPrograms.length !== 1 ? 's' : ''} encontrado
+								{filteredPrograms.length !== 1 ? 's' : ''}
 							</Text>
 
 							<SimpleGrid columns={{ base: 1, lg: 2 }} mx='auto'>
-								{dataMyPrograms?.map((program) => (
+								{filteredPrograms?.map((program) => (
 									<EnrollmentCard
-										key={program.program_id}
+										key={program.program}
 										program={program}
 										onStartEnrollment={handleStartEnrollment}
 									/>
