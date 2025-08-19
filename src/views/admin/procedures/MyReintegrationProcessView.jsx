@@ -3,43 +3,26 @@ import { useColorModeValue } from '@/components/ui';
 import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
 import { useReadMyEnrollments } from '@/hooks';
 import {
-	Badge,
 	Box,
 	Card,
 	Flex,
 	Heading,
-	HStack,
 	Icon,
 	SimpleGrid,
 	Spinner,
 	Text,
 	VStack,
 } from '@chakra-ui/react';
-import {
-	FiBook,
-	FiCalendar,
-	FiCheckCircle,
-	FiClock,
-	FiCreditCard,
-} from 'react-icons/fi';
+import { FiBook } from 'react-icons/fi';
 import { StartReintegrationProcessModal } from '@/components/modals/procedures';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
 import { useNavigate } from 'react-router';
+import { useReadMyPrograms } from '@/hooks/person/useReadMyPrograms';
 
-const EnrollmentCard = ({ enrollment, onStartEnrollment }) => {
+const EnrollmentCard = ({ program, onStartEnrollment }) => {
 	const cardBg = useColorModeValue('white', 'gray.800');
 	const borderColor = useColorModeValue('gray.200', 'gray.600');
-
-	const StatusColor = [
-		{
-			id: 1,
-			status: 7,
-			bg: 'red.100',
-			color: 'red',
-			label: 'Cancelado',
-		},
-	];
 
 	return (
 		<Card.Root
@@ -72,66 +55,22 @@ const EnrollmentCard = ({ enrollment, onStartEnrollment }) => {
 								lineHeight='shorter'
 								noOfLines={2}
 							>
-								{enrollment.program_name}
+								{program.program_name}
 							</Heading>
-							<Badge
-								bg={
-									StatusColor.find((s) => s.status === enrollment.status)?.bg ||
-									'gray.100'
-								}
-								color={
-									StatusColor.find((s) => s.status === enrollment.status)
-										?.color || 'gray.100'
-								}
-								variant='subtle'
-								fontSize='xs'
-							>
-								{enrollment.status_display}
-							</Badge>
 						</VStack>
 					</Flex>
 					<StartReintegrationProcessModal
-						enrollment={enrollment}
+						program={program}
 						onStartEnrollment={onStartEnrollment}
 					/>
 				</Flex>
-
-				<VStack align='start' spacing={3} mt={4}>
-					<HStack spacing={3} w='full'>
-						<Box>
-							<HStack spacing={3} w='full'>
-								<Icon as={FiCalendar} color='gray.500' boxSize={4} />
-								<Text fontSize='sm' color='gray.600'>
-									Período:{' '}
-									<Text as='span' fontWeight='medium'>
-										{enrollment.program_period}
-									</Text>
-								</Text>
-							</HStack>
-						</Box>
-						<Box display='flex' alignItems='center' gapX={2}>
-							<Icon as={FiCreditCard} color='gray.500' boxSize={4} />
-							<Text fontSize='sm' color='gray.600'>
-								Pago verificado:
-								<Icon
-									as={enrollment.payment_verified ? FiCheckCircle : FiClock}
-									color={
-										enrollment.payment_verified ? 'green.500' : 'orange.500'
-									}
-									ml={2}
-									boxSize={4}
-								/>
-							</Text>
-						</Box>
-					</HStack>
-				</VStack>
 			</Card.Body>
 		</Card.Root>
 	);
 };
 
 EnrollmentCard.propTypes = {
-	enrollment: PropTypes.object.isRequired,
+	program: PropTypes.object.isRequired,
 	onStartEnrollment: PropTypes.func.isRequired,
 };
 
@@ -140,19 +79,18 @@ export const MyReintegrationProcessView = () => {
 		useReadMyEnrollments();
 	const navigate = useNavigate();
 	//const { data }
+	const { data: dataMyPrograms } = useReadMyPrograms();
 
 	const filteredEnrollments = dataMyEnrollments?.filter(
 		(enrollment) => enrollment.status === 7
 	);
 
-	console.log(filteredEnrollments);
-
 	const bgColor = useColorModeValue('blue.50', 'blue.900');
 
-	const handleStartEnrollment = (enrollment) => {
-		const encrypted = Encryptor.encrypt(enrollment.id); // id enrollment
+	const handleStartEnrollment = (program) => {
+		const encrypted = Encryptor.encrypt(program?.program_id); // id program
 		const encoded = encodeURIComponent(encrypted);
-		EncryptedStorage.save('selectedEnrollmentProccess', enrollment);
+		EncryptedStorage.save('selectedEnrollmentProccess', program);
 		navigate(`/myprocedures/reintegration-process/${encoded}`);
 	};
 
@@ -185,16 +123,16 @@ export const MyReintegrationProcessView = () => {
 					{filteredEnrollments && filteredEnrollments.length > 0 ? (
 						<>
 							<Text fontSize='sm' color='gray.600' mb={6}>
-								{filteredEnrollments.length} inscripción
-								{filteredEnrollments.length !== 1 ? 'es' : ''} encontrada
+								{filteredEnrollments.length} proceso
+								{filteredEnrollments.length !== 1 ? 's' : ''} encontrado
 								{filteredEnrollments.length !== 1 ? 's' : ''}
 							</Text>
 
 							<SimpleGrid columns={{ base: 1, lg: 2 }} mx='auto'>
-								{filteredEnrollments.map((enrollment) => (
+								{dataMyPrograms?.map((program) => (
 									<EnrollmentCard
-										key={enrollment.id}
-										enrollment={enrollment}
+										key={program.program_id}
+										program={program}
 										onStartEnrollment={handleStartEnrollment}
 									/>
 								))}

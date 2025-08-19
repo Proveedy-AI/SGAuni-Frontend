@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { Button, Modal } from '@/components/ui';
 import { Stack, Card, Text, Box, Flex, Icon } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { LuCircleAlert } from 'react-icons/lu';
 import {
 	FiAlertTriangle,
@@ -13,15 +13,15 @@ import {
 import { useReadCurrentEnrollmentProgram } from '@/hooks/enrollments_programs';
 
 export const StartReintegrationProcessModal = ({
-	enrollment,
+	program,
 	onStartEnrollment,
 }) => {
+  const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 	const { data: dataEnrollmentDetails, isLoading } =
-		useReadCurrentEnrollmentProgram(enrollment.program_id, open);
-    console.log(dataEnrollmentDetails);
+		useReadCurrentEnrollmentProgram(program.program_id, open);
 
-  const isEligible = new Date() <= new Date(dataEnrollmentDetails?.data?.end_date);
+  const isEligible = new Date() <= new Date(dataEnrollmentDetails?.data?.registration_end_date);
 
 	return (
 		<Modal
@@ -29,7 +29,7 @@ export const StartReintegrationProcessModal = ({
 			trigger={
 				<Button
 					bg='transparent'
-					disabled={enrollment.status === 5}
+					disabled={program.status === 5}
 					color='blue.600'
 					size='sm'
 					_hover={{
@@ -43,6 +43,7 @@ export const StartReintegrationProcessModal = ({
 			open={open}
 			onOpenChange={(e) => setOpen(e.open)}
 			size='2xl'
+      contentRef={contentRef}
 			hiddenFooter={true}
 		>
 			<Stack
@@ -68,7 +69,7 @@ export const StartReintegrationProcessModal = ({
 						<Text fontSize='sm' color='gray.600' textAlign={'justify'}>
 							Estás a punto de iniciar el proceso de{' '}
 							<strong>reintegración</strong> para el programa{' '}
-							<strong>{enrollment.program_name}</strong>.
+							<strong>{program.program_name}</strong>.
 						</Text>
 
 						{/* Información importante sobre reintegración */}
@@ -222,7 +223,7 @@ export const StartReintegrationProcessModal = ({
 									bg='#0661D8'
 									_hover={{ bg: '#0550B8' }}
 									onClick={() => {
-										onStartEnrollment(enrollment);
+										onStartEnrollment(dataEnrollmentDetails?.data);
 										setOpen(false);
 									}}
                   disabled={!isEligible}
@@ -241,6 +242,6 @@ export const StartReintegrationProcessModal = ({
 };
 
 StartReintegrationProcessModal.propTypes = {
-	enrollment: PropTypes.object.isRequired,
+	program: PropTypes.object.isRequired,
 	onStartEnrollment: PropTypes.func.isRequired,
 };
