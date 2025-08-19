@@ -54,16 +54,13 @@ const Row = memo(
 				<Table.Cell>
 					{format(parseISO(item.requested_at), 'dd/MM/yyyy')}
 				</Table.Cell>
-				<Table.Cell>{item.full_name}</Table.Cell>
-				<Table.Cell>{item.email}</Table.Cell>
+				<Table.Cell>{item.person_fullname}</Table.Cell>
+				<Table.Cell>{item.person_personal_email}</Table.Cell>
 				<Table.Cell>{item.amount}</Table.Cell>
 				<Table.Cell>{item.purpose_display}</Table.Cell>
 				<Table.Cell>{item.num_document}</Table.Cell>
 				<Table.Cell>{item.payment_method_display}</Table.Cell>
-				<Table.Cell>
-					{item.admission_process_program_name ||
-						item.enrollment_process_program_name}
-				</Table.Cell>
+				<Table.Cell>{item.program_name}</Table.Cell>
 				<Table.Cell>
 					{item.admission_process_name || item.enrollment_process_name}
 				</Table.Cell>

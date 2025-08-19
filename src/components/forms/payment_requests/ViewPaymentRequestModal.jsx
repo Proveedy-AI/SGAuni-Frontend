@@ -49,7 +49,7 @@ export const ViewPaymentRequestModal = ({ item }) => {
 										border='1px solid #E2E8F0'
 										borderRadius='md'
 									>
-										{item.full_name}
+										{item?.person_fullname}
 									</Text>
 								</Field>
 								<Field label='Correo'>
@@ -60,7 +60,7 @@ export const ViewPaymentRequestModal = ({ item }) => {
 										border='1px solid #E2E8F0'
 										borderRadius='md'
 									>
-										{item.email}
+										{item?.person_personal_email}
 									</Text>
 								</Field>
 								<Field label='Tipo de documento'>
