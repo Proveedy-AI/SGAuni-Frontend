@@ -77,8 +77,10 @@ export const PaymentRequestsView = () => {
 	} = useReadPaymentRequest(filterParams);
 
 	const allPaymentRequests =
-		dataPaymentRequests?.pages?.flatMap((page) => page.results) ?? [];
-
+		dataPaymentRequests?.pages
+			?.flatMap((page) => page.results)
+			?.sort((a, b) => new Date(b.requested_at) - new Date(a.requested_at)) ??
+		[];
 	const { data: profile } = useReadUserLogged();
 	const roles = profile?.roles || [];
 	const permissions = roles

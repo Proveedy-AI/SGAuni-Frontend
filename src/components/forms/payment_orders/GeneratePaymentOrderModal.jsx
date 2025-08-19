@@ -54,8 +54,7 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 		purpose: request.purpose,
 		purpose_display: request.purpose_display,
 		amount: request.amount,
-		enrollment_process_program_name: request.enrollment_process_program_name,
-		admission_process_program_name: request.admission_process_program_name,
+		program_name: request.program_name,
 		enrollment_process_name: request.enrollment_process_name,
 		admission_process_name: request.admission_process_name,
 		num_document: request.num_document,
@@ -289,8 +288,7 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 													</Text>
 												</Box>
 												<Text fontSize='sm' color='muted.600'>
-													{selectedRequest.enrollment_process_program_name ||
-														selectedRequest.admission_process_program_name}
+													{selectedRequest.program_name}
 												</Text>
 											</Box>
 

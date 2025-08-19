@@ -59,7 +59,7 @@ export const AcademicRegister = ({ dataStudent }) => {
 	const ProgramsOptions = useMemo(
 		() =>
 			dataStudent?.admission_programs?.map((program) => ({
-				label: program.program__name,
+				label: program.program_name,
 				value: program.program,
 			})) || [],
 		[dataStudent]

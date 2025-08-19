@@ -43,7 +43,6 @@ export const FinalRecordDocument = ({ modality, dataProgram, headers }) => {
 		useReadGradesApplicantions(dataProgram?.uuid, open, {
 			modality_id: modality?.value,
 		});
-	console.log(dataGrades);
 
 	const today = new Date();
 	const formattedDate = today.toLocaleDateString('es-PE', {
@@ -224,6 +223,15 @@ export const FinalRecordDocument = ({ modality, dataProgram, headers }) => {
 										</Text>
 									</View>
 								))}
+							</View>
+							<View style={{ marginTop: 10, textAlign: 'left' }}>
+								<Text style={{ fontSize: 6 }}>C1, </Text>
+							</View>
+							<View style={{ marginTop: 1, textAlign: 'left' }}>
+								<Text style={{ fontSize: 6 }}>C2. {dataGrades.director} </Text>
+							</View>
+							<View style={{ marginTop: 1, textAlign: 'left' }}>
+								<Text style={{ fontSize: 6 }}>C3. {dataGrades.coordinator} </Text>
 							</View>
 							<View
 								style={{
