@@ -10,7 +10,15 @@ import { UrlActionsPopover } from '@/components/ui/UrlActionsPopover';
 import { useDeleteAdmissions } from '@/hooks/admissions_proccess';
 import { useCopyAdmissions } from '@/hooks/admissions_proccess/useCopyAdmissions';
 import useSortedData from '@/utils/useSortedData';
-import { Box, HStack, IconButton, Span, Table, Text } from '@chakra-ui/react';
+import {
+	Badge,
+	Box,
+	HStack,
+	IconButton,
+	Span,
+	Table,
+	Text,
+} from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
 import { FiCopy, FiTrash2 } from 'react-icons/fi';
@@ -72,6 +80,21 @@ const Row = memo(
 			});
 		};
 
+		const getStatusColor = (status) => {
+			switch (status) {
+				case 'Activo': // Activo
+					return 'green';
+				case 'Cancelado': // Cancelado
+					return 'red';
+				case 'Completado': // Completado
+					return 'blue';
+				case 'Borrador': // Borrador
+					return 'gray';
+				default:
+					return 'gray';
+			}
+		};
+
 		return (
 			<Table.Row
 				onClick={(e) => {
@@ -94,6 +117,17 @@ const Row = memo(
 				<Table.Cell>{item.admission_level_display}</Table.Cell>
 				<Table.Cell>{formatDateString(item.start_date)}</Table.Cell>
 				<Table.Cell>{formatDateString(item.end_date)}</Table.Cell>
+				<Table.Cell>
+					<Badge
+						colorPalette={getStatusColor(item.process_status_display)}
+						variant='subtle'
+						px={2}
+						py={1}
+						borderRadius='md'
+					>
+						{item.process_status_display}
+					</Badge>
+				</Table.Cell>
 				<Table.Cell>
 					<UrlActionsPopover
 						approved_programs_count={item.approved_programs_count}
@@ -220,6 +254,14 @@ export const AdmissionsListTable = ({
 							</Table.ColumnHeader>
 							<Table.ColumnHeader>Fecha Inicio</Table.ColumnHeader>
 							<Table.ColumnHeader>Fecha Fin</Table.ColumnHeader>
+							<Table.ColumnHeader>
+								<SortableHeader
+									label='Estado'
+									columnKey='process_status_display'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
 							<Table.ColumnHeader>Url</Table.ColumnHeader>
 							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 						</Table.Row>
