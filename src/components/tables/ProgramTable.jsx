@@ -33,6 +33,7 @@ const Row = memo(
 						: startIndex + index + 1}
 				</Table.Cell>
 				<Table.Cell>{item.name}</Table.Cell>
+				<Table.Cell>{item.code}</Table.Cell>
 				<Table.Cell>{item.type_detail.name}</Table.Cell>
 				<Table.Cell>
 					<HStack justify='space-between'>
@@ -121,7 +122,16 @@ export const ProgramTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='30%'>Tipo</Table.ColumnHeader>
+							<Table.ColumnHeader w='20%'>
+								<SortableHeader
+									label='Código'
+									columnKey='code'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader w='20%'>tipo</Table.ColumnHeader>
+							
 							<Table.ColumnHeader w='20%'>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
