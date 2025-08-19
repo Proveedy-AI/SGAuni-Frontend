@@ -30,7 +30,7 @@ export const EditUserModal = ({
 		{ value: 1, label: 'DNI' },
 		{ value: 2, label: 'Pasaporte' },
 		{ value: 3, label: 'Carné de Extranjería' },
-		{ value: 4, label: 'Cédula de Identidad' },
+
 	];
 
   const [errors, setErrors] = useState({});
