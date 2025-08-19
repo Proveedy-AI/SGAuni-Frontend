@@ -3,6 +3,7 @@ import { ApplicantDashboard } from './ApplicantDashboard';
 import { CoordinatorDashboard } from './CoordinatorDashboard';
 import { DebtDashboard } from './DebtDashboard';
 import { DirectorDashboard } from './DirectorDashboard';
+import { GraduateDashboard } from './GraduateDashboard';
 import { StudentDashboard } from './StudentDashboard';
 import { TeacherDashboard } from './TeacherDashboard';
 
@@ -23,6 +24,10 @@ export const dashboardsByPermission = [
 		permission: 'dashboard.student.view',
 		component: () => <StudentDashboard />,
 	},
+  {
+    permission: 'dashboard.student.view',
+    component: () => <GraduateDashboard />,
+  },
 	{
 		permission: 'dashboard.applicant.view',
 		component: () => <ApplicantDashboard />,
