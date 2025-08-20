@@ -96,15 +96,15 @@ export const MyReintegrationProcessView = () => {
 			<ResponsiveBreadcrumb
 				items={[
 					{ label: 'Trámites', to: '/myprocedures' },
-					{ label: 'Reintegrar matrícula' },
+					{ label: 'Proceso de Reincorporación' },
 				]}
 			/>
 			<Box bg={bgColor} borderRadius='xl' p={{ base: 6, md: 8 }} mb={8}>
 				<Heading as='h1' size='xl' color='blue.800' mb={2} fontWeight='bold'>
-					Reintegrar Matrícula
+					Reincorporar Matrícula
 				</Heading>
 				<Text color='blue.600' fontSize='lg'>
-					Gestiona tu solicitud de reintegración de matrícula académica
+					Gestiona tu solicitud de reincorporación de matrícula académica
 				</Text>
 			</Box>
 

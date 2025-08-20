@@ -166,10 +166,10 @@ export const MyProceduresView = () => {
   },
   {
     id: 9,
-    label: "Proceso de Reintegro",
+    label: "Proceso de Reincorporación",
     href: "/myprocedures/reintegration-process",
     icon: FiUserPlus,
-    description: "Solicita tu proceso de reintegro",
+    description: "Solicita tu proceso de reincorporación",
     isActive: true,
   },
   {

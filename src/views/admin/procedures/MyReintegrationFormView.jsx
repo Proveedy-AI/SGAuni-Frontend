@@ -123,7 +123,7 @@ export const MyReintegrationFormView = () => {
 				items={[
 					{ label: 'Trámites', to: '/myprocedures' },
 					{
-						label: 'Proceso de Reintegración',
+						label: 'Proceso de Reincorporación',
 						to: '/myprocedures/reintegration-process',
 					},
 					{ label: enrollment ? enrollment?.program_name : 'Cargando...' },
@@ -134,22 +134,22 @@ export const MyReintegrationFormView = () => {
 				<Card.Header>
 					<Flex align='center' gap={2}>
 						<Icon as={FiFileText} boxSize={5} color='blue.600' />
-						<Heading fontSize='24px'>Solicitar Reintegración</Heading>
+						<Heading fontSize='24px'>Solicitar Reincorporación</Heading>
 					</Flex>
 				</Card.Header>
 				<Card.Body>
 					<Card.Root>
 						<Card.Header>
-							<Card.Title>Nueva Solicitud de Reintegración</Card.Title>
+							<Card.Title>Nueva Solicitud de Reincorporación</Card.Title>
 							<Card.Description>
-								Completa los datos para solicitar tu reintegración al programa
+								Completa los datos para solicitar tu reincorporación al programa
 								académico. El administrador revisará tu solicitud y generará la
 								orden correspondiente.
 							</Card.Description>
 
 							<Alert status='info' Icon={<FiAlertTriangle />}>
 								<Text>
-									La reintegración te permite volver a incorporarte al programa
+									La reincorporación te permite volver a incorporarte al programa
 									después de una postergación.
 								</Text>
 								<List.Root pl='4' mt='2'>
