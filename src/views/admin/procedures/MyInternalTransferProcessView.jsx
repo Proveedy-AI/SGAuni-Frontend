@@ -21,7 +21,7 @@ export const MyInternalTransferProcessView = () => {
     data:dataTransferRequests,
     isLoading: isLoadingTransferRequests
     refetch: fetchTransferRequests
-  } = useReadTransferRequests();  
+  } = useReadMyTransferRequests();  
   */
   //1: En revisión, 2: Aprobado, 3: Rechazado
   const localTransferRequests = [
@@ -32,7 +32,6 @@ export const MyInternalTransferProcessView = () => {
       program_destination_id: 2,
       program_destination_name: "Maestria en Administración",
       document_path: "path/to/document1.pdf",
-      reason: "Cambio de enfoque profesional hacia la gestión administrativa",
       created_at: "2025-01-15T10:30:00Z",
       status: 3,
       status_display: "Rechazado",
@@ -44,7 +43,6 @@ export const MyInternalTransferProcessView = () => {
       program_destination_id: 3,
       program_destination_name: "Maestria en Data Science",
       document_path: "path/to/document2.pdf",
-      reason: "Interés en especializarme en análisis de datos y ciencia de datos",
       created_at: "2025-02-10T14:20:00Z",
       status: 3,
       status_display: "Rechazado",

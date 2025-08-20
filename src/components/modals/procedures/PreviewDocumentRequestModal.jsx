@@ -20,6 +20,7 @@ export const PreviewDocumentRequestModal = ({ documentPath }) => {
           >
             <IconButton
               size='xs'
+              bg='blue.500'
               colorPalette='gray'
               css={{
                 _icon: {

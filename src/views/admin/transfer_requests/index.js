@@ -1,1 +1,1 @@
-export * from './TransferRequestsList';
+export * from './TransferRequestsView';
