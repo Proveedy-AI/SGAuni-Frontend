@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useReadCurrentEnrollmentProgram = (programId, isModalOpen) => {
+export const useReadCurrentEnrollmentProgram = (programId, isModalOpen=true) => {
   const axiosPrivate = useAxiosPrivate();
 
   return useQuery({

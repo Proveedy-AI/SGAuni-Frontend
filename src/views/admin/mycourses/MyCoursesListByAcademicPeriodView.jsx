@@ -5,12 +5,24 @@ import {
 	useReadCoursesByPeriod,
 } from '@/hooks/students';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
-import { Box, Heading, Text, Stack, Flex, SimpleGrid, Tabs } from '@chakra-ui/react';
+import {
+	Box,
+	Heading,
+	Text,
+	Stack,
+	Flex,
+	SimpleGrid,
+	Tabs,
+} from '@chakra-ui/react';
 import { useNavigate } from 'react-router';
 import { useReadMyPrograms } from '@/hooks/person/useReadMyPrograms';
 import { useState, useEffect } from 'react';
 import { ReactSelect } from '@/components';
-import { AcademicProgressSection, CoursesByPeriodSection } from './sections';
+import {
+	AcademicProgressSection,
+	CoursesByPeriodSection,
+	GradesRecordSection,
+} from './sections';
 import { GenerateAcademicTranscriptPdfModal } from '@/components/modals/mycourses';
 
 export const MyCoursesListByAcademicPeriodView = () => {
@@ -26,7 +38,7 @@ export const MyCoursesListByAcademicPeriodView = () => {
 	}));
 
 	const [programEnrolled, setProgramEnrolled] = useState(null);
-  const [tab, setTab] = useState('courses');
+	const [tab, setTab] = useState('courses');
 
 	useEffect(() => {
 		if (MyProgramsOptions && !programEnrolled) {
@@ -42,10 +54,8 @@ export const MyCoursesListByAcademicPeriodView = () => {
 	const { data: dataCoursesByPeriod, isLoading: isLoadingCoursesByPeriod } =
 		useReadCoursesByPeriod(studentUUID, programEnrolled?.value);
 
-	const isDownloadable =
-		!isLoadingAcademicTranscript &&
-		!isLoading &&
-		dataCoursesByPeriod?.total_periods?.length !== 0;
+	const isDownloadable = !isLoadingAcademicTranscript && !isLoading;
+	dataCoursesByPeriod?.total_courses > 0;
 
 	const navigate = useNavigate();
 
@@ -65,7 +75,7 @@ export const MyCoursesListByAcademicPeriodView = () => {
 		dataAcademicProgress?.programs?.find(
 			(data) => data?.program?.id === programEnrolled?.value
 		);
-  
+
 	return (
 		<Box p={6} maxW='full' mx='auto'>
 			<Stack>
@@ -91,8 +101,8 @@ export const MyCoursesListByAcademicPeriodView = () => {
 							borderRadius={6}
 							flex={1}
 							maxW={{ base: 'full', lg: '320px' }}
-              fontSize='sm'
-            >
+							fontSize='sm'
+						>
 							<ReactSelect
 								isLoading={isLoadingMyPrograms}
 								options={MyProgramsOptions}
@@ -152,50 +162,60 @@ export const MyCoursesListByAcademicPeriodView = () => {
 				</Flex>
 			</Stack>
 
-      <Tabs.Root
-        value={tab}
-        onValueChange={(e) => setTab(e.value)}
-        variant="plain"
-        my={3}
-      >
-        <Flex justify='space-between' align='center'>
-          <Tabs.List bg="blue.100" rounded="l3" p="1">
-            <Tabs.Trigger color='blue.600' fontSize={'sm'} value='courses'>
-              Cursos
-            </Tabs.Trigger>
-            <Tabs.Trigger color='blue.600' fontSize={'sm'} value='academic-summary'>
-              Resumen Académico
-            </Tabs.Trigger>
-            <Tabs.Trigger color='blue.600' fontSize={'sm'} value='grades-record'>
-              Record de notas
-            </Tabs.Trigger>
-            <Tabs.Indicator rounded="l2" />
-          </Tabs.List>
-          {tab === 'courses' && (
-            <GenerateAcademicTranscriptPdfModal
-              data={dataAcademicTranscript}
-              isActive={isDownloadable}
-            />
-          )}
-        </Flex>
-        <Tabs.Content value='courses'>
-          <CoursesByPeriodSection
-            isLoadingCoursesByPeriod={isLoadingCoursesByPeriod}
-            dataCoursesByPeriod={dataCoursesByPeriod}
-            handleRowClick={handleRowClick}
-            handleClickToProcessEnrollment={handleClickToProcessEnrollment}
-          />
-        </Tabs.Content>
-        <Tabs.Content value='academic-summary'>
-          <AcademicProgressSection
-            academicProgress={filteredAcademicProgressByProgram}
-            isLoading={isLoadingAcademicProgress}
-          />
-        </Tabs.Content>
-        <Tabs.Content value='grades-record'>
-          Record de notas
-        </Tabs.Content>
-      </Tabs.Root>
+			<Tabs.Root
+				value={tab}
+				onValueChange={(e) => setTab(e.value)}
+				variant='plain'
+				my={3}
+			>
+				<Flex justify='space-between' align='center'>
+					<Tabs.List bg='blue.100' rounded='l3' p='1'>
+						<Tabs.Trigger color='blue.600' fontSize={'sm'} value='courses'>
+							Cursos
+						</Tabs.Trigger>
+						<Tabs.Trigger
+							color='blue.600'
+							fontSize={'sm'}
+							value='academic-summary'
+						>
+							Resumen Académico
+						</Tabs.Trigger>
+						<Tabs.Trigger
+							color='blue.600'
+							fontSize={'sm'}
+							value='grades-record'
+						>
+							Record de notas
+						</Tabs.Trigger>
+						<Tabs.Indicator rounded='l2' />
+					</Tabs.List>
+					{(tab === 'courses' || tab === 'grades-record') && (
+						<GenerateAcademicTranscriptPdfModal
+							data={dataAcademicTranscript}
+							isActive={isDownloadable}
+						/>
+					)}
+				</Flex>
+				<Tabs.Content value='courses'>
+					<CoursesByPeriodSection
+						isLoadingCoursesByPeriod={isLoadingCoursesByPeriod}
+						dataCoursesByPeriod={dataCoursesByPeriod}
+						handleRowClick={handleRowClick}
+						handleClickToProcessEnrollment={handleClickToProcessEnrollment}
+					/>
+				</Tabs.Content>
+				<Tabs.Content value='academic-summary'>
+					<AcademicProgressSection
+						academicProgress={filteredAcademicProgressByProgram}
+						isLoading={isLoadingAcademicProgress}
+					/>
+				</Tabs.Content>
+				<Tabs.Content value='grades-record'>
+					<GradesRecordSection
+						dataCoursesByPeriod={dataCoursesByPeriod}
+					/>
+				</Tabs.Content>
+			</Tabs.Root>
 		</Box>
 	);
 };
