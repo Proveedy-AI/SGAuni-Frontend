@@ -37,7 +37,17 @@ export const PreviewDocumentRequestModal = ({ documentPath }) => {
       onOpenChange={(e) => setOpen(e.open)}
       size='6xl'
       hiddenFooter={true}
-    ></Modal>
+    >
+      <Box w="100%" h="80vh">
+        <iframe
+          src={documentPath}
+          title="Documento de Solicitud"
+          width="100%"
+          height="100%"
+          style={{ border: "none" }}
+        />
+      </Box>
+    </Modal>
   );
 };
 
