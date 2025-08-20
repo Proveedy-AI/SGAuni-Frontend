@@ -46,6 +46,7 @@ const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 						: startIndex + index + 1}
 				</Table.Cell>
 				<Table.Cell>{item.name}</Table.Cell>
+				<Table.Cell>{item.code}</Table.Cell>
 				<Table.Cell>{item.postgraduate_type_name}</Table.Cell>
 				<Table.Cell>
 					<Switch.Root
@@ -53,7 +54,7 @@ const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 						onCheckedChange={() => handleStatusChange(item.id)}
 						disabled={isPendingToggle}
 					>
-						<Switch.Label mr={10}>
+						<Switch.Label mr={5}>
 							{item.enabled ? 'Activo' : 'Inactivo'}
 						</Switch.Label>
 						<Switch.HiddenInput />
@@ -123,10 +124,18 @@ export const AdmissionModalitiesTable = ({ isLoading, data, fetchData }) => {
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='50%'>
+							<Table.ColumnHeader w='40%'>
 								<SortableHeader
 									label='Modalidad'
 									columnKey='name'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader w='20%'>
+								<SortableHeader
+									label='Código'
+									columnKey='code'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>

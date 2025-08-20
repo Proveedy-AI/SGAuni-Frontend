@@ -27,13 +27,17 @@ export const StudentsView = () => {
 	const [debouncedSearch] = useDebounce(name.trim(), 500); //
 	const [scholarshipStatus, setScholarshipStatus] = useState(null);
 	const [selectedStatus, setSelectedStatus] = useState(null);
+	const [selectedProgramStatus, setSelectedProgramStatus] = useState(null);
+	const [selectedYear, setSelectedYear] = useState(null);
 
 	const hasActiveFilters =
 		selectedProgram ||
 		name ||
 		debouncedSearch ||
 		scholarshipStatus ||
-		selectedStatus;
+		selectedStatus ||
+		selectedProgramStatus ||
+		selectedYear;
 
 	const clearFilters = () => {
 		setSelectedProgram(null);
@@ -41,6 +45,8 @@ export const StudentsView = () => {
 		setScholarshipStatus(null);
 		setSelectedProgram(null);
 		setSelectedStatus(null);
+		setSelectedProgramStatus(null);
+		setSelectedYear(null);
 	};
 
 	const filterParams = useMemo(() => {
@@ -49,9 +55,19 @@ export const StudentsView = () => {
 		if (debouncedSearch) params.name = debouncedSearch;
 		if (scholarshipStatus) params.scholarship = scholarshipStatus.value;
 		if (selectedStatus) params.status = selectedStatus.value;
+		if (selectedProgramStatus)
+			params.academic_type = selectedProgramStatus.value;
+		if (selectedYear) params.admission_year = selectedYear.value;
 
 		return params;
-	}, [selectedProgram, debouncedSearch, scholarshipStatus, selectedStatus]);
+	}, [
+		selectedProgram,
+		debouncedSearch,
+		scholarshipStatus,
+		selectedStatus,
+		selectedProgramStatus,
+		selectedYear
+	]);
 
 	const { data: dataPrograms, isLoading: isLoadingPrograms } =
 		useReadAdmissionsPrograms({ status: 4 });
@@ -82,9 +98,22 @@ export const StudentsView = () => {
 	const statusOptions = [
 		{ id: 1, label: 'Activo', value: 1 },
 		{ id: 2, label: 'Suspendido', value: 2 },
-
 	];
 
+	const statusProgramOptions = [
+		{ id: 1, label: 'Aplica diploma', value: 'diploma' },
+		{ id: 2, label: 'Aplica certificado', value: 'certificate' },
+		{ id: 3, label: 'Egresado', value: 'graduate' },
+		{ id: 4, label: 'En progreso', value: 'in_progress' },
+		{ id: 5, label: 'Diploma/Certificado', value: 'diploma_certificate' },
+	];
+
+	const currentYear = new Date().getFullYear();
+	const yearOptions = Array.from({ length: 20 }, (_, i) => {
+		const year = currentYear - i;
+		return { label: year.toString(), value: year.toString() };
+	});
+console.log(yearOptions)
 	return (
 		<Stack gap={4}>
 			<Card.Root>
@@ -140,8 +169,20 @@ export const StudentsView = () => {
 									options={ProgramsOptions}
 								/>
 							</Field>
+							<Field label='Año de admision:'>
+								<ReactSelect
+									placeholder='Seleccionar año'
+									value={selectedYear}
+									onChange={setSelectedYear}
+									variant='flushed'
+									size='xs'
+									isSearchable
+									isClearable
+									options={yearOptions}
+								/>
+							</Field>
 
-							<Field label='Estado:'>
+							<Field label='Estado de estudiante:'>
 								<ReactSelect
 									placeholder='Seleccionar'
 									value={selectedStatus}
@@ -151,6 +192,18 @@ export const StudentsView = () => {
 									isSearchable
 									isClearable
 									options={statusOptions}
+								/>
+							</Field>
+							<Field label='Estado de programa:'>
+								<ReactSelect
+									placeholder='Seleccionar'
+									value={selectedProgramStatus}
+									onChange={setSelectedProgramStatus}
+									variant='flushed'
+									size='xs'
+									isSearchable
+									isClearable
+									options={statusProgramOptions}
 								/>
 							</Field>
 						</SimpleGrid>

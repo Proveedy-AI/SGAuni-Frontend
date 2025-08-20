@@ -14,6 +14,7 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 	const [name, setName] = useState(data?.admission_process_name);
 	const [startDate, setStartDate] = useState(data?.start_date);
 	const [endDate, setEndDate] = useState(data?.end_date);
+	const [status, setStatus] = useState(null);
 	const [selectedLevel, setSelectedLevel] = useState(null);
 	const [errors, setErrors] = useState({});
 	const validateFields = () => {
@@ -22,7 +23,7 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 		if (!selectedLevel) newErrors.selectedLevel = 'Seleccione un nivel';
 		if (!startDate) newErrors.startDate = 'La fecha de inicio es requerida';
 		if (!endDate) newErrors.endDate = 'La fecha de fin es requerida';
-
+		if (!status) newErrors.status = 'Seleccione un estado';
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
 	};
@@ -51,6 +52,7 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 			start_date: startDate,
 			end_date: endDate,
 			editable: true,
+			process_status: status.value,
 		};
 
 		UpdateAdmissions(
@@ -82,6 +84,13 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 		{ label: 'Diplomado', value: 4 },
 	];
 
+	const dataStatus = [
+		{ label: 'Activo', value: 'Activo' },
+		//{ label: 'Cancelado', value: 'Cancelado' },
+		{ label: 'Completado', value: 'Completado' },
+		{ label: 'Borrador', value: 'Borrador' },
+	];
+
 	const LevelOptions = dataLevel.map((level) => ({
 		label: level.label,
 		value: level.value,
@@ -96,6 +105,17 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 				setSelectedLevel({
 					label: matchedLevel.label,
 					value: matchedLevel.value,
+				});
+			}
+		}
+		if (data && data.process_status_display) {
+			const matchedStatus = dataStatus.find(
+				(status) => status.value === data.process_status_display
+			);
+			if (matchedStatus) {
+				setStatus({
+					label: matchedStatus.label,
+					value: matchedStatus.value,
 				});
 			}
 		}
@@ -148,9 +168,9 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 					/>
 				</Field>
 				<Field
+					label='Nivel:'
 					invalid={!!errors.selectedLevel}
 					errorText={errors.selectedLevel}
-					label='Nivel:'
 				>
 					<ReactSelect
 						value={selectedLevel}
@@ -159,10 +179,28 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 						}}
 						variant='flushed'
 						size='xs'
-						isSearchable={true}
+						isSearchable
 						isClearable
 						name='paises'
 						options={LevelOptions}
+					/>
+				</Field>
+				<Field
+					invalid={!!errors.status}
+					errorText={errors.status}
+					label='Estado:'
+				>
+					<ReactSelect
+						value={status}
+						onChange={(select) => {
+							setStatus(select);
+						}}
+						variant='flushed'
+						size='xs'
+						isSearchable={true}
+						isClearable
+						name='paises'
+						options={dataStatus}
 					/>
 				</Field>
 				<Field
