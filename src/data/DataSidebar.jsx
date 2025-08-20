@@ -21,6 +21,7 @@ import { FaFileContract, FaRegFile, FaUserGraduate } from 'react-icons/fa';
 import { HiOutlineClipboardList } from 'react-icons/hi';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { HiOutlineDocumentText } from 'react-icons/hi2';
+import { MdChangeCircle } from 'react-icons/md';
 
 export const useDataSidebar = () => {
 	const { data: profile } = useReadUserLogged();
@@ -191,6 +192,20 @@ export const useDataSidebar = () => {
 				},
 			],
 		},
+
+    {
+      href: '/transfer-requests',
+      label: 'Traslados Internos',
+      icon: MdChangeCircle,
+      subItems: [
+        {
+          href: '/transfer-requests/list',
+          label: 'Lista General',
+          icon: FiClipboard,
+          permission: 'transfer.requests.view',
+        },
+      ],
+    },
 
 		{
 			href: '/students',

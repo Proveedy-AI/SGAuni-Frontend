@@ -83,6 +83,7 @@ import {
 	EnrolledProcessView,
 	EnrolledStudentsView,
 } from './views/admin/tuitions/enrolled';
+import { TransferRequestsList } from './views/admin/transfer_requests';
 
 function App() {
 	return (
@@ -462,6 +463,17 @@ function App() {
 									<Route path='request' element={<CommitmentLetters />} />
 								</Route>
 							</Route>
+              {/* ------------------------ TRANSFER REQUESTS ROUTES ----------------------- */}
+              <Route path='transfer-requests'>
+                <Route
+                  element={
+										<ProtectedRoute requiredPermission='transfer.requests.view' />
+									}
+                >
+                  <Route path='list' element={<TransferRequestsList />} />
+                </Route>
+              </Route>
+
 							{/* ---------------------------- SETTINGS ROUTES ---------------------------- */}
 
 							<Route path='settings' element={<SettingsLayout />}>
