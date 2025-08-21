@@ -1,6 +1,6 @@
 
 import PropTypes from 'prop-types';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Box,
   IconButton,
@@ -16,16 +16,25 @@ import {
   Badge,
   HStack,
 } from '@chakra-ui/react';
-import { Alert, Field, Modal, toaster, Tooltip } from '@/components/ui';
+import { Alert, Modal, toaster, Tooltip } from '@/components/ui';
 import { FiAlertTriangle, FiCheckCircle, FiMessageSquare, FiXCircle } from 'react-icons/fi';
+import { FiUser, FiArrowRight, FiEdit, FiRepeat } from 'react-icons/fi';
+import { useUpdateTransferRequest } from '@/hooks/transfer_requests';
 
 export const UpdateStatusRequestModal = ({ data, fetchData }) => {
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
+
+  const { mutate: update, isPending } = useUpdateTransferRequest();
+
   const [comments, setComments] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState(null); // 2: Aprobado, 3: Rechazado
+  const [selectedStatus, setSelectedStatus] = useState(null); // 4: Aprobado, 3: Rechazado
   const [errors, setErrors] = useState({});
-  const [isPending, setIsPending] = useState(false);
+  const [readInstructions, setReadInstructions] = useState(false);
+
+  useEffect(() => {
+    setReadInstructions(false);
+  }, [selectedStatus])
 
   const validateFields = () => {
     const newErrors = {};
@@ -38,22 +47,28 @@ export const UpdateStatusRequestModal = ({ data, fetchData }) => {
 
   const handleSubmitStatus = async () => {
     if (!validateFields()) return;
-    setIsPending(true);
-    // Simulación de API
-    setTimeout(() => {
-      toaster.create({
-        title:
-          selectedStatus === 2
-            ? 'Solicitud aprobada correctamente'
-            : 'Solicitud rechazada correctamente',
-        type: 'success',
-      });
-      setOpen(false);
-      setComments('');
-      setSelectedStatus(null);
-      setIsPending(false);
-      fetchData && fetchData();
-    }, 1200);
+    
+    const payload = {
+      status: selectedStatus,
+      comment: comments ? comments : "Aprobado"
+    }
+
+    update({ id: data.id, payload }, {
+      onSuccess: () => {
+        toaster.create({
+          title: 'Solicitud de traslado actualizada correctamente.',
+          type: 'success',
+        });
+        fetchData();
+      },
+      onError: (error) => {
+        toaster.create({
+          title: 'Error al actualizar la solicitud de traslado.',
+          description: error.message || 'Inténtalo de nuevo más tarde.',
+          type: 'error',
+        });
+      }
+    })
   };
 
   const handleOpenChange = (e) => {
@@ -62,6 +77,7 @@ export const UpdateStatusRequestModal = ({ data, fetchData }) => {
       setSelectedStatus(null);
       setComments('');
       setErrors({});
+      setReadInstructions(false);
     }
   };
 
@@ -101,6 +117,7 @@ export const UpdateStatusRequestModal = ({ data, fetchData }) => {
       contentRef={contentRef}
       onSave={handleSubmitStatus}
       hiddenFooter={!selectedStatus}
+      saveButtonProps={{ disabled: !readInstructions || isPending }}
     >
       <Stack gap={2} pb={6} maxH='70vh' overflowY='auto'>
         <Card.Root>
@@ -116,9 +133,9 @@ export const UpdateStatusRequestModal = ({ data, fetchData }) => {
                 flexDirection='column'
                 gap={2}
                 disabled={isPending}
-                bg={selectedStatus === 2 ? 'green.600' : 'transparent'}
+                bg={selectedStatus === 4 ? 'green.600' : 'transparent'}
                 _hover={
-                  selectedStatus === 2
+                  selectedStatus === 4
                     ? { bg: 'green.700' }
                     : {
                         bg: 'green.50',
@@ -126,9 +143,9 @@ export const UpdateStatusRequestModal = ({ data, fetchData }) => {
                         color: 'green.700',
                       }
                 }
-                color={selectedStatus === 2 ? 'white' : undefined}
-                borderColor={selectedStatus === 2 ? 'green.600' : undefined}
-                onClick={() => setSelectedStatus(2)}
+                color={selectedStatus === 4 ? 'white' : undefined}
+                borderColor={selectedStatus === 4 ? 'green.600' : undefined}
+                onClick={() => setSelectedStatus(4)}
               >
                 <Icon as={FiCheckCircle} boxSize={5} />
                 <Text fontWeight='medium'>Aprobar Solicitud</Text>
@@ -160,17 +177,81 @@ export const UpdateStatusRequestModal = ({ data, fetchData }) => {
               <Alert
                 mt={6}
                 status='info'
-                bg={selectedStatus === 2 ? 'green.50' : 'red.50'}
-                borderColor={selectedStatus === 2 ? 'green.200' : 'red.200'}
+                bg={selectedStatus === 4 ? 'green.50' : 'red.50'}
+                borderColor={selectedStatus === 4 ? 'green.200' : 'red.200'}
                 borderWidth='1px'
-                color={selectedStatus === 2 ? 'green.600' : 'red.600'}
+                color={selectedStatus === 4 ? 'green.600' : 'red.600'}
                 icon={<FiAlertTriangle boxSize={4} mr={2} />}
               >
-                <Text color={selectedStatus === 2 ? 'green.800' : 'red.800'}>
-                  {selectedStatus === 2
-                    ? 'La solicitud será aprobada y se notificará automáticamente.'
-                    : 'La solicitud será rechazada. Por favor, proporciona un comentario explicativo.'}
-                </Text>
+                <Stack>
+                  <Text color={selectedStatus === 4 ? 'green.800' : 'red.800'}>
+                    {selectedStatus === 4
+                      ? 'La solicitud será aprobada y se notificará automáticamente.'
+                      : 'La solicitud será rechazada. Por favor, proporciona un comentario explicativo.'}
+                  </Text>
+                  {selectedStatus === 4 && (
+                    <Box mt={2} p={3} bg='green.100' borderRadius='md'>
+                      <Stack spacing={3}>
+                        <Flex align='center' gap={2} wrap='wrap'>
+                          <Icon as={FiCheckCircle} color='green.600' boxSize={5} />
+                          <Text fontWeight='bold' color='green.900'>Instrucciones</Text>
+                        </Flex>
+                        <Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ md: 'center' }}>
+                          <Flex align='center' gap={2}>
+                            <Icon as={FiUser} color='gray.700' boxSize={4} />
+                            <Text fontSize='sm' color='gray.700'>
+                              <strong>De:</strong> {data?.from_program_name || ''}
+                            </Text>
+                            <Icon as={FiArrowRight} color='green.700' boxSize={4} />
+                            <Text fontSize='sm' color='green.700'>
+                              <strong>A:</strong> {data?.to_program_name || ''}
+                            </Text>
+                          </Flex>
+                        </Flex>
+                        <Flex direction={{ base: 'column', md: 'row' }} gap={3} align={{ md: 'center' }}>
+                          <Flex align='center' gap={2}>
+                            <Icon as={FiEdit} color='blue.600' boxSize={4} />
+                            <Text fontSize='sm' color='blue.900'>
+                              Crear manualmente la nueva matrícula del periodo activo en el programa destino.
+                            </Text>
+                          </Flex>
+                          <Flex align='center' gap={2}>
+                            <Icon as={FiRepeat} color='purple.600' boxSize={4} />
+                            <Text fontSize='sm' color='purple.900'>
+                              Convalidar los cursos que sean necesarios.
+                            </Text>
+                          </Flex>
+                        </Flex>
+                        <Flex align='center' gap={2} mt={2}>
+                          <input
+                            type='checkbox'
+                            id='readInstructionsApprove'
+                            checked={readInstructions}
+                            onChange={e => setReadInstructions(e.target.checked)}
+                            style={{ accentColor: '#38A169', width: 18, height: 18 }}
+                          />
+                          <label htmlFor='readInstructionsApprove' style={{ fontSize: '0.95em', color: '#22543d', fontWeight: 500 }}>
+                            He leído y comprendo las instrucciones y confirmo mi decisión.
+                          </label>
+                        </Flex>
+                      </Stack>
+                    </Box>
+                  )}
+                  {selectedStatus === 3 && (
+                    <Flex align='center' gap={2} mt={2}>
+                      <input
+                        type='checkbox'
+                        id='readInstructionsReject'
+                        checked={readInstructions}
+                        onChange={e => setReadInstructions(e.target.checked)}
+                        style={{ accentColor: '#E53E3E', width: 18, height: 18 }}
+                      />
+                      <label htmlFor='readInstructionsReject' style={{ fontSize: '0.95em', color: '#9B2C2C', fontWeight: 500 }}>
+                        He leído y comprendo las instrucciones y confirmo mi decisión.
+                      </label>
+                    </Flex>
+                  )}
+                </Stack>
               </Alert>
             )}
           </Card.Body>
