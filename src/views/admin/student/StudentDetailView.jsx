@@ -24,6 +24,7 @@ import { AcademicRegister } from './sections/AcademicRegister';
 import { PaymentStudent } from './sections/PaymentStudent';
 import { DocumentStudent } from './sections/DocumentStudent';
 import { ChangeStatusStudent } from './modals/ChangeStatusStudent';
+import { ValidationsStudent } from './sections/ValidationsStudent';
 
 export const StudentDetailView = () => {
 	const { id } = useParams();
@@ -194,6 +195,12 @@ export const StudentDetailView = () => {
 									>
 										Documentos
 									</Tabs.Trigger>
+									<Tabs.Trigger
+										value={6}
+										color={tab === 6 ? 'uni.secondary' : ''}
+									>
+										Convalidaciones
+									</Tabs.Trigger>
 								</Tabs.List>
 							</Box>
 						</>
@@ -217,6 +224,9 @@ export const StudentDetailView = () => {
 						</Tabs.Content>
 						<Tabs.Content value={5}>
 							<DocumentStudent dataStudent={dataStudent} />
+						</Tabs.Content>
+						<Tabs.Content value={6}>
+							<ValidationsStudent dataStudent={dataStudent} />
 						</Tabs.Content>
 					</Tabs.Root>
 				</Stack>
