@@ -5,6 +5,7 @@ import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { useReadAdmissionsPrograms } from '@/hooks/admissions_programs';
 import { useReadEnrollmentsPrograms } from '@/hooks/enrollments_programs';
 import { useReadMethodPayment } from '@/hooks/method_payments';
+import { useReadDataDashPayment } from '@/hooks/users';
 import {
 	Box,
 	Card,
@@ -15,7 +16,7 @@ import {
 	Text,
 } from '@chakra-ui/react';
 import { format } from 'date-fns';
-import { /*useMemo,*/ useState } from 'react';
+import { useMemo, useState } from 'react';
 import { FiCreditCard, FiDollarSign, FiFileText } from 'react-icons/fi';
 import { HiClipboardList } from 'react-icons/hi';
 import {
@@ -30,12 +31,19 @@ import {
 } from 'recharts';
 
 export const DebtDashboard = () => {
+	const today = new Date();
+
+	// primer día del mes actual
+	const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+	// formatear en YYYY-MM-DD
+	const formatDate = (date) => date.toISOString().split('T')[0];
 	const [incomesFlow] = useState('1');
 	const [selectedProgram, setSelectedProgram] = useState(null);
 	const [selectedProgramEnrollment, setSelectedProgramEnrollment] =
 		useState(null);
-	const [startDate, setStartDate] = useState('');
-	const [endDate, setEndDate] = useState('');
+	const [startDate, setStartDate] = useState(formatDate(firstDayOfMonth));
+	const [endDate, setEndDate] = useState(formatDate(today));
 	const [selectedMethod, setSelectedMethod] = useState(null);
 	const { data: dataPrograms, isLoading: isLoadingPrograms } =
 		useReadAdmissionsPrograms({ status: 4 });
@@ -48,7 +56,7 @@ export const DebtDashboard = () => {
 	const { data: dataMethodsPayment, isLoading: isLoadingMethodsPayment } =
 		useReadMethodPayment();
 
-	/*const filterParams = useMemo(() => {
+	const filterParams = useMemo(() => {
 		const params = {};
 		if (selectedProgram) params.admission_program = selectedProgram.value;
 		if (selectedProgramEnrollment)
@@ -66,14 +74,11 @@ export const DebtDashboard = () => {
 		endDate,
 	]);
 
-	const {
-		data: dataReportsdebts,
-		isLoading: loadingReportsdebts,
-		refetch: fetchReportsdebts,
-	} = useReadDataReportdebts(filterParams, {});*/
+	const { data: dataIncomesFlow, isLoading: loadingIncomesFlow } =
+		useReadDataDashPayment(filterParams, {});
 
 	// Simulación de datos reales
-	const dataIncomesFlow = {
+	/*const dataIncomesFlow = {
 		income: {
 			dailyRevenue: [
 				{ date: '2024-06-01', PEN: 1200 },
@@ -96,9 +101,9 @@ export const DebtDashboard = () => {
 		totalOrders: 500,
 		totalEntrants: 300,
 		totalRetired: 100,
-	};
+	};*/
 
-	const loadingIncomesFlow = false;
+	//const loadingIncomesFlow = false;
 
 	const lineData =
 		loadingIncomesFlow || incomesFlow === '1'
@@ -165,7 +170,10 @@ export const DebtDashboard = () => {
 						<ReactSelect
 							placeholder='Seleccionar'
 							value={selectedProgram}
-							onChange={setSelectedProgram}
+							onChange={(option) => {
+								setSelectedProgram(option);
+								if (option) setSelectedProgramEnrollment(null); // ✅ limpia el otro
+							}}
 							isLoading={isLoadingPrograms}
 							variant='flushed'
 							size='xs'
@@ -189,11 +197,14 @@ export const DebtDashboard = () => {
 							options={MethodsPaymentOptions}
 						/>
 					</Field>
-					<Field label='Periodo de Matricula:'>
+					<Field label='Periodo de Matrícula:'>
 						<ReactSelect
 							placeholder='Seleccionar'
 							value={selectedProgramEnrollment}
-							onChange={setSelectedProgramEnrollment}
+							onChange={(option) => {
+								setSelectedProgramEnrollment(option);
+								if (option) setSelectedProgram(null); // ✅ limpia el otro
+							}}
 							isLoading={isLoadingProgramsEnrollment}
 							variant='flushed'
 							size='xs'
@@ -263,7 +274,7 @@ export const DebtDashboard = () => {
 					</Card.Header>
 					<Card.Body>
 						<Text fontSize='2xl' fontWeight='bold' color='gray.900'>
-							S/. {dataIncomesFlow.totalDebts || 0}
+							S/. {dataIncomesFlow?.totalDebts || 0}
 						</Text>
 					</Card.Body>
 				</Card.Root>
