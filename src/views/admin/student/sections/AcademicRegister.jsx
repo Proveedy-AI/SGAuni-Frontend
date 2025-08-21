@@ -64,12 +64,14 @@ export const AcademicRegister = ({ dataStudent }) => {
 
 	const ProgramsOptions = useMemo(
 		() =>
-			dataStudent?.admission_programs?.map((program) => ({
-				label: program.program_name,
-				value: program.program,
-				academic_status: program.academic_status,
-				academic_status_display: program.academic_status_display,
-			})) || [],
+			dataStudent?.admission_programs
+				?.map((program) => ({
+					label: program.program_name,
+					value: program.program,
+					academic_status: program.academic_status,
+					academic_status_display: program.academic_status_display,
+				}))
+				.reverse() || [],
 		[dataStudent]
 	);
 

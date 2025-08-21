@@ -21,13 +21,15 @@ export const EnrollmentStudent = ({
 	isLoadingEnrollment,
 }) => {
 	const [selectProgram, setSelectProgram] = useState(null);
-	console.log(myEnrollment, selectProgram);
+
 	const ProgramsOptions = useMemo(
 		() =>
-			dataStudent?.admission_programs?.map((program) => ({
-				label: program.program_name,
-				value: program.program,
-			})) || [],
+			dataStudent?.admission_programs
+				?.map((program) => ({
+					label: program.program_name,
+					value: program.program,
+				}))
+				.reverse() || [],
 		[dataStudent]
 	);
 

@@ -27,11 +27,13 @@ export const DocumentStudent = ({ dataStudent }) => {
 
 	const ProgramsOptions = useMemo(
 		() =>
-			dataStudent?.admission_programs?.map((program) => ({
-				label: program.program_name,
-				program: program.application,
-				value: program.program,
-			})) || [],
+			dataStudent?.admission_programs
+				?.map((program) => ({
+					label: program.program_name,
+					program: program.application,
+					value: program.program,
+				}))
+				.reverse() || [],
 		[dataStudent]
 	);
 

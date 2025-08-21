@@ -220,7 +220,7 @@ export const StudentDetailView = () => {
 							<AcademicRegister dataStudent={dataStudent} />
 						</Tabs.Content>
 						<Tabs.Content value={4}>
-							<PaymentStudent dataPerson={dataPerson} />
+							<PaymentStudent dataStudent={dataStudent} dataPerson={dataPerson} />
 						</Tabs.Content>
 						<Tabs.Content value={5}>
 							<DocumentStudent dataStudent={dataStudent} />
