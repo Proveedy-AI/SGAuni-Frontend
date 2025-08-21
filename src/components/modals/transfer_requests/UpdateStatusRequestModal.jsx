@@ -50,7 +50,16 @@ export const UpdateStatusRequestModal = ({ data, fetchData }) => {
     
     const payload = {
       status: selectedStatus,
-      comment: comments ? comments : "Aprobado"
+      comment: comments ? comments : "Aprobado",
+    }
+
+    if (selectedStatus === 4) {
+      payload.documents = [
+        {
+          document_name: `SOLICITUD DE TRASLADO - ${data?.student_full_name.toUpperCase()}`,
+          document_url: data?.request_document_url
+        }
+      ];
     }
 
     update({ id: data.id, payload }, {
