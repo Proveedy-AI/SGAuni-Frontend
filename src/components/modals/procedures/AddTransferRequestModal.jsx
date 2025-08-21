@@ -1,18 +1,23 @@
 import { ReactSelect } from "@/components/select";
-import { Button, Field, Modal } from "@/components/ui";
+import { Button, Field, Modal, toaster } from "@/components/ui";
 import { CompactFileUpload } from "@/components/ui/CompactFileInput";
+import { useCreateTransferRequest } from "@/hooks/transfer_requests";
 import { Box, Text, VStack, HStack, Icon } from "@chakra-ui/react";
 import PropTypes from "prop-types";
 import { useRef, useState } from "react";
 import { FiPlus, FiDownload, FiFileText } from "react-icons/fi";
+import { uploadToS3 } from '@/utils/uploadToS3';
 
-export const AddTransferRequestModal = ({ dataMyPrograms, dataPrograms }) => {
+export const AddTransferRequestModal = ({ user, dataMyPrograms, dataPrograms }) => {
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
   const [errors, setErrors] = useState({});
   const [programFrom, setProgramFrom] = useState(null);
   const [programTo, setProgramTo] = useState(null);
   const [documentPath, setDocumentPath] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { mutate: createTransferRequest, isPending } = useCreateTransferRequest();;
 
   const validateFields = () => {
     const newErrors = {};
@@ -37,26 +42,83 @@ export const AddTransferRequestModal = ({ dataMyPrograms, dataPrograms }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmitData = (e) => {
-    e.preventDefault();
+  const handleSubmitData = async () => {
+    setIsLoading(true);
     
     if (!validateFields()) return;
 
-    const payload = {
-      program_from: programFrom.value,
-      program_to: programTo.value,
-      document_path: documentPath
+    if (!documentPath) {
+      toaster.create({
+        title: 'Documento no subido',
+        description: 'Compartir el documento de solicitud',
+        type: 'warning',
+      });
+      setIsLoading(false);
+      return;
     }
 
-    console.log('Datos a enviar:', payload);
-    
-    // Aquí iría la lógica para enviar la solicitud
-    setOpen(false);
-    
-    setProgramFrom(null);
-    setProgramTo(null);
-    setDocumentPath(null);
-    setErrors({});
+    let pathDocUrl = documentPath;
+
+    try {
+      const uuid = user.student.uuid;
+      if (documentPath instanceof File) {
+        pathDocUrl = await uploadToS3(
+          documentPath,
+          'sga_uni/transfer_requests',
+          `transfer_request_${uuid}`,
+          'pdf'
+        );
+      }
+
+      console.log(pathDocUrl)
+
+      if (!pathDocUrl) {
+				throw new Error('Error al subir el archivo a S3.');
+			}
+
+      const payload = {
+        student: user.student.id,
+        from_program: programFrom.value,
+        to_program: programTo.value,
+        request_document_url: pathDocUrl
+      }
+
+      createTransferRequest(payload, {
+        onSuccess: () => {
+          toaster.create({
+            title: 'Solicitud enviada',
+            description: 'Tu solicitud de traslado ha sido enviada exitosamente.',
+            type: 'success',
+          });
+          setOpen(false);
+          setProgramFrom(null);
+          setProgramTo(null);
+          setDocumentPath(null);
+          setErrors({});
+        },
+        onError: () => {
+          toaster.create({
+            title: 'Error al enviar la solicitud',
+            description: 'Hubo un problema al enviar tu solicitud de traslado.',
+            type: 'error',
+          });
+        }
+      });
+
+      console.log('Datos a enviar:', payload);
+  
+    } catch (err) {
+      toaster.create({
+				title: 'Error inesperado',
+				description: err.message || 'No se pudo completar la validación.',
+				type: 'error',
+			});
+			setIsLoading(false);
+		} finally {
+			// Limpiar el estado del archivo después de la validación
+			setDocumentPath(null);
+			setIsLoading(false);
+		}
   };
 
   const programFromOptions = dataMyPrograms?.map((program) => ({
@@ -87,6 +149,7 @@ export const AddTransferRequestModal = ({ dataMyPrograms, dataPrograms }) => {
         </Button>
       }
       onSave={handleSubmitData}
+      isLoading={isPending || isLoading}
       size='2xl'
       open={open}
       onOpenChange={(e) => setOpen(e.open)}
@@ -190,6 +253,7 @@ export const AddTransferRequestModal = ({ dataMyPrograms, dataPrograms }) => {
 };
 
 AddTransferRequestModal.propTypes = {
+  user: PropTypes.object,
   dataMyPrograms: PropTypes.array,
   dataPrograms: PropTypes.object,
 };
