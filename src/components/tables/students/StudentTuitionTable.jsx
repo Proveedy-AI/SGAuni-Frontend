@@ -24,7 +24,7 @@ const Row = memo(
 		const normalize = (str) => str?.trim().toLowerCase();
 
 		const matchingProgramId = dataStudent?.admission_programs?.find(
-			(p) => normalize(p.program__name) === normalize(item?.program_name)
+			(p) => normalize(p.program_name) === normalize(item?.program_name)
 		)?.program;
 		const { data: dataCoursesByPeriod } = useReadCoursesByPeriod(
 			dataStudent?.uuid,
@@ -36,7 +36,7 @@ const Row = memo(
 				entry.academic_period === item?.program_period &&
 				normalize(entry.academic_period) === normalize(item?.program_period)
 		);
-
+		console.log(dataStudent);
 		const matchStatus = statusDisplay.find(
 			(status) => status.id === item.status
 		);
