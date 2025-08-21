@@ -229,7 +229,7 @@ export const FinalRecordDocument = ({ modality, dataProgram, headers }) => {
 							</View>
 							<View style={{ marginTop: 10, textAlign: 'left' }}>
 								<Text style={{ fontSize: 6 }}>
-									C1, {dataDirector.degree} {dataDirector.name}{' '}
+									C1, {dataDirector?.degree} {dataDirector?.name}{' '}
 								</Text>
 							</View>
 							<View style={{ marginTop: 1, textAlign: 'left' }}>

@@ -340,7 +340,7 @@ export const AcademicTranscriptDocument = ({ data }) => {
 						<View style={styles.signatureSection}>
 							<View style={styles.signatureLine}></View>
 							<Text style={styles.signatureName}>
-							{dataDirector.degree} {dataDirector.name}
+							{dataDirector?.degree} {dataDirector?.name}
 							</Text>
 							<Text style={styles.signatureTitle}>DIRECTOR (e)</Text>
 							<Text style={styles.signatureUnit}>
