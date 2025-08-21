@@ -14,8 +14,13 @@ import {
 } from "@chakra-ui/react";
 import { FiFileText } from "react-icons/fi";
 import { AddTransferRequestModal, PreviewDocumentRequestModal } from "@/components/modals/procedures";
+import { useReadMyTransferRequest } from "@/hooks/transfer_requests";
+import { useReadUserLogged } from "@/hooks/users/useReadUserLogged";
 
 export const MyInternalTransferProcessView = () => {
+  const { data: dataUserLogged, isLoading: isLoadingUserLogged } = useReadUserLogged();
+  const { data: dataMyRequests } = useReadMyTransferRequest();
+  console.log('my-requests', dataMyRequests)
   /*
   const {
     data:dataTransferRequests,
@@ -93,7 +98,8 @@ export const MyInternalTransferProcessView = () => {
           Mis Solicitudes de Traslado
         </Heading>
         {isEjecutable && (
-          <AddTransferRequestModal 
+          <AddTransferRequestModal
+            user={dataUserLogged}
             dataMyPrograms={dataMyPrograms} 
             dataPrograms={dataPrograms} 
           />
