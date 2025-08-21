@@ -4,6 +4,7 @@ import { useReadTransferRequest } from '@/hooks/transfer_requests';
 import { useEffect, useMemo, useState } from 'react';
 import { ReactSelect } from '@/components';
 import { ConvalidacionesList } from '../accordion/ConvalidacionesList';
+import { ConvalidacionForm } from '../modals/ConvalidacionForm';
 
 export const ValidationsStudent = ({ dataStudent }) => {
 	const [selectProgram, setSelectProgram] = useState(null);
@@ -69,7 +70,9 @@ export const ValidationsStudent = ({ dataStudent }) => {
 								options={ProgramsOptions}
 							/>
 						</Box>
+						
 					</Flex>
+					<ConvalidacionForm />
 				</Flex>
 				{filteredAcademicProgressByProgram && (
 					<Flex
