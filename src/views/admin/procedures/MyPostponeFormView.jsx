@@ -44,7 +44,7 @@ export const MyPostponeFormView = () => {
           toaster.create({
             title: "Éxito",
             description: "El proceso de postergación se ha confirmado.",
-            status: "success",
+            type: "success",
           });
           navigate('/myprocedures/');
         },
@@ -52,7 +52,7 @@ export const MyPostponeFormView = () => {
           toaster.create({
             title: "Error",
             description: "Hubo un problema al confirmar la postergación. Intenta nuevamente.",
-            status: "error",
+            type: "error",
           });
         }
       });
