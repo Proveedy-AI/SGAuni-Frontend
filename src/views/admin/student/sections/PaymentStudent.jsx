@@ -25,18 +25,22 @@ export const PaymentStudent = ({ dataPerson }) => {
 			<Card.Body>
 				<Box overflowX='auto'>
 					<Table.Root size='sm' striped>
-						<Table.Header></Table.Header>
-						<Table.Row>
-							<Table.ColumnHeader>N°</Table.ColumnHeader>
-							<Table.ColumnHeader w={'20%'}>Programa</Table.ColumnHeader>
-							<Table.ColumnHeader w={'15%'}>Proceso</Table.ColumnHeader>
-							<Table.ColumnHeader w={'15%'}>Concepto de pago</Table.ColumnHeader>
-							<Table.ColumnHeader w={'10%'}>Monto</Table.ColumnHeader>
-							<Table.ColumnHeader>Estado</Table.ColumnHeader>
-							<Table.ColumnHeader w={'15%'}>Fecha Solicitud</Table.ColumnHeader>
-							<Table.ColumnHeader>O. de Pago</Table.ColumnHeader>
-						</Table.Row>
-
+						<Table.Header>
+							<Table.Row>
+								<Table.ColumnHeader>N°</Table.ColumnHeader>
+								<Table.ColumnHeader w={'20%'}>Programa</Table.ColumnHeader>
+								<Table.ColumnHeader w={'15%'}>Proceso</Table.ColumnHeader>
+								<Table.ColumnHeader w={'15%'}>
+									Concepto de pago
+								</Table.ColumnHeader>
+								<Table.ColumnHeader w={'10%'}>Monto</Table.ColumnHeader>
+								<Table.ColumnHeader>Estado</Table.ColumnHeader>
+								<Table.ColumnHeader w={'15%'}>
+									Fecha Solicitud
+								</Table.ColumnHeader>
+								<Table.ColumnHeader>O. de Pago</Table.ColumnHeader>
+							</Table.Row>
+						</Table.Header>
 						<Table.Body>
 							{isLoadingPayment ? (
 								<SkeletonTable columns={8} />
@@ -44,9 +48,7 @@ export const PaymentStudent = ({ dataPerson }) => {
 								dataPayment.map((item, index) => (
 									<Table.Row key={item.id}>
 										<Table.Cell>{index + 1}</Table.Cell>
-										<Table.Cell>
-											{item.program_name}
-										</Table.Cell>
+										<Table.Cell>{item.program_name}</Table.Cell>
 										<Table.Cell>
 											{item.admission_process_name ||
 												item.enrollment_process_name}
