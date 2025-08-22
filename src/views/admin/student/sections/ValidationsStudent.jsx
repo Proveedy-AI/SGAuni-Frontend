@@ -8,11 +8,12 @@ import { ConvalidacionForm } from '../modals/ConvalidacionForm';
 
 export const ValidationsStudent = ({ dataStudent }) => {
 	const [selectProgram, setSelectProgram] = useState(null);
-	const { data: dataAcademicTransfers } = useReadTransferRequest({
-		to_program: selectProgram?.value,
-		status: 4,
-		student: dataStudent?.id,
-	});
+	const { data: dataAcademicTransfers, refetch: refetchAcademicTransfers } =
+		useReadTransferRequest({
+			to_program: selectProgram?.value,
+			status: 4,
+			student: dataStudent?.id,
+		});
 
 	const ProgramsOptions = useMemo(
 		() =>
@@ -72,6 +73,7 @@ export const ValidationsStudent = ({ dataStudent }) => {
 						<ConvalidacionForm
 							convalidationsData={academicProgress}
 							dataStudent={dataStudent}
+							fetchData={refetchAcademicTransfers}
 						/>
 					)}
 				</Flex>
@@ -122,9 +124,7 @@ export const ValidationsStudent = ({ dataStudent }) => {
 					</Flex>
 				)}
 			</Stack>
-			<ConvalidacionesList
-				convalidationsData={academicProgress}
-			/>
+			<ConvalidacionesList convalidationsData={academicProgress} />
 		</Stack>
 	);
 };

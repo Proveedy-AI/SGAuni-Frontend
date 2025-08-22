@@ -53,14 +53,14 @@ export const ConvalidacionesList = ({ convalidationsData }) => {
 									<Accordion.ItemTrigger>
 										<Box flex='1' textAlign='left'>
 											<Text fontWeight='bold'>
-												Nuevo curso: {conv.new_course.name} (
+												Nuevo curso: {conv.new_course.course} (
 												{conv.new_course.code})
 											</Text>
 											<Text fontSize='sm' color='gray.500'>
-												Créditos: {conv.new_course.credits} | Nota:{' '}
-												{conv.new_course.grade} |{' '}
+												Créditos: {conv.new_course.credits} | Ciclo:{' '}
+												{conv.new_course.cycle} |{' '}
 												<Badge colorScheme='green'>
-													{conv.new_course.status}
+													Convalidado
 												</Badge>
 											</Text>
 										</Box>
@@ -79,25 +79,17 @@ export const ConvalidacionesList = ({ convalidationsData }) => {
 													<Table.ColumnHeader>Nombre</Table.ColumnHeader>
 													<Table.ColumnHeader>Créditos</Table.ColumnHeader>
 													<Table.ColumnHeader>Nota</Table.ColumnHeader>
-													<Table.ColumnHeader>Estado</Table.ColumnHeader>
+													
 												</Table.Row>
 											</Table.Header>
 											<Table.Body>
 												{conv.old_courses.map((c, idx) => (
 													<Table.Row key={idx}>
-														<Table.Cell>{c.code}</Table.Cell>
-														<Table.Cell>{c.name}</Table.Cell>
+														<Table.Cell>{c.course_code}</Table.Cell>
+														<Table.Cell>{c.course_name}</Table.Cell>
 														<Table.Cell>{c.credits}</Table.Cell>
 														<Table.Cell>{c.grade}</Table.Cell>
-														<Table.Cell>
-															<Badge
-																colorScheme={
-																	c.status === 'Aprobado' ? 'green' : 'red'
-																}
-															>
-																{c.status}
-															</Badge>
-														</Table.Cell>
+														
 													</Table.Row>
 												))}
 											</Table.Body>

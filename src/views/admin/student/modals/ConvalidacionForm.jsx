@@ -141,7 +141,9 @@ export const ConvalidacionForm = ({
 		} catch (error) {
 			setIsPending(false);
 			toaster.create({
-				title: error.message,
+				title:
+					error.response?.data?.[0] ||
+					'No se encontro un grupo de curso activo',
 				type: 'error',
 			});
 		}
@@ -163,7 +165,6 @@ export const ConvalidacionForm = ({
 			.replace(/[\u0300-\u036f]/g, '')
 			.toLowerCase();
 	};
-console.log(convalidationsData)
 	return (
 		<Modal
 			title='Agregar convalidación'
@@ -180,7 +181,9 @@ console.log(convalidationsData)
 			}
 			onSave={handleSubmitData}
 			loading={isPending}
-			disabledSave={!readInstructions || !convalidationsData.enable_convalidation}
+			disabledSave={
+				!readInstructions || !convalidationsData.enable_convalidation
+			}
 			size={'7xl'}
 			open={open}
 			onOpenChange={(e) => setOpen(e.open)}
