@@ -1,3 +1,4 @@
+import { useReadConvalidationRegister } from '@/hooks/convalidation/useReadConvalidationRegister';
 import {
 	Accordion,
 	Box,
@@ -14,10 +15,13 @@ import {
 import PropTypes from 'prop-types';
 import { FiRepeat, FiInbox } from 'react-icons/fi';
 
-export const ConvalidacionesList = ({ filteredAcademicProgressByProgram }) => {
-	console.log(filteredAcademicProgressByProgram);
-	// ejemplo de datos mock mientras conectas con tu API
-	const convalidaciones = [];
+export const ConvalidacionesList = ({ convalidationsData }) => {
+	const { data: convalidacionesDatCourses } = useReadConvalidationRegister(
+		{ id: convalidationsData?.to_program },
+		{ enabled: !!convalidationsData?.to_program }
+	);
+
+	const convalidaciones = convalidacionesDatCourses?.results || [];
 
 	return (
 		<Card.Root shadow={'md'}>
@@ -36,14 +40,14 @@ export const ConvalidacionesList = ({ filteredAcademicProgressByProgram }) => {
 				</Stack>
 			</Card.Header>
 			<Card.Body>
-				{convalidaciones.length === 0 ? (
+				{convalidaciones?.length === 0 ? (
 					<Center flexDir='column' py={10} color='gray.500'>
 						<Icon as={FiInbox} boxSize={10} mb={2} />
 						<Text fontSize='sm'>No existen convalidaciones actualmente</Text>
 					</Center>
 				) : (
 					<Accordion.Root multiple variant='subtle' colorPalette='green'>
-						{convalidaciones.map((conv, index) => (
+						{convalidaciones?.map((conv, index) => (
 							<Accordion.Item key={conv.id ?? index} value={String(index)}>
 								<h2>
 									<Accordion.ItemTrigger>
@@ -110,5 +114,5 @@ export const ConvalidacionesList = ({ filteredAcademicProgressByProgram }) => {
 };
 
 ConvalidacionesList.propTypes = {
-	filteredAcademicProgressByProgram: PropTypes.array,
+	convalidationsData: PropTypes.array,
 };

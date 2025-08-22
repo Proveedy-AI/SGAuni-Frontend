@@ -33,7 +33,7 @@ export const ValidationsStudent = ({ dataStudent }) => {
 		}
 	}, [ProgramsOptions, selectProgram]);
 
-	const filteredAcademicProgressByProgram = dataAcademicTransfers?.results;
+	const academicProgress = dataAcademicTransfers?.results?.[0] ?? null;
 
 	return (
 		<Stack gap={4}>
@@ -68,14 +68,14 @@ export const ValidationsStudent = ({ dataStudent }) => {
 							/>
 						</Box>
 					</Flex>
-					{filteredAcademicProgressByProgram && (
+					{academicProgress && (
 						<ConvalidacionForm
-							convalidationsData={filteredAcademicProgressByProgram}
+							convalidationsData={academicProgress}
 							dataStudent={dataStudent}
 						/>
 					)}
 				</Flex>
-				{filteredAcademicProgressByProgram && (
+				{academicProgress && (
 					<Flex
 						direction={{ base: 'column', md: 'row' }}
 						justify='space-between'
@@ -95,8 +95,7 @@ export const ValidationsStudent = ({ dataStudent }) => {
 									De Programa
 								</Text>
 								<Text fontWeight='bold' fontSize='sm' color='blue.800'>
-									{filteredAcademicProgressByProgram?.from_program_name ||
-										'N/A'}
+									{academicProgress?.from_program_name || 'N/A'}
 								</Text>
 							</Box>
 						</Flex>
@@ -116,7 +115,7 @@ export const ValidationsStudent = ({ dataStudent }) => {
 									A Programa
 								</Text>
 								<Text fontWeight='bold' fontSize='sm' color='green.800'>
-									{filteredAcademicProgressByProgram?.to_program_name || 'N/A'}
+									{academicProgress?.to_program_name || 'N/A'}
 								</Text>
 							</Box>
 						</Flex>
@@ -124,7 +123,7 @@ export const ValidationsStudent = ({ dataStudent }) => {
 				)}
 			</Stack>
 			<ConvalidacionesList
-				filteredAcademicProgressByProgram={filteredAcademicProgressByProgram}
+				convalidationsData={academicProgress}
 			/>
 		</Stack>
 	);
