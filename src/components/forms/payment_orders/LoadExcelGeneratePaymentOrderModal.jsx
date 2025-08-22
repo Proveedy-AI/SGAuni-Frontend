@@ -8,6 +8,7 @@ import { FiDownload, FiFileText } from 'react-icons/fi';
 import PropTypes from 'prop-types';
 import { useReadEnrollmentsPrograms } from '@/hooks/enrollments_programs';
 import { ReactSelect } from '@/components/select';
+import { useReadPaymentOrdersTemplateByProgram } from '@/hooks/enrollments_programs/templates';
 
 export const LoadExcelGeneratePaymentOrderModal = ({ fetchData }) => {
 	const [open, setOpen] = useState(false);
@@ -15,11 +16,16 @@ export const LoadExcelGeneratePaymentOrderModal = ({ fetchData }) => {
 	const { mutate: validate } = useGeneratePaymentOrderExcel();
 	const [isLoading, setIsLoading] = useState(false);
 	const [selectedProgram, setSelectedProgram] = useState(null);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
 
 	const { data: enrollmentsPrograms } = useReadEnrollmentsPrograms(
 		{ status: 4 },
 		{ enable: open }
 	);
+
+  const {
+      mutate: downloadTemplate, isSaving
+    } = useReadPaymentOrdersTemplateByProgram();
 
 	const enrollmentOptions = enrollmentsPrograms?.results
 		? enrollmentsPrograms.results.map((program) => ({
@@ -90,22 +96,56 @@ export const LoadExcelGeneratePaymentOrderModal = ({ fetchData }) => {
 		}
 	};
 
+  const loadExcel = (data) => {
+    const url = window.URL.createObjectURL(
+      new Blob([data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      })
+    );
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute(
+      'download',
+      `ordenes_de_pago_${selectedTemplate?.label}.xlsx`
+    );
+    document.body.appendChild(link);
+    link.click();
+  };
+
 	const handleDownloadGuide = () => {
 		// Crear un enlace temporal para descargar el archivo
-		const link = document.createElement('a');
-		link.href = '/templates/GENERAR-ORDENES-DE-PAGO.xlsx'; // Archivo en la carpeta public
-		link.download = 'GENERAR-ORDENES-DE-PAGO.xlsx';
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
+    if (!selectedTemplate) return;
+    downloadTemplate(selectedTemplate.value, {
+      onSuccess: (data) => {
+        loadExcel(data);
+        toaster.create({
+          title: 'Plantilla descargada',
+          description: 'La plantilla se ha descargado correctamente.',
+          type: 'success',
+        });
+      },
+      onError: (error) => {
+        toaster.create({
+          title: error.message || 'Error al descargar la plantilla.',
+          type: 'error',
+        });
+      }
+    });
 
-		toaster.create({
-			title: 'Descarga completa',
-			description: 'La guía del ordenes de pago se descargó correctamente.',
-			type: 'success',
-			duration: 3000,
-			isClosable: true,
-		});
+		// const link = document.createElement('a');
+		// link.href = '/templates/GENERAR-ORDENES-DE-PAGO.xlsx'; // Archivo en la carpeta public
+		// link.download = 'GENERAR-ORDENES-DE-PAGO.xlsx';
+		// document.body.appendChild(link);
+		// link.click();
+		// document.body.removeChild(link);
+
+		// toaster.create({
+		// 	title: 'Descarga completa',
+		// 	description: 'La guía del ordenes de pago se descargó correctamente.',
+		// 	type: 'success',
+		// 	duration: 3000,
+		// 	isClosable: true,
+		// });
 	};
 
 	return (
@@ -133,6 +173,7 @@ export const LoadExcelGeneratePaymentOrderModal = ({ fetchData }) => {
 				<Stack gap={4} w='full'>
 					<Field label='Programa Académico:'>
 						<ReactSelect
+              placeholder="Selecciona un programa académico"
 							value={selectedProgram}
 							onChange={setSelectedProgram}
 							variant='flushed'
@@ -201,16 +242,42 @@ export const LoadExcelGeneratePaymentOrderModal = ({ fetchData }) => {
 								</Text>
 							</Box>
 						</HStack>
-
-						<Button
+					</HStack>
+          <HStack my={5}>
+            <ReactSelect
+              placeholder="Selecciona un programa académico"
+              value={selectedTemplate}
+              onChange={setSelectedTemplate}
+              variant='flushed'
+              size='xs'
+              isSearchable
+              isClearable
+              options={enrollmentOptions}
+            />
+            <Button
 							colorPalette='green'
 							variant='solid'
 							onClick={handleDownloadGuide}
 							borderRadius='lg'
-						>
-							<FiDownload /> Descargar guía
-						</Button>
-					</HStack>
+              disabled={!selectedTemplate}
+              loading={isSaving}
+              loadingText='Descargando...'
+            >
+              <FiDownload /> Descargar guía
+            </Button>
+          </HStack>
+          <Alert
+            status='warning'
+            borderRadius='lg'
+            borderColor='blue.200'
+            borderWidth={1}
+            title='Tomar en cuenta que:'
+          >
+            <VStack align='start' gap={1}>
+              <Text>• Los campos de <b>descuento, monto, fecha de vencimiento e id de orden</b> son modificables</Text>
+              <Text>• Tener cuidado con cambiar algún otro campo que no sea de los mencionados, queda bajo la responsabildad del usuario</Text>
+            </VStack>
+          </Alert>
 				</Box>
 			</Stack>
 		</Modal>

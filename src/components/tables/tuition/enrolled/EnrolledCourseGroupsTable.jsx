@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 
-const Row = memo(({ program, item, startIndex, index, sortConfig, data, permissions }) => {
+const Row = memo(({ item, startIndex, index, sortConfig, data, permissions }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const encrypted = Encryptor.encrypt(item.id);
@@ -41,7 +41,7 @@ const Row = memo(({ program, item, startIndex, index, sortConfig, data, permissi
           ? data.length - (startIndex + index)
           : startIndex + index + 1}
       </Table.Cell>
-      <Table.Cell fontWeight="medium">{program?.label}</Table.Cell>
+      <Table.Cell>{item.program_name}</Table.Cell>
       <Table.Cell>{item.course}</Table.Cell>
       <Table.Cell textAlign="center">{item.cycle}</Table.Cell>
       <Table.Cell textAlign="center">{item.credits}</Table.Cell>
@@ -64,7 +64,6 @@ const Row = memo(({ program, item, startIndex, index, sortConfig, data, permissi
 Row.displayName = 'EnrolledCourseGroupRow';
 
 Row.propTypes = {
-  program: PropTypes.object,
   item: PropTypes.object.isRequired,
   startIndex: PropTypes.number.isRequired,
   index: PropTypes.number.isRequired,
@@ -74,13 +73,10 @@ Row.propTypes = {
 };
 
 export const EnrolledCourseGroupsTable = ({
-  programOptions,
   data,
   permissions,
   isLoading,
 }) => {
-  console.log('proma', programOptions)
-  console.log('data', data)
   const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
   const [currentPage, setCurrentPage] = useState(1);
   const startIndex = (currentPage - 1) * pageSize;
@@ -109,7 +105,7 @@ export const EnrolledCourseGroupsTable = ({
                   onSort={setSortConfig}
                 />
               </Table.ColumnHeader>
-              <Table.ColumnHeader w='15%'>
+              <Table.ColumnHeader w='30%'>
                 <SortableHeader
                   label='Programa'
                   columnKey='enrollment_program'
@@ -117,7 +113,7 @@ export const EnrolledCourseGroupsTable = ({
                   onSort={setSortConfig}
                 />
               </Table.ColumnHeader>
-              <Table.ColumnHeader w='40%'>
+              <Table.ColumnHeader w='30%'>
                 <SortableHeader
                   label='Nombre del Curso'
                   columnKey='course_name'
@@ -141,7 +137,7 @@ export const EnrolledCourseGroupsTable = ({
                   onSort={setSortConfig}
                 />
               </Table.ColumnHeader>
-              <Table.ColumnHeader w='20%' textAlign="center">
+              <Table.ColumnHeader w='15%' textAlign="center">
                 <SortableHeader
                   label='Tipo'
                   columnKey='is_mandatory'
@@ -160,7 +156,6 @@ export const EnrolledCourseGroupsTable = ({
                   key={item.id}
                   item={item}
                   data={data}
-                  program={programOptions?.find(p => p.value === item?.enrollment_program)}
                   sortConfig={sortConfig}
                   permissions={permissions}
                   startIndex={startIndex}
@@ -194,7 +189,6 @@ export const EnrolledCourseGroupsTable = ({
 };
 
 EnrolledCourseGroupsTable.propTypes = {
-  programOptions: PropTypes.array,
   data: PropTypes.array,
   permissions: PropTypes.array,
   isLoading: PropTypes.bool,

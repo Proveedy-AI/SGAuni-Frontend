@@ -107,8 +107,6 @@ export const EnrolledCourseGroupsView = () => {
 	const decoded = decodeURIComponent(id);
 	const decrypted = Encryptor.decrypt(decoded);
 
-  const { data: dataEnrollment, isLoading: isLoadingEnrollment } = useReadEnrollmentById(decrypted);
-
 	const { data: profile } = useReadUserLogged();
 	const roles = profile?.roles || [];
 	const permissions = roles
@@ -123,45 +121,55 @@ export const EnrolledCourseGroupsView = () => {
 		refetch: fetchCourseGroups,
 		isLoading,
 	} = useReadEnrollmentProgramCourses({}, {});
-  console.log(dataCourseGroups)
 
   let queryParams = {
     enrollment_period: decrypted
   };
 
-  /*
-  if (permiso) {
-    queryParams['coordinator'] = 
+  if (permissions.includes('enrollments.enrolled.viewcoord')) {
+    queryParams.coordinator = profile?.id;
   }
-    if (permiso) {
-    queryParams['director'] = 
+
+  else if (permissions.includes('enrollments.enrolled.viewdirector')) {
+    queryParams.director = profile?.id;
   }
-  */
 
 	const {
 		data: dataEnrollmentProgram,
-		isLoading: isLoadingEnrollmentProgram, //<-- Para el ReactSelect
-	} = useReadEnrollmentsPrograms( //<- no de todos
-		{ enrollment_period: decrypted },
+		isLoading: isLoadingEnrollmentProgram,
+	} = useReadEnrollmentsPrograms(
+		queryParams,
 		{ enabled: !!decrypted }
 	);
 
 	const EnrollmentProgramOptions = dataEnrollmentProgram?.results?.map(
 		(item) => ({
-			value: item.id,
+			value: item.program,
 			label: item.program_name,
 		})
 	);
 
 	const [searchName, setSearchName] = useState('');
 	const [selectedProgram, setSelectedProgram] = useState(null);
+  const [selectedCycle, setSelectedCycle] = useState(null);
+
+  const CycleOptions = [
+    { value: 1, label: 'Ciclo 1' },
+    { value: 2, label: 'Ciclo 2' },
+    { value: 4, label: 'Ciclo 4' },
+    { value: 5, label: 'Ciclo 5' },
+    { value: 6, label: 'Ciclo 6' },
+    { value: 7, label: 'Ciclo 7' },
+    { value: 8, label: 'Ciclo 8' },
+    { value: 9, label: 'Ciclo 9' },
+    { value: 10, label: 'Ciclo 10' }
+  ];
 
 	const allCourseGroups =
 		dataCourseGroups?.pages?.flatMap((page) => page.results) ?? [];
 
-		console.log(allCourseGroups)
 	const filteredCourseGroupsByEnrollmentPeriod =
-		allCourseGroups.filter((group) => group.enrollment_period === dataEnrollment?.academic_period_name) ??
+		allCourseGroups.filter((group) => group.enrollment_period === String(decrypted)) ??
 		[];
 
 	const filteredCourseGroups = filteredCourseGroupsByEnrollmentPeriod.filter(
@@ -170,10 +178,11 @@ export const EnrolledCourseGroupsView = () => {
 				group.course
 					.toLowerCase()
 					.includes(searchName.toLowerCase())) &&
-			(!selectedProgram || group.enrollment_program === selectedProgram?.value)
+			(!selectedProgram || group.program === String(selectedProgram?.value)) &&
+			(!selectedCycle || group.cycle === selectedCycle?.value)
 	);
 
-	const hasActiveFilters = searchName || selectedProgram;
+	const hasActiveFilters = searchName || selectedProgram || selectedCycle;
 
 	const clearFilters = () => {
 		setSearchName('');
@@ -207,8 +216,8 @@ export const EnrolledCourseGroupsView = () => {
 			/>
 
 			<Card.Root>
-				<Card.Header>
-					<Flex justify='space-between' align='center'>
+				<Card.Header overflow='hidden'>
+					<Flex justify='space-between' align='center' gapX={8}>
 						<Flex align='center' gap={2}>
 							<Icon as={FiBookOpen} boxSize={5} color='blue.600' />
 							<Heading fontSize='24px'>Grupos de Cursos</Heading>
@@ -237,7 +246,7 @@ export const EnrolledCourseGroupsView = () => {
 				</Card.Header>
 				<Card.Body>
 					<Stack gap={4} mb={4}>
-						<SimpleGrid columns={{ base: 1, sm: 2 }} gap={6}>
+						<SimpleGrid columns={{ base: 1, lg: 3 }} gap={6}>
 							<Field label='Nombre del curso:'>
 								<InputGroup w='100%' startElement={<FiSearch />}>
 									<Input
@@ -260,13 +269,21 @@ export const EnrolledCourseGroupsView = () => {
 									isLoading={isLoadingEnrollmentProgram}
 								/>
 							</Field>
+              <Field label='Buscar por ciclo:'>
+                <ReactSelect
+                  placeholder='Buscar por ciclo...'
+                  options={CycleOptions}
+                  value={selectedCycle}
+                  onChange={setSelectedCycle}
+                  isClearable
+                />
+              </Field>
 						</SimpleGrid>
 					</Stack>
 				</Card.Body>
 			</Card.Root>
 
 			<EnrolledCourseGroupsTable
-				programOptions={EnrollmentProgramOptions}
 				data={filteredCourseGroups}
 				fetchData={fetchCourseGroups}
 				isLoading={isLoading}
