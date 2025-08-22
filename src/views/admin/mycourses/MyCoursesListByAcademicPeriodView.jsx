@@ -27,12 +27,13 @@ import { GenerateAcademicTranscriptPdfModal } from '@/components/modals/mycourse
 export const MyCoursesListByAcademicPeriodView = () => {
 	const { data: dataUser, isLoading } = useReadUserLogged();
 	const studentUUID = dataUser?.student?.uuid;
-  console.log('User Data:', dataUser?.student?.admission_programs);
 
-	const MyProgramsOptions = dataUser?.student?.admission_programs?.map((program) => ({
-		value: program.program,
-		label: program.program_name,
-	}));
+	const MyProgramsOptions = dataUser?.student?.admission_programs?.map(
+		(program) => ({
+			value: program.program,
+			label: program.program_name,
+		})
+	);
 
 	const [programEnrolled, setProgramEnrolled] = useState(null);
 	const [tab, setTab] = useState('courses');
@@ -51,8 +52,9 @@ export const MyCoursesListByAcademicPeriodView = () => {
 	const { data: dataCoursesByPeriod, isLoading: isLoadingCoursesByPeriod } =
 		useReadCoursesByPeriod(studentUUID, programEnrolled?.value);
 
-	const isDownloadable = !isLoadingAcademicTranscript && !isLoading;
-	dataCoursesByPeriod?.total_courses > 0;
+	const isDownloadable =
+		!isLoadingAcademicTranscript &&
+		dataCoursesByPeriod?.total_courses > 0
 
 	const navigate = useNavigate();
 
@@ -151,7 +153,13 @@ export const MyCoursesListByAcademicPeriodView = () => {
 				variant='plain'
 				my={3}
 			>
-				<Flex overflow='hidden' direction={{ base: 'column', md: 'row' }} justify='space-between' align={{ base: 'flex-start', md: 'center' }} gap={2}>
+				<Flex
+					overflow='hidden'
+					direction={{ base: 'column', md: 'row' }}
+					justify='space-between'
+					align={{ base: 'flex-start', md: 'center' }}
+					gap={2}
+				>
 					<Tabs.List bg='blue.100' rounded='l3' p='1'>
 						<Tabs.Trigger color='blue.600' fontSize={'sm'} value='courses'>
 							Cursos
@@ -194,9 +202,7 @@ export const MyCoursesListByAcademicPeriodView = () => {
 					/>
 				</Tabs.Content>
 				<Tabs.Content value='grades-record'>
-					<GradesRecordSection
-						dataCoursesByPeriod={dataCoursesByPeriod}
-					/>
+					<GradesRecordSection dataCoursesByPeriod={dataCoursesByPeriod} />
 				</Tabs.Content>
 			</Tabs.Root>
 		</Box>
