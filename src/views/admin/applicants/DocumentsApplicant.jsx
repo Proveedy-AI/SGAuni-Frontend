@@ -48,10 +48,16 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 
 	const documentConfig = {
 		3: {
-			tooltip: 'Este documento debe estar notariado',
-			label: 'Documento Especial',
+			tooltip: 'Copia Simple, 6 meses para regularizar',
 		},
-		15: { tooltip: 'Adjunta el certificado oficial emitido por la SUNEDU' },
+		6: { tooltip: '(Concepto de carpeta)' },
+		7: { tooltip: 'Copia Simple, adverso y reverso (pdf)' },
+		14: {
+			tooltip:
+				'Asignaturas aprobadas (visadas y selladas) adjuntadas en un .pdf',
+		},
+		15: { tooltip: 'Copia Simple, 18 meses para regularizar' },
+
 		// puedes seguir agregando aquí más ids...
 	};
 	const { leftColumnDocs, rightColumnDocs } = useMemo(() => {
@@ -84,7 +90,7 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 	}, [item?.rules]);
 
 	const { mutate: create } = useCreateDocuments();
-	const { data: dataDocuments } = useReadDocuments({ application: item.id });
+	const { data: dataDocuments, refetch } = useReadDocuments({ application: item.id });
 
 	useEffect(() => {
 		if (!dataDocuments?.results || !item?.rules) return;
@@ -111,7 +117,7 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 			if (isEqual) return prev;
 			return { ...prev, ...mappedDocs };
 		});
-	}, [dataDocuments, typeDocumentToKeyMap]);
+	}, [dataDocuments]);
 
 	useEffect(() => {
 		if (!item?.rules) return;
@@ -207,6 +213,7 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 			{
 				onSuccess: () => {
 					setIsLoading(false);
+					refetch();
 					toaster.create({
 						title: 'Documentos guardados',
 						description:
