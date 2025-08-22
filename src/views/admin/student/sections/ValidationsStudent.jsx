@@ -9,6 +9,7 @@ import { ConvalidacionForm } from '../modals/ConvalidacionForm';
 export const ValidationsStudent = ({ dataStudent }) => {
 	const [selectProgram, setSelectProgram] = useState(null);
 	const { data: dataAcademicTransfers } = useReadTransferRequest({
+		to_program: selectProgram?.value,
 		status: 4,
 		student: dataStudent?.id,
 	});
@@ -32,13 +33,7 @@ export const ValidationsStudent = ({ dataStudent }) => {
 		}
 	}, [ProgramsOptions, selectProgram]);
 
-	const filteredAcademicProgressByProgram =
-		dataAcademicTransfers?.results?.find(
-			(data) =>
-				data?.to_program === selectProgram?.value &&
-				data?.student === dataStudent?.id &&
-				data?.status === 4
-		);
+	const filteredAcademicProgressByProgram = dataAcademicTransfers?.results;
 
 	return (
 		<Stack gap={4}>
