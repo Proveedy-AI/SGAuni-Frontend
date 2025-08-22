@@ -78,36 +78,6 @@ export const ConvalidacionForm = ({ convalidationsData, dataStudent }) => {
 			course_name: 'Programación Básica',
 			course_code: 'PRG101',
 		},
-		{
-			id: '3',
-			e_periods_programs_id: 'epp_001',
-			course_id: 'c_002',
-			is_mandatory: false,
-			cycle: 2,
-			credits: 3,
-			course_name: 'Programación Básica',
-			course_code: 'PRG101',
-		},
-		{
-			id: '4',
-			e_periods_programs_id: 'epp_001',
-			course_id: 'c_002',
-			is_mandatory: false,
-			cycle: 2,
-			credits: 3,
-			course_name: 'Programación Básica',
-			course_code: 'PRG101',
-		},
-		{
-			id: '5',
-			e_periods_programs_id: 'epp_001',
-			course_id: 'c_002',
-			is_mandatory: false,
-			cycle: 2,
-			credits: 3,
-			course_name: 'Programación Básica',
-			course_code: 'PRG101',
-		},
 	];
 
 	const totalOldCredits = selectedOldCourses.reduce(
