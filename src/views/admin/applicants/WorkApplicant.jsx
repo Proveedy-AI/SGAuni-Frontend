@@ -153,7 +153,7 @@ export const WorkApplicant = ({ onAllCompleted }) => {
 
 		let allCompleted = true;
 		const results = dataEvaluationsByApplication.results || [];
-		console.log(results);
+	
 		// Si no hay ningún trabajo, no está completo
 		if (results.length === 0) {
 			allCompleted = false;
