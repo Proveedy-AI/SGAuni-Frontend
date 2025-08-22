@@ -7,3 +7,5 @@ export * from './useReadUserById';
 
 export * from './profile';
 export * from './useReadDataDashTeacher';
+export * from './useReadDataDashPayment';
+export * from './useReadDataDirectorMain';

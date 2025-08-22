@@ -1,13 +1,44 @@
 import { useReadEnrollmentPayment } from '@/hooks/person/useReadEnrollmentPayment';
 import PropTypes from 'prop-types';
-import { Badge, Box, Card, Table } from '@chakra-ui/react';
+import {
+	Badge,
+	Box,
+	Card,
+	Heading,
+	HStack,
+	Icon,
+	Stack,
+	Table,
+} from '@chakra-ui/react';
 import { PreviewMyOrdenDetailsModal } from '@/components/modals';
 import { formatDateString } from '@/components/ui/dateHelpers';
 import SkeletonTable from '@/components/ui/SkeletonTable';
+import { useEffect, useMemo, useState } from 'react';
+import { ReactSelect } from '@/components';
+import { FiCreditCard } from 'react-icons/fi';
 
-export const PaymentStudent = ({ dataPerson }) => {
+export const PaymentStudent = ({ dataPerson, dataStudent }) => {
 	const { data: dataPayment, isLoading: isLoadingPayment } =
 		useReadEnrollmentPayment(dataPerson?.id, {}, {});
+
+	const [selectProgram, setSelectProgram] = useState(null);
+
+	const ProgramsOptions = useMemo(
+		() =>
+			dataStudent?.admission_programs
+				?.map((program) => ({
+					label: program.program_name,
+					value: program.program,
+				}))
+				.reverse() || [],
+		[dataStudent]
+	);
+
+	useEffect(() => {
+		if (ProgramsOptions.length > 0 && !selectProgram) {
+			setSelectProgram(ProgramsOptions[0]);
+		}
+	}, [ProgramsOptions, selectProgram]);
 	const StatusOptions = [
 		{ value: 1, label: 'Pendiente' },
 		{ value: 2, label: 'Generado' },
@@ -20,33 +51,82 @@ export const PaymentStudent = ({ dataPerson }) => {
 		3: 'green',
 		4: 'yellow',
 	};
+
+	const filteredPayment = useMemo(() => {
+		if (!dataPayment) return [];
+		if (!selectProgram) return dataPayment; // si no hay selección, muestra todo
+
+		return Array.isArray(dataPayment)
+			? dataPayment.filter((enroll) => enroll.program === selectProgram.value)
+			: dataPayment.program === selectProgram.value
+				? [dataPayment]
+				: [];
+	}, [dataPayment, selectProgram]);
+	
 	return (
 		<Card.Root>
+			<Card.Header pb={0}>
+				<Stack
+					justify='space-between'
+					align={{ base: 'flex-start', md: 'center' }}
+					direction={{ base: 'column', md: 'row' }}
+					spacing={{ base: 3, md: 6 }}
+					w='full'
+				>
+					{/* Título */}
+					<HStack>
+						<Icon as={FiCreditCard} boxSize={5} />
+						<Heading size='md'>Pagos</Heading>
+					</HStack>
+
+					{/* Filtros y acciones */}
+					<Stack
+						direction={{ base: 'column', sm: 'row' }}
+						spacing={{ base: 2, md: 4 }}
+						w={{ base: 'full', md: 'auto' }}
+					>
+						<Box flex='1' minW={{ base: 'full', sm: '200px', md: '550px' }}>
+							<ReactSelect
+								placeholder='Filtrar por programa...'
+								value={selectProgram}
+								onChange={(value) => setSelectProgram(value)}
+								variant='flushed'
+								size='xs'
+								isSearchable
+								isClearable
+								options={ProgramsOptions}
+							/>
+						</Box>
+					</Stack>
+				</Stack>
+			</Card.Header>
 			<Card.Body>
 				<Box overflowX='auto'>
 					<Table.Root size='sm' striped>
-						<Table.Header></Table.Header>
-						<Table.Row>
-							<Table.ColumnHeader>N°</Table.ColumnHeader>
-							<Table.ColumnHeader w={'20%'}>Programa</Table.ColumnHeader>
-							<Table.ColumnHeader w={'15%'}>Proceso</Table.ColumnHeader>
-							<Table.ColumnHeader w={'15%'}>Concepto de pago</Table.ColumnHeader>
-							<Table.ColumnHeader w={'10%'}>Monto</Table.ColumnHeader>
-							<Table.ColumnHeader>Estado</Table.ColumnHeader>
-							<Table.ColumnHeader w={'15%'}>Fecha Solicitud</Table.ColumnHeader>
-							<Table.ColumnHeader>O. de Pago</Table.ColumnHeader>
-						</Table.Row>
-
+						<Table.Header>
+							<Table.Row>
+								<Table.ColumnHeader>N°</Table.ColumnHeader>
+								<Table.ColumnHeader w={'20%'}>Programa</Table.ColumnHeader>
+								<Table.ColumnHeader w={'15%'}>Proceso</Table.ColumnHeader>
+								<Table.ColumnHeader w={'15%'}>
+									Concepto de pago
+								</Table.ColumnHeader>
+								<Table.ColumnHeader w={'10%'}>Monto</Table.ColumnHeader>
+								<Table.ColumnHeader>Estado</Table.ColumnHeader>
+								<Table.ColumnHeader w={'15%'}>
+									Fecha Solicitud
+								</Table.ColumnHeader>
+								<Table.ColumnHeader>O. de Pago</Table.ColumnHeader>
+							</Table.Row>
+						</Table.Header>
 						<Table.Body>
 							{isLoadingPayment ? (
 								<SkeletonTable columns={8} />
-							) : dataPayment && dataPayment.length > 0 ? (
-								dataPayment.map((item, index) => (
+							) : filteredPayment && filteredPayment.length > 0 ? (
+								filteredPayment.map((item, index) => (
 									<Table.Row key={item.id}>
 										<Table.Cell>{index + 1}</Table.Cell>
-										<Table.Cell>
-											{item.program_name}
-										</Table.Cell>
+										<Table.Cell>{item.program_name}</Table.Cell>
 										<Table.Cell>
 											{item.admission_process_name ||
 												item.enrollment_process_name}
@@ -88,5 +168,6 @@ export const PaymentStudent = ({ dataPerson }) => {
 };
 
 PaymentStudent.propTypes = {
-	dataPerson: PropTypes.object.isRequired,
+	dataPerson: PropTypes.object,
+	dataStudent: PropTypes.object,
 };

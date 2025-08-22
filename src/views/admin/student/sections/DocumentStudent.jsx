@@ -17,8 +17,8 @@ import { useEffect, useMemo, useState } from 'react';
 export const DocumentStudent = ({ dataStudent }) => {
 	const [selectProgram, setSelectProgram] = useState(null);
 	const { data: dataDocuments } = useReadDocuments(
-		{ application: selectProgram?.value },
-		{ enabled: !!selectProgram?.value }
+		{ application: selectProgram?.program },
+		{ enabled: !!selectProgram?.program }
 	);
 
 	const handleDownload = (filePath) => {
@@ -27,10 +27,13 @@ export const DocumentStudent = ({ dataStudent }) => {
 
 	const ProgramsOptions = useMemo(
 		() =>
-			dataStudent?.admission_programs?.map((program) => ({
-				label: program.program_name,
-				value: program.application,
-			})) || [],
+			dataStudent?.admission_programs
+				?.map((program) => ({
+					label: program.program_name,
+					program: program.application,
+					value: program.program,
+				}))
+				.reverse() || [],
 		[dataStudent]
 	);
 
@@ -58,7 +61,7 @@ export const DocumentStudent = ({ dataStudent }) => {
 						<ReactSelect
 							placeholder='Filtrar por programa...'
 							value={selectProgram}
-							onChange={setSelectProgram}
+							onChange={(value) => setSelectProgram(value)}
 							variant='flushed'
 							size='xs'
 							isSearchable

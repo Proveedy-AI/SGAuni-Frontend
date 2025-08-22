@@ -23,7 +23,7 @@ import { ReactSelect } from '@/components/select';
 import { useReadCurrentEnrollmentProgram } from '@/hooks/enrollments_programs';
 import { FaGraduationCap } from 'react-icons/fa';
 import { formatDateString } from '@/components/ui/dateHelpers';
-import { useCreateEnrollments } from '@/hooks/enrollments_proccess';
+import { useCreateEnrollments } from '@/hooks/enrollments';
 
 export const AddEnrollmentStudentForm = ({
 	dataStudent,

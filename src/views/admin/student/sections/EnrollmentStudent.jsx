@@ -19,15 +19,18 @@ export const EnrollmentStudent = ({
 	dataStudent,
 	myEnrollment,
 	isLoadingEnrollment,
+	fetchData,
 }) => {
 	const [selectProgram, setSelectProgram] = useState(null);
-	console.log(myEnrollment, selectProgram);
+
 	const ProgramsOptions = useMemo(
 		() =>
-			dataStudent?.admission_programs?.map((program) => ({
-				label: program.program_name,
-				value: program.program,
-			})) || [],
+			dataStudent?.admission_programs
+				?.map((program) => ({
+					label: program.program_name,
+					value: program.program,
+				}))
+				.reverse() || [],
 		[dataStudent]
 	);
 
@@ -89,6 +92,7 @@ export const EnrollmentStudent = ({
 							<AddEnrollmentStudentForm
 								dataStudent={dataStudent}
 								selectProgram={selectProgram}
+								fetchData={fetchData}
 							/>
 						</Stack>
 					</Stack>
@@ -110,4 +114,5 @@ EnrollmentStudent.propTypes = {
 	myEnrollment: PropTypes.array.isRequired,
 	isLoadingEnrollment: PropTypes.bool.isRequired,
 	dataStudent: PropTypes.object.isRequired,
+	fetchData: PropTypes.func,
 };

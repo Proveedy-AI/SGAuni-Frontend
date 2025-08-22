@@ -8,7 +8,7 @@ import {
 	Stack,
 	Text,
 } from '@chakra-ui/react';
-import { Field } from '@/components/ui';
+import { Field, PasswordInput } from '@/components/ui';
 import PropTypes from 'prop-types';
 import { ReactSelect } from '@/components/select';
 import { CompactFileUpload } from '@/components/ui/CompactFileInput';
@@ -207,13 +207,14 @@ export const ChangeDataProfileForm = ({
 							orientation={{ base: 'vertical', sm: 'horizontal' }}
 							label='Contraseña'
 						>
-							<Input
+							<PasswordInput
 								type='password'
 								value={profile.password}
 								onChange={(e) => updateProfileField('password', e.target.value)}
 								variant='flushed'
 								flex='1'
 								size='sm'
+								autoComplete='new-password'
 							/>
 						</Field>
 
@@ -221,7 +222,7 @@ export const ChangeDataProfileForm = ({
 							orientation={{ base: 'vertical', sm: 'horizontal' }}
 							label='Confirmar Contraseña'
 						>
-							<Input
+							<PasswordInput
 								type='password'
 								value={profile.confirmPassword}
 								onChange={(e) =>
