@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Box, Flex, SimpleGrid, Stack, Text } from '@chakra-ui/react';
+import { Box, Flex, Stack, Text } from '@chakra-ui/react';
 import { useReadTransferRequest } from '@/hooks/transfer_requests';
 import { useEffect, useMemo, useState } from 'react';
 import { ReactSelect } from '@/components';
@@ -73,33 +73,58 @@ export const ValidationsStudent = ({ dataStudent }) => {
 							/>
 						</Box>
 					</Flex>
-					<ConvalidacionForm />
+					{filteredAcademicProgressByProgram && (
+						<ConvalidacionForm
+							convalidationsData={filteredAcademicProgressByProgram}
+							dataStudent={dataStudent}
+						/>
+					)}
 				</Flex>
 				{filteredAcademicProgressByProgram && (
 					<Flex
+						direction={{ base: 'column', md: 'row' }}
 						justify='space-between'
+						align='center'
 						border='1px solid'
-						borderColor='blue.400'
-						borderRadius={8}
-						direction={{ base: 'column', lg: 'row' }}
-						fontSize={'sm'}
+						borderColor='blue.300'
+						borderRadius='md'
+						bg='blue.50'
+						p={4}
+						gap={4}
 					>
-						<SimpleGrid
-							p={2}
-							borderEndWidth={1}
-							borderColor='blue.400'
-							flex={1}
-							columns={1}
-						>
-							<Text>
-								<b>De programa:</b>{' '}
-								{filteredAcademicProgressByProgram?.from_program_name}
+						{/* De Programa */}
+						<Flex align='center' gap={2} flex={1}>
+							<Box w={3} h={3} bg='blue.500' borderRadius='full' />
+							<Box>
+								<Text fontSize='xs' color='blue.600'>
+									De Programa
+								</Text>
+								<Text fontWeight='bold' fontSize='sm' color='blue.800'>
+									{filteredAcademicProgressByProgram?.from_program_name ||
+										'N/A'}
+								</Text>
+							</Box>
+						</Flex>
+
+						{/* Icono de transición */}
+						<Flex justify='center' align='center'>
+							<Text fontSize='lg' color='blue.400'>
+								→
 							</Text>
-							<Text>
-								<b>A programa:</b>{' '}
-								{filteredAcademicProgressByProgram?.to_program_name}
-							</Text>
-						</SimpleGrid>
+						</Flex>
+
+						{/* A Programa */}
+						<Flex align='center' gap={2} flex={1}>
+							<Box w={3} h={3} bg='green.400' borderRadius='full' />
+							<Box>
+								<Text fontSize='xs' color='green.600'>
+									A Programa
+								</Text>
+								<Text fontWeight='bold' fontSize='sm' color='green.800'>
+									{filteredAcademicProgressByProgram?.to_program_name || 'N/A'}
+								</Text>
+							</Box>
+						</Flex>
 					</Flex>
 				)}
 			</Stack>

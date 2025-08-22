@@ -12,6 +12,7 @@ import {
 	Flex,
 	VStack,
 	Heading,
+	Input,
 } from '@chakra-ui/react';
 import { Modal } from '@/components/ui';
 import {
@@ -21,42 +22,40 @@ import {
 	FiPlus,
 	FiX,
 } from 'react-icons/fi';
+import { useReadCoursesByPeriod } from '@/hooks/students';
 
-export const ConvalidacionForm = () => {
+export const ConvalidacionForm = ({ convalidationsData, dataStudent }) => {
 	const [open, setOpen] = useState(false);
 	const [selectedOldCourses, setSelectedOldCourses] = useState([]);
 	const [selectedNewCourse, setSelectedNewCourse] = useState(null);
 	const [convalidations, setConvalidations] = useState([]);
 	const [isPending, setIsPending] = useState(false);
+	const [searchTermOld, setSearchTermOld] = useState('');
+	const [searchTermNew, setSearchTermNew] = useState('');
 	const contentRef = useRef();
 
+	const { data: dataCoursesByPeriod } = useReadCoursesByPeriod(
+		dataStudent?.uuid,
+		convalidationsData?.from_program
+	);
+
 	// Mock data - replace with actual data from your API
-	const oldCoursesOptions = [
-		{
-			id: '1',
-			enrollment_id: 'enr_001',
-			course_group_id: 'cg_001',
-			credits_course: 3,
-			selected_at: '2023-01-15',
-			status: 'completed',
-			final_grade: 85,
-			status_enrollment: 'active',
-			course_name: 'Matemáticas I',
-			course_code: 'MAT101',
-		},
-		{
-			id: '2',
-			enrollment_id: 'enr_001',
-			course_group_id: 'cg_002',
-			credits_course: 4,
-			selected_at: '2023-01-15',
-			status: 'completed',
-			final_grade: 90,
-			status_enrollment: 'active',
-			course_name: 'Física General',
-			course_code: 'FIS101',
-		},
-	];
+	const oldCoursesOptions = (dataCoursesByPeriod?.data || []).flatMap(
+		(periodData) =>
+			periodData.courses.map((course) => ({
+				id: course.id_course_selection,
+				course_name: course.course_name,
+				course_code: course.course_code,
+				credits_course: course.credits,
+				final_grade: course.final_grade,
+				cycle: course.cycle,
+				group_section: course.group_section,
+				teacher: course.teacher,
+				is_repeated: course.is_repeated,
+				academic_period: periodData.academic_period, // <-- agregamos periodo
+				schedules: course.schedules,
+			}))
+	);
 
 	const newCoursesOptions = [
 		{
@@ -172,6 +171,12 @@ export const ConvalidacionForm = () => {
 		return sum + (diff > 0 ? diff : 0);
 	}, 0);
 
+	const normalizeString = (str) =>
+		str
+			.normalize('NFD') // descompone acentos
+			.replace(/[\u0300-\u036f]/g, '') // elimina marcas de acento
+			.toLowerCase();
+
 	return (
 		<Modal
 			title='Agregar convalidación'
@@ -199,18 +204,34 @@ export const ConvalidacionForm = () => {
 						<SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
 							{/* Cursos Anteriores */}
 							<Stack gap={3}>
+								<Text fontSize='md' fontWeight='bold' color='blue.700'>
+									{convalidationsData?.from_program_name}
+								</Text>
 								<Text fontSize='sm' fontWeight='medium' color='gray.700'>
 									Cursos Anteriores (Selecciona uno o más)
 								</Text>
 
-								<Box maxH='300px' overflowY='auto'>
+								<Input
+									placeholder='Buscar curso...'
+									size='sm'
+									value={searchTermOld}
+									onChange={(e) => setSearchTermOld(e.target.value)}
+								/>
+
+								<Box maxH='250px' overflowY='auto'>
 									<Stack gap={2}>
 										{oldCoursesOptions
 											.filter(
 												(course) =>
 													!convalidations.some((c) =>
 														c.course_selection_ids.includes(course.id)
-													) // excluir cursos ya agregados
+													) && // excluir cursos ya agregados
+													(normalizeString(course.course_name).includes(
+														normalizeString(searchTermOld)
+													) ||
+														normalizeString(course.course_code).includes(
+															normalizeString(searchTermOld)
+														)) // filtrar por búsqueda
 											)
 											.map((course) => {
 												const isSelected = selectedOldCourses.find(
@@ -237,7 +258,6 @@ export const ConvalidacionForm = () => {
 																]);
 															}
 														}}
-														
 														borderColor={isSelected ? 'blue.500' : 'gray.200'}
 														bg={isSelected ? 'blue.50' : 'white'}
 													>
@@ -254,8 +274,9 @@ export const ConvalidacionForm = () => {
 																	<Text fontSize='sm' color='gray.600'>
 																		{course.course_name}
 																	</Text>
-																	<Text fontSize='xs' color='gray.500'>
-																		Nota: {course.final_grade}
+																	<Text fontSize='sm' color='gray.500'>
+																		Nota: {course.final_grade} - Periodo:{' '}
+																		{course.academic_period}
 																	</Text>
 																</Box>
 																<Badge
@@ -278,73 +299,91 @@ export const ConvalidacionForm = () => {
 
 							{/* Curso Nuevo */}
 							<Stack gap={3}>
+								<Text fontSize='md' fontWeight='bold' color='blue.700'>
+									{convalidationsData?.to_program_name}
+								</Text>
 								<Text fontSize='sm' fontWeight='medium' color='gray.700'>
 									Curso del Programa Actual (Selecciona uno)
 								</Text>
 
+								<Input
+									placeholder='Buscar curso...'
+									size='sm'
+									value={searchTermNew}
+									onChange={(e) => setSearchTermNew(e.target.value)}
+								/>
+
 								<Box maxH='250px' overflowY='auto'>
 									<Stack gap={2}>
-										{newCoursesOptions.map((course) => {
-											const isSelected = selectedNewCourse?.id === course.id;
-											return (
-												<Card.Root
-													key={course.id}
-													variant='outline'
-													borderWidth='1px'
-													cursor='pointer'
-													onClick={() =>
-														setSelectedNewCourse(isSelected ? null : course)
-													}
-													_hover={{ borderColor: 'blue.200', bg: 'blue.50' }}
-													borderColor={isSelected ? 'blue.300' : 'gray.200'}
-													bg={isSelected ? 'blue.50' : 'white'}
-												>
-													<Card.Body>
-														<Stack
-															direction='row'
-															justify='space-between'
-															align='flex-start'
-														>
-															<Box>
-																<Stack
-																	direction='row'
-																	align='center'
-																	spacing={2}
-																>
-																	<Text fontWeight='medium' color='gray.900'>
-																		{course.course_code}
-																	</Text>
-																	{course.is_mandatory && (
-																		<Badge
-																			colorScheme='red'
-																			fontSize='xs'
-																			px={1.5}
-																		>
-																			Obligatorio
-																		</Badge>
-																	)}
-																</Stack>
-																<Text fontSize='sm' color='gray.600'>
-																	{course.course_name}
-																</Text>
-																<Text fontSize='xs' color='gray.500'>
-																	Ciclo {course.cycle}
-																</Text>
-															</Box>
-															<Badge
-																colorPalette='blue'
-																px={2}
-																py={1}
-																rounded='full'
-																fontSize='xs'
+										{newCoursesOptions
+											.filter((course) => {
+												const term = normalizeString(searchTermNew);
+												return (
+													normalizeString(course.course_name).includes(term) ||
+													normalizeString(course.course_code).includes(term)
+												);
+											})
+											.map((course) => {
+												const isSelected = selectedNewCourse?.id === course.id;
+												return (
+													<Card.Root
+														key={course.id}
+														variant='outline'
+														borderWidth='1px'
+														cursor='pointer'
+														onClick={() =>
+															setSelectedNewCourse(isSelected ? null : course)
+														}
+														_hover={{ borderColor: 'blue.200', bg: 'blue.50' }}
+														borderColor={isSelected ? 'blue.300' : 'gray.200'}
+														bg={isSelected ? 'blue.50' : 'white'}
+													>
+														<Card.Body>
+															<Stack
+																direction='row'
+																justify='space-between'
+																align='flex-start'
 															>
-																{course.credits} créditos
-															</Badge>
-														</Stack>
-													</Card.Body>
-												</Card.Root>
-											);
-										})}
+																<Box>
+																	<Stack
+																		direction='row'
+																		align='center'
+																		spacing={2}
+																	>
+																		<Text fontWeight='medium' color='gray.900'>
+																			{course.course_code}
+																		</Text>
+																		{course.is_mandatory && (
+																			<Badge
+																				colorScheme='red'
+																				fontSize='xs'
+																				px={1.5}
+																			>
+																				Obligatorio
+																			</Badge>
+																		)}
+																	</Stack>
+																	<Text fontSize='sm' color='gray.600'>
+																		{course.course_name}
+																	</Text>
+																	<Text fontSize='xs' color='gray.500'>
+																		Ciclo {course.cycle}
+																	</Text>
+																</Box>
+																<Badge
+																	colorPalette='blue'
+																	px={2}
+																	py={1}
+																	rounded='full'
+																	fontSize='xs'
+																>
+																	{course.credits} créditos
+																</Badge>
+															</Stack>
+														</Card.Body>
+													</Card.Root>
+												);
+											})}
 									</Stack>
 								</Box>
 							</Stack>
@@ -555,7 +594,6 @@ export const ConvalidacionForm = () => {
 };
 
 ConvalidacionForm.propTypes = {
-	fetchData: PropTypes.func,
-	oldCoursesOptions: PropTypes.array.isRequired,
-	newCoursesOptions: PropTypes.array.isRequired,
+	convalidationsData: PropTypes.array,
+	dataStudent: PropTypes.object,
 };
