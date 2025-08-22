@@ -5,6 +5,8 @@ import { FiDollarSign, FiInfo, FiPlus } from 'react-icons/fi';
 import { useCreateProgram } from '@/hooks';
 import PropTypes from 'prop-types';
 import { ReactSelect } from '@/components/select';
+import { uploadToS3 } from '@/utils/uploadToS3';
+import { CompactFileUpload } from '@/components/ui/CompactFileInput';
 
 export const AddProgram = ({
 	fetchData,
@@ -19,7 +21,7 @@ export const AddProgram = ({
 	const [open, setOpen] = useState(false);
 	const [errors, setErrors] = useState({});
 	const { mutate: register, isPending: loading } = useCreateProgram();
-
+	const [disableUpload, setDisableUpload] = useState(false);
 	const [programRequest, setProgramRequest] = useState({
 		name: '',
 		type: null,
@@ -30,6 +32,7 @@ export const AddProgram = ({
 		minPaymentPercentage: null,
 		maxInstallments: null,
 		total_program_credits: '',
+		essay_guide_path: '',
 		code: '',
 	});
 
@@ -67,6 +70,8 @@ export const AddProgram = ({
 				'El máximo de cuotas debe ser un número positivo';
 		}
 		if (!programRequest.code.trim()) newErrors.code = 'El código es requerido';
+		if (!programRequest.essay_guide_path.trim())
+			newErrors.essay_guide_path = 'La ruta de la guía de ensayo es requerida';
 
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
@@ -76,6 +81,17 @@ export const AddProgram = ({
 		e.preventDefault();
 
 		if (!validateFields()) return;
+
+		let pathDocUrl = programRequest?.essay_guide_path;
+		setDisableUpload(true);
+		// Solo subir a S3 si hay un archivo nuevo
+		if (programRequest?.essay_guide_path instanceof File) {
+			pathDocUrl = await uploadToS3(
+				programRequest.essay_guide_path,
+				'sga_uni/essays',
+				programRequest.name?.replace(/\s+/g, '_') || 'cv'
+			);
+		}
 
 		const payload = {
 			name: programRequest.name,
@@ -93,6 +109,7 @@ export const AddProgram = ({
 			max_installments: programRequest.maxInstallments,
 			total_program_credits: programRequest.total_program_credits,
 			code: programRequest.code,
+			essay_guide_path: pathDocUrl,
 		};
 
 		register(payload, {
@@ -103,14 +120,23 @@ export const AddProgram = ({
 				});
 				setOpen(false);
 				fetchData();
+				setDisableUpload(false);
 				setProgramRequest({
 					name: '',
 					type: null,
 					coordinator: null,
 					price_credit: '',
+					director: null,
+					postgraduate_focus: null,
+					minPaymentPercentage: null,
+					maxInstallments: null,
+					total_program_credits: '',
+					essay_guide_path: '',
+					code: '',
 				});
 			},
 			onError: (error) => {
+				setDisableUpload(false);
 				toaster.create({
 					title: error.message,
 					type: 'error',
@@ -135,7 +161,7 @@ export const AddProgram = ({
 				</Button>
 			}
 			onSave={handleSubmitData}
-			loading={loading}
+			loading={loading || disableUpload}
 			open={open}
 			onOpenChange={(e) => setOpen(e.open)}
 			contentRef={contentRef}
@@ -337,6 +363,33 @@ export const AddProgram = ({
 											total_program_credits: onlyInteger,
 										});
 									}}
+								/>
+							</Field>
+							<Field
+								label='Guía de Ensayo:'
+								errorText={errors.essay_guide_path}
+								invalid={!!errors.essay_guide_path}
+								required
+							>
+								<CompactFileUpload
+									name='essay_guide_path'
+									onChange={(file) =>
+										setProgramRequest({
+											...programRequest,
+											essay_guide_path: file,
+										})
+									}
+									defaultFile={
+										typeof programRequest.essay_guide_path === 'string'
+											? programRequest.essay_guide_path
+											: undefined
+									}
+									onClear={() =>
+										setProgramRequest({
+											...programRequest,
+											essay_guide_path: null,
+										})
+									}
 								/>
 							</Field>
 						</SimpleGrid>

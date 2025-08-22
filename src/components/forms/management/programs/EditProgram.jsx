@@ -6,6 +6,8 @@ import { HiPencil } from 'react-icons/hi2';
 import PropTypes from 'prop-types';
 import { ReactSelect } from '@/components/select';
 import { FiDollarSign, FiInfo } from 'react-icons/fi';
+import { uploadToS3 } from '@/utils/uploadToS3';
+import { CompactFileUpload } from '@/components/ui/CompactFileInput';
 
 export const EditProgram = ({
 	fetchData,
@@ -20,6 +22,7 @@ export const EditProgram = ({
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 	const [errors, setErrors] = useState({});
+	const [disableUpload, setDisableUpload] = useState(false);
 	const { mutateAsync: update, isPending: loadingUpdate } = useUpdateProgram();
 	const [programRequest, setProgramRequest] = useState({
 		name: item.name,
@@ -32,6 +35,7 @@ export const EditProgram = ({
 		maxInstallments: null,
 		total_program_credits: item.total_program_credits || '', // Aseguramos que sea un string
 		code: item.code || '',
+		essay_guide_path: item.essay_guide_path || '',
 	});
 
 	useEffect(() => {
@@ -51,6 +55,7 @@ export const EditProgram = ({
 				minPaymentPercentage: item.min_payment_percentage * 100,
 				maxInstallments: item.max_installments,
 				code: item.code,
+				essay_guide_path: item.essay_guide_path,
 			}));
 		}
 	}, [
@@ -96,12 +101,33 @@ export const EditProgram = ({
 		}
 
 		if (!programRequest.code.trim()) newErrors.code = 'El código es requerido';
+		if (!programRequest.essay_guide_path) {
+			newErrors.essay_guide_path = 'La guía de ensayo es requerida';
+		}
+
+		if (programRequest.essay_guide_path instanceof File) {
+			if (!['application/pdf'].includes(programRequest.essay_guide_path.type)) {
+				newErrors.essay_guide_path =
+					'Solo se permite PDF para la guía de ensayo';
+			}
+		}
+
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
 	};
 
 	const handleUpdate = async () => {
 		if (!validateFields()) return;
+		let pathDocUrl = programRequest?.essay_guide_path;
+		setDisableUpload(true);
+		// Solo subir a S3 si hay un archivo nuevo
+		if (programRequest?.essay_guide_path instanceof File) {
+			pathDocUrl = await uploadToS3(
+				programRequest.essay_guide_path,
+				'sga_uni/essays',
+				programRequest.name?.replace(/\s+/g, '_') || 'cv'
+			);
+		}
 		const payload = {
 			coordinator: Number(programRequest.coordinator.value),
 			name: programRequest.name,
@@ -118,6 +144,7 @@ export const EditProgram = ({
 			max_installments: programRequest.maxInstallments,
 			total_program_credits: programRequest.total_program_credits,
 			code: programRequest.code,
+			essay_guide_path: pathDocUrl,
 		};
 
 		await update(
@@ -130,8 +157,10 @@ export const EditProgram = ({
 					});
 					setOpen(false);
 					fetchData();
+					setDisableUpload(false);
 				},
 				onError: (error) => {
+					setDisableUpload(false);
 					toaster.create({
 						title: error.message,
 						type: 'error',
@@ -152,7 +181,7 @@ export const EditProgram = ({
 				</IconButton>
 			}
 			onSave={handleUpdate}
-			loading={loadingUpdate}
+			loading={loadingUpdate || disableUpload}
 			open={open}
 			onOpenChange={(e) => setOpen(e.open)}
 			contentRef={contentRef}
@@ -353,6 +382,33 @@ export const EditProgram = ({
 											total_program_credits: onlyInteger,
 										});
 									}}
+								/>
+							</Field>
+							<Field
+								label='Guía de Ensayo:'
+								errorText={errors.essay_guide_path}
+								invalid={!!errors.essay_guide_path}
+								required
+							>
+								<CompactFileUpload
+									name='essay_guide_path'
+									onChange={(file) =>
+										setProgramRequest({
+											...programRequest,
+											essay_guide_path: file,
+										})
+									}
+									defaultFile={
+										typeof programRequest.essay_guide_path === 'string'
+											? programRequest.essay_guide_path
+											: undefined
+									}
+									onClear={() =>
+										setProgramRequest({
+											...programRequest,
+											essay_guide_path: null,
+										})
+									}
 								/>
 							</Field>
 						</SimpleGrid>
