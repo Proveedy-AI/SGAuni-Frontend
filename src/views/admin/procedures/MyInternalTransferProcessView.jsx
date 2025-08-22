@@ -23,36 +23,36 @@ import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 export const MyInternalTransferProcessView = () => {
 	const { data: dataUserLogged, isLoading: isLoadingUserLogged } =
 		useReadUserLogged();
-	const { data: dataMyRequests } = useReadMyTransferRequest();
+	const { data: dataMyRequests, isLoading: isLoadingMyRequests } = useReadMyTransferRequest();
 	console.log('my-requests', dataMyRequests);
 
 	//1: Borrador, 2: En revisión, 3: Rechazado, 4: Aprobado, 5: Completado
-	const localTransferRequests = [
-		{
-			id: 1,
-			program_id: 1,
-			program_name_from: 'Maestría en Contabilidad',
-			program_destination_id: 2,
-			program_destination_name: 'Maestria en Administración',
-			document_path: 'path/to/document1.pdf',
-			created_at: '2025-01-15T10:30:00Z',
-			status: 3,
-			status_display: 'Rechazado',
-		},
-		{
-			id: 2,
-			program_id: 2,
-			program_name_from: 'Maestria en Administración',
-			program_destination_id: 3,
-			program_destination_name: 'Maestria en Data Science',
-			document_path: 'path/to/document2.pdf',
-			created_at: '2025-02-10T14:20:00Z',
-			status: 3,
-			status_display: 'Rechazado',
-		},
-	];
+	// const localTransferRequests = [
+	// 	{
+	// 		id: 1,
+	// 		program_id: 1,
+	// 		program_name_from: 'Maestría en Contabilidad',
+	// 		program_destination_id: 2,
+	// 		program_destination_name: 'Maestria en Administración',
+	// 		document_path: 'path/to/document1.pdf',
+	// 		created_at: '2025-01-15T10:30:00Z',
+	// 		status: 3,
+	// 		status_display: 'Rechazado',
+	// 	},
+	// 	{
+	// 		id: 2,
+	// 		program_id: 2,
+	// 		program_name_from: 'Maestria en Administración',
+	// 		program_destination_id: 3,
+	// 		program_destination_name: 'Maestria en Data Science',
+	// 		document_path: 'path/to/document2.pdf',
+	// 		created_at: '2025-02-10T14:20:00Z',
+	// 		status: 3,
+	// 		status_display: 'Rechazado',
+	// 	},
+	// ];
 
-	const isEjecutable = !localTransferRequests.some((req) => req.status === 1);
+	const isEjecutable = !isLoadingMyRequests && !dataMyRequests?.some((req) => req.status === 1);
 
 	const { data: dataMyPrograms } = useReadMyPrograms();
 	console.log('dataMyPrograms', dataMyPrograms);
@@ -75,13 +75,13 @@ export const MyInternalTransferProcessView = () => {
 			? statusColor.find((color) => color.id === status)?.color
 			: 'gray.800';
 
-	const formatDate = (dateString) => {
-		return new Date(dateString).toLocaleDateString('es-ES', {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric',
-		});
-	};
+	// const formatDate = (dateString) => {
+	// 	return new Date(dateString).toLocaleDateString('es-ES', {
+	// 		year: 'numeric',
+	// 		month: 'short',
+	// 		day: 'numeric',
+	// 	});
+	// };
 
 	return (
 		<Box spaceY='5' p={{ base: 4, md: 6 }} maxW='8xl' mx='auto'>
@@ -97,13 +97,13 @@ export const MyInternalTransferProcessView = () => {
 				<Heading size='lg' color='gray.800'>
 					Mis Solicitudes de Traslado
 				</Heading>
-				{isEjecutable && (
-					<AddTransferRequestModal
-						user={dataUserLogged}
-						dataMyPrograms={dataMyPrograms}
-						dataPrograms={dataPrograms}
-					/>
-				)}
+				<AddTransferRequestModal
+          user={dataUserLogged}
+          available={isEjecutable}
+          loading={isLoadingUserLogged}
+          dataMyPrograms={dataMyPrograms}
+          dataPrograms={dataPrograms}
+        />
 			</Flex>
 
 			{/* Información de estado */}
@@ -132,11 +132,11 @@ export const MyInternalTransferProcessView = () => {
 			<Card.Root>
 				<Card.Header>
 					<Card.Title>
-						Historial de Solicitudes ({localTransferRequests.length})
+						Historial de Solicitudes ({dataMyRequests?.length})
 					</Card.Title>
 				</Card.Header>
 				<Card.Body p={0}>
-					{localTransferRequests.length === 0 ? (
+					{dataMyRequests?.length === 0 ? (
 						<Box p={8} textAlign='center'>
 							<FiFileText
 								size={48}
@@ -164,9 +164,9 @@ export const MyInternalTransferProcessView = () => {
 										<Table.ColumnHeader fontWeight='semibold' color='gray.700'>
 											Programa Destino
 										</Table.ColumnHeader>
-										<Table.ColumnHeader fontWeight='semibold' color='gray.700'>
+										{/* <Table.ColumnHeader fontWeight='semibold' color='gray.700'>
 											Fecha Solicitud
-										</Table.ColumnHeader>
+										</Table.ColumnHeader> */}
 										<Table.ColumnHeader fontWeight='semibold' color='gray.700'>
 											Estado
 										</Table.ColumnHeader>
@@ -176,24 +176,24 @@ export const MyInternalTransferProcessView = () => {
 									</Table.Row>
 								</Table.Header>
 								<Table.Body>
-									{localTransferRequests.map((request, index) => (
+									{dataMyRequests?.map((request, index) => (
 										<Table.Row key={request.id} _hover={{ bg: 'gray.50' }}>
 											<Table.Cell fontWeight='medium'>{index + 1}</Table.Cell>
 											<Table.Cell>
 												<Text fontSize='sm' fontWeight='medium'>
-													{request.program_name_from}
+													{request.from_program_name}
 												</Text>
 											</Table.Cell>
 											<Table.Cell>
 												<Text fontSize='sm' fontWeight='medium'>
-													{request.program_destination_name}
+													{request.to_program_name}
 												</Text>
 											</Table.Cell>
-											<Table.Cell>
+											{/* <Table.Cell>
 												<Text fontSize='sm' color='gray.600'>
 													{formatDate(request.created_at)}
 												</Text>
-											</Table.Cell>
+											</Table.Cell> */}
 											<Table.Cell>
 												<Badge
 													bg={getStatusBg(request.status)}
@@ -206,7 +206,7 @@ export const MyInternalTransferProcessView = () => {
 											<Table.Cell>
 												<Group>
 													<PreviewDocumentRequestModal
-														documentPath={request.document_path}
+														documentPath={request.request_document_url}
 													/>
 												</Group>
 											</Table.Cell>

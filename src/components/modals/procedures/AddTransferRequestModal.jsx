@@ -8,7 +8,7 @@ import { useRef, useState } from "react";
 import { FiPlus, FiDownload, FiFileText } from "react-icons/fi";
 import { uploadToS3 } from '@/utils/uploadToS3';
 
-export const AddTransferRequestModal = ({ user, dataMyPrograms, dataPrograms }) => {
+export const AddTransferRequestModal = ({ user, available, loading, dataMyPrograms, dataPrograms }) => {
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
   const [errors, setErrors] = useState({});
@@ -144,6 +144,7 @@ export const AddTransferRequestModal = ({ user, dataMyPrograms, dataPrograms }) 
           color='white'
           size='xs'
           w={{ base: 'full', sm: 'auto' }}
+          disabled={!available}
         >
           <FiPlus /> Mandar solicitud
         </Button>
@@ -222,6 +223,7 @@ export const AddTransferRequestModal = ({ user, dataMyPrograms, dataPrograms }) 
             placeholder="Seleccione el programa al que desea trasladarse"
             size="sm"
             isSearchable
+            loading={loading}
           />
         </Field>
 
@@ -254,6 +256,8 @@ export const AddTransferRequestModal = ({ user, dataMyPrograms, dataPrograms }) 
 
 AddTransferRequestModal.propTypes = {
   user: PropTypes.object,
+  available: PropTypes.bool,
+  loading: PropTypes.bool,
   dataMyPrograms: PropTypes.array,
   dataPrograms: PropTypes.object,
 };
