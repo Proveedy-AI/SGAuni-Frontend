@@ -136,7 +136,9 @@ export const LoadExcelValidationsModal = ({ fetchData }) => {
 					<VStack align='start' spacing={1}>
 						<Text>• Formato requerido: .xlsx o .xls</Text>
 						<Text>• Columnas: Descargar Guía de formato correcto</Text>
-						<Text>• Primera fila debe contener los encabezados</Text>
+            <Text>• Primera fila debe contener el título del reporte</Text>
+						<Text>• Segunda fila debe contener los encabezados</Text>
+						<Text>• Tercera fila en adelante debe contener los datos</Text>
 					</VStack>
 				</Alert>
 

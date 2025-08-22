@@ -42,7 +42,7 @@ const Row = memo(({ program, item, startIndex, index, sortConfig, data, permissi
           : startIndex + index + 1}
       </Table.Cell>
       <Table.Cell fontWeight="medium">{program?.label}</Table.Cell>
-      <Table.Cell>{item.course_name}</Table.Cell>
+      <Table.Cell>{item.course}</Table.Cell>
       <Table.Cell textAlign="center">{item.cycle}</Table.Cell>
       <Table.Cell textAlign="center">{item.credits}</Table.Cell>
       <Table.Cell textAlign="center">
@@ -79,6 +79,8 @@ export const EnrolledCourseGroupsTable = ({
   permissions,
   isLoading,
 }) => {
+  console.log('proma', programOptions)
+  console.log('data', data)
   const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
   const [currentPage, setCurrentPage] = useState(1);
   const startIndex = (currentPage - 1) * pageSize;

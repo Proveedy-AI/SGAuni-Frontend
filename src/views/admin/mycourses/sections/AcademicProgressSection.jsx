@@ -14,9 +14,9 @@ import {
 import { LuGoal } from 'react-icons/lu';
 
 export const AcademicProgressSection = ({ academicProgress, isLoading }) => {
-	if (isLoading || !academicProgress) {
+	if (isLoading) {
 		return (
-			<Card.Root mx='auto' bg='white' borderRadius='lg'>
+			<Card.Root mx='auto' bg='white' borderRadius='lg' w="full">
 				<Card.Header
 					py={4}
 					bg='blue.50'
@@ -37,6 +37,30 @@ export const AcademicProgressSection = ({ academicProgress, isLoading }) => {
 			</Card.Root>
 		);
 	}
+
+  if (!isLoading && !academicProgress) {
+    return (
+      <Card.Root mx='auto' bg='white' borderRadius='lg' w="full">
+        <Card.Header
+          py={4}
+          bg='blue.50'
+          borderBottom='1px solid'
+          borderColor='blue.200'
+        >
+          <Flex align='center' gapX={3}>
+            <Icon as={FiBookOpen} boxSize={5} />
+            <Text fontSize='lg' fontWeight='bold' color='blue.700'>
+              Resumen Académico
+            </Text>
+          </Flex>
+        </Card.Header>
+        <Card.Body p={6}>
+          <Text color='gray.500'>No se encontró información académica.</Text>
+        </Card.Body>
+        <Card.Footer></Card.Footer>
+      </Card.Root>
+    );
+  }
 
 	const { credits, averages, milestones } = academicProgress;
 
@@ -145,7 +169,7 @@ export const AcademicProgressSection = ({ academicProgress, isLoading }) => {
                 px={4}
                 boxSize={7}
               >
-                {averages.cumulative_weighted_average}
+                {averages.cumulative_weighted_average || 0}
               </Badge>
             </HStack>
             <HStack justify='space-between' align='center' py={1}>
@@ -160,7 +184,7 @@ export const AcademicProgressSection = ({ academicProgress, isLoading }) => {
                 px={4}
                 boxSize={7}
               >
-                {averages.current_cycle_average}
+                {averages.current_cycle_average || 0}
               </Badge>
             </HStack>
           </Box>

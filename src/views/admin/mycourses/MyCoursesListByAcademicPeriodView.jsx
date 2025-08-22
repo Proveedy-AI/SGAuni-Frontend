@@ -15,7 +15,6 @@ import {
 	Tabs,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router';
-import { useReadMyPrograms } from '@/hooks/person/useReadMyPrograms';
 import { useState, useEffect } from 'react';
 import { ReactSelect } from '@/components';
 import {
@@ -29,20 +28,19 @@ export const MyCoursesListByAcademicPeriodView = () => {
 	const { data: dataUser, isLoading } = useReadUserLogged();
 	const studentUUID = dataUser?.student?.uuid;
 
-	const { data: dataMyPrograms, isLoading: isLoadingMyPrograms } =
-		useReadMyPrograms();
-
-	const MyProgramsOptions = dataMyPrograms?.map((program) => ({
-		value: program.program_id,
-		label: program.program_name,
-	}));
+	const MyProgramsOptions = dataUser?.student?.admission_programs?.map(
+		(program) => ({
+			value: program.program,
+			label: program.program_name,
+		})
+	);
 
 	const [programEnrolled, setProgramEnrolled] = useState(null);
 	const [tab, setTab] = useState('courses');
 
 	useEffect(() => {
 		if (MyProgramsOptions && !programEnrolled) {
-			setProgramEnrolled(MyProgramsOptions[0]);
+			setProgramEnrolled(MyProgramsOptions[MyProgramsOptions.length - 1]);
 		}
 	}, [MyProgramsOptions, programEnrolled]);
 
@@ -54,8 +52,9 @@ export const MyCoursesListByAcademicPeriodView = () => {
 	const { data: dataCoursesByPeriod, isLoading: isLoadingCoursesByPeriod } =
 		useReadCoursesByPeriod(studentUUID, programEnrolled?.value);
 
-	const isDownloadable = !isLoadingAcademicTranscript && !isLoading;
-	dataCoursesByPeriod?.total_courses > 0;
+	const isDownloadable =
+		!isLoadingAcademicTranscript &&
+		dataCoursesByPeriod?.total_courses > 0
 
 	const navigate = useNavigate();
 
@@ -104,26 +103,12 @@ export const MyCoursesListByAcademicPeriodView = () => {
 							fontSize='sm'
 						>
 							<ReactSelect
-								isLoading={isLoadingMyPrograms}
+								isLoading={isLoading}
 								options={MyProgramsOptions}
 								value={programEnrolled}
 								onChange={setProgramEnrolled}
 							/>
 						</Box>
-					</Flex>
-					<Flex
-						w='fit'
-						bg='purple.200'
-						py={1}
-						px={4}
-						borderRadius='md'
-						alignItems='center'
-						fontSize='md'
-					>
-						<Text fontWeight='bold' color='purple.700'>
-							Periodo Académico:
-						</Text>
-						<Text pl={4}>Ciclo {'string'}</Text>
 					</Flex>
 				</Flex>
 				<Flex
@@ -168,7 +153,13 @@ export const MyCoursesListByAcademicPeriodView = () => {
 				variant='plain'
 				my={3}
 			>
-				<Flex justify='space-between' align='center'>
+				<Flex
+					overflow='hidden'
+					direction={{ base: 'column', md: 'row' }}
+					justify='space-between'
+					align={{ base: 'flex-start', md: 'center' }}
+					gap={2}
+				>
 					<Tabs.List bg='blue.100' rounded='l3' p='1'>
 						<Tabs.Trigger color='blue.600' fontSize={'sm'} value='courses'>
 							Cursos
@@ -211,9 +202,7 @@ export const MyCoursesListByAcademicPeriodView = () => {
 					/>
 				</Tabs.Content>
 				<Tabs.Content value='grades-record'>
-					<GradesRecordSection
-						dataCoursesByPeriod={dataCoursesByPeriod}
-					/>
+					<GradesRecordSection dataCoursesByPeriod={dataCoursesByPeriod} />
 				</Tabs.Content>
 			</Tabs.Root>
 		</Box>

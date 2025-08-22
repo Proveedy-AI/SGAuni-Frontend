@@ -50,7 +50,16 @@ export const UpdateStatusRequestModal = ({ data, fetchData }) => {
     
     const payload = {
       status: selectedStatus,
-      comment: comments ? comments : "Aprobado"
+      comment: comments ? comments : "Aprobado",
+    }
+
+    if (selectedStatus === 4) {
+      payload.documents = [
+        {
+          document_name: `SOLICITUD DE TRASLADO - ${data?.student_full_name.toUpperCase()}`,
+          document_url: data?.request_document_url
+        }
+      ];
     }
 
     update({ id: data.id, payload }, {
@@ -70,6 +79,8 @@ export const UpdateStatusRequestModal = ({ data, fetchData }) => {
       }
     })
   };
+
+  const isCompleted = selectedStatus && readInstructions;
 
   const handleOpenChange = (e) => {
     setOpen(e.open);
@@ -104,6 +115,7 @@ export const UpdateStatusRequestModal = ({ data, fetchData }) => {
               size='xs'
               colorPalette='green'
               css={{ _icon: { width: '5', height: '5' } }}
+              disabled={data.status !== 3 || data.status !== 4}
             >
               <FiCheckCircle />
             </IconButton>
@@ -115,6 +127,7 @@ export const UpdateStatusRequestModal = ({ data, fetchData }) => {
       open={open}
       onOpenChange={handleOpenChange}
       contentRef={contentRef}
+      disabledSave={!isCompleted}
       onSave={handleSubmitStatus}
       hiddenFooter={!selectedStatus}
       saveButtonProps={{ disabled: !readInstructions || isPending }}

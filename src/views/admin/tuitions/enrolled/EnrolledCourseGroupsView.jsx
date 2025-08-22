@@ -107,6 +107,8 @@ export const EnrolledCourseGroupsView = () => {
 	const decoded = decodeURIComponent(id);
 	const decrypted = Encryptor.decrypt(decoded);
 
+  const { data: dataEnrollment, isLoading: isLoadingEnrollment } = useReadEnrollmentById(decrypted);
+
 	const { data: profile } = useReadUserLogged();
 	const roles = profile?.roles || [];
 	const permissions = roles
@@ -121,11 +123,25 @@ export const EnrolledCourseGroupsView = () => {
 		refetch: fetchCourseGroups,
 		isLoading,
 	} = useReadEnrollmentProgramCourses({}, {});
+  console.log(dataCourseGroups)
+
+  let queryParams = {
+    enrollment_period: decrypted
+  };
+
+  /*
+  if (permiso) {
+    queryParams['coordinator'] = 
+  }
+    if (permiso) {
+    queryParams['director'] = 
+  }
+  */
 
 	const {
 		data: dataEnrollmentProgram,
 		isLoading: isLoadingEnrollmentProgram, //<-- Para el ReactSelect
-	} = useReadEnrollmentsPrograms(
+	} = useReadEnrollmentsPrograms( //<- no de todos
 		{ enrollment_period: decrypted },
 		{ enabled: !!decrypted }
 	);
@@ -145,13 +161,13 @@ export const EnrolledCourseGroupsView = () => {
 
 		console.log(allCourseGroups)
 	const filteredCourseGroupsByEnrollmentPeriod =
-		allCourseGroups.filter((group) => group.enrollment_period === decrypted) ??
+		allCourseGroups.filter((group) => group.enrollment_period === dataEnrollment?.academic_period_name) ??
 		[];
 
 	const filteredCourseGroups = filteredCourseGroupsByEnrollmentPeriod.filter(
 		(group) =>
 			(!searchName ||
-				group.course_group_name
+				group.course
 					.toLowerCase()
 					.includes(searchName.toLowerCase())) &&
 			(!selectedProgram || group.enrollment_program === selectedProgram?.value)
