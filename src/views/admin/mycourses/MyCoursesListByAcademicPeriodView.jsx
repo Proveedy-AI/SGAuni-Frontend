@@ -7,7 +7,6 @@ import {
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import {
 	Box,
-	Heading,
 	Text,
 	Stack,
 	Flex,
@@ -77,12 +76,6 @@ export const MyCoursesListByAcademicPeriodView = () => {
 
 	return (
 		<Box p={6} maxW='full' mx='auto'>
-			<Stack>
-				<Heading my={4} fontSize='2xl' fontWeight='bold' color='gray.500'>
-					Mis Cursos
-				</Heading>
-			</Stack>
-
 			<Stack bg='blue.100' p={4} borderRadius={6} overflow='hidden'>
 				<Flex gap={4} direction={{ base: 'column', lg: 'row' }}>
 					<Flex align='center' gap={3} flex={1}>
