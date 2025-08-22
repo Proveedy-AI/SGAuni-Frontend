@@ -42,7 +42,7 @@ export const StudentDetailView = () => {
 		dataStudent?.person
 	);
 
-	const { data: dataEnrollments, isLoading: isLoadingEnrollment } =
+	const { data: dataEnrollments, isLoading: isLoadingEnrollment, refetch: refetchEnrollments } =
 		useReadEnrollmentsList({ student: decrypted });
 
 	const myEnrollment = dataEnrollments?.results || [];
@@ -214,6 +214,7 @@ export const StudentDetailView = () => {
 								dataStudent={dataStudent}
 								myEnrollment={myEnrollment}
 								isLoadingEnrollment={isLoadingEnrollment}
+								fetchData={refetchEnrollments}
 							/>
 						</Tabs.Content>
 						<Tabs.Content value={3}>

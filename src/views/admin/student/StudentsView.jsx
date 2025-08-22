@@ -113,7 +113,7 @@ export const StudentsView = () => {
 		const year = currentYear - i;
 		return { label: year.toString(), value: year.toString() };
 	});
-console.log(yearOptions)
+
 	return (
 		<Stack gap={4}>
 			<Card.Root>

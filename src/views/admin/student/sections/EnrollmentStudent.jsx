@@ -19,6 +19,7 @@ export const EnrollmentStudent = ({
 	dataStudent,
 	myEnrollment,
 	isLoadingEnrollment,
+	fetchData,
 }) => {
 	const [selectProgram, setSelectProgram] = useState(null);
 
@@ -91,6 +92,7 @@ export const EnrollmentStudent = ({
 							<AddEnrollmentStudentForm
 								dataStudent={dataStudent}
 								selectProgram={selectProgram}
+								fetchData={fetchData}
 							/>
 						</Stack>
 					</Stack>
@@ -112,4 +114,5 @@ EnrollmentStudent.propTypes = {
 	myEnrollment: PropTypes.array.isRequired,
 	isLoadingEnrollment: PropTypes.bool.isRequired,
 	dataStudent: PropTypes.object.isRequired,
+	fetchData: PropTypes.func,
 };
