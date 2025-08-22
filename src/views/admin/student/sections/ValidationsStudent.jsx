@@ -8,10 +8,12 @@ import { ConvalidacionForm } from '../modals/ConvalidacionForm';
 
 export const ValidationsStudent = ({ dataStudent }) => {
 	const [selectProgram, setSelectProgram] = useState(null);
-	const { data: dataAcademicTransfers } = useReadTransferRequest({
-		status: 4,
-		student: dataStudent?.id,
-	});
+	const { data: dataAcademicTransfers, refetch: refetchAcademicTransfers } =
+		useReadTransferRequest({
+			to_program: selectProgram?.value,
+			status: 4,
+			student: dataStudent?.id,
+		});
 
 	const ProgramsOptions = useMemo(
 		() =>
@@ -32,13 +34,7 @@ export const ValidationsStudent = ({ dataStudent }) => {
 		}
 	}, [ProgramsOptions, selectProgram]);
 
-	const filteredAcademicProgressByProgram =
-		dataAcademicTransfers?.results?.find(
-			(data) =>
-				data?.to_program === selectProgram?.value &&
-				data?.student === dataStudent?.id &&
-				data?.status === 4
-		);
+	const academicProgress = dataAcademicTransfers?.results?.[0] ?? null;
 
 	return (
 		<Stack gap={4}>
@@ -73,14 +69,15 @@ export const ValidationsStudent = ({ dataStudent }) => {
 							/>
 						</Box>
 					</Flex>
-					{filteredAcademicProgressByProgram && (
+					{academicProgress && (
 						<ConvalidacionForm
-							convalidationsData={filteredAcademicProgressByProgram}
+							convalidationsData={academicProgress}
 							dataStudent={dataStudent}
+							fetchData={refetchAcademicTransfers}
 						/>
 					)}
 				</Flex>
-				{filteredAcademicProgressByProgram && (
+				{academicProgress && (
 					<Flex
 						direction={{ base: 'column', md: 'row' }}
 						justify='space-between'
@@ -100,8 +97,7 @@ export const ValidationsStudent = ({ dataStudent }) => {
 									De Programa
 								</Text>
 								<Text fontWeight='bold' fontSize='sm' color='blue.800'>
-									{filteredAcademicProgressByProgram?.from_program_name ||
-										'N/A'}
+									{academicProgress?.from_program_name || 'N/A'}
 								</Text>
 							</Box>
 						</Flex>
@@ -121,16 +117,14 @@ export const ValidationsStudent = ({ dataStudent }) => {
 									A Programa
 								</Text>
 								<Text fontWeight='bold' fontSize='sm' color='green.800'>
-									{filteredAcademicProgressByProgram?.to_program_name || 'N/A'}
+									{academicProgress?.to_program_name || 'N/A'}
 								</Text>
 							</Box>
 						</Flex>
 					</Flex>
 				)}
 			</Stack>
-			<ConvalidacionesList
-				filteredAcademicProgressByProgram={filteredAcademicProgressByProgram}
-			/>
+			<ConvalidacionesList convalidationsData={academicProgress} />
 		</Stack>
 	);
 };

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
-import { Badge, Box, Table } from '@chakra-ui/react';
+import { Badge, Box, HStack, Table } from '@chakra-ui/react';
 import { Pagination } from '@/components/ui';
 
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
@@ -9,9 +9,10 @@ import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
 import { CoursesSelections } from '@/views/admin/student/modals/CoursesSelections';
 import { useReadCoursesByPeriod } from '@/hooks/students';
+import { UpdateEnrollmentStudentForm } from '@/views/admin/student/modals/UpdateEnrollmentStudentForm';
 
 const Row = memo(
-	({ item, startIndex, index, sortConfig, data, dataStudent }) => {
+	({ item, startIndex, index, sortConfig, data, dataStudent, fetchData }) => {
 		const statusDisplay = [
 			{ id: 7, label: 'No Matriculado', color: 'gray' },
 			{ id: 1, label: 'Pago Pendiente', color: 'orange' },
@@ -36,7 +37,7 @@ const Row = memo(
 				entry.academic_period === item?.program_period &&
 				normalize(entry.academic_period) === normalize(item?.program_period)
 		);
-		console.log(dataStudent);
+
 		const matchStatus = statusDisplay.find(
 			(status) => status.id === item.status
 		);
@@ -71,7 +72,10 @@ const Row = memo(
 					</Badge>
 				</Table.Cell>
 				<Table.Cell>
-					<CoursesSelections dataCoursesByPeriod={matchingPeriod} />
+					<HStack>
+						<UpdateEnrollmentStudentForm data={item} fetchData={fetchData} />
+						<CoursesSelections dataCoursesByPeriod={matchingPeriod} />
+					</HStack>
 				</Table.Cell>
 			</Table.Row>
 		);
@@ -125,7 +129,7 @@ export const StudentTuitionTable = ({
 								/>
 							</Table.ColumnHeader>
 
-							<Table.ColumnHeader w='20%'>
+							<Table.ColumnHeader w='15%'>
 								<SortableHeader
 									label='Periodo'
 									columnKey='program_period'
@@ -142,7 +146,7 @@ export const StudentTuitionTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='15%'>
+							<Table.ColumnHeader w='10%'>
 								<SortableHeader
 									label='Primera Inscripción'
 									columnKey='is_first_enrollment'
@@ -150,7 +154,7 @@ export const StudentTuitionTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='20%'>
+							<Table.ColumnHeader w='15%'>
 								<SortableHeader
 									label='Estado'
 									columnKey='status_display'

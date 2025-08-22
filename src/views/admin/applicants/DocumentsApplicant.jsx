@@ -8,8 +8,7 @@ import {
 	Text,
 } from '@chakra-ui/react';
 import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
-import { useEffect, useState } from 'react';
-import { RequiredDocumentsSections } from '@/data';
+import { useEffect, useMemo, useState } from 'react';
 import { toaster, Tooltip } from '@/components/ui';
 import { FiHelpCircle } from 'react-icons/fi';
 import { CompactFileUpload } from '@/components/ui/CompactFileInput';
@@ -38,83 +37,109 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 		}));
 	};
 
-	const allDocuments = [
-		...RequiredDocumentsSections.leftColumn,
-		...RequiredDocumentsSections.rightColumn,
-	];
+	const documentRulesMap = useMemo(() => {
+		if (!item?.rules) return {};
+		return item.rules.reduce((acc, rule) => {
+			acc[rule.id] = rule; // id === key del documento
+			return acc;
+		}, {});
+	}, [item]);
+	const leftColumnIds = [1, 3, 4, 5, 6, 7, 15]; // 👈 reglas que deben ir a la derecha
 
-	const typeDocumentToKeyMap = allDocuments.reduce((acc, doc) => {
-		if (doc.type_document != null && doc.key != null) {
-			acc[doc.type_document] = doc.key;
-		}
-		return acc;
-	}, {});
+	const documentConfig = {
+		3: {
+			tooltip: 'Copia Simple, 6 meses para regularizar',
+		},
+		6: { tooltip: '(Concepto de carpeta)' },
+		7: { tooltip: 'Copia Simple, adverso y reverso (pdf)' },
+		14: {
+			tooltip:
+				'Asignaturas aprobadas (visadas y selladas) adjuntadas en un .pdf',
+		},
+		15: { tooltip: 'Copia Simple, 18 meses para regularizar' },
 
-	const documentRulesMap = item?.rules?.reduce((acc, rule) => {
-		acc[rule.id] = rule;
-		return acc;
-	}, {});
-
-	const shouldShowDocument = (doc) => {
-		if (doc.key != null) {
-			const rule = documentRulesMap?.[doc.key];
-			return rule?.is_visible ?? false;
-		}
-		return true;
+		// puedes seguir agregando aquí más ids...
 	};
+	const { leftColumnDocs, rightColumnDocs } = useMemo(() => {
+		const visible = Object.values(documentRulesMap).filter(
+			(rule) => rule.is_visible
+		);
+
+		const rightColumn = visible.filter(
+			(rule) => !leftColumnIds.includes(rule.id)
+		);
+		const leftColumn = visible.filter((rule) =>
+			leftColumnIds.includes(rule.id)
+		);
+
+		return {
+			leftColumnDocs: leftColumn,
+			rightColumnDocs: rightColumn,
+		};
+	}, [documentRulesMap]);
+
+	const typeDocumentToKeyMap = useMemo(() => {
+		if (!item?.rules) return {};
+		return item.rules.reduce((acc, rule) => {
+			if (rule.document_type != null) {
+				// usamos el id de la regla como "key"
+				acc[rule.document_type] = rule.id;
+			}
+			return acc;
+		}, {});
+	}, [item?.rules]);
 
 	const { mutate: create } = useCreateDocuments();
-	const { data: dataDocuments } = useReadDocuments({ application: item.id });
+	const { data: dataDocuments, refetch } = useReadDocuments({ application: item.id });
 
 	useEffect(() => {
-		if (!dataDocuments?.results || !item) return;
+		if (!dataDocuments?.results || !item?.rules) return;
 
 		const mappedDocs = {};
 
 		dataDocuments.results.forEach((doc) => {
+			// ahora el key es el id de la regla asociada
 			const key = typeDocumentToKeyMap[doc.type_document];
 			if (!key) return;
 
 			mappedDocs[key] = {
 				file: doc.file_path,
-				initialFilePath: doc.file_path, // ✅ aquí
+				initialFilePath: doc.file_path,
 				description: doc.description_display,
 				id: doc.id,
 			};
 		});
 
-		setDocumentsData((prev) => ({
-			...prev,
-			...mappedDocs,
-		}));
+		// ⚠️ solo setear si hay cambios reales
+		setDocumentsData((prev) => {
+			const isEqual =
+				JSON.stringify(prev) === JSON.stringify({ ...prev, ...mappedDocs });
+			if (isEqual) return prev;
+			return { ...prev, ...mappedDocs };
+		});
 	}, [dataDocuments]);
 
 	useEffect(() => {
-		if (!item || !documentRulesMap) return;
+		if (!item?.rules) return;
 
-		const excludedKeys = [6, 7]; // los que no quieres considerar
+		const excludedIds = [3, 15];
 
-		const allDocs = [
-			...RequiredDocumentsSections.leftColumn,
-			...RequiredDocumentsSections.rightColumn,
-		].filter((doc) => !excludedKeys.includes(doc.key));
+		const missing = item.rules
+			.filter((rule) => !excludedIds.includes(rule.id)) // 👈 excluye 3 y 15
+			.some((rule) => {
+				if (!rule.is_required) return false;
+				const file = documentsData?.[rule.id]?.file;
+				return !file;
+			});
 
-		const missing = allDocs.some((doc) => {
-			const rule = doc.key ? documentRulesMap?.[doc.key] : null;
-			const isRequired = rule?.is_required ?? false;
-			if (!isRequired) return false;
-			const file = documentsData?.[doc.key]?.file;
-			return !file;
-		});
-
-		onValidationChange?.(!missing); // true si está todo ok
-	}, [documentsData, item, documentRulesMap]);
+		onValidationChange?.(!missing);
+	}, [documentsData, item, onValidationChange]);
 
 	const handleSubmitDocuments = async () => {
 		const applicationId = item?.id;
 		if (!applicationId) {
 			toaster.create({
-				title: 'No se encontro el identificador de la postulación',
+				title: 'No se encontró el identificador de la postulación',
 				status: 'warning',
 			});
 			return;
@@ -123,20 +148,16 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 		setIsLoading(true);
 		const missingRequiredDocs = [];
 
-		const allDocs = [
-			...RequiredDocumentsSections.leftColumn,
-			...RequiredDocumentsSections.rightColumn,
-		];
+		// ✅ Combinar docs de ambas columnas
+		const allDocs = [...leftColumnDocs, ...rightColumnDocs];
 
-		for (const doc of allDocs) {
-			const rule = doc.key ? documentRulesMap?.[doc.key] : null;
-
+		// 1️⃣ Validación de requeridos
+		for (const rule of allDocs) {
 			const isRequired = rule?.is_required ?? false;
-
-			const uploadedFile = documentsData[doc.key]?.file;
+			const uploadedFile = documentsData?.[rule.id]?.file;
 
 			if (isRequired && !uploadedFile) {
-				missingRequiredDocs.push(doc.label);
+				missingRequiredDocs.push(rule.field_name);
 			}
 		}
 
@@ -152,34 +173,38 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 			return;
 		}
 
+		// 2️⃣ Construcción del payload
 		const documentsPayload = await Promise.all(
 			Object.entries(documentsData).map(
-				async ([key, { file, initialFilePath }]) => {
-					const docInfo = allDocuments.find((d) => `${d.key}` === key);
-					if (!docInfo?.type_document || !file) return null;
+				async ([ruleId, { file, initialFilePath }]) => {
+					const rule = documentRulesMap?.[ruleId];
+					if (!rule?.id || !file) return null;
 
-					// ✅ Si el archivo es una URL (string), no lo subas
+					// ⚠️ Si es string (URL), no subimos nada
 					if (typeof file === 'string') return null;
 
-					// ✅ Si no hay cambio detectado, no lo subas
+					// ⚠️ Si el nombre no cambió, tampoco lo subimos
 					const originalFileName = initialFilePath?.split('/').pop();
 					if (originalFileName && file.name === originalFileName) return null;
 
 					const filePath = await uploadToS3(
 						file,
 						'sga_uni/applicants_documents',
-						`${item.first_name?.replace(/\s+/g, '_') || 'document'}_${docInfo.label}`
+						`${item.first_name?.replace(/\s+/g, '_') || 'document'}_${rule.field_name}`
 					);
 
 					return {
-						type_document_id: docInfo.type_document,
-						description: 1,
+						type_document_id: rule.document_type,
+						description: 1, // 👈 aquí podrías usar rule.description si existe
 						file_path: filePath,
 					};
 				}
 			)
 		).then((res) => res.filter(Boolean));
+
 		const filteredPayload = documentsPayload.filter(Boolean);
+
+		// 3️⃣ Llamada final
 		create(
 			{
 				application_id: applicationId,
@@ -188,6 +213,7 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 			{
 				onSuccess: () => {
 					setIsLoading(false);
+					refetch();
 					toaster.create({
 						title: 'Documentos guardados',
 						description:
@@ -282,7 +308,7 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 					</Flex>
 				))}
 			</Flex>
-			<Stack p={4} spacing={4} css={{ '--field-label-width': '150px' }}>
+			<Stack p={4} gap={4} css={{ '--field-label-width': '150px' }}>
 				{step === 1 ? (
 					<>
 						<Stack
@@ -344,61 +370,56 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 						</Stack>
 						{/* Paso 1: Mostrar documentos de la derecha en dos columnas */}
 						<SimpleGrid
-							columns={[1, 2]}
-							spacing={4}
-							columnGap={8}
+							columns={[1, 2]} // 1 col en móvil, 2 en desktop
 							gap={4}
-							mx={'auto'}
-							w={{ base: 'full', md: '80%' }}
 						>
-							{RequiredDocumentsSections.leftColumn
-								.filter(shouldShowDocument)
-								.map(({ key, label, tooltip }) => {
-									const rule = key != null ? documentRulesMap?.[key] : null;
-									const isRequired = rule?.is_required ?? false;
+							{leftColumnDocs.map((rule) => {
+								const isRequired = rule?.is_required ?? false;
+								const tooltip = documentConfig?.[rule.id]?.tooltip;
 
-									return (
-										<Box key={key}>
-											<Text fontWeight='medium'>
-												{label}{' '}
-												{tooltip && (
-													<Tooltip
-														content={tooltip}
-														positioning={{ placement: 'top-center' }}
-														showArrow
-														openDelay={0}
-													>
-														<span>
-															<FiHelpCircle
-																style={{
-																	display: 'inline',
-																	verticalAlign: 'middle',
-																	cursor: 'pointer',
-																}}
-															/>
-														</span>
-													</Tooltip>
-												)}
-												{isRequired && (
-													<Text as='span' color='red.500'>
-														{' '}
-														*
-													</Text>
-												)}
-											</Text>
-											<CompactFileUpload
-												name={`file-${key}`}
-												onChange={(file) => handleFileChange(key, file)}
-												defaultFile={
-													typeof documentsData[key]?.file === 'string'
-														? documentsData[key].file
-														: null
-												}
-												onClear={() => handleFileChange(key, null)}
-											/>
-										</Box>
-									);
-								})}
+								return (
+									<Box key={rule.id}>
+										<Text fontWeight='medium'>
+											{rule.field_name}{' '}
+											{tooltip && (
+												<Tooltip
+													content={tooltip}
+													positioning={{ placement: 'top-center' }}
+													showArrow
+													openDelay={0}
+												>
+													<span>
+														<FiHelpCircle
+															style={{
+																display: 'inline',
+																verticalAlign: 'middle',
+																cursor: 'pointer',
+															}}
+														/>
+													</span>
+												</Tooltip>
+											)}
+											{isRequired && (
+												<Text as='span' color='red.500'>
+													{' '}
+													*
+												</Text>
+											)}
+										</Text>
+
+										<CompactFileUpload
+											name={`file-${rule.id}`}
+											onChange={(file) => handleFileChange(rule.id, file)}
+											defaultFile={
+												typeof documentsData[rule.id]?.file === 'string'
+													? documentsData[rule.id].file
+													: null
+											}
+											onClear={() => handleFileChange(rule.id, null)}
+										/>
+									</Box>
+								);
+							})}
 						</SimpleGrid>
 					</>
 				) : (
@@ -472,54 +493,52 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 							mx={'auto'}
 							w={{ base: 'full', md: '80%' }}
 						>
-							{RequiredDocumentsSections.rightColumn
-								.filter(shouldShowDocument)
-								.map(({ key, label, tooltip }) => {
-									const rule = key != null ? documentRulesMap?.[key] : null;
-									const isRequired = rule?.is_required ?? false;
+							{rightColumnDocs.map((rule) => {
+								const isRequired = rule?.is_required ?? false;
+								const tooltip = documentConfig?.[rule.id]?.tooltip;
 
-									return (
-										<Box key={key}>
-											<Text fontWeight='medium'>
-												{label}{' '}
-												{tooltip && (
-													<Tooltip
-														content={tooltip}
-														positioning={{ placement: 'top-center' }}
-														showArrow
-														openDelay={0}
-													>
-														<span>
-															<FiHelpCircle
-																style={{
-																	display: 'inline',
-																	verticalAlign: 'middle',
-																	cursor: 'pointer',
-																}}
-															/>
-														</span>
-													</Tooltip>
-												)}
-												{isRequired && (
-													<Text as='span' color='red.500'>
-														{' '}
-														*
-													</Text>
-												)}
-											</Text>
-											<CompactFileUpload
-												name={`file-${key}`}
-												onChange={(file) => handleFileChange(key, file)}
-												defaultFile={
-													typeof documentsData[key]?.file === 'string'
-														? documentsData[key].file
-														: null
-												}
-												onClear={() => handleFileChange(key, null)}
-											/>
-										</Box>
-									);
-								})}
+								return (
+									<Box key={rule.id}>
+										<Text fontWeight='medium'>
+											{rule.field_name}{' '}
+											{tooltip && (
+												<Tooltip
+													content={tooltip}
+													positioning={{ placement: 'top-center' }}
+													showArrow
+													openDelay={0}
+												>
+													<span>
+														<FiHelpCircle
+															style={{
+																display: 'inline',
+																verticalAlign: 'middle',
+																cursor: 'pointer',
+															}}
+														/>
+													</span>
+												</Tooltip>
+											)}
+											{isRequired && (
+												<Text as='span' color='red.500'>
+													{' '}
+													*
+												</Text>
+											)}
+										</Text>
+										<CompactFileUpload
+											name={`file-${rule.id}`}
+											onChange={(file) => handleFileChange(rule.id, file)}
+											defaultFile={
+												typeof documentsData[rule.id]?.file === 'string'
+													? documentsData[rule.id].file
+													: null
+											}
+											onClear={() => handleFileChange(rule.id, null)}
+										/>
+									</Box>
+								);
+							})}
 						</Stack>
 					</>
 				)}

@@ -32,6 +32,8 @@ import { PaymentOrdersTable } from '@/components/tables/payment_orders';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { format } from 'date-fns';
 import { LuGraduationCap } from 'react-icons/lu';
+import { useReadAdmissionProgramsById } from '@/hooks/admissions_programs';
+import { useReadEnrollmentsProgramsbyId } from '@/hooks/enrollments_programs/useReadEnrollmentsProgramsbyId';
 
 export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 	const contentRef = useRef();
@@ -49,6 +51,14 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 
 	const sortedFilteredOrders = allPaymentRequests?.sort(
 		(a, b) => a.status - b.status
+	);
+
+	const { data: dataAdmissionPrograms } = useReadAdmissionProgramsById(
+		item.admission_process_program
+	);
+
+	const { data: dataEnrollmentPrograms } = useReadEnrollmentsProgramsbyId(
+		item.enrollment_process_program
 	);
 
 	const [orderIdInput, setOrderIdInput] = useState('');
@@ -75,9 +85,18 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 			// propósito 5 → fin del próximo mes
 			dueDate = getLastDayOfMonth(dueDate);
 			setDueDateInput(dueDate.toISOString().split('T')[0]);
+		} else if (item.purpose === 1 || item.purpose === 2) {
+			dueDate = dataAdmissionPrograms?.registration_end_date;
+			setDueDateInput(dueDate);
+		} else if (item.purpose === 7) {
+			dueDate = dataEnrollmentPrograms?.registration_end_date;
+			setDueDateInput(dueDate);
+		} else {
+			// otros propósitos, puedes definir una fecha por defecto
+			dueDate = new Date();
+			setDueDateInput(dueDate.toISOString().split('T')[0]);
 		}
-
-	}, [item?.purpose, open]);
+	}, [item?.purpose, open, dataAdmissionPrograms, dataEnrollmentPrograms]);
 
 	const handleReset = () => {
 		setOrderIdInput('');

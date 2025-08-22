@@ -14,7 +14,7 @@ import {
 	Heading,
 	Input,
 } from '@chakra-ui/react';
-import { Modal } from '@/components/ui';
+import { Alert, Modal, toaster } from '@/components/ui';
 import {
 	FiAlertTriangle,
 	FiCheckCircle,
@@ -23,8 +23,15 @@ import {
 	FiX,
 } from 'react-icons/fi';
 import { useReadCoursesByPeriod } from '@/hooks/students';
+import { useReadProgramsEnrollmentCourses } from '@/hooks/programs/useReadProgramsEnrollmentCourses';
+import { useConvalidateTransferCourses } from '@/hooks/transfer_requests';
+import { FaInfoCircle } from 'react-icons/fa';
 
-export const ConvalidacionForm = ({ convalidationsData, dataStudent }) => {
+export const ConvalidacionForm = ({
+	convalidationsData,
+	dataStudent,
+	fetchData,
+}) => {
 	const [open, setOpen] = useState(false);
 	const [selectedOldCourses, setSelectedOldCourses] = useState([]);
 	const [selectedNewCourse, setSelectedNewCourse] = useState(null);
@@ -32,6 +39,7 @@ export const ConvalidacionForm = ({ convalidationsData, dataStudent }) => {
 	const [isPending, setIsPending] = useState(false);
 	const [searchTermOld, setSearchTermOld] = useState('');
 	const [searchTermNew, setSearchTermNew] = useState('');
+	const [readInstructions, setReadInstructions] = useState(false);
 	const contentRef = useRef();
 
 	const { data: dataCoursesByPeriod } = useReadCoursesByPeriod(
@@ -57,27 +65,22 @@ export const ConvalidacionForm = ({ convalidationsData, dataStudent }) => {
 			}))
 	);
 
+	const { data: dataNewCoursesPeriod } = useReadProgramsEnrollmentCourses(
+		{ id: convalidationsData?.to_program },
+		{ enabled: open && !!convalidationsData?.to_program }
+	);
+
 	const newCoursesOptions = [
-		{
-			id: '1',
-			e_periods_programs_id: 'epp_001',
-			course_id: 'c_001',
-			is_mandatory: true,
-			cycle: 1,
-			credits: 4,
-			course_name: 'Cálculo Diferencial',
-			course_code: 'CAL101',
-		},
-		{
-			id: '2',
-			e_periods_programs_id: 'epp_001',
-			course_id: 'c_002',
-			is_mandatory: false,
-			cycle: 2,
-			credits: 3,
-			course_name: 'Programación Básica',
-			course_code: 'PRG101',
-		},
+		...(dataNewCoursesPeriod?.data || []).map((course) => ({
+			id: course.id,
+			course_name: course.course,
+			enrollment_period: course.enrollment_period,
+			course_code: course.course_code,
+			credits: course.credits,
+			cycle: course.cycle,
+			is_mandatory: course.is_mandatory,
+		})),
+		// Mock data for new courses
 	];
 
 	const totalOldCredits = selectedOldCourses.reduce(
@@ -109,6 +112,8 @@ export const ConvalidacionForm = ({ convalidationsData, dataStudent }) => {
 		setConvalidations(convalidations.filter((_, i) => i !== index));
 	};
 
+	const { mutateAsync: updateEnrollment } = useConvalidateTransferCourses();
+
 	const handleSubmitData = async () => {
 		setIsPending(true);
 
@@ -123,13 +128,25 @@ export const ConvalidacionForm = ({ convalidationsData, dataStudent }) => {
 			})),
 		};
 
-		console.log('[v0] Payload to send:', JSON.stringify(payload, null, 2));
-
-		// Simulate API call
-		await new Promise((resolve) => setTimeout(resolve, 2000));
-		setIsPending(false);
-		setOpen(false);
-		setConvalidations([]);
+		try {
+			await updateEnrollment({ id: convalidationsData.id, payload });
+			toaster.create({
+				title: 'Cursos fueron convalidados correctamente',
+				type: 'success',
+			});
+			setOpen(false);
+			setConvalidations([]);
+			setIsPending(false);
+			fetchData();
+		} catch (error) {
+			setIsPending(false);
+			toaster.create({
+				title:
+					error.response?.data?.[0] ||
+					'No se encontro un grupo de curso activo',
+				type: 'error',
+			});
+		}
 	};
 
 	const totalConvalidationCredits = convalidations.reduce(
@@ -141,12 +158,13 @@ export const ConvalidacionForm = ({ convalidationsData, dataStudent }) => {
 		return sum + (diff > 0 ? diff : 0);
 	}, 0);
 
-	const normalizeString = (str) =>
-		str
-			.normalize('NFD') // descompone acentos
-			.replace(/[\u0300-\u036f]/g, '') // elimina marcas de acento
+	const normalizeString = (str) => {
+		if (!str) return ''; // si es null/undefined devuelve string vacío
+		return str
+			.normalize('NFD')
+			.replace(/[\u0300-\u036f]/g, '')
 			.toLowerCase();
-
+	};
 	return (
 		<Modal
 			title='Agregar convalidación'
@@ -163,6 +181,9 @@ export const ConvalidacionForm = ({ convalidationsData, dataStudent }) => {
 			}
 			onSave={handleSubmitData}
 			loading={isPending}
+			disabledSave={
+				!readInstructions || !convalidationsData.enable_convalidation
+			}
 			size={'7xl'}
 			open={open}
 			onOpenChange={(e) => setOpen(e.open)}
@@ -239,10 +260,10 @@ export const ConvalidacionForm = ({ convalidationsData, dataStudent }) => {
 															>
 																<Box>
 																	<Text fontWeight='medium' color='gray.900'>
-																		{course.course_code}
+																		{course.course_name}
 																	</Text>
 																	<Text fontSize='sm' color='gray.600'>
-																		{course.course_name}
+																		{course.course_code}
 																	</Text>
 																	<Text fontSize='sm' color='gray.500'>
 																		Nota: {course.final_grade} - Periodo:{' '}
@@ -321,7 +342,7 @@ export const ConvalidacionForm = ({ convalidationsData, dataStudent }) => {
 																		spacing={2}
 																	>
 																		<Text fontWeight='medium' color='gray.900'>
-																			{course.course_code}
+																			{course.course_name}
 																		</Text>
 																		{course.is_mandatory && (
 																			<Badge
@@ -334,7 +355,7 @@ export const ConvalidacionForm = ({ convalidationsData, dataStudent }) => {
 																		)}
 																	</Stack>
 																	<Text fontSize='sm' color='gray.600'>
-																		{course.course_name}
+																		{course.enrollment_period}
 																	</Text>
 																	<Text fontSize='xs' color='gray.500'>
 																		Ciclo {course.cycle}
@@ -556,6 +577,35 @@ export const ConvalidacionForm = ({ convalidationsData, dataStudent }) => {
 								</VStack>
 							</VStack>
 						)}
+						<Alert
+							status='warning'
+							title='Convalidaciones'
+							icon={<FaInfoCircle />}
+						>
+							Ten en cuenta que las convalidaciones solo podrán realizarse una
+							única vez. Debes seleccionar todos los cursos a convalidar antes
+							de finalizar el proceso, ya que una vez confirmado no será posible
+							volver a modificarlo.
+						</Alert>
+						<Flex align='center' gap={2} mt={2}>
+							<input
+								type='checkbox'
+								id='readInstructionsReject'
+								checked={readInstructions}
+								onChange={(e) => setReadInstructions(e.target.checked)}
+								style={{ accentColor: '#E53E3E', width: 18, height: 18 }}
+							/>
+							<label
+								htmlFor='readInstructionsReject'
+								style={{
+									fontSize: '0.95em',
+									color: '#9B2C2C',
+									fontWeight: 500,
+								}}
+							>
+								He leído, comprendo las instrucciones y confirmo mi decisión.
+							</label>
+						</Flex>
 					</Stack>
 				</Box>
 			</Stack>
@@ -566,4 +616,5 @@ export const ConvalidacionForm = ({ convalidationsData, dataStudent }) => {
 ConvalidacionForm.propTypes = {
 	convalidationsData: PropTypes.array,
 	dataStudent: PropTypes.object,
+	fetchData: PropTypes.func,
 };

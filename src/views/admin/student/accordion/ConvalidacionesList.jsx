@@ -1,3 +1,4 @@
+import { useReadConvalidationRegister } from '@/hooks/convalidation/useReadConvalidationRegister';
 import {
 	Accordion,
 	Box,
@@ -14,10 +15,13 @@ import {
 import PropTypes from 'prop-types';
 import { FiRepeat, FiInbox } from 'react-icons/fi';
 
-export const ConvalidacionesList = ({ filteredAcademicProgressByProgram }) => {
-	console.log(filteredAcademicProgressByProgram);
-	// ejemplo de datos mock mientras conectas con tu API
-	const convalidaciones = [];
+export const ConvalidacionesList = ({ convalidationsData }) => {
+	const { data: convalidacionesDatCourses } = useReadConvalidationRegister(
+		{ id: convalidationsData?.to_program },
+		{ enabled: !!convalidationsData?.to_program }
+	);
+
+	const convalidaciones = convalidacionesDatCourses?.results || [];
 
 	return (
 		<Card.Root shadow={'md'}>
@@ -36,27 +40,27 @@ export const ConvalidacionesList = ({ filteredAcademicProgressByProgram }) => {
 				</Stack>
 			</Card.Header>
 			<Card.Body>
-				{convalidaciones.length === 0 ? (
+				{convalidaciones?.length === 0 ? (
 					<Center flexDir='column' py={10} color='gray.500'>
 						<Icon as={FiInbox} boxSize={10} mb={2} />
 						<Text fontSize='sm'>No existen convalidaciones actualmente</Text>
 					</Center>
 				) : (
 					<Accordion.Root multiple variant='subtle' colorPalette='green'>
-						{convalidaciones.map((conv, index) => (
+						{convalidaciones?.map((conv, index) => (
 							<Accordion.Item key={conv.id ?? index} value={String(index)}>
 								<h2>
 									<Accordion.ItemTrigger>
 										<Box flex='1' textAlign='left'>
 											<Text fontWeight='bold'>
-												Nuevo curso: {conv.new_course.name} (
+												Nuevo curso: {conv.new_course.course} (
 												{conv.new_course.code})
 											</Text>
 											<Text fontSize='sm' color='gray.500'>
-												Créditos: {conv.new_course.credits} | Nota:{' '}
-												{conv.new_course.grade} |{' '}
+												Créditos: {conv.new_course.credits} | Ciclo:{' '}
+												{conv.new_course.cycle} |{' '}
 												<Badge colorScheme='green'>
-													{conv.new_course.status}
+													Convalidado
 												</Badge>
 											</Text>
 										</Box>
@@ -75,25 +79,17 @@ export const ConvalidacionesList = ({ filteredAcademicProgressByProgram }) => {
 													<Table.ColumnHeader>Nombre</Table.ColumnHeader>
 													<Table.ColumnHeader>Créditos</Table.ColumnHeader>
 													<Table.ColumnHeader>Nota</Table.ColumnHeader>
-													<Table.ColumnHeader>Estado</Table.ColumnHeader>
+													
 												</Table.Row>
 											</Table.Header>
 											<Table.Body>
 												{conv.old_courses.map((c, idx) => (
 													<Table.Row key={idx}>
-														<Table.Cell>{c.code}</Table.Cell>
-														<Table.Cell>{c.name}</Table.Cell>
+														<Table.Cell>{c.course_code}</Table.Cell>
+														<Table.Cell>{c.course_name}</Table.Cell>
 														<Table.Cell>{c.credits}</Table.Cell>
 														<Table.Cell>{c.grade}</Table.Cell>
-														<Table.Cell>
-															<Badge
-																colorScheme={
-																	c.status === 'Aprobado' ? 'green' : 'red'
-																}
-															>
-																{c.status}
-															</Badge>
-														</Table.Cell>
+														
 													</Table.Row>
 												))}
 											</Table.Body>
@@ -110,5 +106,5 @@ export const ConvalidacionesList = ({ filteredAcademicProgressByProgram }) => {
 };
 
 ConvalidacionesList.propTypes = {
-	filteredAcademicProgressByProgram: PropTypes.array,
+	convalidationsData: PropTypes.array,
 };

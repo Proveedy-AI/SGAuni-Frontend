@@ -114,16 +114,15 @@ export const WorkApplicant = ({ onAllCompleted }) => {
 	});
 
 	const handleDownloadGuides = () => {
-		const files = ['/templates/GUIA-DE-ENSAYO.pdf'];
+		if (!item?.essay_guide_path) return;
 
-		files.forEach((file) => {
-			const link = document.createElement('a');
-			link.href = file;
-			link.download = '';
-			document.body.appendChild(link);
-			link.click();
-			document.body.removeChild(link);
-		});
+		const link = document.createElement('a');
+		link.href = item.essay_guide_path;
+		link.target = '_blank'; // opcional: abre en nueva pestaña si no es forzadamente descarga
+		link.download = ''; // fuerza descarga si el servidor lo permite
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
 	};
 
 	useEffect(() => {
@@ -154,7 +153,7 @@ export const WorkApplicant = ({ onAllCompleted }) => {
 
 		let allCompleted = true;
 		const results = dataEvaluationsByApplication.results || [];
-		console.log(results);
+	
 		// Si no hay ningún trabajo, no está completo
 		if (results.length === 0) {
 			allCompleted = false;

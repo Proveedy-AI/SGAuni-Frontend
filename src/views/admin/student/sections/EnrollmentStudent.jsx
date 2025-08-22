@@ -102,6 +102,7 @@ export const EnrollmentStudent = ({
 					<StudentTuitionTable
 						dataStudent={dataStudent}
 						data={filteredEnrollment}
+						fetchData={fetchData}
 						isLoading={isLoadingEnrollment}
 					/>
 				</Card.Body>

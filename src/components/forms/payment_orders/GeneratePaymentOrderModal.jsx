@@ -27,6 +27,8 @@ import { format } from 'date-fns';
 import { useReadPaymentRequest } from '@/hooks/payment_requests';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { LuGraduationCap } from 'react-icons/lu';
+import { useReadAdmissionProgramsById } from '@/hooks/admissions_programs';
+import { useReadEnrollmentsProgramsbyId } from '@/hooks/enrollments_programs/useReadEnrollmentsProgramsbyId';
 
 export const GeneratePaymentOrderModal = ({ fetchData }) => {
 	const contentRef = useRef();
@@ -35,9 +37,11 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 		useCreatePaymentOrder();
 
 	const { data: dataPaymentRequests } = useReadPaymentRequest(
-		{},
+		{ status: 1 },
 		{ enabled: open }
 	);
+
+	console.log(dataPaymentRequests);
 
 	const requests =
 		dataPaymentRequests?.pages?.flatMap((page) => page.results) ?? [];
@@ -55,11 +59,19 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 		purpose_display: request.purpose_display,
 		amount: request.amount,
 		program_name: request.program_name,
+		enrollment_process_program: request.enrollment_process_program,
+		admission_process_program: request.admission_process_program,
 		enrollment_process_name: request.enrollment_process_name,
 		admission_process_name: request.admission_process_name,
 		num_document: request.num_document,
 		payment_method_display: request.payment_method_display,
 	}));
+
+	const { data: dataAdmissionPrograms } = useReadAdmissionProgramsById();
+	selectedRequest?.admission_process_program;
+
+	const { data: dataEnrollmentPrograms } = useReadEnrollmentsProgramsbyId();
+	selectedRequest?.enrollment_process_program;
 
 	const isUniPaymentMethod =
 		requests.find((request) => request.id === selectedRequest?.value)
@@ -91,8 +103,18 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 			// propósito 5 → fin del próximo mes
 			dueDate = getLastDayOfMonth(dueDate);
 			setDueDateInput(dueDate.toISOString().split('T')[0]);
+		} else if (selectedRequest.purpose === 1 || selectedRequest.purpose === 2) {
+			dueDate = dataAdmissionPrograms?.registration_end_date;
+			setDueDateInput(dueDate);
+		} else if (selectedRequest.purpose === 7) {
+			dueDate = dataEnrollmentPrograms?.registration_end_date;
+			setDueDateInput(dueDate);
+		} else {
+			// otros propósitos, puedes definir una fecha por defecto
+			dueDate = new Date();
+			setDueDateInput(dueDate.toISOString().split('T')[0]);
 		}
-	}, [selectedRequest, open]);
+	}, [selectedRequest, open, dataAdmissionPrograms, dataEnrollmentPrograms]);
 
 	useEffect(() => {
 		if (!open) {
