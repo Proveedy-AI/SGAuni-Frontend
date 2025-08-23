@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router';
 import {
 	Box,
-	Container,
 	Heading,
 	Input,
 	Stack,
 	VStack,
 	Text,
+	Flex,
 } from '@chakra-ui/react';
 import { toaster, Field, Button, InputGroup } from '@/components/ui';
 import { LuArrowLeft, LuLock } from 'react-icons/lu';
@@ -92,15 +92,21 @@ export const ResetPassword = () => {
 	};
 
 	return (
-		<Container maxW='md' py={12}>
+		<Flex alignItems='center' justifyContent='flex-end' w='full'>
 			<Box
-				bg={{ base: 'white', _dark: 'uni.gray.500' }}
-				p={10}
-				borderRadius='20px'
+				bg='white'
+				borderRadius='0'
 				boxShadow='2xl'
+				minH='100vh'
+				display='flex'
+				flexDirection='column'
+				pt={10}
+				alignItems='center'
+				pb={10}
 				w='full'
+				maxW='lg'
 			>
-				<VStack spacing={6} align='stretch'>
+				<VStack gap={6} align='stretch'>
 					<Box display='flex' alignItems='center' gap='0.5rem'>
 						<LuArrowLeft size={18} />
 						<Link to='/auth/login'>
@@ -173,6 +179,6 @@ export const ResetPassword = () => {
 					</form>
 				</VStack>
 			</Box>
-		</Container>
+		</Flex>
 	);
 };

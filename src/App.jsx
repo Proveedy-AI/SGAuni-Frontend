@@ -67,12 +67,12 @@ import {
 	MyEnrollmentProcessView,
 	MyInscriptionFormView,
 	MyProceduresView,
-  MyThesisProcess,
-  MyPostponeEnrollmentProcessView,
-  MyPostponeFormView,
-  MyReintegrationProcessView,
-  MyReintegrationFormView,
-  MyInternalTransferProcessView,
+	MyThesisProcess,
+	MyPostponeEnrollmentProcessView,
+	MyPostponeFormView,
+	MyReintegrationProcessView,
+	MyReintegrationFormView,
+	MyInternalTransferProcessView,
 } from './views/admin/procedures';
 import {
 	MyCoursesListByAcademicPeriodView,
@@ -153,10 +153,7 @@ function App() {
 										<ProtectedRoute requiredPermission='admissions.programs.view' />
 									}
 								>
-									<Route
-										path='programs/:id'
-										element={<AdmissionsPrograms />}
-									/>
+									<Route path='programs/:id' element={<AdmissionsPrograms />} />
 								</Route>
 								{/*<Route
 									element={
@@ -341,18 +338,18 @@ function App() {
 									</Route>
 									<Route path='thesis-process' element={<MyThesisProcess />} />
 								</Route>
-                <Route path='thesis-process' element={<MyThesisProcess />} />
-                <Route path='postpone-process'>
-                  <Route index element={<MyPostponeEnrollmentProcessView />} />
-                  <Route path=':id' element={<MyPostponeFormView />} />
-                </Route>
-                <Route path='reintegration-process'>
-                  <Route index element={<MyReintegrationProcessView />} />
-                  <Route path=":id" element={<MyReintegrationFormView />} />
-                </Route>
-                <Route path='internal-transfer-process'>
-                  <Route index element={<MyInternalTransferProcessView />} />
-                </Route>
+								<Route path='thesis-process' element={<MyThesisProcess />} />
+								<Route path='postpone-process'>
+									<Route index element={<MyPostponeEnrollmentProcessView />} />
+									<Route path=':id' element={<MyPostponeFormView />} />
+								</Route>
+								<Route path='reintegration-process'>
+									<Route index element={<MyReintegrationProcessView />} />
+									<Route path=':id' element={<MyReintegrationFormView />} />
+								</Route>
+								<Route path='internal-transfer-process'>
+									<Route index element={<MyInternalTransferProcessView />} />
+								</Route>
 							</Route>
 
 							<Route path='myclasses' element={<MyClassesLayout />}>
@@ -463,16 +460,16 @@ function App() {
 									<Route path='request' element={<CommitmentLetters />} />
 								</Route>
 							</Route>
-              {/* ------------------------ TRANSFER REQUESTS ROUTES ----------------------- */}
-              <Route path='transfer-requests'>
-                <Route
-                  element={
+							{/* ------------------------ TRANSFER REQUESTS ROUTES ----------------------- */}
+							<Route path='transfer-requests'>
+								<Route
+									element={
 										<ProtectedRoute requiredPermission='transfer.requests.view' />
 									}
-                >
-                  <Route path='list' element={<TransferRequestsView />} />
-                </Route>
-              </Route>
+								>
+									<Route path='list' element={<TransferRequestsView />} />
+								</Route>
+							</Route>
 
 							{/* ---------------------------- SETTINGS ROUTES ---------------------------- */}
 
