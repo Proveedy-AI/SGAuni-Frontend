@@ -447,7 +447,7 @@ export default function ChakraInscriptionForm() {
 				acceptsTerms: formData.acceptsTerms,
 				acceptsDataProcessing: formData.acceptsDataProcessing,
 			},
-			admission_program: dataAdmissionProgram?.id,
+			admission_program: formData?.postgraduate_program_type,
 			modality_id: Number(formData.modality_type),
 		};
 
@@ -496,7 +496,7 @@ export default function ChakraInscriptionForm() {
 		dataAdmissionProgram?.programs
 			?.filter((program) => program.status === 4)
 			?.map((program) => ({
-				value: program.program.toString(), //id del programa
+				value: program.id.toString(), //id del programa
 				label: program.program_name, // nombre del programa
 			})) || [];
 
@@ -567,7 +567,7 @@ export default function ChakraInscriptionForm() {
 			? dataAdmissionProgram.programs
 					.filter(
 						(program) =>
-							program.program === Number(formData.postgraduate_program_type)
+							program.id === Number(formData.postgraduate_program_type)
 					)
 					.flatMap(
 						(program) =>
@@ -582,7 +582,6 @@ export default function ChakraInscriptionForm() {
 		{ value: '1', label: 'DNI (Documento Nacional de Identidad)' },
 		{ value: '2', label: 'Pasaporte' },
 		{ value: '3', label: 'Carné de Extranjería' },
-
 	];
 
 	const getLabelFromOptions = (options, value) =>
@@ -975,7 +974,9 @@ export default function ChakraInscriptionForm() {
 																	<Icon as={FaEnvelope} w={4} h={4} />
 																	Correo Electrónico{' '}
 																	<Tooltip
-																		content={'Las credenciales de acceso se enviarán a este correo'}
+																		content={
+																			'Las credenciales de acceso se enviarán a este correo'
+																		}
 																		positioning={{ placement: 'top-center' }}
 																		showArrow
 																		openDelay={0}

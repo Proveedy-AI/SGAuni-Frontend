@@ -311,11 +311,11 @@ export const PaymentApplicant = ({ onValidationChange }) => {
 									admisionRequest,
 									purposes[2]?.rule,
 									admisionOrder,
-									'Admisión',
+									'Admisión - I',
 									purposes[2]?.amount || 50
 								)
 							: renderRequestPrompt(
-									'Admisión',
+									'Admisión - I',
 									purposes[2]?.rule?.amount || 250,
 									true
 								))}

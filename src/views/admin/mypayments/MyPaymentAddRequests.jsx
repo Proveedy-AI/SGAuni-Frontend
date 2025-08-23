@@ -67,10 +67,14 @@ export const MyPaymentAddRequests = () => {
 		{}
 	);
 
+	const hasStudentRole = dataUser.roles?.some(
+		(role) => role.name === 'Estudiante'
+	);
+
 	const { data: MyEnrollment } = useReadMyEnrollments();
 	const { data: studentScholarships } = useReadMyBenefits();
 	const { data: globalDiscountsRaw } = useReadGraduateUni();
-	const { data: MyCredits } = useReadMyCredits();
+	const { data: MyCredits } = useReadMyCredits({ enabled: hasStudentRole });
 	/*const { data: DataEnrollmentProgram } = useReadEnrollmentsProgramsbyId(
 		selectedProgram?.enrollment_program || null,
 		{}
@@ -112,9 +116,6 @@ export const MyPaymentAddRequests = () => {
 		first: item.is_first_enrollment,
 	}));
 
-	const hasStudentRole = dataUser.roles?.some(
-		(role) => role.name === 'Estudiante'
-	);
 	const ProcessTypeOptions = hasStudentRole
 		? [
 				{ label: 'Admisión', value: 'admission' },
@@ -214,8 +215,8 @@ export const MyPaymentAddRequests = () => {
 
 	const isPreMaestria =
 		!hasStudentRole &&
-		dataMyApplicants?.find((p) => p.id === selectedProgram)?.modality_id === 1;
-
+		dataMyApplicants?.find((p) => p.id === Number(selectedProgram?.value))?.modality_id === 1;
+	console.log(dataMyApplicants, selectedProgram);
 	const validateFields = () => {
 		const newErrors = {};
 		if (!selectedProgram) newErrors.selectedProgram = 'Seleccione un programa';
