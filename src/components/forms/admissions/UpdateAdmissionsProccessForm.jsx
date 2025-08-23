@@ -85,10 +85,10 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 	];
 
 	const dataStatus = [
-		{ label: 'Activo', value: 'Activo' },
+		{ label: 'Activo', value: 1 },
 		//{ label: 'Cancelado', value: 'Cancelado' },
-		{ label: 'Completado', value: 'Completado' },
-		{ label: 'Borrador', value: 'Borrador' },
+		{ label: 'Completado', value: 3 },
+		{ label: 'Borrador', value: 4 },
 	];
 
 	const LevelOptions = dataLevel.map((level) => ({

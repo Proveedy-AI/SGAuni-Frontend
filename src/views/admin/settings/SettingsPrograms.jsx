@@ -5,7 +5,7 @@ import { ProgramTable } from '@/components/tables/ProgramTable';
 import { ProgramTypesTable } from '@/components/tables/ProgramTypesTable';
 import { ProgramFocusTable } from '@/components/tables/settings/programs/ProgramFocusTable';
 import { InputGroup } from '@/components/ui';
-import { useReadPrograms, useReadProgramTypes } from '@/hooks';
+import { useReadAllPrograms, useReadProgramTypes } from '@/hooks';
 import { useReadProgramsFocus } from '@/hooks/programs/programsFocus/useReadProgramsFocus';
 import { useReadUsers } from '@/hooks/users';
 import { Box, Heading, HStack, Input, Stack, Tabs } from '@chakra-ui/react';
@@ -20,9 +20,12 @@ export const SettingsPrograms = () => {
 
 	const {
 		data: dataPrograms,
-		refetch: fetchPrograms,
-		isLoading,
-	} = useReadPrograms();
+		fetchNextPage: fetchNextPrograms,
+		hasNextPage: hasNextPagePrograms,
+		isFetchingNextPage: isFetchingNextPrograms,
+		isLoading: isLoadingPrograms,
+		refetch: refetchPrograms,
+	} = useReadAllPrograms();
 	const {
 		data: dataProgramTypes,
 		refetch: fetchProgramTypes,
@@ -69,11 +72,18 @@ export const SettingsPrograms = () => {
 			label: item.full_name,
 		}));
 
-	const filteredPrograms = dataPrograms?.results
+	const allPrograms =
+		dataPrograms?.pages?.flatMap((page) => page.results) ?? [];
+
+	const filteredPrograms = allPrograms
 		?.filter((item) =>
 			item?.name?.toLowerCase().includes(searchProgramValue.toLowerCase())
 		)
 		?.sort((a, b) => b.id - a.id);
+	const isFiltering = searchProgramValue.trim().length > 0;
+	const totalCount = isFiltering
+		? filteredPrograms.length
+		: (dataPrograms?.pages?.[0]?.count ?? 0);
 
 	const filteredProgramTypes = dataProgramTypes?.results?.filter((item) =>
 		item?.name?.toLowerCase().includes(searchProgramTypesValue.toLowerCase())
@@ -96,7 +106,7 @@ export const SettingsPrograms = () => {
 
 				{tab === 1 && (
 					<AddProgram
-						fetchData={fetchPrograms}
+						fetchData={refetchPrograms}
 						ProgramFocusOptions={ProgramFocusOptions}
 						DirectorOptions={DirectorOptions}
 						programTypesOptions={programTypesOptions}
@@ -162,9 +172,14 @@ export const SettingsPrograms = () => {
 						</Stack>
 
 						<ProgramTable
-							isLoading={isLoading}
+							isLoading={isLoadingPrograms}
 							data={filteredPrograms}
-							fetchData={fetchPrograms}
+							fetchData={refetchPrograms}
+							fetchNextPage={fetchNextPrograms}
+							totalCount={totalCount}
+							hasNextPage={hasNextPagePrograms}
+							isFetchingNext={isFetchingNextPrograms}
+							resetPageTrigger={searchProgramValue}
 							ProgramFocusOptions={ProgramFocusOptions}
 							DirectorOptions={DirectorOptions}
 							programTypesOptions={programTypesOptions}
