@@ -35,7 +35,7 @@ import { LuGraduationCap } from 'react-icons/lu';
 import { useReadAdmissionProgramsById } from '@/hooks/admissions_programs';
 import { useReadEnrollmentsProgramsbyId } from '@/hooks/enrollments_programs/useReadEnrollmentsProgramsbyId';
 
-export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
+export const GeneratePaymentOrderModalByRequest = ({fetchData, item, permissions }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 	const { mutateAsync: generatePaymentOrder, isPending } =
@@ -146,6 +146,7 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 					type: 'success',
 				});
 				fetchPaymentOrders();
+				fetchData();
 				handleReset();
 			},
 			onError: (error) => {
@@ -505,4 +506,5 @@ export const GeneratePaymentOrderModalByRequest = ({ item, permissions }) => {
 GeneratePaymentOrderModalByRequest.propTypes = {
 	item: PropTypes.object,
 	permissions: PropTypes.array,
+	fetchData: PropTypes.func,
 };

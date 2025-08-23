@@ -16,7 +16,7 @@ import { usePaginatedInfiniteData } from '@/components/navigation';
 import useSortedData from '@/utils/useSortedData';
 
 const Row = memo(
-	({ item, startIndex, index, permissions, sortConfig, data }) => {
+	({ item, startIndex, index, permissions, sortConfig, data, fetchData }) => {
 		const statusDisplay = [
 			{
 				id: 1,
@@ -82,6 +82,7 @@ const Row = memo(
 							)}
 							{permissions.includes('payment.orders.generate') && (
 								<GeneratePaymentOrderModalByRequest
+									fetchData={fetchData}
 									item={item}
 									permissions={permissions}
 								/>
@@ -103,12 +104,14 @@ Row.propTypes = {
 	index: PropTypes.number,
 	sortConfig: PropTypes.object,
 	data: PropTypes.array,
+	fetchData: PropTypes.func,
 };
 
 export const PaymentRequestsTable = ({
 	isLoading,
 	data,
 	permissions,
+	fetchData,
 	isFetchingNextPage,
 	totalCount,
 	fetchNextPage,
@@ -245,6 +248,7 @@ export const PaymentRequestsTable = ({
 									key={item.id}
 									item={item}
 									startIndex={startIndex}
+									fetchData={fetchData}
 									index={index}
 									permissions={permissions}
 									sortConfig={sortConfig}
@@ -285,4 +289,5 @@ PaymentRequestsTable.propTypes = {
 	totalCount: PropTypes.number,
 	fetchNextPage: PropTypes.func,
 	hasNextPage: PropTypes.bool,
+	fetchData: PropTypes.func
 };
