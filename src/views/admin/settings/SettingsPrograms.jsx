@@ -69,9 +69,11 @@ export const SettingsPrograms = () => {
 			label: item.full_name,
 		}));
 
-	const filteredPrograms = dataPrograms?.results?.filter((item) =>
-		item?.name?.toLowerCase().includes(searchProgramValue.toLowerCase())
-	);
+	const filteredPrograms = dataPrograms?.results
+		?.filter((item) =>
+			item?.name?.toLowerCase().includes(searchProgramValue.toLowerCase())
+		)
+		?.sort((a, b) => b.id - a.id);
 
 	const filteredProgramTypes = dataProgramTypes?.results?.filter((item) =>
 		item?.name?.toLowerCase().includes(searchProgramTypesValue.toLowerCase())
