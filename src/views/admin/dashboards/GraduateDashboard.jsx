@@ -18,15 +18,12 @@ import { LuGraduationCap } from 'react-icons/lu';
 export const GraduateDashboard = () => {
 	const { data: dataUser } = useReadUserLogged();
 	const admissionPrograms = dataUser?.student?.admission_programs || [];
-	console.log(admissionPrograms);
 
 	const filteredGraduatePrograms = admissionPrograms
 		? admissionPrograms.filter(
 				(program) => program.academic_status === 2 //academic_type: graduated
 			)
 		: [];
-
-	console.log(filteredGraduatePrograms);
 
 	const navigate = useNavigate();
 
