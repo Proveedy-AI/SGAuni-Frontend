@@ -69,7 +69,7 @@ export const AddProgram = ({
 			newErrors.maxInstallments =
 				'El máximo de cuotas debe ser un número positivo';
 		}
-		if (!programRequest.code.trim()) newErrors.code = 'El código es requerido';
+		if (!programRequest.code) newErrors.code = 'El código es requerido';
 		if (!programRequest.essay_guide_path)
 			newErrors.essay_guide_path = 'La ruta de la guía de ensayo es requerida';
 
