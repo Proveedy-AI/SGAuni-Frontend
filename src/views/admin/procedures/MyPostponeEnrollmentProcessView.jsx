@@ -150,7 +150,7 @@ export const MyPostponeEnrollmentProcessView = () => {
 	//const { data }
 
 	const filteredEnrollments = dataMyEnrollments?.filter(
-		(enrollment) => enrollment.status === 1
+		(enrollment) => enrollment.status === 1 || enrollment.status === 2 || enrollment.status === 4
 	);
 
 	console.log(filteredEnrollments);

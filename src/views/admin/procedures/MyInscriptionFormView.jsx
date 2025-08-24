@@ -1,4 +1,3 @@
-import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
 import {
 	Box,
@@ -8,6 +7,7 @@ import {
 	HStack,
 	VStack,
 	Icon,
+	Spinner,
 } from '@chakra-ui/react';
 import {
 	FiCheckCircle,
@@ -16,7 +16,6 @@ import {
 	FiArrowRight,
 } from 'react-icons/fi';
 import { TfiFile, TfiMenuAlt } from 'react-icons/tfi';
-import { useParams } from 'react-router';
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Step02ShowSchedule } from './inscription-steps/Step02ShowSchedule';
@@ -100,9 +99,6 @@ StepIndicator.propTypes = {
 };
 
 export const MyInscriptionFormView = () => {
-	const { id } = useParams(); //id de la matrícula (enrollment)
-	const decoded = decodeURIComponent(id);
-	const decrypted = Encryptor.decrypt(decoded);
 	const [enrollmentItem, setEnrollmentItem] = useState(null);
 	const { data: PaymentRequest } = useReadMyPaymentRequest();
 
@@ -123,37 +119,29 @@ export const MyInscriptionFormView = () => {
 		setEnrollmentItem(stored);
 	}, []);
 
-	const [currentStep, setCurrentStep] = useState(4);
+	const [currentStep, setCurrentStep] = useState(1);
 	const [selectedCourse, setSelectedCourse] = useState(null);
 
-  const currentEnrollment = EncryptedStorage.load('selectedEnrollmentProccess');
+	const currentEnrollment = EncryptedStorage.load('selectedEnrollmentProccess');
 
 	const { data: coursesToEnroll, isLoading: isLoadingCoursesToEnroll } =
-		useReadAvailableCourses(
-      currentEnrollment?.uuid,
-      {},
-      {}
-    );
-
+		useReadAvailableCourses(currentEnrollment?.uuid, {}, {});
+	console.log(currentEnrollment);
 	const {
 		data: mySelections,
 		isLoading: isLoadingMySelections,
 		refetch: refetchMySelections,
-	} = useReadMySelections(
-    currentEnrollment?.uuid,
-    {},
-    {}
-  );
+	} = useReadMySelections(currentEnrollment?.uuid, {}, {});
 
 	// Loading state
 	if (isLoadingCoursesToEnroll || isLoadingMySelections) {
 		return (
 			<Box textAlign='center' py={10}>
-				<Text>Cargando...</Text>
+				<Spinner></Spinner>
 			</Box>
 		);
 	}
-	console.log(decrypted);
+
 	// Handlers
 	const handleRefreshSelections = () => {
 		refetchMySelections();
@@ -168,7 +156,11 @@ export const MyInscriptionFormView = () => {
 						label: 'Proceso de matrícula',
 						to: '/myprocedures/enrollment-process',
 					},
-					{ label: id ? id : 'Cargando...' },
+					{
+						label: currentEnrollment
+							? currentEnrollment.program_name
+							: 'Cargando...',
+					},
 				]}
 			/>
 
@@ -227,7 +219,7 @@ export const MyInscriptionFormView = () => {
 
 				{currentStep === 3 && (
 					<Step03SummaryEnrollment
-            currentEnrollment={currentEnrollment}
+						currentEnrollment={currentEnrollment}
 						isSomeRequestPending={isSomeRequestPending}
 						selectedGroups={mySelections}
 						onBack={() => setCurrentStep(currentStep - 1)}
