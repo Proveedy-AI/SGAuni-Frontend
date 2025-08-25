@@ -122,7 +122,7 @@ export const AddTransferRequestModal = ({ user, available, loading, dataMyProgra
   };
 
   const programFromOptions = dataMyPrograms?.map((program) => ({
-    value: program.program_id,
+    value: program.program,
     label: program.program_name
   })) || [];
 
