@@ -7,7 +7,7 @@ import { RegisterEvaluationsModal } from '@/components/modals/myclasses';
 const Row = memo(
 	({
 		fetchData,
-    fetchGradesReport,
+		fetchGradesReport,
 		student,
 		evaluationComponents,
 		statusOptions,
@@ -18,7 +18,7 @@ const Row = memo(
 		);
 		const statusColor = statusColors.find(
 			(c) => c.id === student.qualification_status
-		) || { bg: 'gray.200', color: 'gray.800' };
+		) || { color: 'gray' };
 
 		return (
 			<Table.Row
@@ -35,8 +35,7 @@ const Row = memo(
 						py={1}
 						borderRadius='md'
 						fontWeight='bold'
-						bg={statusColor.bg}
-						color={statusColor.color}
+						colorPalette={statusColor.color}
 					>
 						{statusOption?.label ||
 							student.qualification_status_display ||
@@ -68,7 +67,7 @@ const Row = memo(
 					<Group>
 						<RegisterEvaluationsModal
 							fetchData={fetchData}
-              fetchGradesReport={fetchGradesReport}
+							fetchGradesReport={fetchGradesReport}
 							student={student}
 							evaluationComponents={evaluationComponents}
 						/>
@@ -107,11 +106,11 @@ export const StudentsEvaluationsTable = ({
 	];
 
 	const statusColors = [
-		{ id: 1, bg: '#AEAEAE', color: '#F5F5F5' },
-		{ id: 2, bg: '#FDD9C6', color: '#F86A1E' },
-		{ id: 3, bg: '#C0D7F5', color: '#0661D8' },
-		{ id: 4, bg: '#D0EDD0', color: '#2D9F2D' },
-		{ id: 5, bg: '#F7CDCE', color: '#E0383B' },
+		{ id: 1, color: 'yellow' },
+		{ id: 2, color: 'orange' },
+		{ id: 3, color: 'blue' },
+		{ id: 4, color: 'green' },
+		{ id: 5, color: 'red' },
 	];
 
 	const getColumnCount = () => {

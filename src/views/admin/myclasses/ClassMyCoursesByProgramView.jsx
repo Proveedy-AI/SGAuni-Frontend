@@ -11,11 +11,13 @@ import {
 	SimpleGrid,
 	Badge,
 	Box,
-  HStack,
+	HStack,
+	IconButton,
 } from '@chakra-ui/react';
-import { MdSchool, MdDateRange, MdEventNote, MdListAlt } from 'react-icons/md';
+import { MdDateRange, MdEventNote, MdListAlt } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
+import { FiArrowLeft } from 'react-icons/fi';
 
 export const CourseCard = ({ course, goTo }) => {
 	return (
@@ -83,7 +85,7 @@ export const CourseCard = ({ course, goTo }) => {
 			<Card.Body px={4} py={3}>
 				<Stack gap={2}>
 					{/* Nombre y código */}
-				<HStack justify='space-between'>
+					<HStack justify='space-between'>
 						<Heading size='sm' color='gray.800' noOfLines={1}>
 							{course.course_name}
 						</Heading>
@@ -157,18 +159,24 @@ export const ClassMyCoursesByProgramView = () => {
 	};
 
 	const statusDisplay = [
-		{ value: false, label: 'Por Empezar', bg: '#AEAEAE', color: '#F5F5F5' },
-		{ value: true, label: 'En Curso', bg: '#C6E7FC80', color: '#0661D8' },
+		{ value: false, label: 'Por Empezar', color: 'blue' },
+		{ value: true, label: 'En Curso', color: 'green' },
 	];
 
 	const status = statusDisplay.find((s) => s.value === programItem?.is_current);
 	return (
-		<Stack spacing={6} mx='auto'>
-			<Heading size='lg'>Gestión de cursos</Heading>
+		<Stack gap={6} mx='auto'>
 			<Card.Root>
 				<Card.Header>
 					<Flex align='center' gap={2}>
-						<MdSchool size={24} color='#3182ce' />
+						<IconButton
+							aria-label='Regresar'
+							variant='ghost'
+							color='blue.600'
+							onClick={() => navigate(-1)} // 👈 retrocede una página
+						>
+							<FiArrowLeft />
+						</IconButton>
 						<Heading size='md'>Información del Programa</Heading>
 					</Flex>
 				</Card.Header>
@@ -192,8 +200,7 @@ export const ClassMyCoursesByProgramView = () => {
 							<Text>
 								<b>Estado:</b>{' '}
 								<Badge
-									bg={status?.bg}
-									color={status?.color}
+									colorPalette={status?.color}
 									borderRadius='md'
 									fontSize='sm'
 								>
