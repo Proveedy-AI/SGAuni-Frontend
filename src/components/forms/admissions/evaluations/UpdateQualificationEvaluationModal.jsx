@@ -414,7 +414,7 @@ export const UpdateQualificationEvaluationModal = ({ data, fetchData, fetchDataM
 };
 
 UpdateQualificationEvaluationModal.propTypes = {
-	data: PropTypes.object.isRequired,
-	fetchData: PropTypes.func.isRequired,
-	fetchDataMain: PropTypes.func.isRequired,
+	data: PropTypes.object,
+	fetchData: PropTypes.func,
+	fetchDataMain: PropTypes.func,
 };
