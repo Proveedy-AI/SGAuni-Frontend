@@ -73,13 +73,13 @@ export const ExpandableCourseCard = ({ course, gradesCache, setGradesCache }) =>
 	};
 
 	return (
-		<Box>
+		<Box overflow='hidden'>
 			<Card.Root variant='outline'>
 				<Card.Body>
 					<Flex justify='space-between' align='center'>
-						<HStack spacing={4} flex={1}>
+						<HStack spacing={4} flex={1} gapX={3}>
 							<Box>
-								<Text fontSize='md' fontWeight='semibold'>
+								<Text fontSize='md' fontWeight='semibold' minW='160px'>
 									{course.course_name}
 								</Text>
 							</Box>
@@ -93,7 +93,7 @@ export const ExpandableCourseCard = ({ course, gradesCache, setGradesCache }) =>
 							</Text>
 						</HStack>
 
-						<Collapsible.Root>
+						<Collapsible.Root overflow='hidden'>
 							<Collapsible.Trigger asChild>
 								<Button
 									boxSize={8}
@@ -108,7 +108,7 @@ export const ExpandableCourseCard = ({ course, gradesCache, setGradesCache }) =>
 					</Flex>
 
 					{/* Detalles expandidos del curso */}
-					<Collapsible.Root open={open}>
+					<Collapsible.Root open={open} overflow='hidden'>
 						<Collapsible.Content>
 							<Box mt={4} pt={4} borderTop='1px' borderColor='gray.200'>
 								{/* Información del curso */}
@@ -318,134 +318,139 @@ export const GradesRecordSection = ({ dataCoursesByPeriod }) => {
 	const statistics = getStatistics();
 
 	return (
-		<VStack spacing={6} align='stretch'>
-			<Box>
-				<Flex align='center' gap={3} flex={1}>
-					<Text py={1} pr={2} color='blue.600' fontSize='md' fontWeight='bold'>
-						Seleccionar Período:
-					</Text>
-					<Box
-						bg='white'
-						borderRadius={6}
-						flex={1}
-						maxW={{ base: 'full', lg: '320px' }}
-						fontSize='sm'
-						overflow='hidden'
-					>
-						<ReactSelect
-							value={selectedPeriod}
-							onChange={setSelectedPeriod}
-							options={periodOptions}
-							placeholder='Seleccione un período'
-							variant='flushed'
-							size='xs'
-							isSearchable
-							isClearable
-						/>
-					</Box>
-				</Flex>
-			</Box>
+    <VStack spacing={8} align="stretch" w="full">
+      {/* Selector de Período */}
+      <Box>
+        <Flex
+          direction={{ base: "column", md: "row" }}
+          align={{ base: "stretch", md: "center" }}
+          gap={3}
+        >
+          <Text
+            color="blue.600"
+            fontSize="md"
+            fontWeight="bold"
+            whiteSpace="nowrap"
+          >
+            Seleccionar Período:
+          </Text>
+          <Box
+            bg="white"
+            borderRadius="md"
+            flex={1}
+            w="full"
+            maxW={{ base: "full", md: "320px" }}
+            fontSize="sm"
+            boxShadow="sm"
+            overflow="hidden"
+          >
+            <ReactSelect
+              value={selectedPeriod}
+              onChange={setSelectedPeriod}
+              options={periodOptions}
+              placeholder="Seleccione un período"
+              isSearchable
+              isClearable
+            />
+          </Box>
+        </Flex>
+      </Box>
 
-			{selectedPeriodData && (
-				<>
-					{/* Resumen General del Período */}
-					<Card.Root>
-						<Card.Header>
-							<Text fontSize='lg' fontWeight='bold'>
-								Resumen General del Período
-							</Text>
-						</Card.Header>
-						<Card.Body
-							borderWidth={1}
-							borderColor='gray.200'
-							m={6}
-							overflow='hidden'
-						>
-							<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-								<Flex
-									direction={{ base: 'column', md: 'row' }}
-									justify='space-between'
-									alignItems={{ base: 'flex-start', md: 'center' }}
-									gapX={4}
-									gapY={2}
-								>
-									<Text fontSize='sm' fontWeight='semibold'>
-										Cantidad de cursos matriculados:
-									</Text>
-									<Input
-										readOnly
-										value={String(statistics.totalCourses).padStart(2, '0')}
-										textAlign='center'
-										bg='blue.200'
-										color='blue.600'
-										h='fit'
-										py={1}
-										fontSize='lg'
-										fontWeight='bold'
-										maxW='120px'
-									/>
-								</Flex>
-								<Flex
-									direction={{ base: 'column', md: 'row' }}
-									justify='space-between'
-									alignItems={{ base: 'flex-start', md: 'center' }}
-									gapX={4}
-									gapY={2}
-								>
-									<Text fontSize='sm' fontWeight='semibold'>
-										Promedio ponderado:
-									</Text>
-									<Input
-										readOnly
-										value={statistics.average}
-										textAlign='center'
-										bg='blue.200'
-										color='blue.600'
-										h='fit'
-										py={1}
-										fontSize='lg'
-										fontWeight='bold'
-										maxW='120px'
-									/>
-								</Flex>
-							</SimpleGrid>
-						</Card.Body>
-					</Card.Root>
+      {/* Resumen y Lista */}
+      {selectedPeriodData ? (
+        <>
+          {/* Resumen General del Período */}
+          <Card.Root shadow="md" borderRadius="xl">
+            <Card.Header borderBottomWidth="1px" borderColor="gray.100">
+              <Text fontSize="lg" fontWeight="bold" color="blue.700">
+                Resumen General del Período
+              </Text>
+            </Card.Header>
+            <Card.Body p={6}>
+              <SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
+                <Flex
+                  direction={{ base: "column", md: "row" }}
+                  justify="space-between"
+                  align={{ base: "flex-start", md: "center" }}
+                  gap={3}
+                >
+                  <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                    Cantidad de cursos matriculados:
+                  </Text>
+                  <Input
+                    readOnly
+                    value={String(statistics.totalCourses).padStart(2, "0")}
+                    textAlign="center"
+                    bg="blue.50"
+                    color="blue.700"
+                    border="none"
+                    borderRadius="md"
+                    fontSize="lg"
+                    fontWeight="bold"
+                    maxW="120px"
+                    px={2}
+                  />
+                </Flex>
 
-					{/* Lista de Cursos */}
-					<Card.Root>
-						<Card.Header>
-							<Text fontSize='lg' fontWeight='bold' color='blue.600'>
-								Lista de Cursos
-							</Text>
-						</Card.Header>
-						<Card.Body>
-							<VStack spacing={3} align='stretch' overflow='hidden'>
-								{selectedPeriodData.courses.map((course) => (
-									<ExpandableCourseCard
-										key={course.id_course_selection}
-										course={course}
-										gradesCache={gradesCache}
-										setGradesCache={setGradesCache}
-									/>
-								))}
-							</VStack>
-						</Card.Body>
-					</Card.Root>
-				</>
-			)}
+                <Flex
+                  direction={{ base: "column", md: "row" }}
+                  justify="space-between"
+                  align={{ base: "flex-start", md: "center" }}
+                  gap={3}
+                >
+                  <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                    Promedio ponderado:
+                  </Text>
+                  <Input
+                    readOnly
+                    value={statistics.average}
+                    textAlign="center"
+                    bg="blue.50"
+                    color="blue.700"
+                    border="none"
+                    borderRadius="md"
+                    fontSize="lg"
+                    fontWeight="bold"
+                    maxW="120px"
+                    px={2}
+                  />
+                </Flex>
+              </SimpleGrid>
+            </Card.Body>
+          </Card.Root>
 
-			{!selectedPeriod && (
-				<Card.Root>
-					<Card.Body>
-						<Text textAlign='center' color='gray.500'>
-							Seleccione un período académico para ver el record de notas
-						</Text>
-					</Card.Body>
-				</Card.Root>
-			)}
-		</VStack>
-	);
+          {/* Lista de Cursos */}
+          <Card.Root shadow="md" borderRadius="xl">
+            <Card.Header borderBottomWidth="1px" borderColor="gray.100">
+              <Text fontSize="lg" fontWeight="bold" color="blue.700">
+                Lista de Cursos
+              </Text>
+            </Card.Header>
+            <Card.Body>
+              <VStack spacing={4} align="stretch">
+                {selectedPeriodData.courses.map((course) => (
+                  <ExpandableCourseCard
+                    key={course.id_course_selection}
+                    course={course}
+                    gradesCache={gradesCache}
+                    setGradesCache={setGradesCache}
+                  />
+                ))}
+              </VStack>
+            </Card.Body>
+          </Card.Root>
+        </>
+      ) : (
+        <Card.Root shadow="sm" borderRadius="lg">
+          <Card.Body>
+            <Text textAlign="center" color="gray.500" fontSize="sm">
+              Seleccione un período académico para ver el récord de notas
+            </Text>
+          </Card.Body>
+        </Card.Root>
+      )}
+    </VStack>
+  );
 };
 
 GradesRecordSection.propTypes = {
