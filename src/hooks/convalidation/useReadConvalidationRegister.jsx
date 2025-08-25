@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useReadConvalidationRegister = (params = {}) => {
+export const useReadConvalidationRegister = (params = {}, options = {}) => {
 	const axiosPrivate = useAxiosPrivate();
 	return useQuery({
 		queryKey: ['convalidations', params],
@@ -12,5 +12,6 @@ export const useReadConvalidationRegister = (params = {}) => {
 			});
 			return res.data;
 		},
+		...options,
 	});
 };

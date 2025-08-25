@@ -17,8 +17,8 @@ import { FiRepeat, FiInbox } from 'react-icons/fi';
 
 export const ConvalidacionesList = ({ convalidationsData }) => {
 	const { data: convalidacionesDatCourses } = useReadConvalidationRegister(
-		{ id: convalidationsData?.to_program },
-		{ enabled: !!convalidationsData?.to_program }
+		{ transfer_request: convalidationsData?.id },
+		{ enabled: !!convalidationsData?.id }
 	);
 
 	const convalidaciones = convalidacionesDatCourses?.results || [];
@@ -106,5 +106,5 @@ export const ConvalidacionesList = ({ convalidationsData }) => {
 };
 
 ConvalidacionesList.propTypes = {
-	convalidationsData: PropTypes.array,
+	convalidationsData: PropTypes.object,
 };
