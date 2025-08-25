@@ -54,25 +54,27 @@ const Row = memo(
 				))}
 				{/* Columna de promedio */}
 				{evaluationComponents && evaluationComponents.length > 0 && (
-					<Table.Cell textAlign='center'>
-						<Text
-							fontWeight='bold'
-							color={(student.final_grade || 0) >= 11 ? 'green.600' : 'red.600'}
-						>
-							{student?.final_grade}
-						</Text>
-					</Table.Cell>
+					<>
+            <Table.Cell textAlign='center'>
+              <Text
+                fontWeight='bold'
+                color={(student.final_grade || 0) >= 11 ? 'green.600' : 'red.600'}
+              >
+                {student?.final_grade}
+              </Text>
+            </Table.Cell>
+            <Table.Cell>
+              <Group>
+                <RegisterEvaluationsModal
+                  fetchData={fetchData}
+                  fetchGradesReport={fetchGradesReport}
+                  student={student}
+                  evaluationComponents={evaluationComponents}
+                />
+              </Group>
+            </Table.Cell>
+          </>
 				)}
-				<Table.Cell>
-					<Group>
-						<RegisterEvaluationsModal
-							fetchData={fetchData}
-							fetchGradesReport={fetchGradesReport}
-							student={student}
-							evaluationComponents={evaluationComponents}
-						/>
-					</Group>
-				</Table.Cell>
 			</Table.Row>
 		);
 	}
