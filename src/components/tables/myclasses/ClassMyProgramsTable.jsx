@@ -14,12 +14,12 @@ import { useNavigate } from 'react-router';
 const Row = memo(
 	({ item, startIndex, index, sortConfig, data, permissions }) => {
 		const statusDisplay = [
-			{ value: false, label: 'Por Empezar', bg: '#AEAEAE', color: '#F5F5F5' },
-			{ value: true, label: 'En Curso', bg: '#C6E7FC80', color: '#0661D8' },
+			{ value: false, label: 'Por Empezar', color: 'blue' },
+			{ value: true, label: 'En Curso', color: 'green' },
 		];
 
-		const status = statusDisplay.find((s) => s.is_current === item.status);
-
+		const status = statusDisplay.find((s) => s.value === item.is_current);
+		console.log(item);
 		const navigate = useNavigate();
 		const encrypted = Encryptor.encrypt(item.id);
 		const encoded = encodeURIComponent(encrypted);
@@ -54,8 +54,7 @@ const Row = memo(
 
 				<Table.Cell>
 					<Badge
-						bg={status?.bg}
-						color={status?.color}
+						colorPalette={status?.color}
 						borderRadius='md'
 						px={2}
 						py={1}

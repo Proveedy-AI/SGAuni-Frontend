@@ -11,7 +11,7 @@ import {
 	SimpleGrid,
 	Badge,
 	Box,
-  HStack,
+	HStack,
 } from '@chakra-ui/react';
 import { MdSchool, MdDateRange, MdEventNote, MdListAlt } from 'react-icons/md';
 import { useEffect, useState } from 'react';
@@ -83,7 +83,7 @@ export const CourseCard = ({ course, goTo }) => {
 			<Card.Body px={4} py={3}>
 				<Stack gap={2}>
 					{/* Nombre y código */}
-				<HStack justify='space-between'>
+					<HStack justify='space-between'>
 						<Heading size='sm' color='gray.800' noOfLines={1}>
 							{course.course_name}
 						</Heading>
@@ -157,8 +157,8 @@ export const ClassMyCoursesByProgramView = () => {
 	};
 
 	const statusDisplay = [
-		{ value: false, label: 'Por Empezar', bg: '#AEAEAE', color: '#F5F5F5' },
-		{ value: true, label: 'En Curso', bg: '#C6E7FC80', color: '#0661D8' },
+		{ value: false, label: 'Por Empezar', color: 'blue' },
+		{ value: true, label: 'En Curso', color: 'green' },
 	];
 
 	const status = statusDisplay.find((s) => s.value === programItem?.is_current);
@@ -192,8 +192,7 @@ export const ClassMyCoursesByProgramView = () => {
 							<Text>
 								<b>Estado:</b>{' '}
 								<Badge
-									bg={status?.bg}
-									color={status?.color}
+									colorPalette={status?.color}
 									borderRadius='md'
 									fontSize='sm'
 								>

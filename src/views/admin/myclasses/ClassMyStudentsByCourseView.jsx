@@ -10,7 +10,11 @@ import {
 	SimpleGrid,
 	Icon,
 } from '@chakra-ui/react';
-import { useGenerateGradesReport, useReadCourseGroupById, useReadEvaluationSummaryByCourse } from '@/hooks/course_groups';
+import {
+	useGenerateGradesReport,
+	useReadCourseGroupById,
+	useReadEvaluationSummaryByCourse,
+} from '@/hooks/course_groups';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { useReadStudentsByCourseId } from '@/hooks/students';
 import { useState } from 'react';
@@ -19,7 +23,10 @@ import { Button, Field } from '@/components/ui';
 import { FiBook, FiTrash, FiUsers } from 'react-icons/fi';
 import { MdGroup, MdPerson } from 'react-icons/md';
 import { StudentsEvaluationsTable } from '@/components/tables/myclasses/StudentsEvaluationsTable';
-import { ConfigurateCalificationCourseModal, LoadEvaluationsByExcelModal } from '@/components/modals/myclasses';
+import {
+	ConfigurateCalificationCourseModal,
+	LoadEvaluationsByExcelModal,
+} from '@/components/modals/myclasses';
 import { GenerateGradesReportPdfModal } from '@/components/modals/myclasses/GenerateGradesReportPdfModal';
 
 export const ClassMyStudentsByCourseView = () => {
@@ -27,32 +34,25 @@ export const ClassMyStudentsByCourseView = () => {
 	const decoded = decodeURIComponent(courseId);
 	const decrypted = Encryptor.decrypt(decoded);
 
+	const { data: dataCourseGroup, isLoading: loadingCourseGroup } =
+		useReadCourseGroupById(decrypted, { enabled: !!decrypted });
+
+	const { data: dataEvaluationSummary, refetch: refetchEvaluationSummary } =
+		useReadEvaluationSummaryByCourse(decrypted, {}, { enabled: !!decrypted });
+
+	const evaluationComponents =
+		dataEvaluationSummary?.data?.evaluation_components || [];
+
+	const has_configured =
+		dataEvaluationSummary?.data?.evaluation_configured || false;
+
 	const {
-		data: dataCourseGroup,
-		isLoading: loadingCourseGroup,
-	} = useReadCourseGroupById(
-    decrypted,
-    { enabled: !!decrypted }
-  );
-
-  const {
-    data: dataEvaluationSummary,
-    refetch: refetchEvaluationSummary,
-  } = useReadEvaluationSummaryByCourse(
-    decrypted, 
-    {},
-    { enabled: !!decrypted }
-  );
-
-  const evaluationComponents = dataEvaluationSummary?.data?.evaluation_components || [];
-
-  const has_configured = dataEvaluationSummary?.data?.evaluation_configured || false;
-  
-	const { data: studentsData, isLoading: loadingStudents, refetch: fetchStudents } =
-		useReadStudentsByCourseId(
-      dataCourseGroup?.id,
-      { enabled: !!dataCourseGroup?.id }
-    );
+		data: studentsData,
+		isLoading: loadingStudents,
+		refetch: fetchStudents,
+	} = useReadStudentsByCourseId(dataCourseGroup?.id, {
+		enabled: !!dataCourseGroup?.id,
+	});
 
 	const [filteredName, setFilteredName] = useState('');
 	const [selectedStatus, setSelectedStatus] = useState(null);
@@ -82,13 +82,14 @@ export const ClassMyStudentsByCourseView = () => {
 		setSelectedStatus(null);
 	};
 
-  const {
-    data: dataGradesReport,
-    isLoading: loadingGradesReport,
-    refetch: fetchGradesReport
-  } = useGenerateGradesReport(decrypted);
+	const {
+		data: dataGradesReport,
+		isLoading: loadingGradesReport,
+		refetch: fetchGradesReport,
+	} = useGenerateGradesReport(decrypted);
 
-  const isDownloadable = (!loadingGradesReport) && (studentsData?.students?.length > 0);
+	const isDownloadable =
+		!loadingGradesReport && studentsData?.students?.length > 0;
 
 	return (
 		<Box p={4}>
@@ -96,10 +97,16 @@ export const ClassMyStudentsByCourseView = () => {
 				<Card.Header>
 					<Flex align='center' gap={2}>
 						<Icon as={FiBook} boxSize={5} color='blue.600' />
-						<Heading fontSize='24px'>{loadingCourseGroup ? 'Cargando...' : dataCourseGroup?.course_name}</Heading>
+						<Heading fontSize='24px'>
+							{loadingCourseGroup
+								? 'Cargando...'
+								: dataCourseGroup?.course_name}
+						</Heading>
 					</Flex>
 					<Text fontSize='sm' color='gray.500'>
-						Código: {loadingCourseGroup ? 'Cargando...' : dataCourseGroup?.course_code} | Grupo:{' '}
+						Código:{' '}
+						{loadingCourseGroup ? 'Cargando...' : dataCourseGroup?.course_code}{' '}
+						| Grupo:{' '}
 						{loadingCourseGroup ? 'Cargando...' : dataCourseGroup?.group_code}
 					</Text>
 				</Card.Header>
@@ -110,7 +117,9 @@ export const ClassMyStudentsByCourseView = () => {
 							<Text fontWeight='medium' color='gray.700'>
 								Docente:
 								<Text as='span' fontWeight='semibold' ml={1}>
-									{loadingCourseGroup ? 'Cargando...' :  dataCourseGroup?.teacher_name || '—'}
+									{loadingCourseGroup
+										? 'Cargando...'
+										: dataCourseGroup?.teacher_name || '—'}
 								</Text>
 							</Text>
 						</Flex>
@@ -120,7 +129,9 @@ export const ClassMyStudentsByCourseView = () => {
 							<Text fontWeight='medium' color='gray.700'>
 								Capacidad:
 								<Text as='span' fontWeight='semibold' ml={1}>
-									{loadingCourseGroup ? 'Cargando...' : dataCourseGroup?.capacity ?? '—'}
+									{loadingCourseGroup
+										? 'Cargando...'
+										: (dataCourseGroup?.capacity ?? '—')}
 								</Text>
 							</Text>
 						</Flex>
@@ -147,8 +158,8 @@ export const ClassMyStudentsByCourseView = () => {
 							spacing={2}
 							justify='flex-end'
 							w={{ base: '100%', md: 'auto' }}
-              overflow='hidden'
-              direction={{ base: 'column', md: 'row' }}
+							overflow='hidden'
+							direction={{ base: 'column', md: 'row' }}
 						>
 							{hasActiveFilters && (
 								<Button
@@ -162,10 +173,10 @@ export const ClassMyStudentsByCourseView = () => {
 								</Button>
 							)}
 
-              <GenerateGradesReportPdfModal 
-                dataGradesReport={dataGradesReport}
-                isLoading={isDownloadable}
-              />
+							<GenerateGradesReportPdfModal
+								dataGradesReport={dataGradesReport}
+								isLoading={isDownloadable}
+							/>
 						</Stack>
 					</Flex>
 				</Card.Header>
@@ -194,21 +205,20 @@ export const ClassMyStudentsByCourseView = () => {
 						<SimpleGrid
 							columns={{ base: 1, sm: 2, md: 2 }}
 							gap={3}
-							
 							justifyContent='end'
 						>
-							<LoadEvaluationsByExcelModal 
-                dataCourseGroup={dataCourseGroup}
-                fetchData={fetchStudents}
-                fetchGradesReport={fetchGradesReport}
-              />
+							<LoadEvaluationsByExcelModal
+								dataCourseGroup={dataCourseGroup}
+								fetchData={fetchStudents}
+								fetchGradesReport={fetchGradesReport}
+							/>
 
 							<ConfigurateCalificationCourseModal
-                fetchData={refetchEvaluationSummary}
-                courseGroup={dataCourseGroup}
-                data={dataEvaluationSummary?.data}
+								fetchData={refetchEvaluationSummary}
+								courseGroup={dataCourseGroup}
+								data={dataEvaluationSummary?.data}
 								evaluationComponents={evaluationComponents}
-				        hasConfiguration={has_configured}
+								hasConfiguration={has_configured}
 							/>
 						</SimpleGrid>
 					</Stack>
@@ -216,8 +226,8 @@ export const ClassMyStudentsByCourseView = () => {
 			</Card.Root>
 
 			<StudentsEvaluationsTable
-        fetchData={fetchStudents}
-        fetchGradesReport={fetchGradesReport}
+				fetchData={fetchStudents}
+				fetchGradesReport={fetchGradesReport}
 				students={filteredStudents}
 				evaluationComponents={evaluationComponents}
 				isLoading={loadingStudents}

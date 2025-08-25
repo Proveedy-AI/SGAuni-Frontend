@@ -31,7 +31,7 @@ export const ConfigurateCalificationCourseModal = ({
 	const [errors, setErrors] = useState({});
 	const [currentStep, setCurrentStep] = useState(1); // 1: Método, 2: Tipo, 3: Número, 4: Configurar
 
-  const evaluationComponents = data?.evaluation_components || [];
+	const evaluationComponents = data?.evaluation_components || [];
 
 	const { mutate: configureEvaluation, isLoading: isConfiguring } =
 		useConfigureEvaluationByCourse(courseGroup?.id);
@@ -49,8 +49,8 @@ export const ConfigurateCalificationCourseModal = ({
 	// Determinar si ya está configurado
 	const isAlreadyConfigured = hasConfiguration;
 	const currentQualificationLabel =
-		QualificationTypes.find((q) => q.value === data?.qualification_type_code)?.label ||
-		'No definido';
+		QualificationTypes.find((q) => q.value === data?.qualification_type_code)
+			?.label || 'No definido';
 
 	// Reset form cuando se abre la modal
 	useEffect(() => {
@@ -205,26 +205,24 @@ export const ConfigurateCalificationCourseModal = ({
 		}
 
 		configureEvaluation(payload, {
-				onSuccess: () => {
-					toaster.create({
-						title: 'Configuración guardada',
-						description: 'Las evaluaciones se han configurado correctamente',
-						type: 'success',
-					});
-					setOpen(false);
-					fetchData && fetchData();
-				},
-				onError: (error) => {
-					toaster.create({
-						title: 'Error al configurar',
-						description:
-							error.message ||
-							'Ocurrió un error al configurar las evaluaciones',
-						type: 'error',
-					});
-				},
-			}
-		);
+			onSuccess: () => {
+				toaster.create({
+					title: 'Configuración guardada',
+					description: 'Las evaluaciones se han configurado correctamente',
+					type: 'success',
+				});
+				setOpen(false);
+				fetchData && fetchData();
+			},
+			onError: (error) => {
+				toaster.create({
+					title: 'Error al configurar',
+					description:
+						error.message || 'Ocurrió un error al configurar las evaluaciones',
+					type: 'error',
+				});
+			},
+		});
 	};
 
 	const renderStepContent = () => {
@@ -389,8 +387,8 @@ export const ConfigurateCalificationCourseModal = ({
 									</Alert.Indicator>
 									<Alert.Title>¡Importante!</Alert.Title>
 									<Alert.Description>
-										Una vez configurado, el sistema de evaluación no podrá ser modificado. 
-										Revise cuidadosamente antes de confirmar.
+										Una vez configurado, el sistema de evaluación no podrá ser
+										modificado. Revise cuidadosamente antes de confirmar.
 									</Alert.Description>
 								</Alert.Root>
 
@@ -411,7 +409,6 @@ export const ConfigurateCalificationCourseModal = ({
 									Se creará un campo único para registrar la calificación final
 									de cada estudiante.
 								</Text>
-
 							</VStack>
 						</Card.Body>
 					</Card.Root>
@@ -562,8 +559,9 @@ export const ConfigurateCalificationCourseModal = ({
 						</Alert.Indicator>
 						<Alert.Title>¡Configuración Irreversible!</Alert.Title>
 						<Alert.Description>
-							Una vez guardada la configuración de evaluaciones, no podrá modificar los nombres, 
-							cantidades ni pesos de las evaluaciones. Verifique que toda la información sea correcta.
+							Una vez guardada la configuración de evaluaciones, no podrá
+							modificar los nombres, cantidades ni pesos de las evaluaciones.
+							Verifique que toda la información sea correcta.
 						</Alert.Description>
 					</Alert.Root>
 				</VStack>
@@ -615,9 +613,9 @@ export const ConfigurateCalificationCourseModal = ({
 									bg='green.500'
 									color='white'
 									onClick={handleSubmit}
-									isLoading={isConfiguring}
-									leftIcon={<FiSave />}
+									loading={isConfiguring}
 								>
+									<FiSave />
 									Guardar Configuración
 								</Button>
 							) : evaluationMethod?.value === 2 && currentStep < 4 ? (
@@ -629,9 +627,9 @@ export const ConfigurateCalificationCourseModal = ({
 									bg='green.500'
 									color='white'
 									onClick={handleSubmit}
-									isLoading={isConfiguring}
-									leftIcon={<FiSave />}
+									loading={isConfiguring}
 								>
+									<FiSave />
 									Guardar Configuración
 								</Button>
 							)}
