@@ -11,7 +11,7 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import { Link, Outlet, useLocation } from 'react-router';
-import { FiFileText, FiClipboard } from 'react-icons/fi';
+import { FiClipboard } from 'react-icons/fi';
 
 export const MyClassesLayout = () => {
   const { colorMode } = useColorMode();
