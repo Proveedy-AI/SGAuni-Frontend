@@ -37,6 +37,7 @@ export const SendAEnrollmentProgramtoConfirmForm = ({ fetchData, item }) => {
 					type: 'success',
 				});
 				fetchData();
+				setOpen(false);
 			},
 			onError: (error) => {
 				toaster.create({
