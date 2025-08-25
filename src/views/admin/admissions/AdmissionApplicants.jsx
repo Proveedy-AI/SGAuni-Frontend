@@ -44,20 +44,23 @@ export const AdmissionApplicants = () => {
 		!!searchValue.program_type ||
 		!!searchValue.admission_process ||
 		!!searchValue.date;
-	const filteredAdmissionPrograms = allAdmissionPrograms?.filter(
-		(item) =>
-			(!searchValue.program_name ||
-				item.program_name
-					.toLowerCase()
-					.includes(searchValue.program_name.trim().toLowerCase())) &&
-			(!searchValue.program_type?.value ||
-				item.program_type.trim().toLowerCase() ===
-					searchValue.program_type.label.trim().toLowerCase()) &&
-			(!searchValue.admission_process?.value ||
-				item.admission_process === searchValue.admission_process.value) &&
-			(!searchValue.date ||
-				item.semester_start_date.slice(0, 10) === searchValue.date)
-	);
+	
+	const filteredAdmissionPrograms = allAdmissionPrograms
+		?.filter(
+			(item) =>
+				(!searchValue.program_name ||
+					item.program_name
+						.toLowerCase()
+						.includes(searchValue.program_name.trim().toLowerCase())) &&
+				(!searchValue.program_type?.value ||
+					item.program_type.trim().toLowerCase() ===
+						searchValue.program_type.label.trim().toLowerCase()) &&
+				(!searchValue.admission_process?.value ||
+					item.admission_process === searchValue.admission_process.value) &&
+				(!searchValue.date ||
+					item.semester_start_date.slice(0, 10) === searchValue.date)
+		)
+		?.sort((a, b) => b.id - a.id); // ascendente (usa b.id - a.id para descendente)
 
 	const totalCount = isFiltering
 		? filteredAdmissionPrograms.length

@@ -91,6 +91,7 @@ const Row = memo(
 						: startIndex + index + 1}
 				</Table.Cell>
 				<Table.Cell>{item.person_full_name}</Table.Cell>
+				<Table.Cell>{item.modality_display}</Table.Cell>
 				<Table.Cell>
 					<Badge
 						colorPalette={
@@ -129,10 +130,20 @@ const Row = memo(
 				<Table.Cell textAlign='center'>
 					{item.qualification_average || '-'}
 				</Table.Cell>
+				<Table.Cell textAlign='center'>
+					<Badge
+						colorPalette={item.has_passed ? 'green' : 'red'}
+						fontWeight='semibold'
+					>
+						{item.has_passed ? 'Si' : 'No'}
+					</Badge>
+				</Table.Cell>
 				<Table.Cell onClick={(e) => e.stopPropagation()}>
 					<HStack>
 						<ViewAdmissionProgramExams item={item} fetchData={fetchData} />
-						{permissions?.includes('admissions.applicants.create.evaluation') && (
+						{permissions?.includes(
+							'admissions.applicants.create.evaluation'
+						) && (
 							<CreateProgramExamToAdmissionProgram
 								item={item}
 								fetchData={fetchData}
@@ -221,6 +232,14 @@ export const AdmissionApplicantsByProgramTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
+							<Table.ColumnHeader>
+								<SortableHeader
+									label='Modalidad'
+									columnKey='modality_display'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
 							<Table.ColumnHeader textAlign='center'>
 								<SortableHeader
 									label='Estado de postulación'
@@ -245,12 +264,20 @@ export const AdmissionApplicantsByProgramTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
+							<Table.ColumnHeader textAlign='center'>
+								<SortableHeader
+									label='Ingreso'
+									columnKey='has_passed'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
 							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
 						{isLoading ? (
-							<SkeletonTable columns={6} />
+							<SkeletonTable columns={8} />
 						) : visibleRows?.length > 0 ? (
 							visibleRows.map((item, index) => (
 								<Row
