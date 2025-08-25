@@ -19,7 +19,7 @@ const Row = memo(
 		];
 
 		const status = statusDisplay.find((s) => s.value === item.is_current);
-		console.log(item);
+
 		const navigate = useNavigate();
 		const encrypted = Encryptor.encrypt(item.id);
 		const encoded = encodeURIComponent(encrypted);

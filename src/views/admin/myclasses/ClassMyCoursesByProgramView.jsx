@@ -165,7 +165,7 @@ export const ClassMyCoursesByProgramView = () => {
 
 	const status = statusDisplay.find((s) => s.value === programItem?.is_current);
 	return (
-		<Stack spacing={6} mx='auto'>
+		<Stack gap={6} mx='auto'>
 			<Card.Root>
 				<Card.Header>
 					<Flex align='center' gap={2}>

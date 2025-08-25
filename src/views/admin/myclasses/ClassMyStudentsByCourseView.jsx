@@ -93,7 +93,7 @@ export const ClassMyStudentsByCourseView = () => {
 		!loadingGradesReport && studentsData?.students?.length > 0;
 
 	return (
-		<Box p={4}>
+		<Box>
 			<Card.Root mb={6} overflow='hidden'>
 				<Card.Header>
 					<Flex align='center' gap={2}>

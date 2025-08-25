@@ -132,7 +132,6 @@ const styles = StyleSheet.create({
 
 export const GradesReportDocument = ({ dataGradesReport }) => {
 	const faviconUrl = `${window.location.origin}/favicon.png`;
-  console.log(dataGradesReport)
 	return (
 		<PDFViewer height='600' width='100%'>
 			<Document>
