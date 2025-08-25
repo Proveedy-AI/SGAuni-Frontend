@@ -14,8 +14,10 @@ import {
 import { FiFileText, FiLock, FiMapPin, FiPhone, FiUser } from 'react-icons/fi';
 import { LuGraduationCap } from 'react-icons/lu';
 import PropTypes from 'prop-types';
+import { FaSchool } from 'react-icons/fa';
+import { Field } from '@/components/ui';
 
-export const GeneralDataStudent = ({ dataPerson }) => {
+export const GeneralDataStudent = ({ dataPerson, dataStudent }) => {
 	const documentTypes = [
 		{ value: 1, label: 'DNI' },
 		{ value: 2, label: 'Pasaporte' },
@@ -579,10 +581,40 @@ export const GeneralDataStudent = ({ dataPerson }) => {
 							</VStack>
 						</Card.Body>
 					</Card.Root>
+					<Card.Root shadow='md'>
+						<Card.Header pb={0}>
+							<HStack gap={2}>
+								<Icon as={FaSchool} boxSize={5} />
+								<Heading size='md'>Datos Postgrado</Heading>
+							</HStack>
+						</Card.Header>
+
+						<Card.Body>
+							<VStack align='stretch' gap={4}>
+								<Flex gap={3} align='start'>
+									<Box>
+										<Text fontSize='sm' fontWeight='medium' color='gray.600'>
+											Código de Estudiante
+										</Text>
+										<Text color='gray.900'>
+											{dataStudent?.student_code || '—'}
+										</Text>
+									</Box>
+								</Flex>
+								<Flex gap={3} align='start'>
+									{dataStudent?.admission_programs?.map((p) => (
+										<Field key={p.program} label='Programas:'>
+											<Text fontSize='sm' fontWeight='medium'>
+												{p.program_name}
+											</Text>
+										</Field>
+									))}
+								</Flex>
+							</VStack>
+						</Card.Body>
+					</Card.Root>
 				</SimpleGrid>
 			</Box>
-
-	
 		</SimpleGrid>
 	);
 };
@@ -591,4 +623,5 @@ GeneralDataStudent.propTypes = {
 	dataPerson: PropTypes.object.isRequired,
 	myEnrollment: PropTypes.array.isRequired,
 	isLoadingEnrollment: PropTypes.bool.isRequired,
+	dataStudent: PropTypes.object,
 };
