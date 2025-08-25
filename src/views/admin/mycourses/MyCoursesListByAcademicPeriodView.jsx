@@ -75,7 +75,7 @@ export const MyCoursesListByAcademicPeriodView = () => {
 		);
 
 	return (
-		<Box p={{ base: 4, md: 6 }} maxW="full" mx="auto">
+		<Box maxW="full" mx="auto">
 			<Stack bg="blue.100" p={{ base: 3, md: 4 }} borderRadius={6} spacing={4}>
 				{/* Selector de programa */}
 				<Flex
