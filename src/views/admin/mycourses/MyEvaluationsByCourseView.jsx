@@ -39,8 +39,6 @@ export const MyEvaluationsByCourseView = () => {
     (evaluation) => evaluation.weight_percentage !== null
   );
 
-  console.log(hasConfiguratedWithWeight);
-
   const bgColor = useColorModeValue("white", "gray.800");
   const borderColor = useColorModeValue("gray.200", "gray.600");
 
@@ -99,7 +97,7 @@ export const MyEvaluationsByCourseView = () => {
   }
 
   return (
-    <Box p={6} maxW="full" mx="auto">
+    <Box maxW="full" mx="auto">
       {/* Header con botón de regreso */}
       <Button
         variant="ghost"
