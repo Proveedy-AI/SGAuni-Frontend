@@ -67,163 +67,6 @@ import { usePaginationSettings } from '@/components/navigation/usePaginationSett
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 
-// Datos de ejemplo basados en la estructura proporcionada
-/*const scheduleData = [
-	{
-		id: 1,
-		course_schedule: 1,
-		course_name: 'Matemáticas Básicas',
-		course_group_code: 'MAT-101-A',
-		enrollment_period_program: '2024-1',
-		teacher_name: 'Dr. Juan Pérez',
-		day_of_week: 'Lunes',
-		capacity: 30,
-		start_time: '08:00',
-		end_time: '10:00',
-		status_review: 1,
-		status_review_display: 'Aprobado',
-		is_mandatory: true,
-		cycle: 'I',
-		credits: 4,
-	},
-	{
-		id: 2,
-		course_schedule: 2,
-		course_name: 'Física General',
-		course_group_code: 'FIS-201-B',
-		enrollment_period_program: '2024-1',
-		teacher_name: 'Dra. María García',
-		day_of_week: 'Martes',
-		capacity: 25,
-		start_time: '10:00',
-		end_time: '12:00',
-		status_review: 0,
-		status_review_display: 'Pendiente',
-		is_mandatory: false,
-		cycle: 'II',
-		credits: 3,
-	},
-	{
-		id: 3,
-		course_schedule: 3,
-		course_name: 'Programación I',
-		course_group_code: 'PRG-101-A',
-		enrollment_period_program: '2024-1',
-		teacher_name: 'Ing. Carlos López',
-		day_of_week: 'Miércoles',
-		capacity: 20,
-		start_time: '14:00',
-		end_time: '16:00',
-		status_review: 1,
-		status_review_display: 'Aprobado',
-		is_mandatory: true,
-		cycle: 'I',
-		credits: 5,
-	},
-	{
-		id: 4,
-		course_schedule: 4,
-		course_name: 'Química Orgánica',
-		course_group_code: 'QUI-301-A',
-		enrollment_period_program: '2024-1',
-		teacher_name: 'Dr. Ana Martínez',
-		day_of_week: 'Jueves',
-		capacity: 15,
-		start_time: '09:00',
-		end_time: '11:00',
-		status_review: 1,
-		status_review_display: 'Aprobado',
-		is_mandatory: true,
-		cycle: 'III',
-		credits: 4,
-	},
-	{
-		id: 5,
-		course_schedule: 5,
-		course_name: 'Historia del Arte',
-		course_group_code: 'ART-101-B',
-		enrollment_period_program: '2024-1',
-		teacher_name: 'Prof. Luis Rodríguez',
-		day_of_week: 'Viernes',
-		capacity: 40,
-		start_time: '16:00',
-		end_time: '18:00',
-		status_review: 0,
-		status_review_display: 'Pendiente',
-		is_mandatory: false,
-		cycle: 'I',
-		credits: 2,
-	},
-	{
-		id: 6,
-		course_schedule: 6,
-		course_name: 'Estadística',
-		course_group_code: 'EST-201-A',
-		enrollment_period_program: '2024-1',
-		teacher_name: 'Dra. Carmen Silva',
-		day_of_week: 'Lunes',
-		capacity: 35,
-		start_time: '14:00',
-		end_time: '16:00',
-		status_review: 1,
-		status_review_display: 'Aprobado',
-		is_mandatory: true,
-		cycle: 'II',
-		credits: 3,
-	},
-	{
-		id: 9,
-		course_schedule: 6,
-		course_name: 'Física',
-		course_group_code: 'FIS-201-A',
-		enrollment_period_program: '2024-1',
-		teacher_name: 'Dra. Pedro Aliaga',
-		day_of_week: 'Lunes',
-		capacity: 35,
-		start_time: '14:00',
-		end_time: '16:00',
-		status_review: 1,
-		status_review_display: 'Aprobado',
-		is_mandatory: true,
-		cycle: 'II',
-		credits: 3,
-	},
-	{
-		id: 8,
-		course_schedule: 6,
-		course_name: 'Física',
-		course_group_code: 'FIS-201-A',
-		enrollment_period_program: '2024-1',
-		teacher_name: 'Dra. Pedro Aliaga',
-		day_of_week: 'Lunes',
-		capacity: 35,
-		start_time: '14:00',
-		end_time: '16:00',
-		status_review: 1,
-		status_review_display: 'Aprobado',
-		is_mandatory: true,
-		cycle: 'II',
-		credits: 3,
-	},
-	{
-		id: 7,
-		course_schedule: 6,
-		course_name: 'Física',
-		course_group_code: 'FIS-201-A',
-		enrollment_period_program: '2024-1',
-		teacher_name: 'Dra. Pedro Aliaga',
-		day_of_week: 'Lunes',
-		capacity: 35,
-		start_time: '15:00',
-		end_time: '17:00',
-		status_review: 1,
-		status_review_display: 'Aprobado',
-		is_mandatory: true,
-		cycle: 'II',
-		credits: 3,
-	},
-];*/
-
 const timeSlots = [
 	'07:00',
 	'08:00',
@@ -238,6 +81,10 @@ const timeSlots = [
 	'17:00',
 	'18:00',
 	'19:00',
+	'20:00',
+	'21:00',
+	'22:00',
+	'23:00',
 ];
 
 const daysOfWeek = [
@@ -247,6 +94,7 @@ const daysOfWeek = [
 	'Jueves',
 	'Viernes',
 	'Sábado',
+	'Domingo',
 ];
 
 const daysOfWeek2 = [
@@ -1059,7 +907,7 @@ const CalendarView = ({ data }) => {
 		<Box overflowX='auto'>
 			<Box minW='800px'>
 				{/* Header con días */}
-				<Grid templateColumns='auto repeat(6, 1fr)' gap={1} mb={2}>
+				<Grid templateColumns='auto repeat(7, 1fr)' gap={1} mb={2}>
 					<Box p={2} textAlign='center' fontWeight='medium' fontSize='sm'>
 						Hora
 					</Box>
@@ -1080,7 +928,7 @@ const CalendarView = ({ data }) => {
 
 				{/* Grid del calendario */}
 				{timeSlots.map((time) => (
-					<Grid key={time} templateColumns='auto repeat(6, 1fr)' gap={1}>
+					<Grid key={time} templateColumns='auto repeat(7, 1fr)' gap={1}>
 						<Box
 							p={2}
 							fontSize='xs'
@@ -1285,49 +1133,45 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 		});
 	};*/
 
-	const handleSendMultiple = (courseIds = []) => {
+	const handleSendMultiple = async (courseIds = []) => {
 		if (!courseIds.length) return;
 
-		Promise.allSettled(
+		let successCount = 0;
+		let errorCount = 0;
+
+		await Promise.all(
 			courseIds.map(
 				(id) =>
-					new Promise((resolve, reject) => {
+					new Promise((resolve) => {
 						createCourseReview(id, {
-							onSuccess: () => resolve({ id, status: 'success' }),
-							onError: (error) =>
-								reject({ id, status: 'error', message: error.message }),
+							onSuccess: () => {
+								successCount++;
+								resolve();
+							},
+							onError: (error) => {
+								errorCount++;
+								console.error(`Error al enviar curso ${id}:`, error);
+								resolve(); // resolvemos igual, para que no corte el Promise.all
+							},
 						});
 					})
 			)
-		).then((results) => {
-			const successCount = results.filter(
-				(r) => r.status === 'fulfilled'
-			).length;
-			const errorCount = results.filter((r) => r.status === 'rejected').length;
+		);
 
-			if (successCount > 0) {
-				toaster.create({
-					title: `✅ ${successCount} horario(s) enviados correctamente`,
-					type: 'success',
-				});
-				refetchCourseSchedule();
-				setSelectedIds([]); // Limpiar selección después de enviar
-			}
+		if (successCount > 0) {
+			toaster.create({
+				title: `✅ ${successCount} horario(s) enviados correctamente`,
+				type: 'success',
+			});
+		}
 
-			if (errorCount > 0) {
-				toaster.create({
-					title: `⚠️ ${errorCount} error(es) al enviar`,
-					type: 'error',
-				});
-				console.error(
-					'Errores:',
-					results.filter((r) => r.status === 'rejected')
-				);
-			}
+		if (errorCount > 0) {
+			toaster.create({
+				title: `⚠️ ${errorCount} error(es) al enviar`,
+				type: 'error',
+			});
+		}
 
-			refetchCourseSchedule();
-			//setOpenSend(false);
-		});
 		refetchCourseSchedule();
 		setSelectedIds([]);
 	};
@@ -1458,7 +1302,7 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 			{/* Tabs */}
 			<Tabs.Root value={tab} onValueChange={(e) => setTab(e.value)}>
 				<Tabs.List as={Flex} justify='space-between' align='center' mb={3}>
-					<HStack spacing={4}>
+					<HStack gap={4}>
 						<Tabs.Trigger value={1}>
 							<HStack>
 								<FiGrid size={16} />
