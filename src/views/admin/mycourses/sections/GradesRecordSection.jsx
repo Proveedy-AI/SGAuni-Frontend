@@ -44,12 +44,23 @@ export const ExpandableCourseCard = ({ course, gradesCache, setGradesCache }) =>
 	useEffect(() => {
 		const gradesData = gradesCache[course.id_course_selection] || dataCourseGrades;
 		if (gradesData) {
+      const hasConfiguredWithWeight = gradesData?.data?.evaluations?.some(
+        (evaluation) => evaluation.weight_percentage !== null
+      );
+
 			const formulaParts = gradesData?.data?.evaluations.map(
 				(evaluation, index) => {
-					return `${index !== 0 ? '+' : ''}${evaluation.weight_percentage}% (${evaluation.evaluation_name})`;
+					return `
+            ${index !== 0 ? '+' : ''}
+            ${hasConfiguredWithWeight ? `${evaluation.weight_percentage}%` : ''}
+            ${hasConfiguredWithWeight ? `(${evaluation.evaluation_name})` : evaluation.evaluation_name}
+          `;
 				}
 			);
-			setGradeFormula(formulaParts.join(' ') || 'No está definido');
+      const formulaString = `
+        ${formulaParts.join(' ')}${hasConfiguredWithWeight ? '' : `/ ${gradesData?.data?.evaluations.length}`}
+      `
+			setGradeFormula(formulaString || 'No está definido');
 		}
 	}, [gradesCache, course.id_course_selection, dataCourseGrades]);
 
