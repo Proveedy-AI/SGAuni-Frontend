@@ -1,4 +1,5 @@
 import {
+	Badge,
 	Box,
 	Card,
 	Grid,
@@ -11,7 +12,13 @@ import {
 	Text,
 	VStack,
 } from '@chakra-ui/react';
-import { Field, PasswordInput, Radio, RadioGroup } from '@/components/ui';
+import {
+	Field,
+	PasswordInput,
+	Radio,
+	RadioGroup,
+	Tooltip,
+} from '@/components/ui';
 import PropTypes from 'prop-types';
 import { ReactSelect } from '@/components/select';
 import {
@@ -27,8 +34,16 @@ import { CompactFileUpload } from '@/components/ui/CompactFileInput';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { format } from 'date-fns';
 import { useReadDisabilities } from '@/hooks/disabilities';
-import { FiFileText, FiMapPin, FiPhone, FiUser } from 'react-icons/fi';
+import {
+	FiFileText,
+	FiInfo,
+	FiMapPin,
+	FiPhone,
+	FiSettings,
+	FiUser,
+} from 'react-icons/fi';
 import { LuGraduationCap } from 'react-icons/lu';
+import { FaSchool } from 'react-icons/fa';
 
 const FieldWithInputText = ({
 	placeholder,
@@ -69,12 +84,12 @@ FieldWithInputText.propTypes = {
 export const ChangeDataStudentProfileForm = ({
 	profile,
 	updateProfileField,
+	setProfile,
 }) => {
 	const documentTypeOptions = [
 		{ value: 1, label: 'DNI' },
 		{ value: 2, label: 'Pasaporte' },
 		{ value: 3, label: 'Carné de Extranjería' },
-
 	];
 	const { data: dataCountries, isLoading: isLoadingCountries } =
 		useReadCountries();
@@ -459,6 +474,66 @@ export const ChangeDataStudentProfileForm = ({
 							</VStack>
 						</Card.Body>
 					</Card.Root>
+					{profile.student && (
+						<Card.Root>
+							<Card.Header pb={0}>
+								<HStack gap={2}>
+									<Icon as={FaSchool} boxSize={5} />
+									<Heading size='md'>Datos Postgrado</Heading>
+								</HStack>
+							</Card.Header>
+
+							<Card.Body>
+								<VStack align='stretch' gap={4}>
+									{/* Nombre */}
+									<Field label='Nombre Completo:'>
+										<Text fontSize='sm' fontWeight='medium'>
+											{profile.student.student_name}
+										</Text>
+									</Field>
+
+									{/* Documento */}
+									<Field label='N° Documento:'>
+										<Text fontSize='sm'>{profile.student.document_number}</Text>
+									</Field>
+
+									{/* Código editable */}
+									<FieldWithInputText
+										label='Código de Estudiante:'
+										field='student_code'
+										placeholder='Ingresar código'
+										value={profile.student.student_code}
+										updateProfileField={(field, value) =>
+											setProfile((prev) => ({
+												...prev,
+												student: { ...prev.student, [field]: value },
+											}))
+										}
+									/>
+
+									{/* Estado */}
+									<Field label='Estado:'>
+										<Badge
+											colorPalette={
+												profile.student.status === 1 ? 'green' : 'red'
+											}
+										>
+											{profile.student.status_display}
+										</Badge>
+									</Field>
+
+									{/* Programa */}
+									{profile.student.admission_programs?.map((p) => (
+										<Field key={p.program} label='Programa:'>
+											<Text fontSize='sm' fontWeight='medium'>
+												{p.program_name}
+											</Text>
+										</Field>
+									))}
+								</VStack>
+							</Card.Body>
+						</Card.Root>
+					)}
 				</Box>
 
 				<Box minW='50%' spaceY={4}>
@@ -633,27 +708,30 @@ export const ChangeDataStudentProfileForm = ({
 									</Field>
 								</Box>
 								<Separator />
+								{profile.is_uni_graduate && (
+									<>
+										<Box>
+											<FieldWithInputText
+												label='Correo institucional:'
+												type='email'
+												field='uni_email'
+												placeholder='Ingresar correo'
+												value={profile.uni_email}
+												updateProfileField={updateProfileField}
+											/>
+										</Box>
 
-								<Box>
-									<FieldWithInputText
-										label='Correo institucional:'
-										type='email'
-										field='uni_email'
-										placeholder='Ingresar correo'
-										value={profile.uni_email}
-										updateProfileField={updateProfileField}
-									/>
-								</Box>
-
-								<Box>
-									<FieldWithInputText
-										label='Código UNI:'
-										field='uni_code'
-										placeholder='Ingresar código'
-										value={profile.uni_code}
-										updateProfileField={updateProfileField}
-									/>
-								</Box>
+										<Box>
+											<FieldWithInputText
+												label='Código UNI:'
+												field='uni_code'
+												placeholder='Ingresar código'
+												value={profile.uni_code}
+												updateProfileField={updateProfileField}
+											/>
+										</Box>
+									</>
+								)}
 
 								<Box>
 									<FieldWithInputText
@@ -670,25 +748,43 @@ export const ChangeDataStudentProfileForm = ({
 					<Card.Root>
 						<Card.Header pb={0}>
 							<HStack gap={2}>
-								<Icon as={LuGraduationCap} boxSize={5} />
+								<Icon as={FiSettings} boxSize={5} />
 								<Heading size='md'>Datos de la cuenta</Heading>
 							</HStack>
 						</Card.Header>
 
 						<Card.Body>
 							<VStack align='stretch' gap={4}>
-								<Box>
-									<Text
-										fontSize='sm'
-										color='gray.500'
-										mt={2}
-										fontWeight='medium'
-									>
-										Usuario del Sistema
-									</Text>
-									<Text mt={1}>{profile.user.username}</Text>
-								</Box>
-								<Separator />
+								<FieldWithInputText
+									label={
+										<HStack>
+											<Text>Usuario del Sistema:</Text>
+											<Tooltip
+												content='Este usuario debe ser cambiado por el correo institucional que le será proporcionado'
+												positioning={{ placement: 'bottom-center' }}
+												showArrow
+												openDelay={0}
+											>
+												<Icon
+													as={FiInfo}
+													color='gray.500'
+													boxSize={4}
+													cursor='pointer'
+												/>
+											</Tooltip>
+										</HStack>
+									}
+									field='username'
+									placeholder='Ingresar código'
+									value={profile.user.username}
+									updateProfileField={(field, value) =>
+										setProfile((prev) => ({
+											...prev,
+											user: { ...prev.user, [field]: value },
+										}))
+									}
+								/>
+
 								<Box>
 									<Field label='Contraseña'>
 										<PasswordInput
@@ -738,4 +834,5 @@ export const ChangeDataStudentProfileForm = ({
 ChangeDataStudentProfileForm.propTypes = {
 	profile: PropTypes.object,
 	updateProfileField: PropTypes.func,
+	setProfile: PropTypes.func,
 };

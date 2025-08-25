@@ -84,7 +84,7 @@ export const StudentDashboard = () => {
 	);
 
 	const shouldShowAlert =
-		hasMatriculatedEnrollment && (!profile?.uni_email || !profile?.uni_code);
+		hasMatriculatedEnrollment && !profile?.student?.student_code;
 
 	const enrollmentStatusMap = {
 		1: {
@@ -399,9 +399,11 @@ export const StudentDashboard = () => {
 						<Flex w='full' align='center'>
 							<Box>
 								Ya estás matriculado, pero no has registrado tu{' '}
-								<b>correo institucional</b> ni tu <b>código universitario</b>.
-								Es urgente que actualices estos datos para continuar sin
-								inconvenientes.
+								<b>código universitario</b>. Es urgente que actualices este dato
+								para continuar sin inconvenientes.
+								<Box mt={2} color='orange.500' fontSize='sm'>
+									⚠️ También recuerda registrar tu <b>correo institucional</b> como tu username.
+								</Box>
 							</Box>
 							<Spacer />
 
