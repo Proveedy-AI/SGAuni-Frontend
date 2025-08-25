@@ -33,6 +33,14 @@ export const MyEvaluationsByCourseView = () => {
     { enabled: !!decrypted }
   );
 
+  console.log(dataMyEvaluations)
+
+  const hasConfiguratedWithWeight = dataMyEvaluations?.data?.evaluations?.some(
+    (evaluation) => evaluation.weight_percentage !== null
+  );
+
+  console.log(hasConfiguratedWithWeight);
+
   const bgColor = useColorModeValue("white", "gray.800");
   const borderColor = useColorModeValue("gray.200", "gray.600");
 
@@ -189,9 +197,11 @@ export const MyEvaluationsByCourseView = () => {
                     <Table.Cell minW="240px" textAlign="center" borderRightColor={borderColor}>
                       Evaluación
                     </Table.Cell>
-                    <Table.Cell width="120px" textAlign="center" borderRightColor={borderColor}>
-                      Peso
-                    </Table.Cell>
+                    {hasConfiguratedWithWeight && (
+                      <Table.Cell width="120px" textAlign="center" borderRightColor={borderColor}>
+                        Peso
+                      </Table.Cell>
+                    )}
                     <Table.Cell width="120px" textAlign="center" borderRightColor={borderColor}>
                       Nota
                     </Table.Cell>
@@ -214,11 +224,15 @@ export const MyEvaluationsByCourseView = () => {
                             Evaluación {index + 1} - {evaluation.evaluation_name}
                           </Text>
                         </Table.Cell>
+                        {
+                          hasConfiguratedWithWeight && (
+                            <Table.Cell textAlign="center" borderRightColor={borderColor}>
+                              {evaluation.weight_percentage}%
+                            </Table.Cell>
+                          )
+                        }
                         <Table.Cell textAlign="center" borderRightColor={borderColor}>
-                          {evaluation.weight_percentage}%
-                        </Table.Cell>
-                        <Table.Cell textAlign="center" borderRightColor={borderColor}>
-                          {evaluation.grade_obtained && (
+                          {evaluation.grade_obtained ? (
                             <Badge 
                               bg={getGradeColor(evaluation.grade_obtained)}
                               variant="solid"
@@ -232,7 +246,7 @@ export const MyEvaluationsByCourseView = () => {
                             >
                               {evaluation.grade_obtained}
                             </Badge>
-                          )}
+                          ) : '-' }
                         </Table.Cell>
                         <Table.Cell textAlign="center" borderRightColor={borderColor}>
                           <Badge 
