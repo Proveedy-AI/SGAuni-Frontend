@@ -12,10 +12,12 @@ import {
 	Badge,
 	Box,
 	HStack,
+	IconButton,
 } from '@chakra-ui/react';
-import { MdSchool, MdDateRange, MdEventNote, MdListAlt } from 'react-icons/md';
+import { MdDateRange, MdEventNote, MdListAlt } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
+import { FiArrowLeft } from 'react-icons/fi';
 
 export const CourseCard = ({ course, goTo }) => {
 	return (
@@ -164,11 +166,17 @@ export const ClassMyCoursesByProgramView = () => {
 	const status = statusDisplay.find((s) => s.value === programItem?.is_current);
 	return (
 		<Stack spacing={6} mx='auto'>
-			<Heading size='lg'>Gestión de cursos</Heading>
 			<Card.Root>
 				<Card.Header>
 					<Flex align='center' gap={2}>
-						<MdSchool size={24} color='#3182ce' />
+						<IconButton
+							aria-label='Regresar'
+							variant='ghost'
+							color='blue.600'
+							onClick={() => navigate(-1)} // 👈 retrocede una página
+						>
+							<FiArrowLeft />
+						</IconButton>
 						<Heading size='md'>Información del Programa</Heading>
 					</Flex>
 				</Card.Header>

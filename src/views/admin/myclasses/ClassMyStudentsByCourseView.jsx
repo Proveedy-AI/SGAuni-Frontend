@@ -1,4 +1,4 @@
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import {
 	Box,
 	Card,
@@ -9,6 +9,7 @@ import {
 	Stack,
 	SimpleGrid,
 	Icon,
+	IconButton,
 } from '@chakra-ui/react';
 import {
 	useGenerateGradesReport,
@@ -20,7 +21,7 @@ import { useReadStudentsByCourseId } from '@/hooks/students';
 import { useState } from 'react';
 import { ReactSelect } from '@/components';
 import { Button, Field } from '@/components/ui';
-import { FiBook, FiTrash, FiUsers } from 'react-icons/fi';
+import { FiArrowLeft, FiTrash, FiUsers } from 'react-icons/fi';
 import { MdGroup, MdPerson } from 'react-icons/md';
 import { StudentsEvaluationsTable } from '@/components/tables/myclasses/StudentsEvaluationsTable';
 import {
@@ -33,7 +34,7 @@ export const ClassMyStudentsByCourseView = () => {
 	const { courseId } = useParams();
 	const decoded = decodeURIComponent(courseId);
 	const decrypted = Encryptor.decrypt(decoded);
-
+	const navigate = useNavigate();
 	const { data: dataCourseGroup, isLoading: loadingCourseGroup } =
 		useReadCourseGroupById(decrypted, { enabled: !!decrypted });
 
@@ -96,7 +97,15 @@ export const ClassMyStudentsByCourseView = () => {
 			<Card.Root mb={6} overflow='hidden'>
 				<Card.Header>
 					<Flex align='center' gap={2}>
-						<Icon as={FiBook} boxSize={5} color='blue.600' />
+						<IconButton
+							aria-label='Regresar'
+							variant='ghost'
+							color='blue.600'
+							onClick={() => navigate(-1)} // 👈 retrocede una página
+						>
+							<FiArrowLeft />
+						</IconButton>
+
 						<Heading fontSize='24px'>
 							{loadingCourseGroup
 								? 'Cargando...'
@@ -111,7 +120,7 @@ export const ClassMyStudentsByCourseView = () => {
 					</Text>
 				</Card.Header>
 				<Card.Body px={4} py={3}>
-					<Stack spacing={3}>
+					<Stack gap={3}>
 						<Flex align='center' gap={2}>
 							<Icon as={MdPerson} boxSize={5} color='gray.600' />
 							<Text fontWeight='medium' color='gray.700'>
@@ -155,7 +164,7 @@ export const ClassMyStudentsByCourseView = () => {
 						</Flex>
 
 						<Stack
-							spacing={2}
+							gap={2}
 							justify='flex-end'
 							w={{ base: '100%', md: 'auto' }}
 							overflow='hidden'
