@@ -53,7 +53,7 @@ export const MyCoursesListByAcademicPeriodView = () => {
 
 	const isDownloadable =
 		!isLoadingAcademicTranscript &&
-		dataCoursesByPeriod?.total_courses > 0
+		dataCoursesByPeriod?.total_courses > 0;
 
 	const navigate = useNavigate();
 
@@ -75,25 +75,30 @@ export const MyCoursesListByAcademicPeriodView = () => {
 		);
 
 	return (
-		<Box p={6} maxW='full' mx='auto'>
-			<Stack bg='blue.100' p={4} borderRadius={6} overflow='hidden'>
-				<Flex gap={4} direction={{ base: 'column', lg: 'row' }}>
-					<Flex align='center' gap={3} flex={1}>
+		<Box p={{ base: 4, md: 6 }} maxW="full" mx="auto">
+			<Stack bg="blue.100" p={{ base: 3, md: 4 }} borderRadius={6} spacing={4}>
+				{/* Selector de programa */}
+				<Flex
+					gap={4}
+					direction={{ base: 'column', lg: 'row' }}
+					align={{ base: 'stretch', lg: 'center' }}
+				>
+					<Flex align="center" gap={3} flex={1} direction={{ base: 'column', md: 'row' }}>
 						<Text
 							py={1}
-							pr={2}
-							color='blue.600'
-							fontSize='md'
-							fontWeight='bold'
+							pr={{ base: 0, md: 2 }}
+							color="blue.600"
+							fontSize="md"
+							fontWeight="bold"
+							textAlign={{ base: 'center', md: 'left' }}
 						>
 							Programa Académico:
 						</Text>
 						<Box
-							bg='white'
+							bg="white"
 							borderRadius={6}
-							flex={1}
-							maxW={{ base: 'full', lg: '320px' }}
-							fontSize='sm'
+							w={{ base: 'full', md: '100%', lg: '320px' }}
+							fontSize="sm"
 						>
 							<ReactSelect
 								isLoading={isLoading}
@@ -105,19 +110,22 @@ export const MyCoursesListByAcademicPeriodView = () => {
 					</Flex>
 				</Flex>
 				<Flex
-					justify='space-between'
-					border='1px solid'
-					borderColor='blue.400'
+					justify="space-between"
+					border="1px solid"
+					borderColor="blue.400"
 					borderRadius={8}
-					direction={{ base: 'column', lg: 'row' }}
-					fontSize={'sm'}
+					direction={{ base: 'column', md: 'row' }}
+					fontSize="sm"
+					overflow="hidden"
 				>
 					<SimpleGrid
-						p={2}
-						borderEndWidth={1}
-						borderColor='blue.400'
+						p={3}
+						borderBottom={{ base: '1px solid', md: '0' }}
+						borderRight={{ base: '0', md: '1px solid' }}
+						borderColor="blue.400"
 						flex={1}
 						columns={1}
+						spacing={1}
 					>
 						<Text>
 							<b>Programa:</b>{' '}
@@ -128,59 +136,62 @@ export const MyCoursesListByAcademicPeriodView = () => {
 							{filteredAcademicProgressByProgram?.admission_year}
 						</Text>
 					</SimpleGrid>
-					<SimpleGrid p={2} flex={1} columns={1}>
-						<Text color='gray.500'>
+					<SimpleGrid p={3} flex={1} columns={1} spacing={1}>
+						<Text color="gray.500">
 							<b>Inicio de programa:</b>{' '}
 							{filteredAcademicProgressByProgram?.program_start_date}
 						</Text>
-						<Text color='gray.500'>
+						<Text color="gray.500">
 							<b>Fin de programa:</b> En curso
 						</Text>
 					</SimpleGrid>
 				</Flex>
 			</Stack>
 
+			{/* Tabs */}
 			<Tabs.Root
 				value={tab}
 				onValueChange={(e) => setTab(e.value)}
-				variant='plain'
-				my={3}
+				variant="plain"
+				my={4}
 			>
 				<Flex
-					overflow='hidden'
+					overflow="auto"
 					direction={{ base: 'column', md: 'row' }}
-					justify='space-between'
+					justify="space-between"
 					align={{ base: 'flex-start', md: 'center' }}
-					gap={2}
+					gap={3}
+					w="full"
 				>
-					<Tabs.List bg='blue.100' rounded='l3' p='1'>
-						<Tabs.Trigger color='blue.600' fontSize={'sm'} value='courses'>
+					<Tabs.List
+						bg="blue.100"
+						rounded="l3"
+						p="1"
+						flexShrink={0}
+						display="flex"
+					>
+						<Tabs.Trigger color="blue.600" fontSize="sm" value="courses">
 							Cursos
 						</Tabs.Trigger>
-						<Tabs.Trigger
-							color='blue.600'
-							fontSize={'sm'}
-							value='academic-summary'
-						>
+						<Tabs.Trigger color="blue.600" fontSize="sm" value="academic-summary">
 							Resumen Académico
 						</Tabs.Trigger>
-						<Tabs.Trigger
-							color='blue.600'
-							fontSize={'sm'}
-							value='grades-record'
-						>
+						<Tabs.Trigger color="blue.600" fontSize="sm" value="grades-record">
 							Record de notas
 						</Tabs.Trigger>
-						<Tabs.Indicator rounded='l2' />
+						<Tabs.Indicator rounded="l2" />
 					</Tabs.List>
 					{(tab === 'courses' || tab === 'grades-record') && (
-						<GenerateAcademicTranscriptPdfModal
-							data={dataAcademicTranscript}
-							isActive={isDownloadable}
-						/>
+						<Box mt={{ base: 2, md: 0 }}>
+							<GenerateAcademicTranscriptPdfModal
+								data={dataAcademicTranscript}
+								isActive={isDownloadable}
+							/>
+						</Box>
 					)}
 				</Flex>
-				<Tabs.Content value='courses'>
+
+				<Tabs.Content value="courses">
 					<CoursesByPeriodSection
 						isLoadingCoursesByPeriod={isLoadingCoursesByPeriod}
 						dataCoursesByPeriod={dataCoursesByPeriod}
@@ -188,13 +199,13 @@ export const MyCoursesListByAcademicPeriodView = () => {
 						handleClickToProcessEnrollment={handleClickToProcessEnrollment}
 					/>
 				</Tabs.Content>
-				<Tabs.Content value='academic-summary'>
+				<Tabs.Content value="academic-summary">
 					<AcademicProgressSection
 						academicProgress={filteredAcademicProgressByProgram}
 						isLoading={isLoadingAcademicProgress}
 					/>
 				</Tabs.Content>
-				<Tabs.Content value='grades-record'>
+				<Tabs.Content value="grades-record">
 					<GradesRecordSection dataCoursesByPeriod={dataCoursesByPeriod} />
 				</Tabs.Content>
 			</Tabs.Root>
