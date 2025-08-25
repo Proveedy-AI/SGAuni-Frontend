@@ -85,7 +85,7 @@ export const AcademicProgressSection = ({ academicProgress, isLoading }) => {
             </Text>
           </HStack>
         </Card.Header>
-        <Card.Body px={6} spacing={2} align='stretch' gapY={2} py={3}>
+        <Card.Body px={6} gap={2} align='stretch' gapY={2} py={3}>
           <HStack justify='space-between' align='center'>
             <Text fontSize='sm' color='blue.600'>
               Aprobados
@@ -166,7 +166,7 @@ export const AcademicProgressSection = ({ academicProgress, isLoading }) => {
                 variant='solid'
                 fontSize='sm'
                 justifyContent={'center'}
-                px={4}
+                px={5}
                 boxSize={7}
               >
                 {averages.cumulative_weighted_average || 0}
@@ -181,7 +181,7 @@ export const AcademicProgressSection = ({ academicProgress, isLoading }) => {
                 variant='solid'
                 fontSize='sm'
                 justifyContent={'center'}
-                px={4}
+                px={5}
                 boxSize={7}
               >
                 {averages.current_cycle_average || 0}
