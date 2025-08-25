@@ -400,9 +400,12 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 				fetchData();
 			},
 			onError: (error) => {
+				const backendError =
+					error.response?.data?.error || error.message || 'Error desconocido';
+
 				toaster.create({
 					title: 'Error al agregar curso',
-					description: error.message,
+					description: backendError,
 					type: 'error',
 				});
 			},
@@ -682,7 +685,12 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 									</Box>
 
 									<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-										<Field label='Hora de inicio'>
+										<Field
+											label='Hora de inicio'
+											required
+											invalid={!!errors.start_time}
+											errorText={errors.start_time}
+										>
 											<Input
 												type='time'
 												value={schedule.start_time}
@@ -691,7 +699,12 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 												}
 											/>
 										</Field>
-										<Field label='Hora de fin'>
+										<Field
+											label='Hora de fin'
+											required
+											invalid={!!errors.end_time}
+											errorText={errors.end_time}
+										>
 											<Input
 												type='time'
 												value={schedule.end_time}
@@ -1192,7 +1205,8 @@ CalendarView.propTypes = {
 
 export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 	const [open, setOpen] = useState(false);
-	const [openDelete, setOpenDelete] = useState(false);
+
+	const [courseToDelete, setCourseToDelete] = useState(null);
 	//const [openSend, setOpenSend] = useState(false);
 	const [addCourseOpen, setAddCourseOpen] = useState(false);
 	const [addExcelOpen, setAddExcelOpen] = useState(false);
@@ -1328,7 +1342,7 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 					type: 'success',
 				});
 				refetchCourseSchedule();
-				setOpenDelete(false);
+				setCourseToDelete(null);
 			},
 			onError: (error) => {
 				toaster.create({
@@ -1686,19 +1700,22 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 																}
 																colorPalette='red'
 																size='xs'
+																onClick={() => setCourseToDelete(course)} // 👈 guardas cuál
 															>
 																<FiTrash2 />
 															</IconButton>
 														}
-														open={openDelete}
-														onOpenChange={(e) => setOpenDelete(e.open)}
-														onConfirm={() => handleDelete(course)}
+														open={courseToDelete?.id === course.id} // 👈 solo abre el modal de ese curso
+														onOpenChange={(e) => {
+															if (!e.open) setCourseToDelete(null); // 👈 cerrar limpia el estado
+														}}
+														onConfirm={() => handleDelete(courseToDelete)}
 														loading={isPending}
 													>
 														<Text>
 															¿Estás seguro que quieres eliminar a
 															<Span fontWeight='semibold' px='1'>
-																{course.course_name}
+																{courseToDelete?.course_name}
 															</Span>
 															de la lista de ubigeos?
 														</Text>

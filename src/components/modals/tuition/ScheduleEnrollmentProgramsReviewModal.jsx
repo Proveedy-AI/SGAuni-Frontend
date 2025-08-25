@@ -1189,7 +1189,7 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 	permissions,
 }) => {
 	const [open, setOpen] = useState(false);
-	const [openDelete, setOpenDelete] = useState(false);
+	const [courseToDelete, setCourseToDelete] = useState(null);
 	//const [openSend, setOpenSend] = useState(false);
 	const [addCourseOpen, setAddCourseOpen] = useState(false);
 	const [addExcelOpen, setAddExcelOpen] = useState(false);
@@ -1313,11 +1313,15 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 					type: 'success',
 				});
 				refetchCourseSchedule();
-				setOpenDelete(false);
+				setCourseToDelete(null);
 			},
 			onError: (error) => {
+				const backendError =
+					error.response?.data?.error || error.message || 'Error desconocido';
+
 				toaster.create({
-					title: error.message,
+					title: 'Error al agregar curso',
+					description: backendError,
 					type: 'error',
 				});
 			},
@@ -1660,19 +1664,22 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 																	}
 																	colorPalette='red'
 																	size='xs'
+																	onClick={() => setCourseToDelete(course)} // 👈 guardas cuál
 																>
 																	<FiTrash2 />
 																</IconButton>
 															}
-															open={openDelete}
-															onOpenChange={(e) => setOpenDelete(e.open)}
-															onConfirm={() => handleDelete(course)}
+															open={courseToDelete?.id === course.id} // 👈 solo abre el modal de ese curso
+															onOpenChange={(e) => {
+																if (!e.open) setCourseToDelete(null); // 👈 cerrar limpia el estado
+															}}
+															onConfirm={() => handleDelete(courseToDelete)}
 															loading={isPending}
 														>
 															<Text>
 																¿Estás seguro que quieres eliminar a
 																<Span fontWeight='semibold' px='1'>
-																	{course.course_name}
+																	{courseToDelete?.course_name}
 																</Span>
 																de la lista de ubigeos?
 															</Text>
