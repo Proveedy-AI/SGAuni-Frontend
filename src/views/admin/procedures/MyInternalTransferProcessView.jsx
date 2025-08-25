@@ -1,6 +1,5 @@
 import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
 import { useReadPrograms } from '@/hooks';
-import { useReadMyPrograms } from '@/hooks/person/useReadMyPrograms';
 import {
 	Box,
 	Text,
@@ -27,38 +26,13 @@ export const MyInternalTransferProcessView = () => {
 	console.log('my-requests', dataMyRequests);
 
 	//1: Borrador, 2: En revisión, 3: Rechazado, 4: Aprobado, 5: Completado
-	// const localTransferRequests = [
-	// 	{
-	// 		id: 1,
-	// 		program_id: 1,
-	// 		program_name_from: 'Maestría en Contabilidad',
-	// 		program_destination_id: 2,
-	// 		program_destination_name: 'Maestria en Administración',
-	// 		document_path: 'path/to/document1.pdf',
-	// 		created_at: '2025-01-15T10:30:00Z',
-	// 		status: 3,
-	// 		status_display: 'Rechazado',
-	// 	},
-	// 	{
-	// 		id: 2,
-	// 		program_id: 2,
-	// 		program_name_from: 'Maestria en Administración',
-	// 		program_destination_id: 3,
-	// 		program_destination_name: 'Maestria en Data Science',
-	// 		document_path: 'path/to/document2.pdf',
-	// 		created_at: '2025-02-10T14:20:00Z',
-	// 		status: 3,
-	// 		status_display: 'Rechazado',
-	// 	},
-	// ];
 
 	const isEjecutable = !isLoadingMyRequests && !dataMyRequests?.some((req) => req.status === 1);
 
-	const { data: dataMyPrograms } = useReadMyPrograms();
-	console.log('dataMyPrograms', dataMyPrograms);
+  const myPrograms = dataUserLogged?.student?.admission_programs || [];
+  const myFilteredPrograms = myPrograms.filter(p => p.academic_status === 1);
 
 	const { data: dataPrograms } = useReadPrograms();
-	console.log('dataPrograms', dataPrograms);
 
 	const statusColor = [
 		{ id: 1, bg: 'gray.200', color: 'gray.800' },
@@ -101,7 +75,7 @@ export const MyInternalTransferProcessView = () => {
           user={dataUserLogged}
           available={isEjecutable}
           loading={isLoadingUserLogged}
-          dataMyPrograms={dataMyPrograms}
+          dataMyPrograms={myFilteredPrograms}
           dataPrograms={dataPrograms}
         />
 			</Flex>
