@@ -15,7 +15,6 @@ import { useCreateBulkEvaluations } from '@/hooks/evaluations';
 
 export const RegisterEvaluationsModal = ({ fetchData, fetchGradesReport, student, evaluationComponents }) => {
   const { mutate: registerEvaluation, isPending } = useCreateBulkEvaluations();
-  console.log(evaluationComponents)
 
   const [open, setOpen] = useState(false);
   const [grades, setGrades] = useState({});
@@ -150,7 +149,7 @@ export const RegisterEvaluationsModal = ({ fetchData, fetchGradesReport, student
       onOpenChange={(e) => setOpen(e.open)}
       onSave={handleSubmit}
       onClose={() => setOpen(false)}
-      isLoading={isPending}
+      loading={isPending}
     >
       <VStack spacing={6} align='stretch' maxHeight={'700px'} overflowY='auto'>
         {/* Información del estudiante */}
