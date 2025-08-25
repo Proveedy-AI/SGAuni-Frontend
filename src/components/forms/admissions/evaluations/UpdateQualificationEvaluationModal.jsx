@@ -28,7 +28,7 @@ import { formatDateString } from '@/components/ui/dateHelpers';
 import { LuFileType } from 'react-icons/lu';
 import { FaGrinStars } from 'react-icons/fa';
 
-export const UpdateQualificationEvaluationModal = ({ data, fetchData }) => {
+export const UpdateQualificationEvaluationModal = ({ data, fetchData, fetchDataMain }) => {
 	const [open, setOpen] = useState(false);
 	const [qualification, setQualification] = useState(data.qualification || '');
 	const [comment, setComments] = useState(data.feedback || '');
@@ -58,6 +58,7 @@ export const UpdateQualificationEvaluationModal = ({ data, fetchData }) => {
 						type: 'success',
 					});
 					fetchData();
+					fetchDataMain();
 					setOpen(false);
 				},
 				onError: (error) => {
@@ -415,4 +416,5 @@ export const UpdateQualificationEvaluationModal = ({ data, fetchData }) => {
 UpdateQualificationEvaluationModal.propTypes = {
 	data: PropTypes.object.isRequired,
 	fetchData: PropTypes.func.isRequired,
+	fetchDataMain: PropTypes.func.isRequired,
 };
