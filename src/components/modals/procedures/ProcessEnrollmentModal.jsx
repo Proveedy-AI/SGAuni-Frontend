@@ -120,7 +120,7 @@ export const ProcessEnrollmentModal = ({
 						type: 'success',
 					});
 					onConfirmEnrollment();
-					onNext();
+
 					setisSelectCaja(false);
 					setSelectedMethod(null);
 					setNumDoc('');
