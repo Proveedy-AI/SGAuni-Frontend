@@ -1158,19 +1158,16 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 			)
 		);
 
-		if (successCount > 0) {
-			toaster.create({
-				title: `✅ ${successCount} horario(s) enviados correctamente`,
-				type: 'success',
-			});
-		}
-
 		if (errorCount > 0) {
 			toaster.create({
 				title: `⚠️ ${errorCount} error(es) al enviar`,
 				type: 'error',
 			});
 		}
+		toaster.create({
+			title: `✅ ${successCount} horario(s) enviados correctamente`,
+			type: 'success',
+		});
 
 		refetchCourseSchedule();
 		setSelectedIds([]);

@@ -181,46 +181,40 @@ export const Step03SummaryEnrollment = ({
 	];
 
 	const handleConfirmEnrollment = () => {
-		confirmCourses({
-			onSuccess: () => {
-				toaster.create({
-					title: 'Matricula confirmada exitosamente',
-					type: 'success',
-				});
-				onNext();
-			},
-			onError: (error) => {
-				const errorData = error.response?.data;
+		confirmCourses.mutate(
+			{ selection_ids: selections.map((course) => course.id) }, // 👈 payload que viaja en el body
+			{
+				onSuccess: () => {
+					toaster.create({
+						title: 'Matrícula confirmada exitosamente',
+						type: 'success',
+					});
+					onNext();
+				},
+				onError: (error) => {
+					const errorData = error.response?.data;
 
-				if (Array.isArray(errorData)) {
-					// Caso como: ["Ya existe una solicitud de pago Pendiente..."]
-					errorData.forEach((message) => {
+					if (Array.isArray(errorData)) {
+						errorData.forEach((message) => {
+							toaster.create({ title: message, type: 'error' });
+						});
+					} else if (errorData && typeof errorData === 'object') {
+						Object.values(errorData).forEach((errorList) => {
+							if (Array.isArray(errorList)) {
+								errorList.forEach((message) => {
+									toaster.create({ title: message, type: 'error' });
+								});
+							}
+						});
+					} else {
 						toaster.create({
-							title: message,
+							title: 'Error al confirmar la matrícula',
 							type: 'error',
 						});
-					});
-				} else if (errorData && typeof errorData === 'object') {
-					// Caso como: { field1: ["msg1", "msg2"], field2: ["msg3"] }
-					Object.values(errorData).forEach((errorList) => {
-						if (Array.isArray(errorList)) {
-							errorList.forEach((message) => {
-								toaster.create({
-									title: message,
-									type: 'error',
-								});
-							});
-						}
-					});
-				} else {
-					// Fallback
-					toaster.create({
-						title: 'Error al solicitar el pago',
-						type: 'error',
-					});
-				}
-			},
-		});
+					}
+				},
+			}
+		);
 	};
 	const handleRequestPaymentOrder = () => {
 		setPaymentPlan(9);
