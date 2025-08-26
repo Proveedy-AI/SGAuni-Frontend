@@ -51,9 +51,7 @@ export const MyCoursesListByAcademicPeriodView = () => {
 	const { data: dataCoursesByPeriod, isLoading: isLoadingCoursesByPeriod } =
 		useReadCoursesByPeriod(studentUUID, programEnrolled?.value);
 
-	const isDownloadable =
-		!isLoadingAcademicTranscript &&
-		dataCoursesByPeriod?.total_courses > 0;
+	const isDownloadable = !isLoadingAcademicTranscript && dataAcademicTranscript;
 
 	const navigate = useNavigate();
 
