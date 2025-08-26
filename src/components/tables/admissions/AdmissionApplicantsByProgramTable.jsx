@@ -15,7 +15,6 @@ import { useNavigate } from 'react-router';
 
 const Row = memo(
 	({
-		programId,
     admissionProgramId,
 		item,
 		fetchData,
@@ -147,7 +146,7 @@ const Row = memo(
 						) && (
 							<CreateProgramExamToAdmissionProgram
 								item={item}
-                programId={programId}
+                programId={admissionProgramId}
 								fetchData={fetchData}
 							/>
 						)}
@@ -162,7 +161,6 @@ const Row = memo(
 Row.displayName = 'Row';
 
 Row.propTypes = {
-	programId: PropTypes.number,
   admissionProgramId: PropTypes.number,
 	item: PropTypes.object,
 	fetchData: PropTypes.func,
@@ -174,7 +172,6 @@ Row.propTypes = {
 };
 
 export const AdmissionApplicantsByProgramTable = ({
-	programId,
   admissionProgramId,
 	data,
 	fetchData,
@@ -281,12 +278,11 @@ export const AdmissionApplicantsByProgramTable = ({
 					</Table.Header>
 					<Table.Body>
 						{isLoading ? (
-							<SkeletonTable columns={8} />
+							<SkeletonTable columns={9} />
 						) : visibleRows?.length > 0 ? (
 							visibleRows.map((item, index) => (
 								<Row
 									key={item.id}
-									programId={programId}
                   admissionProgramId={admissionProgramId}
 									item={item}
 									data={data}
@@ -299,7 +295,7 @@ export const AdmissionApplicantsByProgramTable = ({
 							))
 						) : (
 							<Table.Row>
-								<Table.Cell colSpan={6} textAlign='center' py={2}>
+								<Table.Cell colSpan={7} textAlign='center' py={2}>
 									No hay datos disponibles.
 								</Table.Cell>
 							</Table.Row>
@@ -324,7 +320,6 @@ export const AdmissionApplicantsByProgramTable = ({
 };
 
 AdmissionApplicantsByProgramTable.propTypes = {
-	programId: PropTypes.number,
   admissionProgramId: PropTypes.number,
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
