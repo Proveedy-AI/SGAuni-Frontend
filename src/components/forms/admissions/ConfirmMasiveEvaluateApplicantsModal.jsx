@@ -8,6 +8,7 @@ export const ConfirmMasiveEvaluateApplicantsModal = ({
 	uuid,
 	open,
 	setOpen,
+	fetchData,
 }) => {
 	const { mutate: masiveEvaluateApplicants, isPending } =
 		useMasiveEvaluateApplicants();
@@ -32,6 +33,7 @@ export const ConfirmMasiveEvaluateApplicantsModal = ({
 					type: 'success',
 				});
 				setOpen(false);
+				fetchData();
 			},
 			onError: (error) => {
 				toaster.create({
@@ -69,4 +71,5 @@ ConfirmMasiveEvaluateApplicantsModal.propTypes = {
 	uuid: PropTypes.string,
 	open: PropTypes.bool,
 	setOpen: PropTypes.func,
+	fetchData: PropTypes.func,
 };

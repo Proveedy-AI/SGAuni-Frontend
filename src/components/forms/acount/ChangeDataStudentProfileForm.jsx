@@ -138,7 +138,7 @@ export const ChangeDataStudentProfileForm = ({
 	const { data: dataDisabilites, isLoading: loadingDisabilites } =
 		useReadDisabilities();
 	const DisabilitesOptions =
-		dataDisabilites?.map((disability) => ({
+		dataDisabilites?.results.map((disability) => ({
 			value: disability.id,
 			label: disability.name,
 		})) || [];

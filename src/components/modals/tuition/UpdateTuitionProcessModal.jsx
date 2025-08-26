@@ -15,6 +15,7 @@ import {
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import PropTypes from 'prop-types';
+import { ReactSelect } from '@/components/select';
 
 export const UpdateTuitionProcessModal = ({
 	open,
@@ -40,7 +41,11 @@ export const UpdateTuitionProcessModal = ({
 		evalStart: '',
 		evalEnd: '',
 		semesterStart: '',
+		status_enrollment_period: null,
 	});
+	const initialData = {
+		academicPeriod: data?.academic_period_name || '',
+	};
 
 	const academicPeriodRegex = /^\d{4}-\d{1}$/;
 	const isAcademicPeriodValid = academicPeriodRegex.test(
@@ -58,6 +63,7 @@ export const UpdateTuitionProcessModal = ({
 							: baseAcademicPeriod,
 					startDate: data.start_date || '',
 					endDate: data.end_date || '',
+					status_enrollment_period: data.status_enrollment_period || null,
 				});
 			} else {
 				setFormData({
@@ -187,12 +193,16 @@ export const UpdateTuitionProcessModal = ({
 			});
 		} else if (actionType === 'edit') {
 			const payload = {
-				academic_period_name: formData.academicPeriod,
+				status_enrollment_period: formData.status_enrollment_period.value,
 				start_date: formData.startDate,
 				end_date: formData.endDate,
 				elective_period: data.elective_period,
 			};
 
+			// Solo enviar academic_period_name si cambió respecto al inicial
+			if (formData.academicPeriod !== initialData.academicPeriod) {
+				payload.academic_period_name = formData.academicPeriod;
+			}
 			const existingOtherNames = existingNames.filter(
 				(name) => name !== data.academic_period_name?.toLowerCase()
 			);
@@ -239,6 +249,13 @@ export const UpdateTuitionProcessModal = ({
 		}
 	};
 
+	const statusOptions = [
+		{ value: 1, label: 'Activo' },
+
+		{ value: 3, label: 'Completado' },
+		{ value: 4, label: 'Borrador' },
+	];
+
 	return (
 		<Modal
 			scrollBehavior='inside'
@@ -278,6 +295,20 @@ export const UpdateTuitionProcessModal = ({
 							<FieldErrorText>Formato inválido. Ej: 2025-1.</FieldErrorText>
 						)}
 					</Field>
+
+					{actionType === 'edit' && (
+						<Field label='Estado'>
+							<ReactSelect
+								options={statusOptions}
+								value={formData.status_enrollment_period}
+								onChange={(value) =>
+									handleChange('status_enrollment_period', value)
+								}
+								placeholder='Seleccione estado'
+								isClearable={false}
+							/>
+						</Field>
+					)}
 				</Stack>
 
 				<Stack>

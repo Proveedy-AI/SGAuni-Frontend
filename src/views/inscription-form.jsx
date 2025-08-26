@@ -501,7 +501,7 @@ export default function ChakraInscriptionForm() {
 			})) || [];
 
 	const nationalityOptions =
-		dataNacionalities?.results?.map((nationality) => ({
+		dataNacionalities?.map((nationality) => ({
 			value: nationality.id.toString(),
 			label: nationality.name,
 		})) || [];
@@ -533,7 +533,7 @@ export default function ChakraInscriptionForm() {
 		: [];
 
 	const DisabilitesOptions =
-		dataDisabilites?.map((disability) => ({
+		dataDisabilites?.results?.map((disability) => ({
 			value: disability.id.toString(),
 			label: disability.name,
 		})) || [];

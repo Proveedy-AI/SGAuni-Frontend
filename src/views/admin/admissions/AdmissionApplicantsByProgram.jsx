@@ -44,7 +44,7 @@ export const AdmissionApplicantsMenu = ({ dataProgram, applicants, data }) => {
   const { data: dataAdmissionProcess, loading: isAdmissionProcessLoading } = useReadAdmissionById(admissionProcessId);
 */
 
-export const AdmissionApplicantsMenu = ({ applicants, data }) => {
+export const AdmissionApplicantsMenu = ({ applicants, data, fetchData }) => {
 	const [openGeneratePdfModal, setOpenGeneratePdfModal] = useState(false);
 	const [openGenerateSuneduExcelModal, setOpenGenerateSuneduExcelModal] =
 		useState(false);
@@ -123,6 +123,7 @@ export const AdmissionApplicantsMenu = ({ applicants, data }) => {
 				uuid={data?.uuid}
 				open={openMasiveEvaluationModal}
 				setOpen={setOpenMasiveEvaluationModal}
+				fetchData={fetchData}
 			/>
 		</Box>
 	);
@@ -132,6 +133,7 @@ AdmissionApplicantsMenu.propTypes = {
 	dataProgram: PropTypes.object.isRequired,
 	applicants: PropTypes.array,
 	data: PropTypes.object,
+	fetchData: PropTypes.func,
 };
 
 export const AdmissionApplicantsByProgram = () => {
@@ -232,6 +234,7 @@ export const AdmissionApplicantsByProgram = () => {
 							dataProgram={dataProgram}
 							applicants={allApplicants}
 							data={dataProgram}
+							fetchData={refetchApplicants}
 						/>
 					</HStack>
 				</Heading>
