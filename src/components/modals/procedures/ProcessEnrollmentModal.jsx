@@ -461,7 +461,7 @@ export const ProcessEnrollmentModal = ({
 												/>
 											</Field>
 											<Field
-												label={`Número de cuotas (máximo ${enrollmentItem?.max_installments})`}
+												label={`Número de cuotas (máximo ${enrollmentItem?.max_installments}) adicional al pago inicial`}
 												invalid={!!errors.installments}
 												errorText={errors.installments}
 											>
