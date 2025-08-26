@@ -507,14 +507,14 @@ export default function ChakraInscriptionForm() {
 		})) || [];
 
 	const countryOptions =
-		dataCountries?.results?.map((country) => ({
+		dataCountries?.map((country) => ({
 			value: country.id.toString(),
 			label: country.name,
 			code: country.iso_code,
 		})) || [];
 
 	const dialCodeOptions =
-		dataCountries?.results?.map((country) => ({
+		dataCountries?.map((country) => ({
 			value: country.dial_code.toString(),
 			label: country.dial_code,
 			code: country.iso_code,
@@ -524,7 +524,7 @@ export default function ChakraInscriptionForm() {
 	const currentStepData = STEPS[currentStep - 1];
 
 	const availableDepartments = formData.residenceCountry
-		? dataDepartments?.results
+		? dataDepartments
 				?.filter((dep) => dep.country === Number(formData.residenceCountry))
 				.map((dep) => ({
 					value: dep.id.toString(),
@@ -533,13 +533,13 @@ export default function ChakraInscriptionForm() {
 		: [];
 
 	const DisabilitesOptions =
-		dataDisabilites?.results?.map((disability) => ({
+		dataDisabilites?.map((disability) => ({
 			value: disability.id.toString(),
 			label: disability.name,
 		})) || [];
 	// Get available options based on selections
 	const availableProvinces =
-		dataProvince?.results
+		dataProvince
 			?.filter((prov) =>
 				formData.department
 					? prov.department === Number(formData.department)
@@ -552,7 +552,7 @@ export default function ChakraInscriptionForm() {
 			})) || [];
 
 	const availableDistricts =
-		dataDistrict?.results
+		dataDistrict
 			?.filter((dist) =>
 				formData.province ? dist.province === Number(formData.province) : true
 			)

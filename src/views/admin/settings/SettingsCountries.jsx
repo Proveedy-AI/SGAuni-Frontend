@@ -70,27 +70,27 @@ export const SettingsCountries = () => {
 		isLoading: loadingNationalities,
 	} = useReadNationality();
 
-	const filteredCountry = dataCountries?.results?.filter((item) =>
+	const filteredCountry = dataCountries?.filter((item) =>
 		item?.name?.toLowerCase().includes(searchCountryValue.toLowerCase())
 	);
 
-	const filteredDepartment = dataDepartments?.results?.filter((item) =>
+	const filteredDepartment = dataDepartments?.filter((item) =>
 		item?.name?.toLowerCase().includes(searchDepartmentsValue.toLowerCase())
 	);
 
-	const filteredProvinces = dataProvince?.results?.filter((item) =>
+	const filteredProvinces = dataProvince?.filter((item) =>
 		item?.name?.toLowerCase().includes(searchDepartmentsValue.toLowerCase())
 	);
 
-	const filteredDistricts = dataDistrict?.results?.filter((item) =>
+	const filteredDistricts = dataDistrict?.filter((item) =>
 		item?.name?.toLowerCase().includes(searchDistrictValue.toLowerCase())
 	);
 
-	const filteredUbigeos = dataUbigeos?.results?.filter((item) =>
+	const filteredUbigeos = dataUbigeos?.filter((item) =>
 		item?.code?.toLowerCase().includes(searchUbigeosValue.toLowerCase())
 	);
 
-	const filteredNationality = dataNationality?.results?.filter((item) =>
+	const filteredNationality = dataNationality?.filter((item) =>
 		item?.name?.toLowerCase().includes(searchUbigeosValue.toLowerCase())
 	);
 
@@ -116,35 +116,35 @@ export const SettingsCountries = () => {
 					<AddSettingsDepartmentForm
 						fetchData={fetchDepartmetns}
 						isLoading={isLoading}
-						dataCountries={dataCountries?.results}
+						dataCountries={dataCountries}
 					/>
 				)}
 				{tab === 3 && (
 					<AddSettingsProvinceForm
 						fetchData={fetchProvince}
 						isLoading={loadingDepartments}
-						dataDepartments={dataDepartments?.results}
+						dataDepartments={dataDepartments}
 					/>
 				)}
 				{tab === 4 && (
 					<AddSettingsDistrictForm
 						fetchData={fetchDistrict}
 						isLoading={loadingProvince}
-						dataProvince={dataProvince?.results}
+						dataProvince={dataProvince}
 					/>
 				)}
 				{tab === 5 && (
 					<AddSettingsUbigeoForm
 						fetchData={fetchUbigeos}
 						isLoading={loadingDistrict}
-						dataDistrict={dataDistrict?.results}
+						dataDistrict={dataDistrict}
 					/>
 				)}
 				{tab === 6 && (
 					<AddSettingsNationalityForm
 						fetchData={fetchNationality}
 						isLoading={isLoading}
-						dataCountries={dataCountries?.results}
+						dataCountries={dataCountries}
 					/>
 				)}
 			</Stack>
@@ -243,7 +243,7 @@ export const SettingsCountries = () => {
 						<SettingsDepartmentTable
 							isLoading={loadingDepartments}
 							data={filteredDepartment}
-							dataCountries={dataCountries?.results}
+							dataCountries={dataCountries}
 							fetchData={fetchDepartmetns}
 						/>
 					</Stack>
@@ -303,7 +303,7 @@ export const SettingsCountries = () => {
 						<SettingsDistrictTable
 							isLoading={loadingDistrict}
 							data={filteredDistricts}
-							dataProvince={dataProvince?.results}
+							dataProvince={dataProvince}
 							fetchData={fetchDistrict}
 						/>
 					</Stack>
@@ -334,7 +334,7 @@ export const SettingsCountries = () => {
 							isLoading={loadingUbigeos}
 							data={filteredUbigeos}
 							fetchData={fetchUbigeos}
-							dataDistrict={dataDistrict?.results}
+							dataDistrict={dataDistrict}
 						/>
 					</Stack>
 				</Tabs.Content>
@@ -364,7 +364,7 @@ export const SettingsCountries = () => {
 							isLoading={loadingNationalities}
 							data={filteredNationality}
 							fetchData={fetchNationality}
-							dataCountries={dataCountries?.results}
+							dataCountries={dataCountries}
 						/>
 					</Stack>
 				</Tabs.Content>

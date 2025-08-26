@@ -94,7 +94,7 @@ export const ChangeDataStudentProfileForm = ({
 	const { data: dataCountries, isLoading: isLoadingCountries } =
 		useReadCountries();
 	const countryOptions =
-		dataCountries?.results?.map((country) => ({
+		dataCountries?.map((country) => ({
 			value: country.id,
 			label: country.name,
 		})) || [];
@@ -102,7 +102,7 @@ export const ChangeDataStudentProfileForm = ({
 		useReadDepartments({ country: profile?.residenceCountry?.value || null });
 
 	const departmentOptions =
-		dataDepartments?.results?.map((department) => ({
+		dataDepartments?.map((department) => ({
 			value: department.id,
 			label: department.name,
 		})) || [];
@@ -111,7 +111,7 @@ export const ChangeDataStudentProfileForm = ({
 		useReadProvince({ department: profile?.department?.value || null });
 
 	const provinceOptions =
-		dataProvinces?.results?.map((province) => ({
+		dataProvinces?.map((province) => ({
 			value: province.id,
 			label: province.name,
 		})) || [];
@@ -119,7 +119,7 @@ export const ChangeDataStudentProfileForm = ({
 	const { data: dataNacionalities, isLoading: loadingNationalities } =
 		useReadNacionalities();
 	const nationalityOptions =
-		dataNacionalities?.results?.map((nationality) => ({
+		dataNacionalities?.map((nationality) => ({
 			value: nationality.id,
 			label: nationality.name,
 		})) || [];
@@ -127,7 +127,7 @@ export const ChangeDataStudentProfileForm = ({
 	const { data: dataUbigeo, isLoading: loadingUbigeo } = useReadUbigeos();
 	const districtId = profile?.district?.value;
 	const filteredUbigeos =
-		dataUbigeo?.results?.filter((ubigeo) => ubigeo.district === districtId) ||
+		dataUbigeo?.filter((ubigeo) => ubigeo.district === districtId) ||
 		[];
 
 	const UbigeosOptions = filteredUbigeos.map((ubigeo) => ({
@@ -138,7 +138,7 @@ export const ChangeDataStudentProfileForm = ({
 	const { data: dataDisabilites, isLoading: loadingDisabilites } =
 		useReadDisabilities();
 	const DisabilitesOptions =
-		dataDisabilites?.results?.map((disability) => ({
+		dataDisabilites?.map((disability) => ({
 			value: disability.id,
 			label: disability.name,
 		})) || [];
@@ -148,7 +148,7 @@ export const ChangeDataStudentProfileForm = ({
 	});
 
 	const DistrictOptions =
-		dataDistrict?.results?.map((district) => ({
+		dataDistrict?.map((district) => ({
 			value: district.id,
 			label: district.name,
 		})) || [];
