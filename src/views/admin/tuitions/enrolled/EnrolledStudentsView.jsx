@@ -17,6 +17,7 @@ export const EnrolledStudentsView = () => {
   const decryptedId = Encryptor.decrypt(decodedId);
   const decodedCourseGroupId = decodeURIComponent(courseGroupId);
   const decryptedCourseGroupId = Encryptor.decrypt(decodedCourseGroupId);
+  console.log(decryptedCourseGroupId)
 
   // Estados para filtros
   const [searchName, setSearchName] = useState('');

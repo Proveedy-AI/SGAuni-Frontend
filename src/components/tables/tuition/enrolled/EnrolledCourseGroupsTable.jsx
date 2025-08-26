@@ -1,40 +1,20 @@
-import { Encryptor } from '@/components/CrytoJS/Encryptor';
+import { ViewCourseGroupsModal } from '@/components/modals/tuition/courses';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { Pagination } from '@/components/ui';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import useSortedData from '@/utils/useSortedData';
-import { Box, Table, Badge } from '@chakra-ui/react';
+import { Box, Table, Badge, Group } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router';
 
 const Row = memo(({ item, startIndex, index, sortConfig, data, permissions }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const encrypted = Encryptor.encrypt(item.id);
-  const encoded = encodeURIComponent(encrypted);
-  
-  const handleRowClick = () => {
-    if (permissions?.includes('enrollments.enrolled.view')) {
-      navigate(`${location.pathname}/${encoded}`);
-    }
-  };
+  const hasViewCourseGroups = permissions?.includes('enrollments.enrolled.view');
 
   return (
     <Table.Row
-      onClick={(e) => {
-        if (e.target.closest('button') || e.target.closest('a')) return;
-        if (permissions?.includes('enrollments.enrolled.view')) {
-          handleRowClick();
-        }
-      }}
       key={item.id}
       bg={index % 2 === 0 ? 'gray.100' : 'white'}
-      _hover={{
-        bg: permissions?.includes('enrollments.enrolled.view') ? 'blue.100' : 'gray.200',
-        cursor: permissions?.includes('enrollments.enrolled.view') ? 'pointer' : 'default',
-      }}
     >
       <Table.Cell>
         {sortConfig?.key === 'index' && sortConfig?.direction === 'desc'
@@ -56,6 +36,11 @@ const Row = memo(({ item, startIndex, index, sortConfig, data, permissions }) =>
         >
           {item.is_mandatory ? 'Obligatorio' : 'Electivo'}
         </Badge>
+      </Table.Cell>
+      <Table.Cell textAlign="center">
+        <Group spacing={2} justify="center">
+          <ViewCourseGroupsModal item={item} hasView={hasViewCourseGroups} />
+        </Group>
       </Table.Cell>
     </Table.Row>
   );
@@ -145,11 +130,19 @@ export const EnrolledCourseGroupsTable = ({
                   onSort={setSortConfig}
                 />
               </Table.ColumnHeader>
+              <Table.ColumnHeader w='15%' textAlign="center">
+                <SortableHeader
+                  label='Acciones'
+                  columnKey='actions'
+                  sortConfig={sortConfig}
+                  onSort={setSortConfig}
+                />
+              </Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
           <Table.Body>
             {isLoading ? (
-              <SkeletonTable columns={6} />
+              <SkeletonTable columns={7} />
             ) : visibleRows?.length > 0 ? (
               visibleRows.map((item, index) => (
                 <Row
