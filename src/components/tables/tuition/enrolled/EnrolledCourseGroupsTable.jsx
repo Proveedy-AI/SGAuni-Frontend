@@ -157,7 +157,7 @@ export const EnrolledCourseGroupsTable = ({
               ))
             ) : (
               <Table.Row>
-                <Table.Cell colSpan={6} textAlign='center' py={2}>
+                <Table.Cell colSpan={7} textAlign='center' py={2}>
                   No hay grupos de cursos disponibles.
                 </Table.Cell>
               </Table.Row>

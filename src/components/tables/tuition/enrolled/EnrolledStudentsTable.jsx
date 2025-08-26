@@ -88,16 +88,16 @@ export const EnrolledStudentsTable = ({ data = {}, students = [], isLoading = fa
                   </Table.ColumnHeader>
                   <Table.ColumnHeader>
                     <SortableHeader
-                      label='Documento'
-                      columnKey='student_document'
+                      label='Correo'
+                      columnKey='email'
                       sortConfig={sortConfig}
                       onSort={setSortConfig}
                     />
                   </Table.ColumnHeader>
                   <Table.ColumnHeader>
                     <SortableHeader
-                      label='Correo'
-                      columnKey='email'
+                      label='Documento'
+                      columnKey='student_document'
                       sortConfig={sortConfig}
                       onSort={setSortConfig}
                     />

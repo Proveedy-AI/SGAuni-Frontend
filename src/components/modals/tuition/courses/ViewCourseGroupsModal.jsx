@@ -1,5 +1,5 @@
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
-import { Button, Modal, Tooltip } from '@/components/ui';
+import { Button, Modal } from '@/components/ui';
 import { Box, Card, Table } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
@@ -11,7 +11,6 @@ export const ViewCourseGroupsModal = ({ item, hasView }) => {
   const location = useLocation();
   
   const [open, setOpen] = useState(false);
-  console.log({ item, hasView });
 
   const handleRowClick = (courseGroupId) => {
     const encrypted = Encryptor.encrypt(courseGroupId);
@@ -25,20 +24,11 @@ export const ViewCourseGroupsModal = ({ item, hasView }) => {
     <Modal
 			title='Grupos del curso'
 			placement='center'
-			size='4xl'
+			size='2xl'
 			trigger={
-        <Box>
-          <Tooltip 
-            content='Ver grupos de curso'
-						positioning={{ placement: 'bottom-center' }}
-						showArrow
-						openDelay={0}
-          >
-            <Button size='xs' bg='blue.600' disabled={!hasView}>
-              <FiEye />
-            </Button>
-          </Tooltip>
-        </Box>
+        <Button size='xs' bg='blue.600' disabled={!hasView}>
+          <FiEye /> Ver Grupos
+        </Button>
 			}
       hiddenFooter={true}
 			open={open}
@@ -59,26 +49,32 @@ export const ViewCourseGroupsModal = ({ item, hasView }) => {
             <Table.ScrollArea>
               <Table.Root size='sm' w='full'>
                 <Table.Header>
-                  <Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
+                  <Table.Row bg='gray.100'>
                     <Table.ColumnHeader>Codigo de Grupo</Table.ColumnHeader>
                     <Table.ColumnHeader>Docente</Table.ColumnHeader>
-                    <Table.ColumnHeader>Capacidad total</Table.ColumnHeader>
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {item?.course_groups?.map((group, index) => (
+                  {item?.groups?.length > 0 ? item?.groups?.map((group, index) => (
                     <Table.Row 
                       key={index}
                       onClick={(e) => {
                         if (e.target.closest('button') || e.target.closest('a')) return;
                         handleRowClick(group.id);
                       }}
+                      bg={ index % 2 === 0 ? 'white' : 'gray.100' }
+                      _hover={{ bg: 'blue.200', cursor: 'pointer' }}
                     >
                       <Table.Cell>{group.group_code}</Table.Cell>
-                      <Table.Cell>{group.teacher}</Table.Cell>
-                      <Table.Cell>{group.capacity}</Table.Cell>
+                      <Table.Cell>{group.teacher_name}</Table.Cell>
                     </Table.Row>
-                  ))}
+                  )) : (
+                    <Table.Row>
+                      <Table.Cell colSpan={2} textAlign='center'>
+                        No hay grupos disponibles
+                      </Table.Cell>
+                    </Table.Row>
+                  )}
                 </Table.Body>
               </Table.Root>
             </Table.ScrollArea>
