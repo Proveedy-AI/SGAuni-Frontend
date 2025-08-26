@@ -41,8 +41,6 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 		{ enabled: open }
 	);
 
-	console.log(dataPaymentRequests);
-
 	const requests =
 		dataPaymentRequests?.pages?.flatMap((page) => page.results) ?? [];
 

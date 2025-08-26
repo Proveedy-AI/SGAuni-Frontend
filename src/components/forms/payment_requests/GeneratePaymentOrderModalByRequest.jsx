@@ -35,7 +35,11 @@ import { LuGraduationCap } from 'react-icons/lu';
 import { useReadAdmissionProgramsById } from '@/hooks/admissions_programs';
 import { useReadEnrollmentsProgramsbyId } from '@/hooks/enrollments_programs/useReadEnrollmentsProgramsbyId';
 
-export const GeneratePaymentOrderModalByRequest = ({fetchData, item, permissions }) => {
+export const GeneratePaymentOrderModalByRequest = ({
+	fetchData,
+	item,
+	permissions,
+}) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 	const { mutateAsync: generatePaymentOrder, isPending } =
@@ -62,12 +66,14 @@ export const GeneratePaymentOrderModalByRequest = ({fetchData, item, permissions
 	);
 
 	const [orderIdInput, setOrderIdInput] = useState('');
-	const [discountInput, setDiscountInput] = useState('');
+	const [discountInput, setDiscountInput] = useState();
 	const [dueDateInput, setDueDateInput] = useState('');
 
 	useEffect(() => {
 		if (!item?.purpose) return;
-
+		setDiscountInput(
+			item.discount_value ? Number(item.discount_value).toString() : ''
+		);
 		// función para calcular el último día de un mes
 		const getLastDayOfMonth = (date) => {
 			return new Date(date.getFullYear(), date.getMonth() + 1, 0);
