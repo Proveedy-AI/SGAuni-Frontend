@@ -183,10 +183,12 @@ export const MyCoursesListByAcademicPeriodView = () => {
 					</Tabs.List>
 					{(tab === 'courses' || tab === 'grades-record') && (
 						<Box mt={{ base: 2, md: 0 }}>
-							<GenerateAcademicTranscriptPdfModal
-								data={dataAcademicTranscript}
-								isActive={isDownloadable}
-							/>
+							{isDownloadable && (
+                <GenerateAcademicTranscriptPdfModal
+							  	data={dataAcademicTranscript}
+								  isActive={isDownloadable}
+							  />
+              )}
 						</Box>
 					)}
 				</Flex>
