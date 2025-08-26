@@ -67,6 +67,8 @@ export const EnrolledStudentsView = () => {
       )
   ) || [];
 
+  console.log(dataEnrollmentReport);
+
   const hasActiveFilters = searchName || searchEmail || searchDocument;
 
   const clearFilters = () => {
@@ -84,7 +86,7 @@ export const EnrolledStudentsView = () => {
       <ResponsiveBreadcrumb
         items={[
           { label: 'Matriculados',  to: '/enrollments/enrolled' },
-          { label: enrollmentProcessName, to: `/enrollments/programs/${id}/course-groups` },
+          { label: enrollmentProcessName, to: `/enrollments/programs/${encodeURIComponent(id)}/course-groups` },
           { label: courseGroupName }
         ]}
       />
