@@ -160,6 +160,7 @@ export const TuitionMyPrograms = () => {
 				processData={data}
 				fetchData={fetchEnrollmentsPrograms}
 				actionType={actionType}
+				permissions={permissions}
 			/>
 		</Box>
 	);
