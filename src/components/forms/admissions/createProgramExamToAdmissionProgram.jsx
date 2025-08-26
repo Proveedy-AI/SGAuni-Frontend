@@ -8,7 +8,7 @@ import {
 	useReadAdmissionEvaluationsByApplication,
 	useUpdateAdmissionEvaluation,
 } from '@/hooks/admissions_evaluations';
-import { useReadUsers } from '@/hooks/users';
+import { useReadAdmissionEvaluators } from '@/hooks/admissions_evaluators';
 import {
 	Badge,
 	Box,
@@ -36,7 +36,8 @@ import {
 	FiUser,
 } from 'react-icons/fi';
 
-export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
+export const CreateProgramExamToAdmissionProgram = ({ item, programId, fetchData }) => {
+  console.log(programId)
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 
@@ -54,22 +55,19 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 		enabled: open,
 	});
 
-	const { data: dataUsers, isLoading: evaluatorsLoading } = useReadUsers(
-		{},
-		{
-			enabled: open,
-		}
-	);
-	const evaluatorOptions = dataUsers?.results
-		?.filter(
-			(c) =>
-				c?.is_active === true &&
-				Array.isArray(c?.roles) &&
-				c.roles.some((role) => role?.name === 'Docente')
-		)
+  const { 
+    data: dataAdmissionEvaluators, 
+    isLoading: isLoadingAdmissionEvaluators
+  } = useReadAdmissionEvaluators(
+    { program_id: programId },
+    { enabled: open && !!programId }
+  );
+  console.log(dataAdmissionEvaluators);
+
+	const evaluatorOptions = dataAdmissionEvaluators?.results
 		?.map((c) => ({
 			value: c.id.toString(),
-			label: c.full_name,
+			label: c.evaluator_display,
 		}));
 
 	const applicationTypeOptions = [
@@ -348,7 +346,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 								<ReactSelect
 									value={evaluatorInput}
 									options={evaluatorOptions}
-									isLoading={evaluatorsLoading}
+									isLoading={isLoadingAdmissionEvaluators}
 									onChange={(value) => setEvaluatorInput(value)}
 								/>
 							</Field>
@@ -502,5 +500,6 @@ export const CreateProgramExamToAdmissionProgram = ({ item, fetchData }) => {
 
 CreateProgramExamToAdmissionProgram.propTypes = {
 	item: PropTypes.object.isRequired,
+  programId: PropTypes.number.isRequired,
 	fetchData: PropTypes.func.isRequired,
 };

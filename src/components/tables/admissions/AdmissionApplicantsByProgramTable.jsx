@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router';
 const Row = memo(
 	({
 		programId,
+    admissionProgramId,
 		item,
 		fetchData,
 		startIndex,
@@ -28,7 +29,7 @@ const Row = memo(
 		const encrypted = Encryptor.encrypt(item.id);
 		const encoded = encodeURIComponent(encrypted);
 
-		const encryptedProgram = Encryptor.encrypt(programId);
+		const encryptedProgram = Encryptor.encrypt(admissionProgramId);
 		const encodedProgram = encodeURIComponent(encryptedProgram);
 
 		const handleRowClick = () => {
@@ -146,6 +147,7 @@ const Row = memo(
 						) && (
 							<CreateProgramExamToAdmissionProgram
 								item={item}
+                programId={programId}
 								fetchData={fetchData}
 							/>
 						)}
@@ -161,6 +163,7 @@ Row.displayName = 'Row';
 
 Row.propTypes = {
 	programId: PropTypes.number,
+  admissionProgramId: PropTypes.number,
 	item: PropTypes.object,
 	fetchData: PropTypes.func,
 	startIndex: PropTypes.number,
@@ -172,6 +175,7 @@ Row.propTypes = {
 
 export const AdmissionApplicantsByProgramTable = ({
 	programId,
+  admissionProgramId,
 	data,
 	fetchData,
 	permissions,
@@ -283,6 +287,7 @@ export const AdmissionApplicantsByProgramTable = ({
 								<Row
 									key={item.id}
 									programId={programId}
+                  admissionProgramId={admissionProgramId}
 									item={item}
 									data={data}
 									sortConfig={sortConfig}
@@ -320,6 +325,7 @@ export const AdmissionApplicantsByProgramTable = ({
 
 AdmissionApplicantsByProgramTable.propTypes = {
 	programId: PropTypes.number,
+  admissionProgramId: PropTypes.number,
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
 	permissions: PropTypes.array,

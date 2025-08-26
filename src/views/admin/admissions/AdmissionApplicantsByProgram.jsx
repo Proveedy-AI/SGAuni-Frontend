@@ -148,6 +148,7 @@ export const AdmissionApplicantsByProgram = () => {
 
 	const { data: dataProgram, loading: isProgramLoading } =
 		useReadAdmissionProgramsById(decrypted);
+  console.log('gg', dataProgram?.program, decrypted)
 	const [searchApplicantValue, setSearchApplicantValue] = useState('');
 
 	const {
@@ -260,7 +261,8 @@ export const AdmissionApplicantsByProgram = () => {
 			</Stack>
 
 			<AdmissionApplicantsByProgramTable
-				programId={decrypted}
+				programId={dataProgram?.program}
+        admissionProgramId={decrypted}
 				isLoading={isLoadingApplicants}
 				data={filteredApplicants}
 				fetchNextPage={fetchNextApplicants}
