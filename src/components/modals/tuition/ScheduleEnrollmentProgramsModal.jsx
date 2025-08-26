@@ -1077,7 +1077,7 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 		dataCourseSchedule?.pages?.flatMap((page) => page.results) ?? [];
 
 	const [selectedIds, setSelectedIds] = useState([]);
-	const scheduleData = dataCourseSchedule?.results || [];
+	const scheduleData = allCourseSchedules || [];
 
 	const totalCount = dataCourseSchedule?.pages?.[0]?.count ?? 0;
 
@@ -1138,7 +1138,13 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 
 		let successCount = 0;
 		let errorCount = 0;
+		toaster.create({
+			title: `✅ ${successCount} horario(s) enviados correctamente`,
+			type: 'success',
+		});
 
+		refetchCourseSchedule();
+		setSelectedIds([]);
 		await Promise.all(
 			courseIds.map(
 				(id) =>
@@ -1164,13 +1170,6 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 				type: 'error',
 			});
 		}
-		toaster.create({
-			title: `✅ ${successCount} horario(s) enviados correctamente`,
-			type: 'success',
-		});
-
-		refetchCourseSchedule();
-		setSelectedIds([]);
 	};
 
 	const { mutate: deleteCourseSchedule, isPending } = useDeleteCourseSchedule();
@@ -1346,7 +1345,7 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 															course.status_review !== 4
 													).length && scheduleData.length > 0
 											}
-											isIndeterminate={
+											indeterminate={
 												selectedIds.length > 0 &&
 												selectedIds.length <
 													scheduleData.filter(
@@ -1356,12 +1355,14 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 													).length
 											}
 											onChange={(e) => {
+												const checked = e.target?.checked ?? e === true;
 												const enabledCourses = scheduleData.filter(
 													(course) =>
 														course.status_review !== 2 &&
 														course.status_review !== 4
 												);
-												if (e.target.checked) {
+
+												if (checked) {
 													setSelectedIds(
 														enabledCourses.map((course) => course.id)
 													);
