@@ -25,6 +25,7 @@ import { PaymentStudent } from './sections/PaymentStudent';
 import { DocumentStudent } from './sections/DocumentStudent';
 import { ChangeStatusStudent } from './modals/ChangeStatusStudent';
 import { ValidationsStudent } from './sections/ValidationsStudent';
+import { UpdateStudentForm } from './modals/UpdateStudentForm';
 
 export const StudentDetailView = () => {
 	const { id } = useParams();
@@ -41,9 +42,12 @@ export const StudentDetailView = () => {
 	const { data: dataPerson, isLoading: isPersonLoading } = useReadPersonById(
 		dataStudent?.person
 	);
-
-	const { data: dataEnrollments, isLoading: isLoadingEnrollment, refetch: refetchEnrollments } =
-		useReadEnrollmentsList({ student: decrypted });
+	console.log(dataStudent);
+	const {
+		data: dataEnrollments,
+		isLoading: isLoadingEnrollment,
+		refetch: refetchEnrollments,
+	} = useReadEnrollmentsList({ student: decrypted });
 
 	const myEnrollment = dataEnrollments?.results || [];
 
@@ -121,6 +125,10 @@ export const StudentDetailView = () => {
 											? 'Cargando...'
 											: `${dataPerson?.first_name} ${dataPerson?.user?.last_name}`}
 									</Text>
+									<UpdateStudentForm
+										data={dataStudent}
+										fetchData={refetchStudent}
+									/>
 								</Box>
 							</Flex>
 
@@ -206,7 +214,10 @@ export const StudentDetailView = () => {
 						</>
 						<Tabs.Content value={1}>
 							<Stack>
-								<GeneralDataStudent dataPerson={dataPerson} />
+								<GeneralDataStudent
+									dataPerson={dataPerson}
+									dataStudent={dataStudent}
+								/>
 							</Stack>
 						</Tabs.Content>
 						<Tabs.Content value={2}>
@@ -221,7 +232,10 @@ export const StudentDetailView = () => {
 							<AcademicRegister dataStudent={dataStudent} />
 						</Tabs.Content>
 						<Tabs.Content value={4}>
-							<PaymentStudent dataStudent={dataStudent} dataPerson={dataPerson} />
+							<PaymentStudent
+								dataStudent={dataStudent}
+								dataPerson={dataPerson}
+							/>
 						</Tabs.Content>
 						<Tabs.Content value={5}>
 							<DocumentStudent dataStudent={dataStudent} />

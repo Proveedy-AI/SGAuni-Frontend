@@ -8,16 +8,20 @@ import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { uploadToS3 } from '@/utils/uploadToS3';
 import { ChangeDataStudentProfileForm } from '@/components/forms/acount/ChangeDataStudentProfileForm';
 import { useUpdateProfile } from '@/hooks/users';
+import { useUpdateStudent } from '@/hooks/students';
 
 export const AccountStudentProfile = () => {
 	const { data: dataUser, isLoading, error, refetch } = useReadUserLogged();
 	const [disableUpload, setDisableUpload] = useState(false);
 	const { mutate: update, loading: loadingUpdate } = useUpdateProfile();
+	const { mutate: updateStudent, loading: loadingUpdateStudent } =
+		useUpdateStudent();
 
 	const [profile, setProfile] = useState({
 		id: '',
 		user: {},
 		username: '',
+		student_code: '',
 		first_name: '',
 		password: '',
 		personal_email: '',
@@ -49,6 +53,7 @@ export const AccountStudentProfile = () => {
 		entrant: '',
 		orcid_code: '',
 		document_path: '',
+		student: {},
 	});
 
 	const [isChangesMade, setIsChangesMade] = useState(false);
@@ -78,7 +83,8 @@ export const AccountStudentProfile = () => {
 
 		let pathDocUrl = profile?.document_path;
 		setDisableUpload(true);
-		// Solo subir a S3 si hay un archivo nuevo
+
+		// 🔹 Subir archivo a S3 solo si es nuevo
 		if (profile?.document_path instanceof File) {
 			pathDocUrl = await uploadToS3(
 				profile.document_path,
@@ -87,11 +93,8 @@ export const AccountStudentProfile = () => {
 			);
 		}
 
+		// Payload para PERSONA
 		const payload = {
-			user: {
-				password: profile.password,
-				first_name: profile.first_name,
-			},
 			first_name: profile.first_name,
 			paternal_surname: profile.paternal_surname,
 			maternal_surname: profile.maternal_surname,
@@ -122,14 +125,60 @@ export const AccountStudentProfile = () => {
 			residenceCountry: profile.residenceCountry?.value,
 		};
 
+		const userPayload = {};
+		if (profile.user.username !== initialProfile.user.username) {
+			userPayload.username = profile.user.username;
+		}
+		if (profile.password) {
+			userPayload.password = profile.password;
+		}
+		if (profile.first_name !== initialProfile.first_name) {
+			userPayload.first_name = profile.first_name;
+		}
+
+		if (Object.keys(userPayload).length > 0) {
+			payload.user = userPayload;
+		}
+
+		// 1️⃣ Primero actualiza la persona
 		update(payload, {
 			onSuccess: () => {
+				// 2️⃣ Si cambió el student_code, actualiza estudiante
+				if (
+					profile?.student?.student_code !==
+					initialProfile?.student?.student_code
+				) {
+					updateStudent(
+						{
+							id: profile.student.id,
+							payload: {
+								student_code: profile.student.student_code,
+							},
+						},
+						{
+							onSuccess: () => {
+								toaster.create({
+									title: 'Perfil y código de estudiante actualizados.',
+									type: 'success',
+								});
+							},
+							onError: () => {
+								toaster.create({
+									title: 'Error al actualizar el código de estudiante.',
+									type: 'error',
+								});
+							},
+						}
+					);
+				} else {
+					toaster.create({
+						title: 'Perfil actualizado correctamente.',
+						type: 'success',
+					});
+				}
+
 				setInitialProfile(profile);
 				setIsChangesMade(false);
-				toaster.create({
-					title: 'Perfil actualizado correctamente.',
-					type: 'success',
-				});
 				setDisableUpload(false);
 				refetch();
 			},
@@ -140,10 +189,16 @@ export const AccountStudentProfile = () => {
 					Object.values(errorData).forEach((errorList) => {
 						if (Array.isArray(errorList)) {
 							errorList.forEach((message) => {
-								toaster.create({
-									title: message,
-									type: 'error',
-								});
+								toaster.create({ title: message, type: 'error' });
+							});
+						} else if (typeof errorList === 'object' && errorList !== null) {
+							// 👇 volver a recorrer si es un objeto (como "user")
+							Object.values(errorList).forEach((nested) => {
+								if (Array.isArray(nested)) {
+									nested.forEach((message) => {
+										toaster.create({ title: message, type: 'error' });
+									});
+								}
 							});
 						}
 					});
@@ -201,13 +256,14 @@ export const AccountStudentProfile = () => {
 						profile={profile}
 						isChangesMade={isChangesMade}
 						handleUpdateProfile={handleUpdateProfile}
-						loadingUpdate={loadingUpdate}
+						loadingUpdate={loadingUpdate || loadingUpdateStudent}
 						disableUpload={disableUpload}
 					/>
 
 					<ChangeDataStudentProfileForm
 						profile={profile}
 						updateProfileField={updateProfileField}
+						setProfile={setProfile}
 					/>
 				</>
 			)}

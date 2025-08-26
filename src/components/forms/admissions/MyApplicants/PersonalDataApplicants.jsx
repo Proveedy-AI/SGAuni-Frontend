@@ -49,7 +49,7 @@ export const PersonalDataApplicants = ({ data, loading, fetchUser }) => {
 	};
 
 	const UbigeosOptions =
-		dataUbigeo?.results?.map((ubigeo) => ({
+		dataUbigeo?.map((ubigeo) => ({
 			value: ubigeo.id,
 			label: ubigeo.code + ' - ' + ubigeo.district_name,
 		})) || [];

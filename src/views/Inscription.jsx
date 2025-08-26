@@ -50,12 +50,12 @@ export default function AdmissionForm() {
 	const { data: dataCountries, isLoading: isLoadingCountries } =
 		useReadCountries();
 	const countryOptions =
-		dataCountries?.results?.map((country) => ({
+		dataCountries?.map((country) => ({
 			value: country.id,
 			label: country.name,
 		})) || [];
 	const dialCodeOptions =
-		dataCountries?.results?.map((country) => ({
+		dataCountries?.map((country) => ({
 			value: country.dial_code,
 			label: country.dial_code,
 		})) || [];
@@ -63,7 +63,7 @@ export default function AdmissionForm() {
 	const { data: dataNacionalities, isLoading: loadingNationalities } =
 		useReadNacionalities();
 	const nationalityOptions =
-		dataNacionalities?.results?.map((nationality) => ({
+		dataNacionalities?.map((nationality) => ({
 			value: nationality.id,
 			label: nationality.name,
 		})) || [];
@@ -122,7 +122,7 @@ export default function AdmissionForm() {
 	}, [selectedProvince]);
 
 	const departmentOptions =
-		dataDepartments?.results
+		dataDepartments
 			?.filter((dep) =>
 				selectedCountry ? dep.country === selectedCountry.value : true
 			)
@@ -132,7 +132,7 @@ export default function AdmissionForm() {
 			})) || [];
 
 	const provinceOptions =
-		dataProvince?.results
+		dataProvince
 			?.filter((prov) =>
 				selectedDepartment ? prov.department === selectedDepartment.value : true
 			)
@@ -143,7 +143,7 @@ export default function AdmissionForm() {
 			})) || [];
 
 	const districtOptions =
-		dataDistrict?.results
+		dataDistrict
 			?.filter((dist) =>
 				selectedProvince ? dist.province === selectedProvince.value : true
 			)

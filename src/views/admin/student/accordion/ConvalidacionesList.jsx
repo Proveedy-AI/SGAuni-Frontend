@@ -49,9 +49,9 @@ export const ConvalidacionesList = ({ convalidationsData }) => {
 					<Accordion.Root multiple variant='subtle' colorPalette='green'>
 						{convalidaciones?.map((conv, index) => (
 							<Accordion.Item key={conv.id ?? index} value={String(index)}>
-								<h2>
-									<Accordion.ItemTrigger>
-										<Box flex='1' textAlign='left'>
+								<h2 >
+									<Accordion.ItemTrigger cursor='pointer' _hover={{ bg: 'blue.50' }}>
+										<Box  flex='1' textAlign='left'>
 											<Text fontWeight='bold'>
 												Nuevo curso: {conv.new_course.course} (
 												{conv.new_course.code})
