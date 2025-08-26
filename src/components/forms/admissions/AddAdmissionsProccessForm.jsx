@@ -29,7 +29,7 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 
 	const validateFields = () => {
 		const newErrors = {};
-		if (!name.trim()) newErrors.name = 'El ciclo es requerido';
+		if (!name) newErrors.name = 'El ciclo es requerido';
 		if (!selectedLevel) newErrors.selectedLevel = 'Seleccione un nivel';
 		if (!startDate) newErrors.startDate = 'La fecha de inicio es requerida';
 		if (!endDate) newErrors.endDate = 'La fecha de fin es requerida';
@@ -114,6 +114,16 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 						onChange={(e) => {
 							const newName = e.target.value;
 							setName(newName);
+
+							// Validación directa
+							if (!/^\d{4}-(1|2)$/.test(newName)) {
+								setErrors((prev) => ({
+									...prev,
+									name: 'Formato inválido. Ej: 2025-1 o 2025-2',
+								}));
+							} else {
+								setErrors((prev) => ({ ...prev, name: undefined }));
+							}
 						}}
 						placeholder='2025-1'
 						size='xs'
