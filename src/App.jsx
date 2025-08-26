@@ -464,7 +464,7 @@ function App() {
 							<Route path='transfer-requests'>
 								<Route
 									element={
-										<ProtectedRoute requiredPermission='transfer.requests.view' />
+										<ProtectedRoute requiredPermission='transfer.requeststransfer.view' />
 									}
 								>
 									<Route path='list' element={<TransferRequestsView />} />
