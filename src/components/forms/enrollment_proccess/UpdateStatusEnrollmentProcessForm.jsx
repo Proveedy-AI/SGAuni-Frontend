@@ -105,6 +105,7 @@ export const UpdateStatusEnrollmentProcessForm = ({ data, fetchData }) => {
 						<IconButton
 							size='xs'
 							colorPalette='green'
+							disabled={data.status === 4}
 							css={{ _icon: { width: '5', height: '5' } }}
 						>
 							<LiaCheckCircleSolid />

@@ -17,26 +17,36 @@ import { Link as RouterLink } from 'react-router';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { useReadEnrollmentsPrograms } from '@/hooks/enrollments_programs';
+import { UpdateTuitionProgramsModal } from '@/components/modals/tuition';
 
 export const TuitonPrograms = () => {
 	const { id } = useParams();
 	const decoded = decodeURIComponent(id);
 	const decrypted = Encryptor.decrypt(decoded);
 	const { data: profile } = useReadUserLogged();
-	const [tab, setTab] = useState(1);
-	const {
-		data: dataEnrollmentPrograms,
-		refetch: fetchEnrollmentPrograms,
-		isLoading,
-	} = useReadEnrollmentsPrograms({
-		enrollment_period: Number(decrypted),
-		director: profile?.id,
-	});
 
+	const [actionType, setActionType] = useState('create');
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [modalData, setModalData] = useState(null);
+	console.log(isModalOpen);
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])
 		.map((p) => p.guard_name);
+
+	const [tab, setTab] = useState(1);
+
+	let queryParams = { enrollment_period: Number(decrypted) };
+
+	// Según permisos agregamos el filtro
+	if (!permissions?.includes('enrollments.programsEnrollments.admin')) {
+		queryParams.director = profile?.id;
+	}
+	const {
+		data: dataEnrollmentPrograms,
+		refetch: fetchEnrollmentPrograms,
+		isLoading,
+	} = useReadEnrollmentsPrograms(queryParams);
 
 	const [searchValue, setSearchValue] = useState('');
 
@@ -150,6 +160,9 @@ export const TuitonPrograms = () => {
 							data={filteredEnrollmentPrograms}
 							fetchData={fetchEnrollmentPrograms}
 							permissions={permissions}
+							setModalData={setModalData}
+							setIsModalOpen={setIsModalOpen}
+							setActionType={setActionType}
 						/>
 					</Stack>
 				</Tabs.Content>
@@ -180,9 +193,25 @@ export const TuitonPrograms = () => {
 							data={filteredApprovedPrograms}
 							fetchData={fetchEnrollmentPrograms}
 							permissions={permissions}
+							setModalData={setModalData}
+							setIsModalOpen={setIsModalOpen}
+							setActionType={setActionType}
 						/>
 					</Stack>
 				</Tabs.Content>
+				<UpdateTuitionProgramsModal
+					open={isModalOpen}
+					onClose={() => {
+						setIsModalOpen(false);
+						setModalData(null);
+					}}
+					data={modalData}
+					profileId={profile?.id}
+					processData={filteredApprovedPrograms}
+					fetchData={fetchEnrollmentPrograms}
+					actionType={actionType}
+					permissions={permissions}
+				/>
 			</Tabs.Root>
 		</Box>
 	);

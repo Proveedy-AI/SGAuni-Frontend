@@ -1192,7 +1192,7 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 			}
 			hiddenFooter={true}
 		>
-			{permissions?.includes('enrollments.admin.course.create') && (
+			{permissions?.includes('enrollments.programsEnrollments.admin') && (
 				<HStack gap={3} borderBottomWidth={1} justifyContent={'end'}>
 					<AddCourseModal
 						data={data}
@@ -1497,7 +1497,7 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 														fetchData={refetchCourseSchedule}
 													/>
 													{permissions?.includes(
-														'enrollments.admin.course.delete'
+														'enrollments.programsEnrollments.admin'
 													) && (
 														<ConfirmModal
 															placement='center'

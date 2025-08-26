@@ -85,18 +85,18 @@ export const useDataSidebar = () => {
 			label: 'Mis Pagos',
 			permission: 'payment.mypaymentsdebts.view',
 		},
-    {
-      href: '/mycourses',
-      icon: FiBookOpen,
-      label: 'Mis cursos',
-      permission: 'enrollments.mycourses.view'
-    },
-    {
-      href: '/myprocedures',
-      icon: HiOutlineDocumentText,
-      label: 'Mis Trámites',
-      permission: 'procedures.myprocedures.view',
-    },
+		{
+			href: '/mycourses',
+			icon: FiBookOpen,
+			label: 'Mis cursos',
+			permission: 'enrollments.mycourses.view',
+		},
+		{
+			href: '/myprocedures',
+			icon: HiOutlineDocumentText,
+			label: 'Mis Trámites',
+			permission: 'procedures.myprocedures.view',
+		},
 		{
 			href: '/contracts',
 			icon: FaFileContract,
@@ -127,12 +127,12 @@ export const useDataSidebar = () => {
 					label: 'Procesos Matricula',
 					permission: 'enrollments.proccessEnrollments.view',
 				},
-        {
-          href: '/enrollments/enrolled',
-          icon: FiUsers,
-          label: 'Matriculados',
-          permission: 'enrollments.enrolled.view',
-        }
+				{
+					href: '/enrollments/enrolled',
+					icon: FiUsers,
+					label: 'Matriculados',
+					permission: 'enrollments.enrolled.view',
+				},
 			],
 		},
 		{
@@ -193,19 +193,19 @@ export const useDataSidebar = () => {
 			],
 		},
 
-    {
-      href: '/transfer-requests',
-      label: 'Traslados Internos',
-      icon: MdChangeCircle,
-      subItems: [
-        {
-          href: '/transfer-requests/list',
-          label: 'Lista General',
-          icon: FiClipboard,
-          permission: 'transfer.requests.view',
-        },
-      ],
-    },
+		{
+			href: '/transfer-requests',
+			label: 'Traslados Internos',
+			icon: MdChangeCircle,
+			subItems: [
+				{
+					href: '/transfer-requests/list',
+					label: 'Lista General',
+					icon: FiClipboard,
+					permission: 'transfer.requeststransfer.view',
+				},
+			],
+		},
 
 		{
 			href: '/students',

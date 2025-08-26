@@ -2,15 +2,16 @@ import { PreviewAdmissionsProgramsModal } from '@/components/forms/admissions/Pr
 import { UpdateStatusEnrollmentProcessForm } from '@/components/forms/enrollment_proccess/UpdateStatusEnrollmentProcessForm';
 import { ScheduleEnrollmentProgramsReviewModal } from '@/components/modals/tuition';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
-import { Pagination } from '@/components/ui';
+import { Pagination, Tooltip } from '@/components/ui';
 import { formatDateString } from '@/components/ui/dateHelpers';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import useSortedData from '@/utils/useSortedData';
 
-import { Badge, Box, HStack, Table } from '@chakra-ui/react';
+import { Badge, Box, HStack, IconButton, Table } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
+import { FiEdit2 } from 'react-icons/fi';
 
 const Row = memo(
 	({
@@ -22,6 +23,9 @@ const Row = memo(
 		sortConfig,
 		data,
 		enrollment,
+		setModalData,
+		setIsModalOpen,
+		setActionType,
 	}) => {
 		const statusMap = {
 			Borrador: { label: 'Borrador', color: 'gray' },
@@ -67,6 +71,32 @@ const Row = memo(
 						)}
 						<PreviewAdmissionsProgramsModal data={item} />
 
+						{enrollment &&
+							permissions?.includes(
+								'enrollments.programsEnrollments.admin'
+							) && (
+								<Tooltip
+									content='Editar'
+									positioning={{ placement: 'bottom-center' }}
+									showArrow
+									openDelay={0}
+								>
+									<IconButton
+										size='xs'
+										colorPalette='cyan'
+										// disabled={!permissions?.includes('enrollments.myprograms.edit')}
+
+										onClick={() => {
+											setModalData(item);
+											setIsModalOpen(true);
+											setActionType('edit');
+										}}
+									>
+										<FiEdit2 />
+									</IconButton>
+								</Tooltip>
+							)}
+
 						{enrollment && (
 							<UpdateStatusEnrollmentProcessForm
 								data={item}
@@ -92,6 +122,9 @@ Row.propTypes = {
 	sortConfig: PropTypes.object,
 	data: PropTypes.array,
 	enrollment: PropTypes.bool,
+	setModalData: PropTypes.func,
+	setIsModalOpen: PropTypes.func,
+	setActionType: PropTypes.func,
 };
 
 export const AdmissionsProgramsTable = ({
@@ -100,6 +133,9 @@ export const AdmissionsProgramsTable = ({
 	permissions,
 	isLoading,
 	enrollment = false,
+	setModalData,
+	setIsModalOpen,
+	setActionType,
 }) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [currentPage, setCurrentPage] = useState(1);
@@ -194,6 +230,9 @@ export const AdmissionsProgramsTable = ({
 									enrollment={enrollment}
 									startIndex={startIndex}
 									index={index}
+									setModalData={setModalData}
+									setIsModalOpen={setIsModalOpen}
+									setActionType={setActionType}
 								/>
 							))
 						) : (
@@ -228,4 +267,7 @@ AdmissionsProgramsTable.propTypes = {
 	isLoading: PropTypes.bool,
 	permissions: PropTypes.array,
 	enrollment: PropTypes.bool,
+	setModalData: PropTypes.func,
+	setIsModalOpen: PropTypes.func,
+	setActionType: PropTypes.func,
 };

@@ -54,7 +54,7 @@ import { useUploadCourseScheduleExcel } from '@/hooks/enrollments_programs/sched
 import { uploadToS3 } from '@/utils/uploadToS3';
 import { useProccessCourseScheduleExcel } from '@/hooks/enrollments_programs/schedule/useProccessCourseScheduleExcel';
 //import { SendConfirmationModal } from '@/components/ui/SendConfirmationModal';
-import { useCreateCourseScheduleReview } from '@/hooks/enrollments_programs/schedule/useCreateCourseScheduleReview';
+//import { useCreateCourseScheduleReview } from '@/hooks/enrollments_programs/schedule/useCreateCourseScheduleReview';
 import { useDeleteCourseSchedule } from '@/hooks/enrollments_programs/schedule/useDeleteCourseSchedule';
 import { FaClock, FaGraduationCap } from 'react-icons/fa';
 import { useReadCourses } from '@/hooks/courses';
@@ -66,6 +66,7 @@ import useSortedData from '@/utils/useSortedData';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import SkeletonTable from '@/components/ui/SkeletonTable';
+import { useCreateCourseScheduleReviewMasive } from '@/hooks/enrollments_programs/schedule/useCreateCourseScheduleReviewMasive';
 
 const timeSlots = [
 	'07:00',
@@ -1077,7 +1078,7 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 		dataCourseSchedule?.pages?.flatMap((page) => page.results) ?? [];
 
 	const [selectedIds, setSelectedIds] = useState([]);
-	const scheduleData = dataCourseSchedule?.results || [];
+	const scheduleData = allCourseSchedules || [];
 
 	const totalCount = dataCourseSchedule?.pages?.[0]?.count ?? 0;
 
@@ -1111,7 +1112,7 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 	}));
 
 	const { mutate: createCourseReview, isPending: LoadingProgramsReview } =
-		useCreateCourseScheduleReview();
+		useCreateCourseScheduleReviewMasive();
 
 	/*const handleSend = (course) => {
 		createCourseReview(course.id, {
@@ -1136,41 +1137,27 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 	const handleSendMultiple = async (courseIds = []) => {
 		if (!courseIds.length) return;
 
-		let successCount = 0;
-		let errorCount = 0;
+		// Preparo el payload
+		const payload = { course_schedule_ids: courseIds };
 
-		await Promise.all(
-			courseIds.map(
-				(id) =>
-					new Promise((resolve) => {
-						createCourseReview(id, {
-							onSuccess: () => {
-								successCount++;
-								resolve();
-							},
-							onError: (error) => {
-								errorCount++;
-								console.error(`Error al enviar curso ${id}:`, error);
-								resolve(); // resolvemos igual, para que no corte el Promise.all
-							},
-						});
-					})
-			)
-		);
-
-		if (errorCount > 0) {
-			toaster.create({
-				title: `⚠️ ${errorCount} error(es) al enviar`,
-				type: 'error',
-			});
-		}
-		toaster.create({
-			title: `✅ ${successCount} horario(s) enviados correctamente`,
-			type: 'success',
+		// Llamo a la API
+		createCourseReview(payload, {
+			onSuccess: () => {
+				toaster.create({
+					title: `✅ ${courseIds.length} horario(s) enviados correctamente`,
+					type: 'success',
+				});
+				refetchCourseSchedule();
+				setSelectedIds([]);
+			},
+			onError: (error) => {
+				console.error('Error al enviar:', error);
+				toaster.create({
+					title: `⚠️ Hubo un error al enviar los horarios`,
+					type: 'error',
+				});
+			},
 		});
-
-		refetchCourseSchedule();
-		setSelectedIds([]);
 	};
 
 	const { mutate: deleteCourseSchedule, isPending } = useDeleteCourseSchedule();
@@ -1346,7 +1333,7 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 															course.status_review !== 4
 													).length && scheduleData.length > 0
 											}
-											isIndeterminate={
+											indeterminate={
 												selectedIds.length > 0 &&
 												selectedIds.length <
 													scheduleData.filter(
@@ -1356,12 +1343,14 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 													).length
 											}
 											onChange={(e) => {
+												const checked = e.target?.checked ?? e === true;
 												const enabledCourses = scheduleData.filter(
 													(course) =>
 														course.status_review !== 2 &&
 														course.status_review !== 4
 												);
-												if (e.target.checked) {
+
+												if (checked) {
 													setSelectedIds(
 														enabledCourses.map((course) => course.id)
 													);

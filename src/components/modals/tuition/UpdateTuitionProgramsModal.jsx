@@ -38,16 +38,26 @@ export const UpdateTuitionProgramsModal = ({
 	fetchData,
 	profileId,
 	actionType,
+	permissions,
 }) => {
 	const { mutate: createEnrollmentsPrograms, isPending: isCreating } =
 		useCreateEnrollmentsPrograms();
 	const { mutate: updateEnrollmentsPrograms, isPending: isUpdating } =
 		useUpdateEnrollmentsPrograms();
 
-	const { data: dataPrograms } = useReadPrograms(
-		{ coordinator_id: profileId },
-		{ enabled: open }
-	);
+	let queryParams = {};
+
+	// Según permisos agregamos el filtro
+	if (
+		permissions &&
+		!permissions.includes('enrollments.programsEnrollments.admin')
+	) {
+		queryParams.coordinator_id = profileId;
+	}
+
+	const { data: dataPrograms } = useReadPrograms(queryParams, {
+		enabled: open,
+	});
 
 	const [formData, setFormData] = useState({
 		program: '',
@@ -186,7 +196,7 @@ export const UpdateTuitionProgramsModal = ({
 				examen_start_date: formData.evalStart,
 				examen_end_date: formData.evalEnd,
 				semester_start_date: formData.semester_start_date,
-				credits: formData.semesterCredits 	|| 1,
+				credits: formData.semesterCredits || 1,
 			};
 
 			createEnrollmentsPrograms(payload, {
@@ -234,7 +244,7 @@ export const UpdateTuitionProgramsModal = ({
 				examen_start_date: formData.evalStart,
 				examen_end_date: formData.evalEnd,
 				semester_start_date: formData.semester_start_date,
-				credits: formData.semesterCredits 	|| 1,
+				credits: formData.semesterCredits || 1,
 			};
 
 			updateEnrollmentsPrograms(
@@ -544,4 +554,5 @@ UpdateTuitionProgramsModal.propTypes = {
 	profileId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	actionType: PropTypes.oneOf(['create', 'edit']),
 	existingNames: PropTypes.arrayOf(PropTypes.string),
+	permissions: PropTypes.array,
 };
