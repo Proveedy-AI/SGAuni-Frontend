@@ -72,6 +72,12 @@ const Row = memo(
 			},
 		];
 
+    const qualificationEnum = [
+      { value:'Pendiente', label: 'Pendiente', color: 'gray', bg: 'gray.100' },
+      { value:'En Progreso', label: 'En Progreso', color: 'blue', bg: 'blue.100' },
+      { value:'Completado', label: 'Completado', color: 'green', bg: 'green.100' },
+    ]
+
 		return (
 			<Table.Row
 				onClick={(e) => {
@@ -109,20 +115,20 @@ const Row = memo(
 				<Table.Cell>
 					<Badge
 						bg={
-							statusEnum.find(
-								(status) => status.value === item.status_qualification_display
+							qualificationEnum.find(
+								(status) => status.value?.trim() === item.status_qualification_display?.trim()
 							)?.bg
 						}
 						color={
-							statusEnum.find(
-								(status) => status.value === item.status_qualification_display
+							qualificationEnum.find(
+								(status) => status.value?.trim() === item.status_qualification_display?.trim()
 							)?.color
 						}
 						fontWeight='semibold'
 					>
 						{
-							statusEnum.find(
-								(status) => status.value === item.status_qualification_display
+							qualificationEnum.find(
+								(status) => status.value?.trim() === item.status_qualification_display?.trim()
 							)?.label
 						}
 					</Badge>
@@ -131,12 +137,14 @@ const Row = memo(
 					{item.qualification_average || '-'}
 				</Table.Cell>
 				<Table.Cell textAlign='center'>
-					<Badge
-						colorPalette={item.has_passed ? 'green' : 'red'}
-						fontWeight='semibold'
-					>
-						{item.has_passed ? 'Si' : 'No'}
-					</Badge>
+					{item.has_passed !== null && (
+            <Badge
+              colorPalette={item.has_passed ? 'green' : 'red'}
+              fontWeight='semibold'
+            >
+              {item.has_passed ? 'Si' : 'No'}
+            </Badge>
+          )}
 				</Table.Cell>
 				<Table.Cell onClick={(e) => e.stopPropagation()}>
 					<HStack>
