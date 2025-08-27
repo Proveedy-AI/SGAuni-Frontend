@@ -36,8 +36,8 @@ export const AssignWeigthProgramFocus = ({ item, fetchData }) => {
 	const [errors, setErrors] = useState({});
 
 	const roleOptions = [
-		{ label: 'Ensayo', value: '1' },
-		{ label: 'Entrevista personal', value: '3' },
+		{ label: 'Entrevista', value: '1' },
+		{ label: 'Ensayo', value: '2' },
 	];
 
 	const evaluatorsAssigned = dataProgramsWeight?.results?.filter(

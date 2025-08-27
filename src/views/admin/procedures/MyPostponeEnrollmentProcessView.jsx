@@ -72,7 +72,7 @@ const EnrollmentCard = ({ enrollment, onStartEnrollment }) => {
 						>
 							<Icon as={FiBook} boxSize={6} color='blue.600' />
 						</Box>
-						<VStack align='start' spacing={1} flex='1'>
+						<VStack align='start' gap={1} flex='1'>
 							<Heading
 								as='h3'
 								size='md'
@@ -104,10 +104,10 @@ const EnrollmentCard = ({ enrollment, onStartEnrollment }) => {
 					/>
 				</Flex>
 
-				<VStack align='start' spacing={3} mt={4}>
-					<HStack spacing={3} w='full'>
+				<VStack align='start' gap={3} mt={4}>
+					<HStack gap={3} w='full'>
 						<Box>
-							<HStack spacing={3} w='full'>
+							<HStack gap={3} w='full'>
 								<Icon as={FiCalendar} color='gray.500' boxSize={4} />
 								<Text fontSize='sm' color='gray.600'>
 									Período:{' '}
@@ -153,7 +153,7 @@ export const MyPostponeEnrollmentProcessView = () => {
 		(enrollment) => enrollment.status === 1 || enrollment.status === 2 || enrollment.status === 4
 	);
 
-	console.log(filteredEnrollments);
+	console.log(dataMyEnrollments);
 
 	const bgColor = useColorModeValue('blue.50', 'blue.900');
 
