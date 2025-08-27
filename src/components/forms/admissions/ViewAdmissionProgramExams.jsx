@@ -39,6 +39,7 @@ export const ViewAdmissionProgramExams = ({ item, fetchData }) => {
 							size='xs'
 							colorPalette='blue'
 							css={{ _icon: { width: '5', height: '5' } }}
+              disabled={item?.status === 1}
 						>
 							<FiCheckCircle />
 						</IconButton>
