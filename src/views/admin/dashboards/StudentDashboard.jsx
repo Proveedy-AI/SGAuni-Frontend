@@ -46,6 +46,14 @@ export const StudentDashboard = () => {
 		}
 	};
 
+  const filteredPrograms = profile?.student?.admission_programs?.filter((program) => program?.academic_status === 1);
+  console.log(filteredPrograms);
+  const filteredMyCredits = Object.values(dataMyCredits?.result || {}).filter((credits) =>
+    filteredPrograms?.some(
+      (program) => program?.program_name?.trim() === credits?.program_name?.trim()
+    )
+  );
+
 	/*const dataMyEnrollments = [
 		{
 			id: 1,
@@ -242,7 +250,7 @@ export const StudentDashboard = () => {
 				</Alert>
 			)}
 			<SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
-				{Object.values(dataMyCredits?.result || {}).map((program) => (
+				{Object.values(filteredMyCredits || {})?.map((program) => (
 					<React.Fragment key={program.program_id}>
 						{/* Créditos Totales */}
 						<Card.Root
