@@ -188,7 +188,7 @@ export const ExpandableCourseCard = ({ course, gradesCache, setGradesCache }) =>
 
 									<VStack my={2} align='stretch'>
 										{/* Simulando evaluaciones basadas en la nota final */}
-										{isLoadingCourseGrades ? (
+										{isLoadingCourseGrades && !dataCourseGrades?.data?.evaluations ? (
 											<Spinner size='sm' color='blue.500' />
 										) : dataCourseGrades?.data?.evaluations.length > 0 ? (
 											dataCourseGrades.data.evaluations.map(
@@ -224,19 +224,21 @@ export const ExpandableCourseCard = ({ course, gradesCache, setGradesCache }) =>
 									</VStack>
 
 									{/* Fórmula de calificación */}
-									<Box my={2} bg='green.50' p={3} borderRadius='md'>
-										<Text
-											fontSize='sm'
-											fontWeight='bold'
-											color='green.700'
-											mb={1}
-										>
-											Fórmula de calificación:
-										</Text>
-										<Text fontSize='sm' color='green.600'>
-											{gradeFormula}
-										</Text>
-									</Box>
+                  {dataCourseGrades?.data?.evaluations.length > 0 && (
+                    <Box my={2} bg='green.50' p={3} borderRadius='md'>
+                      <Text
+                        fontSize='sm'
+                        fontWeight='bold'
+                        color='green.700'
+                        mb={1}
+                      >
+                        Fórmula de calificación:
+                      </Text>
+                      <Text fontSize='sm' color='green.600'>
+                        {gradeFormula}
+                      </Text>
+                    </Box>
+                  )}
 
 									{/* Promedio final */}
 									<Flex
