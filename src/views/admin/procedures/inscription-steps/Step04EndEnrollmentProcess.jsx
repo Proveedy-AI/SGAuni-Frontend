@@ -12,7 +12,6 @@ import { Button } from '@/components/ui';
 import { useNavigate } from 'react-router';
 
 export const Step04EndEnrollmentProcess = ({ currentEnrollment, step, mySelections }) => {
-  console.log(currentEnrollment?.enrollment_period_program)
 	const { data: dataRegistrationInfo, isLoading: loadingRegistrationInfo } =
 		useReadEnrollmentReceipt(
       currentEnrollment?.enrollment_period_program, 
