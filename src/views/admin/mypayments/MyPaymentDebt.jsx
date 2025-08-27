@@ -36,59 +36,7 @@ export const MyPaymentDebt = () => {
 
 	const { data: debtsByPurpose, isLoading: isLoadingDebts } =
 		useReadMyDebtsPayment();
-
-	/*const debtsByPurpose = [
-		{
-			purpose: 'MATRICULA',
-			description: 'Matrícula Semestre 2024-I',
-			amount: 1200,
-			status: 'PENDIENTE',
-			dueDate: '2024-02-15',
-			program: 'Ingeniería de Sistemas',
-			programId: 'ING-SIS',
-			orderId: 'OP-2024-001',
-		},
-		{
-			purpose: 'MATRICULA',
-			description: 'Matrícula Semestre 2024-I',
-			amount: 1100,
-			status: 'PENDIENTE',
-			dueDate: '2024-02-15',
-			program: 'Ingeniería Industrial',
-			programId: 'ING-IND',
-			orderId: 'OP-2024-003',
-		},
-		{
-			purpose: 'PENSION',
-			description: 'Pensión Enero 2024',
-			amount: 800,
-			status: 'PENDIENTE',
-			dueDate: '2024-01-31',
-			program: 'Ingeniería de Sistemas',
-			programId: 'ING-SIS',
-			orderId: null,
-		},
-		{
-			purpose: 'CERTIFICADOS',
-			description: 'Certificados de Estudios',
-			amount: 150,
-			status: 'EN_PROCESO',
-			dueDate: '-',
-			program: 'Ingeniería de Sistemas',
-			programId: 'ING-SIS',
-			orderId: 'SOL-2024-001',
-		},
-		{
-			purpose: 'CARPETAS',
-			description: 'Carpetas Académicas',
-			amount: 80,
-			status: 'PAGADO',
-			dueDate: '2024-01-25',
-			program: 'Ingeniería Industrial',
-			programId: 'ING-IND',
-			orderId: 'OP-2024-002',
-		},
-	];*/
+	console.log(debtsByPurpose);
 	const getFilteredDebts = () => {
 		if (!debtsByPurpose?.results) return [];
 		return debtsByPurpose.results.filter(
@@ -133,7 +81,7 @@ export const MyPaymentDebt = () => {
 			consolidated[debt.purpose].totalAmount += debt.amount;
 			consolidated[debt.purpose].items.push(debt);
 
-			if (debt.status === 2) consolidated[debt.purpose].pendingCount++;
+			if (debt.status === 4) consolidated[debt.purpose].pendingCount++;
 			else if (debt.status === 'PAGADO') consolidated[debt.purpose].paidCount++;
 			else if (debt.status === 'EN_PROCESO')
 				consolidated[debt.purpose].inProcessCount++;
@@ -151,11 +99,11 @@ export const MyPaymentDebt = () => {
 
 		if (selectedProgram === 'TODOS') {
 			const pendingDebts = debtsByPurpose.results
-				.filter((d) => d.status === 2)
+				.filter((d) => d.status === 4)
 				.reduce((sum, d) => sum + d.amount, 0);
 
 			const pendingCount = debtsByPurpose.results.filter(
-				(d) => d.status === 2
+				(d) => d.status === 4
 			).length;
 
 			return {
@@ -165,10 +113,10 @@ export const MyPaymentDebt = () => {
 		} else {
 			const filteredDebts = getFilteredDebts();
 			const pendingDebts = filteredDebts
-				.filter((d) => d.status === 2)
+				.filter((d) => d.status === 4)
 				.reduce((sum, d) => sum + d.amount, 0);
 
-			const pendingCount = filteredDebts.filter((d) => d.status === 2).length;
+			const pendingCount = filteredDebts.filter((d) => d.status === 4).length;
 
 			return {
 				pendingDebts,
@@ -198,7 +146,7 @@ export const MyPaymentDebt = () => {
 				)) &&
 			// Filtra por propósito fraccionamiento o 8
 			consolidated.items.some(
-				(item) => item.purpose === 4 || item.purpose === 8
+				(item) => item.purpose_id === 3 || item.purpose_id === 4
 			)
 	);
 
@@ -367,14 +315,10 @@ export const MyPaymentDebt = () => {
 																	<Table.Cell>{debt.description}</Table.Cell>
 																	<Table.Cell
 																		color={
-																			debt.status === 'PENDIENTE'
-																				? 'red.600'
-																				: 'inherit'
+																			debt.status === 4 ? 'red.600' : 'inherit'
 																		}
 																		fontWeight={
-																			debt.status === 'PENDIENTE'
-																				? 'semibold'
-																				: 'normal'
+																			debt.status === 4 ? 'semibold' : 'normal'
 																		}
 																	>
 																		S/ {debt.amount}
@@ -382,15 +326,15 @@ export const MyPaymentDebt = () => {
 																	<Table.Cell>
 																		<Badge
 																			colorPalette={
-																				debt.status === 2
+																				debt.status === 4
 																					? 'red'
 																					: debt.status === 2
 																						? 'blue'
 																						: 'green'
 																			}
 																		>
-																			{debt.status === 2
-																				? 'Pendiente'
+																			{debt.status === 4
+																				? 'Expirado'
 																				: debt.status === 2
 																					? 'En Proceso'
 																					: 'Pagado'}
@@ -399,13 +343,13 @@ export const MyPaymentDebt = () => {
 																	<Table.Cell>{debt.dueDate}</Table.Cell>
 																	<Table.Cell>
 																		<Flex gap={2}>
-																			{debt.status === 'PENDIENTE' &&
-																				!debt.orderId && (
+																			{debt.status === 4 &&
+																				!debt.id_orden && (
 																					<Button size='sm'>
 																						Solicitar Orden
 																					</Button>
 																				)}
-																			{debt.orderId && (
+																			{debt.id_orden && (
 																				<PreviewMypaymentDetailsModal
 																					data={debt}
 																				/>

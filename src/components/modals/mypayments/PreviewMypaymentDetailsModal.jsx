@@ -25,8 +25,8 @@ export const PreviewMypaymentDetailsModal = ({ data }) => {
 	const [open, setOpen] = useState(false);
 
 	const debtStatusUI = {
-		PENDIENTE: {
-			label: 'Pendiente',
+		4: {
+			label: 'Expirado',
 			color: 'red.600',
 			bg: 'red.100',
 		},
@@ -190,7 +190,7 @@ export const PreviewMypaymentDetailsModal = ({ data }) => {
 									fontWeight='semibold'
 									color='gray.900'
 								>
-									{data.orderId}
+									{data.id_orden}
 								</Text>
 							</Box>
 						</SimpleGrid>

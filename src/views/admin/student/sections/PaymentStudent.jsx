@@ -44,12 +44,18 @@ export const PaymentStudent = ({ dataPerson, dataStudent }) => {
 		{ value: 2, label: 'Generado' },
 		{ value: 3, label: 'Pagado' }, // puedes agregar más si aplica
 		{ value: 4, label: 'Expirado' },
+		{ value: 5, label: 'Cancelado' },
+		{ value: 6, label: 'Devuelto' },
+		{ value: 7, label: 'Rectificado' },
 	];
 	const statusColorMap = {
 		1: 'red',
 		2: 'blue',
 		3: 'green',
 		4: 'yellow',
+		5: 'red',
+		6: 'orange',
+		7: 'purple',
 	};
 
 	const filteredPayment = useMemo(() => {

@@ -40,11 +40,11 @@ export const ViewInstallmentsPaymentsModal = ({ item }) => {
 	};
 	return (
 		<ModalSimple
-			title='Cuotas del plan de fraccionamiento'
+			title='Cuotas del cronograma de pago'
 			placement='center'
 			size='5xl'
 			trigger={
-				<Button disabled={!Installments?.results?.length} colorPalette='green' size='xs'>
+				<Button  colorPalette='green' size='xs'>
 					<FiCalendar /> Cronograma
 				</Button>
 			}

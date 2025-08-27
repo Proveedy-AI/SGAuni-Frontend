@@ -23,6 +23,7 @@ import PropTypes from 'prop-types';
 import {
 	FiBookOpen,
 	FiCalendar,
+	FiCheckCircle,
 	FiClock,
 	FiDownload,
 	FiFileText,
@@ -34,6 +35,7 @@ import {
 } from 'react-icons/fi';
 import {
 	Alert,
+	Checkbox,
 	//Checkbox,
 	ConfirmModal,
 	Field,
@@ -61,6 +63,7 @@ import { usePaginationSettings } from '@/components/navigation/usePaginationSett
 import useSortedData from '@/utils/useSortedData';
 import { usePaginatedInfiniteData } from '@/components/navigation';
 import SkeletonTable from '@/components/ui/SkeletonTable';
+import { useAproveeCourseScheduleReviewMasive } from '@/hooks/enrollments_programs/schedule/useAproveeCourseScheduleReviewMasive';
 
 // Datos de ejemplo basados en la estructura proporcionada
 
@@ -1052,12 +1055,12 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 		{ enabled: open }
 	);
 
-	//const [selectedIds, setSelectedIds] = useState([]);
+	const [selectedIds, setSelectedIds] = useState([]);
 	const allCourseSchedules =
 		dataCourseSchedule?.pages?.flatMap((page) =>
 			page.results.filter((item) => item.status_review !== 1)
 		) ?? [];
-
+	const scheduleData = allCourseSchedules || [];
 	const dayNames = [
 		'Domingo',
 		'Lunes',
@@ -1102,51 +1105,34 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 			isFetchingNextPage,
 		});
 
-	/*const { mutate: createCourseReview, isPending: LoadingProgramsReview } =
-		useCreateCourseScheduleReview();
+	const { mutate: AproveeCourseReview, isPending: LoadingProgramsReview } =
+		useAproveeCourseScheduleReviewMasive();
 
-	const handleSendMultiple = (courseIds = []) => {
+	const handleApproveMultiple = async (courseIds = []) => {
 		if (!courseIds.length) return;
 
-		Promise.allSettled(
-			courseIds.map(
-				(id) =>
-					new Promise((resolve, reject) => {
-						createCourseReview(id, {
-							onSuccess: () => resolve({ id, status: 'success' }),
-							onError: (error) =>
-								reject({ id, status: 'error', message: error.message }),
-						});
-					})
-			)
-		).then((results) => {
-			const successCount = results.filter(
-				(r) => r.status === 'fulfilled'
-			).length;
-			const errorCount = results.filter((r) => r.status === 'rejected').length;
+		// Preparo el payload
+		const payload = { schedule_ids: courseIds };
 
-			if (successCount > 0) {
+		// Llamo a la API
+		AproveeCourseReview(payload, {
+			onSuccess: () => {
 				toaster.create({
-					title: `✅ ${successCount} horario(s) enviados correctamente`,
+					title: `✅ ${courseIds.length} horario(s) enviados correctamente`,
 					type: 'success',
 				});
-			}
-
-			if (errorCount > 0) {
+				refetchCourseSchedule();
+				setSelectedIds([]);
+			},
+			onError: (error) => {
+				console.error('Error al enviar:', error);
 				toaster.create({
-					title: `⚠️ ${errorCount} error(es) al enviar`,
+					title: `⚠️ Hubo un error al enviar los horarios`,
 					type: 'error',
 				});
-				console.error(
-					'Errores:',
-					results.filter((r) => r.status === 'rejected')
-				);
-			}
-
-			fetchDataCourseSchedule();
-			setOpenSend(false);
+			},
 		});
-	};*/
+	};
 
 	const { mutate: deleteCourseSchedule, isPending } = useDeleteCourseSchedule();
 
@@ -1286,15 +1272,17 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 						</Tabs.Trigger>
 					</HStack>
 
-					{/*selectedIds.length > 0 && (
-						<Button
-							colorPalette='green'
-							size='xs'
-							onClick={() => handleSendMultiple(selectedIds)}
-						>
-							<FiSend /> Aprobar {selectedIds.length} horario(s)
-						</Button>
-					)*/}
+					<Button
+						colorPalette='green'
+						mt={2}
+						size='xs'
+						disabled={selectedIds.length <= 0}
+						loading={LoadingProgramsReview}
+						loadingText='Enviando...'
+						onClick={() => handleApproveMultiple(selectedIds)}
+					>
+						<FiCheckCircle /> Aprobar {selectedIds.length} horario(s)
+					</Button>
 				</Tabs.List>
 
 				<Tabs.Content value={1}>
@@ -1306,7 +1294,7 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 						<Table.Root variant='simple'>
 							<Table.Header>
 								<Table.Row>
-									{/*<Table.Cell>
+									<Table.Cell>
 										<Checkbox
 											checked={
 												selectedIds.length ===
@@ -1316,7 +1304,7 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 															course.status_review !== 4
 													).length && scheduleData.length > 0
 											}
-											isIndeterminate={
+											indeterminate={
 												selectedIds.length > 0 &&
 												selectedIds.length <
 													scheduleData.filter(
@@ -1326,12 +1314,14 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 													).length
 											}
 											onChange={(e) => {
+												const checked = e.target?.checked ?? e === true;
 												const enabledCourses = scheduleData.filter(
 													(course) =>
 														course.status_review !== 3 &&
 														course.status_review !== 4
 												);
-												if (e.target.checked) {
+
+												if (checked) {
 													setSelectedIds(
 														enabledCourses.map((course) => course.id)
 													);
@@ -1340,7 +1330,7 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 												}
 											}}
 										/>
-									</Table.Cell>*/}
+									</Table.Cell>
 
 									<Table.Cell>
 										<SortableHeader
@@ -1432,7 +1422,7 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 								) : visibleRows?.length > 0 ? (
 									visibleRows.map((course) => (
 										<Table.Row key={course.id}>
-											{/*<Table.Cell>
+											<Table.Cell>
 												<Checkbox
 													checked={selectedIds.includes(course.id)}
 													onChange={(e) => {
@@ -1444,11 +1434,11 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 														);
 													}}
 													disabled={
-														course.status_review !== 3 &&
+														course.status_review === 3 ||
 														course.status_review === 4
 													}
 												/>
-											</Table.Cell>*/}
+											</Table.Cell>
 											<Table.Cell fontWeight='medium'>
 												{course.course_name}
 											</Table.Cell>

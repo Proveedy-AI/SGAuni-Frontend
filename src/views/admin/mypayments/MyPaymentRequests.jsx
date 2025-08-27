@@ -93,12 +93,18 @@ export const MyPaymentRequests = () => {
 		{ value: 2, label: 'Generado' },
 		{ value: 3, label: 'Pagado' }, // puedes agregar más si aplica
 		{ value: 4, label: 'Expirado' },
+		{ value: 5, label: 'Cancelado' },
+		{ value: 6, label: 'Devuelto' },
+		{ value: 7, label: 'Rectificado' },
 	];
 	const statusColorMap = {
 		1: 'red',
 		2: 'blue',
 		3: 'green',
 		4: 'yellow',
+		5: 'red',
+		6: 'orange',
+		7: 'purple',
 	};
 
 	return (
@@ -202,7 +208,9 @@ export const MyPaymentRequests = () => {
 								<Table.ColumnHeader>N°</Table.ColumnHeader>
 								<Table.ColumnHeader w={'20%'}>Programa</Table.ColumnHeader>
 								<Table.ColumnHeader w={'15%'}>Proceso</Table.ColumnHeader>
-								<Table.ColumnHeader w={'15%'}>Concepto de pago</Table.ColumnHeader>
+								<Table.ColumnHeader w={'15%'}>
+									Concepto de pago
+								</Table.ColumnHeader>
 								<Table.ColumnHeader w={'10%'}>Monto</Table.ColumnHeader>
 								<Table.ColumnHeader>Estado</Table.ColumnHeader>
 								<Table.ColumnHeader w={'15%'}>
@@ -216,11 +224,10 @@ export const MyPaymentRequests = () => {
 									filteredRequests.map((item, index) => (
 										<Table.Row key={item.id}>
 											<Table.Cell>{index + 1}</Table.Cell>
+											<Table.Cell>{item.program_name}</Table.Cell>
 											<Table.Cell>
-												{item.program_name}
-											</Table.Cell>
-											<Table.Cell>
-												{item.admission_process_name || item.enrollment_process_name}
+												{item.admission_process_name ||
+													item.enrollment_process_name}
 											</Table.Cell>
 											<Table.Cell>{item.purpose_display}</Table.Cell>
 											<Table.Cell>S/ {item.amount}</Table.Cell>
