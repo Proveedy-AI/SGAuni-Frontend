@@ -59,7 +59,6 @@ export const ConfirmDownloadSuneduModal = ({
 		downloadSunedu(admissionProcess?.uuid, {
 			onSuccess: (data) => {
 				// ⚠️ Aquí asumimos que tu API devuelve JSON con estudiantes
-				console.log(data);
 				loadExcelWithTemplate(data);
 
 				toaster.create({

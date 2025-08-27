@@ -60,7 +60,6 @@ export const UpdateEnrollmentStudentForm = ({ data, fetchData }) => {
 		],
 		[]
 	);
-	console.log(data);
 	useEffect(() => {
 		if (data && data.status) {
 			const matchedStatus = StatusOptions.find((c) => c.value === data.status);
