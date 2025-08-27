@@ -261,7 +261,6 @@ export const AdmissionApplicantsByProgram = () => {
 			</Stack>
 
 			<AdmissionApplicantsByProgramTable
-				programId={dataProgram?.program}
         admissionProgramId={decrypted}
 				isLoading={isLoadingApplicants}
 				data={filteredApplicants}
