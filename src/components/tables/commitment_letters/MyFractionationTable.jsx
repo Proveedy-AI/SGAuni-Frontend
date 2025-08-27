@@ -18,7 +18,6 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 		{ id: 2, label: 'Rechazado', color: 'red' },
 		{ id: 3, label: 'Aprobado', color: 'green' },
 	];
-	console.log(item);
 	const matchStatus = statusDisplay.find(
 		(status) => status.id === item.status_review
 	);
