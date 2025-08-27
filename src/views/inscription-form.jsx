@@ -583,6 +583,8 @@ export default function ChakraInscriptionForm() {
 		{ value: '2', label: 'Pasaporte' },
 		{ value: '3', label: 'Carné de Extranjería' },
 	];
+	const fecha = new Date(dataAdmissionProgram.end_date);
+	const fechaMas5Horas = new Date(fecha.getTime() + 5 * 60 * 60 * 1000);
 
 	const getLabelFromOptions = (options, value) =>
 		options.find((item) => item.value === value)?.label || '';
@@ -634,8 +636,7 @@ export default function ChakraInscriptionForm() {
 				<>
 					{
 						/* Formulario de Inscripción */
-						dataAdmissionProgram?.end_date &&
-						new Date(dataAdmissionProgram.end_date) >= new Date() ? (
+						dataAdmissionProgram?.end_date && fechaMas5Horas >= new Date() ? (
 							<Container maxW='6xl' py={8}>
 								{/* Progress Section */}
 								<Card.Root mb={8} px={6} pt={4} shadow='lg' bg={cardBg}>
