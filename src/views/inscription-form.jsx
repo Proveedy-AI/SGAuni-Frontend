@@ -583,7 +583,7 @@ export default function ChakraInscriptionForm() {
 		{ value: '2', label: 'Pasaporte' },
 		{ value: '3', label: 'Carné de Extranjería' },
 	];
-	const fecha = new Date(dataAdmissionProgram.end_date);
+	const fecha = new Date(dataAdmissionProgram?.end_date);
 	const fechaMas5Horas = new Date(fecha.getTime() + 5 * 60 * 60 * 1000);
 
 	const getLabelFromOptions = (options, value) =>
