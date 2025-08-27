@@ -216,7 +216,7 @@ export const MyPaymentAddRequests = () => {
 	const isPreMaestria =
 		!hasStudentRole &&
 		dataMyApplicants?.find((p) => p.id === Number(selectedProgram?.value))?.modality_id === 1;
-	console.log(dataMyApplicants, selectedProgram);
+
 	const validateFields = () => {
 		const newErrors = {};
 		if (!selectedProgram) newErrors.selectedProgram = 'Seleccione un programa';

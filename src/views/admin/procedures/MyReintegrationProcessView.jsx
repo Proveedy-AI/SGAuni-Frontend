@@ -77,7 +77,6 @@ export const MyReintegrationProcessView = () => {
 	const navigate = useNavigate();
 
   const { data: dataUser, isLoading: isLoadingUser } = useReadUserLogged();
-  console.log(dataUser?.student?.admission_programs);
   const filteredPrograms =  dataUser?.student?.admission_programs.filter(
     (program) => program.academic_status === 4
   );

@@ -10,7 +10,6 @@ import { PreviewDocumentRequestModal } from '@/components/modals/procedures';
 import { UpdateStatusRequestModal } from '@/components/modals/transfer_requests';
 
 const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data, handleClickRow }) => {
-  console.log(item)
   //1: Borrador, 2: En revisión, 3: Rechazado, 4: Aprobado, 5: Completado
 	const statusColor = [
 		{ id: 1, bg: 'gray.200', color: 'gray.800' },

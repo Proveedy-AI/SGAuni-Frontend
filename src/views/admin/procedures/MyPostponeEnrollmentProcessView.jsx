@@ -153,8 +153,6 @@ export const MyPostponeEnrollmentProcessView = () => {
 		(enrollment) => enrollment.status === 1 || enrollment.status === 2 || enrollment.status === 4
 	);
 
-	console.log(dataMyEnrollments);
-
 	const bgColor = useColorModeValue('blue.50', 'blue.900');
 
 	const handleStartEnrollment = (enrollment) => {

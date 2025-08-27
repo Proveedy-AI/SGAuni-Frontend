@@ -109,7 +109,6 @@ export const MyApplicantsTable = ({
 	const startIndex = (currentPage - 1) * pageSize;
 	const endIndex = startIndex + pageSize;
 	const [sortConfig, setSortConfig] = useState(null);
-	console.log(data);
 	const sortedData = useMemo(() => {
 		if (!sortConfig) return data;
 

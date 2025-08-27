@@ -32,7 +32,7 @@ export const UpdateStatusFractionatopmModal = ({ data, fetchData }) => {
 	const [open, setOpen] = useState(false);
 	const [comments, setComments] = useState('');
 	const [upfront_percentage, setUpfrontPercentage] = useState('');
-	console.log(data);
+
 	const [selectedStatus, setSelectedStatus] = useState(null); // 4: Aprobado, 3: Rechazado
 	const [errors, setErrors] = useState({});
 

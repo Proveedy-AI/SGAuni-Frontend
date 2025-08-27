@@ -89,9 +89,8 @@ export const MyReintegrationFormView = () => {
 			current_enrollment_program: enrollment.id,
 			payment_method: selectedMethod?.value,
 			payment_document: selectedDocumentType?.value,
+			num_document: numDocCarpeta,
 		};
-
-		console.log('Payload de reintegración:', payload);
 
 		reintegrateEnrollment(payload, {
 			onSuccess: () => {

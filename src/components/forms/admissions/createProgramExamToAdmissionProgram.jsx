@@ -41,7 +41,6 @@ export const CreateProgramExamToAdmissionProgram = ({
 	programId,
 	fetchData,
 }) => {
-	console.log(programId);
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 
@@ -66,7 +65,6 @@ export const CreateProgramExamToAdmissionProgram = ({
 		{ program_id: programId },
 		{ enabled: open && !!programId }
 	);
-	console.log(dataAdmissionEvaluators);
 
 	const evaluatorOptions = dataAdmissionEvaluators?.results?.map((c) => ({
 		value: c.id.toString(),
@@ -83,7 +81,6 @@ export const CreateProgramExamToAdmissionProgram = ({
 	const filteredApplicationTypeOptions = applicationTypeOptions.filter(
 		(option) => dataModality?.[option.key]
 	);
-console.log('dataModality',dataModality)
 	const filteredEvaluationsByStudent = dataEvaluations?.results?.filter(
 		(evaluation) => evaluation.application === item?.id
 	);
@@ -94,7 +91,7 @@ console.log('dataModality',dataModality)
 	const [evaluatorInput, setEvaluatorInput] = useState(null);
 	const [applicationTypeInput, setApplicationTypeInput] = useState(null);
 	const [editingId, setEditingId] = useState(null);
-	console.log(evaluatorInput);
+
 	const handleResetForm = () => {
 		setStartDateExamInput('');
 		setEndDateExamInput('');
@@ -171,7 +168,7 @@ console.log('dataModality',dataModality)
 			},
 		});
 	};
-	console.log(filteredEvaluationsByStudent);
+
 	return (
 		<Modal
 			title='Programar Tareas'

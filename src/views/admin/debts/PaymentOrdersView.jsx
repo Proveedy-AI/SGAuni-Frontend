@@ -115,8 +115,6 @@ export const PaymentOrdersView = () => {
 			payment_order_ids: selectedOrderIds,
 		};
 
-		console.log(payload);
-
 		cancelPaymentOrders(payload, {
 			onSuccess: () => {
 				toaster.create({

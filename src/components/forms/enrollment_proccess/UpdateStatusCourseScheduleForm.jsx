@@ -104,7 +104,6 @@ export const UpdateStatusCourseScheduleForm = ({ data, fetchData }) => {
 			setComments('');
 		}
 	};
-console.log(data)
 	const dayLabel =
 		daysOfWeek2.find((d) => d.value === String(data?.day_of_week))?.fullName ??
 		`Día ${data?.day_of_week}`;

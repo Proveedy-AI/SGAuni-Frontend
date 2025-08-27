@@ -15,7 +15,6 @@ import { useNavigate } from "react-router";
 import PropTypes from "prop-types";
 import { toaster, useColorModeValue } from "@/components/ui";
 import { Box, Card, Flex, Heading, Icon, SimpleGrid, Text } from "@chakra-ui/react";
-import { useGetProfile } from "@/hooks/auth";
 
 const ProcedureCard = ({ procedure, onClick }) => {
   const cardBg = useColorModeValue("white", "gray.800");
@@ -95,9 +94,6 @@ ProcedureCard.propTypes = {
 export const MyProceduresView = () => {
   const navigate = useNavigate();
   const bgColor = useColorModeValue("blue.50", "blue.900");
-
-  const { data: profile } = useGetProfile();
-  console.log(profile)
 
   const proceduresData = [
   {
@@ -183,7 +179,6 @@ export const MyProceduresView = () => {
 ];
 
   const handleProcedureClick = (procedure) => {
-    console.log("Navegando a:", procedure.href);
     if (procedure.isActive) {
       navigate(procedure.href);
     }

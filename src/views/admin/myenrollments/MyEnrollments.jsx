@@ -31,7 +31,7 @@ export const MyEnrollments = () => {
   const [totalCredits, setTotalCredits] = useState(0);
 
   const { data: myEnrollments, isLoading: isLoadingEnrollments, refetch: refetchEnrollments } = useReadMyEnrollments();
-  console.log(myEnrollments);
+
   //console.log(myEnrollments);
   
   const { data: myDebts, isLoading: isLoadingDebts } = useReadMyDebtsPayment();
