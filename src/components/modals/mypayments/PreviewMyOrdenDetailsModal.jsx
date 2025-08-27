@@ -48,9 +48,11 @@ export const PreviewMyOrdenDetailsModal = ({ data }) => {
 	const StatusOptions = [
 		{ value: 1, label: 'Pendiente' },
 		{ value: 2, label: 'Generado' },
-		{ value: 3, label: 'Verificado' }, // puedes agregar más si aplica
+		{ value: 3, label: 'Pagado' }, // puedes agregar más si aplica
 		{ value: 4, label: 'Expirado' },
 		{ value: 5, label: 'Cancelado' },
+		{ value: 6, label: 'Devuelto' },
+		{ value: 7, label: 'Rectificado' },
 	];
 	const statusColorMap = {
 		1: 'yellow',
@@ -58,6 +60,8 @@ export const PreviewMyOrdenDetailsModal = ({ data }) => {
 		3: 'green',
 		4: 'red',
 		5: 'red',
+		6: 'orange',
+		7: 'purple',
 	};
 
 	const handleRowClick = () => {

@@ -16,10 +16,9 @@ import { UpdateStatusFractionatopmModal } from '@/components/forms/commitment_le
 
 const Row = memo(({ item, startIndex, index, refetch, sortConfig, data }) => {
 	const statusDisplay = [
-		{ id: 1, label: 'Borrador', bg: '#AEAEAE', color: '#F5F5F5' },
-		{ id: 2, label: 'En revisión', bg: '#d0daedff', color: '#2d689fff' },
-		{ id: 3, label: 'Rechazado', bg: '#F7CDCE', color: '#E0383B' },
-		{ id: 4, label: 'Aprobado', bg: '#D0EDD0', color: '#2D9F2D' },
+		{ id: 1, label: 'En revisión', color: 'blue' },
+		{ id: 2, label: 'Rechazado', color: 'red' },
+		{ id: 3, label: 'Aprobado', color: 'green' },
 	];
 
 	const matchStatus = statusDisplay.find((status) => status.id === item.status);
@@ -32,11 +31,12 @@ const Row = memo(({ item, startIndex, index, refetch, sortConfig, data }) => {
 					: startIndex + index + 1}
 			</Table.Cell>
 			<Table.Cell>{item.enrollment_name}</Table.Cell>
+			<Table.Cell>{item.student_name}</Table.Cell>
 			<Table.Cell>{item.num_document_person}</Table.Cell>
 			<Table.Cell>{item.number_of_installments}</Table.Cell>
 			<Table.Cell>{item.payment_document_type_display}</Table.Cell>
 			<Table.Cell>
-				<Badge bg={matchStatus?.bg} color={matchStatus?.color}>
+				<Badge colorPalette={matchStatus?.color}>
 					{matchStatus?.label || 'N/A'}
 				</Badge>
 			</Table.Cell>
@@ -121,6 +121,14 @@ export const CommitmentLettersTable = ({
 								<SortableHeader
 									label='Matrícula'
 									columnKey='enrollment_name'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader alignContent={'start'}>
+								<SortableHeader
+									label='Estudiante'
+									columnKey='student_name'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>

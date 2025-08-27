@@ -150,7 +150,7 @@ export const AddTransferRequestModal = ({ user, available, loading, dataMyProgra
         </Button>
       }
       onSave={handleSubmitData}
-      isLoading={isPending || isLoading}
+      loading={isPending || isLoading}
       size='2xl'
       open={open}
       onOpenChange={(e) => setOpen(e.open)}
