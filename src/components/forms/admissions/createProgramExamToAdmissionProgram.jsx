@@ -36,8 +36,12 @@ import {
 	FiUser,
 } from 'react-icons/fi';
 
-export const CreateProgramExamToAdmissionProgram = ({ item, programId, fetchData }) => {
-  console.log(programId)
+export const CreateProgramExamToAdmissionProgram = ({
+	item,
+	programId,
+	fetchData,
+}) => {
+	console.log(programId);
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 
@@ -55,31 +59,31 @@ export const CreateProgramExamToAdmissionProgram = ({ item, programId, fetchData
 		enabled: open,
 	});
 
-  const { 
-    data: dataAdmissionEvaluators, 
-    isLoading: isLoadingAdmissionEvaluators
-  } = useReadAdmissionEvaluators(
-    { program_id: programId },
-    { enabled: open && !!programId }
-  );
-  console.log(dataAdmissionEvaluators);
+	const {
+		data: dataAdmissionEvaluators,
+		isLoading: isLoadingAdmissionEvaluators,
+	} = useReadAdmissionEvaluators(
+		{ program_id: programId },
+		{ enabled: open && !!programId }
+	);
+	console.log(dataAdmissionEvaluators);
 
-	const evaluatorOptions = dataAdmissionEvaluators?.results
-		?.map((c) => ({
-			value: c.id.toString(),
-			label: c.evaluator_display,
-		}));
+	const evaluatorOptions = dataAdmissionEvaluators?.results?.map((c) => ({
+		value: c.id.toString(),
+		evaluator: c.evaluator,
+		label: c.evaluator_display,
+	}));
 
 	const applicationTypeOptions = [
-		{ value: 1, label: 'Ensayo', key: 'requires_essay' },
-		{ value: 2, label: 'Entrevista', key: 'requires_interview' },
+		{ value: 1, label: 'Entrevista', key: 'requires_interview' },
+		{ value: 2, label: 'Ensayo', key: 'requires_essay' },
 		{ value: 3, label: 'Examen', key: 'requires_pre_master_exam' },
 	];
 
 	const filteredApplicationTypeOptions = applicationTypeOptions.filter(
 		(option) => dataModality?.[option.key]
 	);
-
+console.log('dataModality',dataModality)
 	const filteredEvaluationsByStudent = dataEvaluations?.results?.filter(
 		(evaluation) => evaluation.application === item?.id
 	);
@@ -90,7 +94,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, programId, fetchData
 	const [evaluatorInput, setEvaluatorInput] = useState(null);
 	const [applicationTypeInput, setApplicationTypeInput] = useState(null);
 	const [editingId, setEditingId] = useState(null);
-
+	console.log(evaluatorInput);
 	const handleResetForm = () => {
 		setStartDateExamInput('');
 		setEndDateExamInput('');
@@ -119,7 +123,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, programId, fetchData
 			type_application: applicationTypeInput?.value,
 			start_date: startDateExamInput,
 			end_date: endDateExamInput,
-			evaluator: evaluatorInput?.value,
+			evaluator: evaluatorInput?.evaluator,
 			evaluation_time: timeExamInput,
 		};
 
@@ -136,7 +140,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, programId, fetchData
 		const onError = (error) => {
 			console.error(error);
 			toaster.create({
-				title: error.response?.data?.[0] || 'Error en la creación del examen',
+				title: error.response?.data?.[0] || 'Error en la creación del Tarea',
 				type: 'error',
 			});
 		};
@@ -167,7 +171,7 @@ export const CreateProgramExamToAdmissionProgram = ({ item, programId, fetchData
 			},
 		});
 	};
-
+	console.log(filteredEvaluationsByStudent);
 	return (
 		<Modal
 			title='Programar Tareas'
@@ -500,6 +504,6 @@ export const CreateProgramExamToAdmissionProgram = ({ item, programId, fetchData
 
 CreateProgramExamToAdmissionProgram.propTypes = {
 	item: PropTypes.object.isRequired,
-  programId: PropTypes.number.isRequired,
+	programId: PropTypes.number.isRequired,
 	fetchData: PropTypes.func.isRequired,
 };
