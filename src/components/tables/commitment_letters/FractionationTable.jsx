@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { memo, useEffect, useState } from 'react';
-import { Badge, Box, Table } from '@chakra-ui/react';
+import { Badge, Box, HStack, Table } from '@chakra-ui/react';
 import { Pagination } from '@/components/ui';
 
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
@@ -8,7 +8,10 @@ import { SortableHeader } from '@/components/ui/SortableHeader';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
 import { usePaginatedInfiniteData } from '@/components/navigation';
-import { ViewFractionationRequestsModal } from '@/components/forms/commitment_letters';
+import {
+	ViewFractionationRequestsModal,
+	ViewInstallmentsFractionationModal,
+} from '@/components/forms/commitment_letters';
 
 const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 	const statusDisplay = [
@@ -38,7 +41,16 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 				</Badge>
 			</Table.Cell>
 			<Table.Cell>
-				<ViewFractionationRequestsModal item={item} matchStatus={matchStatus} />
+				<HStack>
+					<ViewInstallmentsFractionationModal
+						item={item}
+						matchStatus={matchStatus}
+					/>
+					<ViewFractionationRequestsModal
+						item={item}
+						matchStatus={matchStatus}
+					/>
+				</HStack>
 			</Table.Cell>
 		</Table.Row>
 	);

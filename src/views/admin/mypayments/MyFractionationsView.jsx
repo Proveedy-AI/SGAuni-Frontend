@@ -27,7 +27,7 @@ export const MyFractionationsView = () => {
 			?.toLowerCase()
 			.includes(searchBenefitsValue.toLowerCase())
 	);
-console.log(dataFractionation)
+
 	return (
 		<Box spaceY='5'>
 			<Card.Root>

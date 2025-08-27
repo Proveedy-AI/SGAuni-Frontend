@@ -23,7 +23,7 @@ export const FractionationsView = () => {
 		isFetchingNextPage: isFetchingNextPageFractionation,
 		isLoading: loadingFractionation,
 		refetch: fetchFractionation,
-	} = useReadFractionation({}, {});
+	} = useReadFractionation({ type: 1 }, {});
 
 	const allFractionations =
 		dataFractionation?.pages?.flatMap((page) => page.results) ?? [];

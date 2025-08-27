@@ -22,15 +22,19 @@ import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 export const MyInternalTransferProcessView = () => {
 	const { data: dataUserLogged, isLoading: isLoadingUserLogged } =
 		useReadUserLogged();
-	const { data: dataMyRequests, isLoading: isLoadingMyRequests } = useReadMyTransferRequest();
-	console.log('my-requests', dataMyRequests);
+	const {
+		data: dataMyRequests,
+		isLoading: isLoadingMyRequests,
+		refetch: refetchMyRequests,
+	} = useReadMyTransferRequest();
 
 	//1: Borrador, 2: En revisión, 3: Rechazado, 4: Aprobado, 5: Completado
 
-	const isEjecutable = !isLoadingMyRequests && !dataMyRequests?.some((req) => req.status === 1);
+	const isEjecutable =
+		!isLoadingMyRequests && !dataMyRequests?.some((req) => req.status === 1);
 
-  const myPrograms = dataUserLogged?.student?.admission_programs || [];
-  const myFilteredPrograms = myPrograms.filter(p => p.academic_status === 1);
+	const myPrograms = dataUserLogged?.student?.admission_programs || [];
+	const myFilteredPrograms = myPrograms.filter((p) => p.academic_status === 1);
 
 	const { data: dataPrograms } = useReadPrograms();
 
@@ -72,19 +76,20 @@ export const MyInternalTransferProcessView = () => {
 					Mis Solicitudes de Traslado
 				</Heading>
 				<AddTransferRequestModal
-          user={dataUserLogged}
-          available={isEjecutable}
-          loading={isLoadingUserLogged}
-          dataMyPrograms={myFilteredPrograms}
-          dataPrograms={dataPrograms}
-        />
+					user={dataUserLogged}
+					available={isEjecutable}
+					loading={isLoadingUserLogged}
+					dataMyPrograms={myFilteredPrograms}
+					dataPrograms={dataPrograms}
+					fetchData={refetchMyRequests}
+				/>
 			</Flex>
 
 			{/* Información de estado */}
 			{!isEjecutable && (
 				<Card.Root mb={6}>
 					<Card.Body>
-						<HStack spacing={3}>
+						<HStack gap={3}>
 							<Box p={2} bg='blue.50' borderRadius='md'>
 								<FiFileText color='blue.500' size={20} />
 							</Box>
