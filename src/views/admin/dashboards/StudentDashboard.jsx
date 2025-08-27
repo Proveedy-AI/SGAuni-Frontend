@@ -47,28 +47,18 @@ export const StudentDashboard = () => {
 	};
 
   const filteredPrograms = profile?.student?.admission_programs?.filter((program) => program?.academic_status === 1);
-  console.log(filteredPrograms);
+
   const filteredMyCredits = Object.values(dataMyCredits?.result || {}).filter((credits) =>
     filteredPrograms?.some(
       (program) => program?.program_name?.trim() === credits?.program_name?.trim()
     )
   );
 
-	/*const dataMyEnrollments = [
-		{
-			id: 1,
-			student: 1,
-			enrollment_period_program: 1,
-			program_name: 'Ingeniería de Sistemas',
-			payment_verified: true,
-			is_first_enrollment: true,
-			status: 1,
-			status_display: 'Activo',
-			verified_at: '2024-01-15T10:30:00Z',
-		},
-	];*/
+	const filteredMyEnrollments = dataMyEnrollments?.filter((enrollment) =>
+    enrollment.status !== 6
+	) || [];
 	const currentEnrollments =
-		dataMyEnrollments?.filter(
+		filteredMyEnrollments?.filter(
 			(enrollment) => enrollment.is_current_enrollment === true
 		) || [];
 	const activeEnrollments =
@@ -87,7 +77,7 @@ export const StudentDashboard = () => {
 		navigate(`/settings/myprofile`);
 	};
 
-	const hasMatriculatedEnrollment = dataMyEnrollments?.some(
+	const hasMatriculatedEnrollment = filteredMyEnrollments?.some(
 		(enrollment) => enrollment.status === 5
 	);
 
@@ -139,7 +129,7 @@ export const StudentDashboard = () => {
 		},
 	};
 
-	const recentEnrollments = dataMyEnrollments?.slice(-3) || [];
+	const recentEnrollments = filteredMyEnrollments?.slice(-3) || [];
 
 	return (
 		<Stack mx='auto' gap={4}>
@@ -426,7 +416,7 @@ export const StudentDashboard = () => {
 					</Alert>
 				)}
 
-				{dataMyEnrollments && dataMyEnrollments.length === 0 && (
+				{filteredMyEnrollments && filteredMyEnrollments.length === 0 && (
 					<Alert
 						status='warning'
 						borderRadius='md'
@@ -444,7 +434,7 @@ export const StudentDashboard = () => {
 			{recentEnrollments.length > 0 && (
 				<Box>
 					<Heading size='md' mb={4}>
-						Mis Matriculas ({dataMyEnrollments.length})
+						Mis Matriculas ({filteredMyEnrollments.length})
 					</Heading>
 					<SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
 						{recentEnrollments.map((enrollment) => {
@@ -478,7 +468,7 @@ export const StudentDashboard = () => {
 									</Flex>
 
 									<Stack spacing={1} fontSize='sm' color='gray.600'>
-										<Text>ID: {enrollment.id}</Text>
+										<Text>ID: {enrollment.program_period}</Text>
 										<Text>
 											Pago verificado:{' '}
 											{enrollment.payment_verified ? '✅ Sí' : '❌ No'}
