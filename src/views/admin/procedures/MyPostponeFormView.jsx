@@ -33,7 +33,6 @@ export const MyPostponeFormView = () => {
   const { mutate: postponeEnrollment, isPending } = usePostponeEnrollment();
 
   const enrollment = EncryptedStorage.load('selectedEnrollmentProccess');
-  console.log(enrollment?.uuid);
 
   const [hasReadTerms, setHasReadTerms] = useState(false);
 

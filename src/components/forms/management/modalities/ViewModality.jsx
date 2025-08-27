@@ -14,7 +14,7 @@ import { HiEye } from 'react-icons/hi2';
 
 export const ViewModality = ({ item }) => {
 	const [open, setOpen] = useState(false);
-	console.log(item);
+
 	return (
 		<Stack css={{ '--field-label-width': '180px' }}>
 			<Field orientation={{ base: 'vertical', sm: 'horizontal' }}>

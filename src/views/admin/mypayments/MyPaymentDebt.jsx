@@ -36,7 +36,6 @@ export const MyPaymentDebt = () => {
 
 	const { data: debtsByPurpose, isLoading: isLoadingDebts } =
 		useReadMyDebtsPayment();
-	console.log(debtsByPurpose);
 	const getFilteredDebts = () => {
 		if (!debtsByPurpose?.results) return [];
 		return debtsByPurpose.results.filter(

@@ -32,9 +32,9 @@ export const GenerateMasivePaymentOrders = ({ data }) => {
 
     // Simulación de validación
     setIsSaving(true);
-    console.log("Generando masivamente las ordenes de pago");
+
     setTimeout(() => {
-      console.log("Ordenes de pago generadas correctamente");
+
       setIsSaving(false);
       setOpen(false);
     }, 1000);

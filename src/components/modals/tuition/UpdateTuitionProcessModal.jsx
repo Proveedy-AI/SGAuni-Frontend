@@ -235,8 +235,9 @@ export const UpdateTuitionProcessModal = ({
 						onClose();
 					},
 					onError: (error) => {
+
 						toaster.create({
-							title: error.message || 'Error al actualizar el Proceso',
+							title: error?.response?.message || 'Error al actualizar el Proceso',
 							type: 'error',
 							onStatusChange({ status }) {
 								if (status === 'unmounted') setToasterShown(false);

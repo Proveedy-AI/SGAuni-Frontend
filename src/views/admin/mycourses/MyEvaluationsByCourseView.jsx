@@ -33,8 +33,6 @@ export const MyEvaluationsByCourseView = () => {
     { enabled: !!decrypted }
   );
 
-  console.log(dataMyEvaluations)
-
   const hasConfiguratedWithWeight = dataMyEvaluations?.data?.evaluations?.some(
     (evaluation) => evaluation.weight_percentage !== null
   );

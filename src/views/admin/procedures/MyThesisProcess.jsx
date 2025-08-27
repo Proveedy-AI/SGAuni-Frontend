@@ -206,17 +206,12 @@ export const MyThesisProcess = () => {
   // ];
 
   const { data: dataUser } = useReadUserLogged();
-  console.log(dataUser)
-  console.log(dataUser?.student?.admission_programs)
 
   const admissionPrograms = dataUser?.student?.admission_programs || [];
-  console.log(admissionPrograms);
 
   const filteredGraduatePrograms = admissionPrograms ? admissionPrograms.filter(
     (program) => program.academic_status === 2 //academic_type: graduated 
   ) : [];
-
-  console.log(filteredGraduatePrograms);
 
   const studentName = dataUser?.first_name || dataUser?.user?.first_name || '';
 

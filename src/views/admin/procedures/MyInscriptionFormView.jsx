@@ -126,7 +126,6 @@ export const MyInscriptionFormView = () => {
 
 	const { data: coursesToEnroll, isLoading: isLoadingCoursesToEnroll } =
 		useReadAvailableCourses(currentEnrollment?.uuid, {}, {});
-	console.log(currentEnrollment);
 	const {
 		data: mySelections,
 		isLoading: isLoadingMySelections,

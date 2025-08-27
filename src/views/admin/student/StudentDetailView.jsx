@@ -42,7 +42,6 @@ export const StudentDetailView = () => {
 	const { data: dataPerson, isLoading: isPersonLoading } = useReadPersonById(
 		dataStudent?.person
 	);
-	console.log(dataStudent);
 	const {
 		data: dataEnrollments,
 		isLoading: isLoadingEnrollment,

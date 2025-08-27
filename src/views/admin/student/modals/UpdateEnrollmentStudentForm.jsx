@@ -12,6 +12,7 @@ export const UpdateEnrollmentStudentForm = ({ data, fetchData }) => {
 	const [open, setOpen] = useState(false);
 
 	const [selectedStatus, setselectedStatus] = useState(null);
+	const [selectedCurrent, setselectedCurrent] = useState(null);
 	const [readInstructions, setReadInstructions] = useState(false);
 	const { mutateAsync: updateEnrollment, isPending } = useUpdateEnrollment();
 
@@ -20,6 +21,7 @@ export const UpdateEnrollmentStudentForm = ({ data, fetchData }) => {
 
 		const payload = {
 			status: selectedStatus.value,
+			is_current_enrollment: selectedCurrent.value,
 		};
 
 		try {
@@ -51,7 +53,13 @@ export const UpdateEnrollmentStudentForm = ({ data, fetchData }) => {
 		],
 		[]
 	);
-	console.log(data);
+	const StatusCurrentOptions = useMemo(
+		() => [
+			{ label: 'Si', value: true },
+			{ label: 'No', value: false },
+		],
+		[]
+	);
 	useEffect(() => {
 		if (data && data.status) {
 			const matchedStatus = StatusOptions.find((c) => c.value === data.status);
@@ -100,6 +108,20 @@ export const UpdateEnrollmentStudentForm = ({ data, fetchData }) => {
 						isClearable
 						name='estado'
 						options={StatusOptions}
+					/>
+				</Field>
+				<Field label='Matricula en curso:'>
+					<ReactSelect
+						value={selectedCurrent}
+						onChange={(select) => {
+							setselectedCurrent(select);
+						}}
+						variant='flushed'
+						size='xs'
+						isSearchable={true}
+						isClearable
+						name='estado'
+						options={StatusCurrentOptions}
 					/>
 				</Field>
 

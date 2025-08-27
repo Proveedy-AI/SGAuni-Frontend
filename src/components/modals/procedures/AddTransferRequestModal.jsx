@@ -79,8 +79,6 @@ export const AddTransferRequestModal = ({
 				);
 			}
 
-			console.log(pathDocUrl);
-
 			if (!pathDocUrl) {
 				throw new Error('Error al subir el archivo a S3.');
 			}

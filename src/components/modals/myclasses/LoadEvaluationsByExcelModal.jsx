@@ -114,8 +114,6 @@ export const LoadEvaluationsByExcelModal = ({
 				throw new Error('Error al subir el archivo');
 			}
 
-			console.log(fileUrl);
-
 			const payload = {
 				grade_excel_path: fileUrl,
 			};

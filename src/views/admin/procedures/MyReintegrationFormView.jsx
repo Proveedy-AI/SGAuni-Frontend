@@ -29,9 +29,9 @@ import { useRequestReincorporation } from '@/hooks/enrollments';
 import { useNavigate } from 'react-router';
 
 export const MyReintegrationFormView = () => {
-  const navigate = useNavigate();
+	const navigate = useNavigate();
 	const enrollment = EncryptedStorage.load('selectedEnrollmentProccess');
-	const { mutate: reintegrateEnrollment, isLoading } =
+	const { mutate: reintegrateEnrollment, isPending } =
 		useRequestReincorporation();
 
 	const [selectedMethod, setSelectedMethod] = useState(null);
@@ -88,10 +88,9 @@ export const MyReintegrationFormView = () => {
 		const payload = {
 			current_enrollment_program: enrollment.id,
 			payment_method: selectedMethod?.value,
-			payment_document: numDocCarpeta,
+			payment_document: selectedDocumentType?.value,
+			num_document: numDocCarpeta,
 		};
-
-		console.log('Payload de reintegración:', payload);
 
 		reintegrateEnrollment(payload, {
 			onSuccess: () => {
@@ -105,7 +104,7 @@ export const MyReintegrationFormView = () => {
 				setnumDocCarpeta('');
 				setSelectedDocumentType(null);
 				setAcceptTerms(false);
-        navigate('/myprocedures/');
+				navigate('/myprocedures/');
 			},
 			onError: (error) => {
 				toaster.create({
@@ -149,8 +148,8 @@ export const MyReintegrationFormView = () => {
 
 							<Alert status='info' Icon={<FiAlertTriangle />}>
 								<Text>
-									La reincorporación te permite volver a incorporarte al programa
-									después de una postergación.
+									La reincorporación te permite volver a incorporarte al
+									programa después de una postergación.
 								</Text>
 								<List.Root pl='4' mt='2'>
 									<List.Item>
@@ -225,7 +224,7 @@ export const MyReintegrationFormView = () => {
 									</Field>
 
 									<Field
-										label='N° Doc'
+										label='N° Documento'
 										invalid={!!errors.numDocCarpeta}
 										errorText={errors.numDocCarpeta}
 									>
@@ -301,7 +300,7 @@ export const MyReintegrationFormView = () => {
 									disabled={!acceptTerms}
 									width='full'
 									onClick={handleSubmitData}
-									loading={isLoading}
+									loading={isPending}
 								>
 									Enviar Solicitud de Reintegración
 								</Button>

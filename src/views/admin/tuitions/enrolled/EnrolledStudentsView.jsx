@@ -17,7 +17,6 @@ export const EnrolledStudentsView = () => {
   const decryptedId = Encryptor.decrypt(decodedId);
   const decodedCourseGroupId = decodeURIComponent(courseGroupId);
   const decryptedCourseGroupId = Encryptor.decrypt(decodedCourseGroupId);
-  console.log(decryptedCourseGroupId)
 
   // Estados para filtros
   const [searchName, setSearchName] = useState('');
@@ -43,8 +42,6 @@ export const EnrolledStudentsView = () => {
     {}
   );
 
-  console.log(dataEnrollmentReport);
-
   const enrollmentProcessName = !isLoadingEnrollmentProcess ? dataEnrollmentProcess?.academic_period_name : 'Cargando...';
   const courseGroupName = !isLoadingCourseGroup ? dataCourseGroup?.course_name : 'Cargando...';
 
@@ -67,8 +64,6 @@ export const EnrolledStudentsView = () => {
           .includes(searchDocument.toLowerCase())
       )
   ) || [];
-
-  console.log(dataEnrollmentReport);
 
   const hasActiveFilters = searchName || searchEmail || searchDocument;
 

@@ -28,7 +28,6 @@ export const TuitonPrograms = () => {
 	const [actionType, setActionType] = useState('create');
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [modalData, setModalData] = useState(null);
-	console.log(isModalOpen);
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])

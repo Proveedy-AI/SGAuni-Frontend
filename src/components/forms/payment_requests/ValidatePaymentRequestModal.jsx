@@ -33,9 +33,7 @@ export const ValidatePaymentRequestModal = ({ item }) => {
 
     // Simulación de validación
     setIsSaving(true);
-    console.log("Validando solicitud de pago:", item.id);
     setTimeout(() => {
-      console.log("Solicitud de pago validada correctamente");
       setIsSaving(false);
       setOpen(false);
     }, 1000);

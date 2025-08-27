@@ -148,7 +148,6 @@ export const AdmissionApplicantsByProgram = () => {
 
 	const { data: dataProgram, loading: isProgramLoading } =
 		useReadAdmissionProgramsById(decrypted);
-  console.log('gg', dataProgram?.program, decrypted)
 	const [searchApplicantValue, setSearchApplicantValue] = useState('');
 
 	const {

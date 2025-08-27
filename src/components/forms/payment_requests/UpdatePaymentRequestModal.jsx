@@ -25,7 +25,7 @@ export const UpdatePaymentRequestModal = ({ item, fetchPaymentRequests, statusOp
     const payload = {
       status: currentStatus.value
     }
-    console.log(payload)
+
     /*
     await validatePaymentRequest({ id: item.id, payload: payload }, {
       onSuccess: () => {
