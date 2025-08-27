@@ -72,6 +72,8 @@ export const ExpandableCourseCard = ({ course, gradesCache, setGradesCache }) =>
 		return grade >= 10.5 ? 'green' : 'red';
 	};
 
+  console.log(dataCourseGrades?.data?.final_grade)
+
 	return (
 		<Box overflow='hidden'>
 			<Card.Root variant='outline'>
@@ -241,24 +243,26 @@ export const ExpandableCourseCard = ({ course, gradesCache, setGradesCache }) =>
                   )}
 
 									{/* Promedio final */}
-									<Flex
-										justify='space-between'
-										align='center'
-										p={3}
-										bg='blue.50'
-										borderRadius='md'
-									>
-										<Text fontSize='md' fontWeight='bold' color='blue.700'>
-											Promedio:
-										</Text>
-										<Badge
-											colorPalette={getGradeColor(course.final_grade)}
-											size='lg'
-										>
-											{course.final_grade} |{' '}
-											{getGradeStatus(course.final_grade)}
-										</Badge>
-									</Flex>
+                  { dataCourseGrades?.data?.final_grade && (
+                    <Flex
+                      justify='space-between'
+                      align='center'
+                      p={3}
+                      bg='blue.50'
+                      borderRadius='md'
+                    >
+                      <Text fontSize='md' fontWeight='bold' color='blue.700'>
+                        Promedio:
+                      </Text>
+                      <Badge
+                        colorPalette={getGradeColor(dataCourseGrades?.data?.final_grade)}
+                        size='lg'
+                      >
+                        {dataCourseGrades?.data?.final_grade} |{' '}
+                        {getGradeStatus(dataCourseGrades?.data?.final_grade)}
+                      </Badge>
+                    </Flex>
+                  ) }
 								</Box>
 							</Box>
 						</Collapsible.Content>
