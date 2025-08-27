@@ -70,7 +70,7 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 					console.log(error);
 					toaster.create({
 						title:
-							error.response?.data?.[0] || 'Error al actualizar el Proceso',
+							error.response?.data?.process_status[0] || 'Error al actualizar el Proceso',
 						type: 'error',
 					});
 				},
