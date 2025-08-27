@@ -22,29 +22,6 @@ export const MyFractionationsView = () => {
 		refetch: fetchFractionation,
 	} = useReadMyFractionation({}, {});
 
-	/*const dataFractionation = [
-		{
-			id: 1,
-			plan_purpose: 'Fraccionamiento',
-			status_review: 2,
-			status_display: 'En revisión',
-			student_name: 'Juan Pérez',
-			enrollment_name: '2024-I',
-			plan_type_display: 'Cuotas',
-			total_amount: '1200.00',
-			total_amortization: '400.00',
-			total_balance: '800.00',
-			upfront_percentage: '0.3',
-			number_of_installments: 3,
-			program_name: 'Ingeniería de Sistemas',
-			reviewed_at: '2024-05-10T10:00:00.000Z',
-			payment_document_type: 1,
-			payment_document_type_display: 'Boleta',
-			path_commitment_letter: 'https://example.com/doc/54asd6s4asdas4d89asd4as',
-			num_document_person: '12345678',
-		},
-	];*/
-
 	const filteredFractionations = dataFractionation?.filter((item) =>
 		item?.enrollment_name
 			?.toLowerCase()

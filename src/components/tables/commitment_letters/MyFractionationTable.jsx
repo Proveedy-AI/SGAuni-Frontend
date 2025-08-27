@@ -9,17 +9,16 @@ import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
 import {
 	ViewFractionationRequestsModal,
+	ViewInstallmentsFractionationModal,
 } from '@/components/forms/commitment_letters';
-import { ViewInstallmentsPaymentsModal } from '@/components/forms/commitment_letters/ViewInstallmentsPaymentsModal';
 
 const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 	const statusDisplay = [
-		{ id: 1, label: 'Borrador', bg: '#AEAEAE', color: '#F5F5F5' },
-		{ id: 2, label: 'En revisión', bg: '#d0daedff', color: '#2d689fff' },
-		{ id: 3, label: 'Rechazado', bg: '#F7CDCE', color: '#E0383B' },
-		{ id: 4, label: 'Aprobado', bg: '#D0EDD0', color: '#2D9F2D' },
+		{ id: 1, label: 'En revisión', color: 'blue' },
+		{ id: 2, label: 'Rechazado', color: 'red' },
+		{ id: 3, label: 'Aprobado', color: 'green' },
 	];
-
+	console.log(item);
 	const matchStatus = statusDisplay.find(
 		(status) => status.id === item.status_review
 	);
@@ -33,17 +32,17 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 			</Table.Cell>
 
 			<Table.Cell>{item.enrollment_name}</Table.Cell>
-			<Table.Cell>{item.plan_type_display}</Table.Cell>
+			<Table.Cell>{item.payment_document_type_display}</Table.Cell>
 			<Table.Cell>{item.upfront_percentage * 100}</Table.Cell>
 			<Table.Cell>{item.number_of_installments}</Table.Cell>
 			<Table.Cell>
-				<Badge bg={matchStatus?.bg} color={matchStatus?.color}>
+				<Badge colorPalette={matchStatus?.color}>
 					{matchStatus?.label || 'N/A'}
 				</Badge>
 			</Table.Cell>
 			<Table.Cell>
 				<HStack>
-					<ViewInstallmentsPaymentsModal
+					<ViewInstallmentsFractionationModal
 						item={item}
 						matchStatus={matchStatus}
 					/>
@@ -107,7 +106,7 @@ export const MyFractionationTable = ({ data, fetchData, isLoading }) => {
 							<Table.ColumnHeader w='15%'>
 								<SortableHeader
 									label='Tipo'
-									columnKey='plan_type_display'
+									columnKey='payment_document_type_display'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>

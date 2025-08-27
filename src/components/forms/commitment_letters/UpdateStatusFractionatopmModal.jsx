@@ -32,7 +32,7 @@ export const UpdateStatusFractionatopmModal = ({ data, fetchData }) => {
 	const [open, setOpen] = useState(false);
 	const [comments, setComments] = useState('');
 	const [upfront_percentage, setUpfrontPercentage] = useState('');
-
+	console.log(data);
 	const [selectedStatus, setSelectedStatus] = useState(null); // 4: Aprobado, 3: Rechazado
 	const [errors, setErrors] = useState({});
 
@@ -41,10 +41,10 @@ export const UpdateStatusFractionatopmModal = ({ data, fetchData }) => {
 
 	const validateFields = () => {
 		const newErrors = {};
-		if (selectedStatus === 3 && !comments.trim()) {
+		if (selectedStatus === 2 && !comments.trim()) {
 			newErrors.comments = 'El comentario es requerido para rechazar.';
 		}
-		if (selectedStatus === 4 && !upfront_percentage) {
+		if (selectedStatus === 3 && !upfront_percentage) {
 			newErrors.upfront_percentage = 'El porcentaje inicial es requerido.';
 		}
 
@@ -56,18 +56,18 @@ export const UpdateStatusFractionatopmModal = ({ data, fetchData }) => {
 		if (!validateFields()) return;
 
 		const payload = {
-			comments: selectedStatus === 3 ? comments.trim() : '',
+			comments: selectedStatus === 2 ? comments.trim() : '',
 			status: selectedStatus,
-			upfront_percentage: selectedStatus === 4 ? upfront_percentage / 100 : '',
+			upfront_percentage: selectedStatus === 3 ? upfront_percentage / 100 : '',
 		};
 
 		aproveeFractionation(
-			{ id: data.request_benefit, payload },
+			{ id: data.plan, payload },
 			{
 				onSuccess: () => {
 					toaster.create({
 						title:
-							selectedStatus === 4
+							selectedStatus === 3
 								? 'Fraccionamiento aprobado correctamente'
 								: 'Fraccionamiento rechazado correctamente',
 						type: 'success',
@@ -79,9 +79,25 @@ export const UpdateStatusFractionatopmModal = ({ data, fetchData }) => {
 					fetchData();
 				},
 				onError: (error) => {
-					console.error(error);
+					const data = error.response?.data;
+
+					// Intentamos encontrar el primer string de error dentro de cualquier campo
+					let message = 'Error al actualizar estado';
+					if (data) {
+						if (Array.isArray(data)) {
+							message = data[0];
+						} else if (typeof data === 'object') {
+							const firstKey = Object.keys(data)[0];
+							if (Array.isArray(data[firstKey])) {
+								message = data[firstKey][0];
+							} else if (typeof data[firstKey] === 'string') {
+								message = data[firstKey];
+							}
+						}
+					}
+
 					toaster.create({
-						title: error.response?.data?.[0] || 'Error al actualizar estado',
+						title: message,
 						type: 'error',
 					});
 				},
@@ -119,7 +135,7 @@ export const UpdateStatusFractionatopmModal = ({ data, fetchData }) => {
 						<IconButton
 							size='xs'
 							colorPalette='green'
-							disabled={data.status !== 2}
+							disabled={data.status !== 1}
 							css={{ _icon: { width: '5', height: '5' } }}
 						>
 							<LiaCheckCircleSolid />
@@ -161,9 +177,9 @@ export const UpdateStatusFractionatopmModal = ({ data, fetchData }) => {
 								flexDirection='column'
 								gap={2}
 								disabled={isPending}
-								bg={selectedStatus === 4 ? 'green.600' : 'transparent'}
+								bg={selectedStatus === 3 ? 'green.600' : 'transparent'}
 								_hover={
-									selectedStatus === 4
+									selectedStatus === 3
 										? { bg: 'green.700' }
 										: {
 												bg: 'green.50',
@@ -171,9 +187,9 @@ export const UpdateStatusFractionatopmModal = ({ data, fetchData }) => {
 												color: 'green.700',
 											}
 								}
-								color={selectedStatus === 4 ? 'white' : undefined}
-								borderColor={selectedStatus === 4 ? 'green.600' : undefined}
-								onClick={() => setSelectedStatus(4)}
+								color={selectedStatus === 3 ? 'white' : undefined}
+								borderColor={selectedStatus === 3 ? 'green.600' : undefined}
+								onClick={() => setSelectedStatus(3)}
 							>
 								<Icon as={FiCheckCircle} boxSize={5} />
 								<Text fontWeight='medium'>Aprobar Proceso</Text>
@@ -186,15 +202,15 @@ export const UpdateStatusFractionatopmModal = ({ data, fetchData }) => {
 								flexDirection='column'
 								gap={2}
 								disabled={isPending}
-								bg={selectedStatus === 3 ? 'red.600' : 'transparent'}
+								bg={selectedStatus === 2 ? 'red.600' : 'transparent'}
 								_hover={
-									selectedStatus === 3
+									selectedStatus === 2
 										? { bg: 'red.700' }
 										: { bg: 'red.50', borderColor: 'red.300', color: 'red.700' }
 								}
-								color={selectedStatus === 3 ? 'white' : undefined}
-								borderColor={selectedStatus === 3 ? 'red.600' : undefined}
-								onClick={() => setSelectedStatus(3)}
+								color={selectedStatus === 2 ? 'white' : undefined}
+								borderColor={selectedStatus === 2 ? 'red.600' : undefined}
+								onClick={() => setSelectedStatus(2)}
 							>
 								<Icon as={FiXCircle} boxSize={5} />
 								<Text fontWeight='medium'>Rechazar Proceso</Text>
@@ -205,14 +221,14 @@ export const UpdateStatusFractionatopmModal = ({ data, fetchData }) => {
 							<Alert
 								mt={6}
 								status='info'
-								bg={selectedStatus === 4 ? 'green.50' : 'red.50'}
-								borderColor={selectedStatus === 4 ? 'green.200' : 'red.200'}
+								bg={selectedStatus === 3 ? 'green.50' : 'red.50'}
+								borderColor={selectedStatus === 3 ? 'green.200' : 'red.200'}
 								borderWidth='1px'
-								color={selectedStatus === 4 ? 'green.600' : 'red.600'}
+								color={selectedStatus === 3 ? 'green.600' : 'red.600'}
 								icon={<FiAlertTriangle boxSize={4} mr={2} />}
 							>
-								<Text color={selectedStatus === 4 ? 'green.800' : 'red.800'}>
-									{selectedStatus === 4
+								<Text color={selectedStatus === 3 ? 'green.800' : 'red.800'}>
+									{selectedStatus === 3
 										? 'El proceso será aprobado y se notificará automáticamente.'
 										: 'El proceso será rechazado. Por favor, proporciona un comentario explicativo.'}
 								</Text>
@@ -221,7 +237,7 @@ export const UpdateStatusFractionatopmModal = ({ data, fetchData }) => {
 					</Card.Body>
 				</Card.Root>
 
-				{selectedStatus === 4 && (
+				{selectedStatus === 3 && (
 					<Card.Root borderLeft='4px solid' borderLeftColor='green.500'>
 						<Card.Header>
 							<Flex align='center' gap={2}>
@@ -237,14 +253,14 @@ export const UpdateStatusFractionatopmModal = ({ data, fetchData }) => {
 						<Card.Body>
 							<Stack gap={2}>
 								<Field
-									label='Porcentaje de descuento (1 -100%)'
+									label='Porcentaje de Pago Inicial (1 -100%)'
 									errors={errors}
 									required
 								>
 									<Input
 										type='text'
-										name='discount_percentage'
-										placeholder='Ingrese el porcentaje de descuento'
+										name='upfront_percentage'
+										placeholder='Ingrese el porcentaje de pago inicial'
 										value={upfront_percentage}
 										onChange={(e) => setUpfrontPercentage(e.target.value)}
 									/>
@@ -254,7 +270,7 @@ export const UpdateStatusFractionatopmModal = ({ data, fetchData }) => {
 					</Card.Root>
 				)}
 
-				{selectedStatus === 3 && (
+				{selectedStatus === 2 && (
 					<Card.Root borderLeft='4px solid' borderLeftColor='red.500'>
 						<Card.Header>
 							<Flex align='center' gap={2}>

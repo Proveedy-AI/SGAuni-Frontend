@@ -8,7 +8,6 @@ import { SortableHeader } from '@/components/ui/SortableHeader';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
 import {
-	ViewInstallmentsFractionationModal,
 	ViewInstallmentsPaymentsModal,
 } from '@/components/forms/commitment_letters';
 

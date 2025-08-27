@@ -23,7 +23,9 @@ export const ViewInstallmentsFractionationModal = ({ item }) => {
 		{ plan: item.id },
 		{ enabled: open }
 	);
-
+	const sortedInstallments = Installments?.results
+		? [...Installments.results].sort((a, b) => a.id - b.id)
+		: [];
 	const getStatusBadgeProps = (status) => {
 		switch (status) {
 			case 'Pendiente':
@@ -80,7 +82,7 @@ export const ViewInstallmentsFractionationModal = ({ item }) => {
 										color='green.700'
 										borderColor='green.200'
 									>
-										{Installments?.length || 0} Cuotas
+										{sortedInstallments?.length || 0} Cuotas
 									</Badge>
 								</Flex>
 							</Flex>
@@ -99,7 +101,7 @@ export const ViewInstallmentsFractionationModal = ({ item }) => {
 							</Table.Header>
 
 							<Table.Body>
-								{Installments?.map((item, index) => {
+								{sortedInstallments?.map((item, index) => {
 									const { colorScheme, label } = getStatusBadgeProps(
 										item.status
 									);
@@ -115,11 +117,13 @@ export const ViewInstallmentsFractionationModal = ({ item }) => {
 												<Badge colorPalette={colorScheme}>{label}</Badge>
 											</Table.Cell>
 											<Table.Cell>{formatDateString(item.due_date)}</Table.Cell>
-											<Table.Cell>{formatDateString(item.paid_at)}</Table.Cell>
+											<Table.Cell>
+												{formatDateString(item.paid_at) || 'Aun no pagado'}
+											</Table.Cell>
 										</Table.Row>
 									);
 								})}
-								{Installments?.length === 0 && (
+								{sortedInstallments?.length === 0 && (
 									<Table.Row>
 										<Table.Cell colSpan={5} textAlign='center'>
 											Sin datos disponibles
