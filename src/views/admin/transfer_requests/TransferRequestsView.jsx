@@ -21,20 +21,21 @@ import { useNavigate } from 'react-router';
 import { useDebounce } from 'use-debounce';
 
 export const TransferRequestsView = () => {
-	const { 
-    data: dataTransferRequests, 
-    isLoading: isLoadingTransferRequests,
-    refetch: refetchTransferRequests
-  } = useReadTransferRequest();
-  const navigate = useNavigate();
+	const {
+		data: dataTransferRequests,
+		isLoading: isLoadingTransferRequests,
+		refetch: refetchTransferRequests,
+	} = useReadTransferRequest();
+	const navigate = useNavigate();
 
-  const handleClickRow = (id) => {
-    const encrypted = Encryptor.encrypt(id);
-    const encoded = encodeURIComponent(encrypted);
-    navigate(`/students/${encoded}`);
-  }
+	const handleClickRow = (id) => {
+		const encrypted = Encryptor.encrypt(id);
+		const encoded = encodeURIComponent(encrypted);
+		navigate(`/students/${encoded}`);
+	};
 
-  const { data: dataPrograms, isLoading: isLoadingPrograms } = useReadPrograms();
+	const { data: dataPrograms, isLoading: isLoadingPrograms } =
+		useReadPrograms();
 	const [selectedProgramFrom, setSelectedProgramFrom] = useState(null);
 	const [selectedProgramTo, setSelectedProgramTo] = useState(null);
 	const [studentName, setStudentName] = useState('');
@@ -62,34 +63,30 @@ export const TransferRequestsView = () => {
 		{ label: 'Rechazado', value: 3 },
 	];
 
-  const ProgramOptions = dataPrograms?.results?.map((program) => ({
+	const ProgramOptions = dataPrograms?.results?.map((program) => ({
 		label: program.name,
 		value: program.id,
 	}));
 
 	// Filtrar datos locales
 	const filteredData = dataTransferRequests?.results?.filter((request) => {
-			const matchesProgramFrom =
-				!selectedProgramFrom ||
-				request.from_program === selectedProgramFrom.value;
-			const matchesProgramTo =
-				!selectedProgramTo ||
-				request.to_program === selectedProgramTo.value;
-			const matchesStudent =
-				!debouncedSearch ||
-				request.student_full_name
-					.toLowerCase()
-					.includes(debouncedSearch.toLowerCase()) ||
-				request.student_code.includes(debouncedSearch);
-			const matchesStatus =
-				!selectedStatus || request.status === selectedStatus.value;
-			return (
-				matchesProgramFrom &&
-				matchesProgramTo &&
-				matchesStudent &&
-				matchesStatus
-			);
-		});
+		const matchesProgramFrom =
+			!selectedProgramFrom ||
+			request.from_program === selectedProgramFrom.value;
+		const matchesProgramTo =
+			!selectedProgramTo || request.to_program === selectedProgramTo.value;
+		const matchesStudent =
+			!debouncedSearch ||
+			request.student_full_name
+				.toLowerCase()
+				.includes(debouncedSearch.toLowerCase()) ||
+			request.student_code.includes(debouncedSearch);
+		const matchesStatus =
+			!selectedStatus || request.status === selectedStatus.value;
+		return (
+			matchesProgramFrom && matchesProgramTo && matchesStudent && matchesStatus
+		);
+	});
 
 	return (
 		<Stack gap={4}>
@@ -139,7 +136,7 @@ export const TransferRequestsView = () => {
 									value={selectedProgramFrom}
 									onChange={setSelectedProgramFrom}
 									options={ProgramOptions}
-                  isLoading={isLoadingPrograms}
+									isLoading={isLoadingPrograms}
 									placeholder='Todos los programas de procedencia'
 									isClearable
 									size='sm'
@@ -152,7 +149,7 @@ export const TransferRequestsView = () => {
 									value={selectedProgramTo}
 									onChange={setSelectedProgramTo}
 									options={ProgramOptions}
-                  isLoading={isLoadingPrograms}
+									isLoading={isLoadingPrograms}
 									placeholder='Todos los programas de destino'
 									isClearable
 									size='sm'
@@ -177,11 +174,11 @@ export const TransferRequestsView = () => {
 
 			{/* Tabla de solicitudes */}
 			<TransferRequestsTable
-        data={filteredData}
-        fetchData={refetchTransferRequests}
-        isLoading={isLoadingTransferRequests}
-        handleClickRow={handleClickRow}
-      />
+				data={filteredData}
+				fetchData={refetchTransferRequests}
+				isLoading={isLoadingTransferRequests}
+				handleClickRow={handleClickRow}
+			/>
 		</Stack>
 	);
 };

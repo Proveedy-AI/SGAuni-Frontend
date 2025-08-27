@@ -15,11 +15,10 @@ const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data, handle
 	const statusColor = [
 		{ id: 1, bg: 'gray.200', color: 'gray.800' },
 		{ id: 2, bg: 'gray.200', color: 'gray.800' },
-		{ id: 3, bg: 'red.200', color: 'red.600' },
-		{ id: 4, bg: 'green.200', color: 'green.600' },
-		{ id: 5, bg: 'blue.200', color: 'blue.600' },
+		{ id: 3, bg: 'red.200', color: 'red' },
+		{ id: 4, bg: 'green.200', color: 'green' },
+		{ id: 5, bg: 'blue.200', color: 'blue' },
 	];
-
   const matchStatus = statusColor.find((status) => status.id === item.status);
   return (
     <Table.Row key={item.id} bg={index % 2 === 0 ? 'gray.100' : 'white'}>
@@ -33,7 +32,7 @@ const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data, handle
       <Table.Cell>{item.from_program_name}</Table.Cell>
       <Table.Cell>{item.to_program_name}</Table.Cell>
       <Table.Cell>
-        <Badge bg={matchStatus?.bg} color={matchStatus?.color} textAlign='center' >
+        <Badge colorPalette={matchStatus?.color} textAlign='center' >
           {matchStatus?.label || item.status_display}
         </Badge>
       </Table.Cell>
@@ -43,8 +42,8 @@ const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data, handle
           <UpdateStatusRequestModal data={item} fetchData={fetchData} />
           <Button
             size="sm"
-            onClick={() => handleClickRow(item.id)}
-            colorScheme='blue'
+            onClick={() => handleClickRow(item.student)}
+            colorPalette='blue'
             disabled={item.status !== 4}
           >
             Ir a matrícula
