@@ -472,7 +472,7 @@ export const AcademicRegister = ({ dataStudent }) => {
 					/>
 				</Tabs.Content>
 				<Tabs.Content value='grades-record'>
-					<GradesRecordSection dataCoursesByPeriod={dataCoursesByPeriod} />
+					<GradesRecordSection dataCoursesByPeriod={dataCoursesByPeriod} admin={true} />
 				</Tabs.Content>
 			</Tabs.Root>
 		</Stack>

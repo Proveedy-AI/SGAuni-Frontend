@@ -1257,7 +1257,7 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 			{/* Tabs */}
 			<Tabs.Root value={tab} onValueChange={(e) => setTab(e.value)}>
 				<Tabs.List as={Flex} justify='space-between' align='center' mb={3}>
-					<HStack spacing={4}>
+					<HStack gap={4}>
 						<Tabs.Trigger value={1}>
 							<HStack>
 								<FiGrid size={16} />
