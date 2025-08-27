@@ -72,6 +72,11 @@ const Row = memo(
 					</Badge>
 				</Table.Cell>
 				<Table.Cell>
+					<Badge colorPalette={item.is_current_enrollment ? 'green' : 'red'}>
+						{item.is_current_enrollment ? 'Sí' : 'No'}
+					</Badge>
+				</Table.Cell>
+				<Table.Cell>
 					<HStack>
 						<UpdateEnrollmentStudentForm data={item} fetchData={fetchData} />
 						<CoursesSelections dataCoursesByPeriod={matchingPeriod} />
@@ -158,6 +163,14 @@ export const StudentTuitionTable = ({
 								<SortableHeader
 									label='Estado'
 									columnKey='status_display'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader w='10%'>
+								<SortableHeader
+									label='Matricula en curso'
+									columnKey='is_current_enrollment'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
