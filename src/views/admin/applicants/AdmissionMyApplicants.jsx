@@ -1,6 +1,8 @@
 import { PersonalDataApplicants } from '@/components/forms/admissions/MyApplicants';
+import { FindAdmissionToPostulation } from '@/components/modals/myadmission';
 import { MyApplicantsTable } from '@/components/tables/myApplicants';
 import { useReadMyApplicants } from '@/hooks';
+import { useReadAdmissions } from '@/hooks/admissions_proccess';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { Box, Heading, Stack, Spinner, Flex } from '@chakra-ui/react';
 import { useState } from 'react';
@@ -23,6 +25,12 @@ export const AdmissionMyApplicants = () => {
 		date: null,
 	});
 
+  const {
+    data: dataAdmissionProcesses
+  } = useReadAdmissions();
+
+  const filteredAdmission = dataAdmissionProcesses?.results?.find((admission) => (admission.process_status === 1));
+
 	return (
 		<Box spaceY='5'>
 			<Stack
@@ -40,6 +48,7 @@ export const AdmissionMyApplicants = () => {
 				>
 					Mis Postulaciones
 				</Heading>
+        <FindAdmissionToPostulation program={filteredAdmission} userData={dataUser} fetchData={fetchMyApplicants} />
 			</Stack>
 
 			{isLoading && (

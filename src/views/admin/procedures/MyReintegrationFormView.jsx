@@ -107,10 +107,11 @@ export const MyReintegrationFormView = () => {
 				navigate('/myprocedures/');
 			},
 			onError: (error) => {
+        console.log(error)
 				toaster.create({
 					title: 'Error al enviar la solicitud de reintegración',
 					type: 'error',
-					description: error.message,
+					description: error?.response?.data?.message,
 				});
 			},
 		});

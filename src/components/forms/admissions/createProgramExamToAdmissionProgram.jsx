@@ -185,6 +185,7 @@ export const CreateProgramExamToAdmissionProgram = ({
 							size='xs'
 							colorPalette='green'
 							css={{ _icon: { width: '5', height: '5' } }}
+              disabled={item?.status === 1}
 						>
 							<FiCalendar />
 						</IconButton>
