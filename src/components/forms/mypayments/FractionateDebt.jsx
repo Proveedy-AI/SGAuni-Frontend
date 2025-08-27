@@ -136,7 +136,7 @@ export const FractionateDebt = ({ countDebts }) => {
 
 			const payload = {
 				enrollment: program?.enrollment,
-				upfront_percentage: DataProgram?.min_payment_percentage,
+				//upfront_percentage: DataProgram?.min_payment_percentage,
 				number_of_installments: installments,
 				payment_document_type: selectedDocumentType?.value,
 				num_document_person: numDocCarpeta,
@@ -302,7 +302,7 @@ export const FractionateDebt = ({ countDebts }) => {
 										options={methodOptions}
 									/>
 								</Field>
-								<Field label='Porcentaje inicial (%)'>
+								{/*<Field label='Porcentaje inicial (%)'>
 									<Input
 										readOnly
 										placeholder='Seleccione programa'
@@ -316,7 +316,7 @@ export const FractionateDebt = ({ countDebts }) => {
 										}
 										style={{ width: '100%' }}
 									/>
-								</Field>
+								</Field>*/}
 								<Field
 									label={`Número de cuotas (máximo ${DataProgram?.max_installments || paymentDebtLocal.max_installments})`}
 									invalid={!!errors.installments}
@@ -337,13 +337,13 @@ export const FractionateDebt = ({ countDebts }) => {
 									/>
 								</Field>
 							</SimpleGrid>
-							<Field label='Monto minimo a pagar (S/.)'>
+							<Field label='Monto a pagar (S/.)'>
 								<Input
 									type='number'
 									disabled
 									min={1}
 									value={
-										(amount * DataProgram?.min_payment_percentage) / 100 || 0
+										(amount) || 0
 									}
 									onChange={(e) => setAmount(e.target.value)}
 									style={{ width: '100%' }}
@@ -366,7 +366,7 @@ export const FractionateDebt = ({ countDebts }) => {
 							</Field>
 
 							<Field
-								label='N° Doc'
+								label='N° Documento de Identidad'
 								invalid={!!errors.numDocCarpeta}
 								errorText={errors.numDocCarpeta}
 							>

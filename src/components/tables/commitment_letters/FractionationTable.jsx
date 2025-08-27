@@ -12,10 +12,9 @@ import { ViewFractionationRequestsModal } from '@/components/forms/commitment_le
 
 const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 	const statusDisplay = [
-		{ id: 1, label: 'Borrador', bg: '#AEAEAE', color: '#F5F5F5' },
-		{ id: 2, label: 'En revisión', bg: '#d0daedff', color: '#2d689fff' },
-		{ id: 3, label: 'Rechazado', bg: '#F7CDCE', color: '#E0383B' },
-		{ id: 4, label: 'Aprobado', bg: '#D0EDD0', color: '#2D9F2D' },
+		{ id: 1, label: 'En revisión', color: 'blue' },
+		{ id: 2, label: 'Rechazado', color: 'red' },
+		{ id: 3, label: 'Aprobado', color: 'green' },
 	];
 
 	const matchStatus = statusDisplay.find(
@@ -29,12 +28,12 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 					? data.length - (startIndex + index)
 					: startIndex + index + 1}
 			</Table.Cell>
-			<Table.Cell>{item.student_full_name}</Table.Cell>
+			<Table.Cell>{item.student_name}</Table.Cell>
 			<Table.Cell>{item.enrollment_name}</Table.Cell>
-			<Table.Cell>{item.plan_type_display}</Table.Cell>
+			<Table.Cell>{item.payment_document_type_display}</Table.Cell>
 			<Table.Cell>{item.upfront_percentage * 100}%</Table.Cell>
 			<Table.Cell>
-				<Badge bg={matchStatus?.bg} color={matchStatus?.color}>
+				<Badge colorPalette={matchStatus?.color}>
 					{matchStatus?.label || 'N/A'}
 				</Badge>
 			</Table.Cell>
@@ -88,7 +87,7 @@ export const FractionationTable = ({
 	useEffect(() => {
 		setCurrentPage(1);
 	}, [resetPageTrigger]);
-const validRows = visibleRows?.filter((item) => item && item.id) ?? [];
+	const validRows = visibleRows?.filter((item) => item && item.id) ?? [];
 	return (
 		<Box
 			bg={{ base: 'white', _dark: 'its.gray.500' }}
@@ -112,7 +111,7 @@ const validRows = visibleRows?.filter((item) => item && item.id) ?? [];
 							<Table.ColumnHeader w='20%'>
 								<SortableHeader
 									label='Estudiante'
-									columnKey='student_full_name'
+									columnKey='student_name'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
@@ -128,7 +127,7 @@ const validRows = visibleRows?.filter((item) => item && item.id) ?? [];
 							<Table.ColumnHeader w='20%'>
 								<SortableHeader
 									label='Tipo'
-									columnKey='plan_type_display'
+									columnKey='payment_document_type_display'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>
@@ -149,6 +148,7 @@ const validRows = visibleRows?.filter((item) => item && item.id) ?? [];
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
+							<Table.ColumnHeader w='10%'>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
