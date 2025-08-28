@@ -1,7 +1,5 @@
-//import { UpdateSettingsCountryForm } from '@/components/forms';
 import { HistoryStatusEnrollmentProgramsView } from '@/components/forms/enrollment_proccess/HistoryStatusEnrollmentProgramsView';
 import {
-	DeleteTuitionProgramsModal,
 	ScheduleEnrollmentProgramsModal,
 } from '@/components/modals/tuition';
 import { SendAEnrollmentProgramtoConfirmForm } from '@/components/modals/tuition/SendAEnrollmentProgramtoConfirmForm';
@@ -25,7 +23,6 @@ const Row = memo(
 		index,
 		sortConfig,
 		data,
-		permissions,
 		setIsModalOpen,
 		setModalData,
 		setActionType,
@@ -90,11 +87,6 @@ const Row = memo(
 							</IconButton>
 						</Tooltip>
 						{/* )} */}
-						<DeleteTuitionProgramsModal
-							permissions={permissions}
-							item={item}
-							fetchData={fetchData}
-						/>
 					</HStack>
 				</Table.Cell>
 			</Table.Row>

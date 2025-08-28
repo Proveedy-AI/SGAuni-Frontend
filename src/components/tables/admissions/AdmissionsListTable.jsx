@@ -1,4 +1,3 @@
-//import { UpdateSettingsCountryForm } from '@/components/forms';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { UpdateAdmissionsProccessForm } from '@/components/forms/admissions';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
@@ -7,7 +6,6 @@ import { formatDateString } from '@/components/ui/dateHelpers';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import { UrlActionsPopover } from '@/components/ui/UrlActionsPopover';
-import { useDeleteAdmissions } from '@/hooks/admissions_proccess';
 import { useCopyAdmissions } from '@/hooks/admissions_proccess/useCopyAdmissions';
 import useSortedData from '@/utils/useSortedData';
 import {
@@ -21,12 +19,11 @@ import {
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
-import { FiCopy, FiTrash2 } from 'react-icons/fi';
+import { FiCopy } from 'react-icons/fi';
 import { useNavigate } from 'react-router';
 
 const Row = memo(
 	({ item, fetchData, startIndex, index, permissions, sortConfig, data }) => {
-		const [open, setOpen] = useState(false);
 		const [openCopy, setOpenCopy] = useState(false);
 		const navigate = useNavigate();
 		const encrypted = Encryptor.encrypt(item.id);
@@ -39,27 +36,6 @@ const Row = memo(
 
 		const { mutate: copyAdmissions, isPending: LoadingcopyAdmissions } =
 			useCopyAdmissions();
-
-		const { mutate: deleteAdmisions, isPending } = useDeleteAdmissions();
-
-		const handleDelete = () => {
-			deleteAdmisions(item.id, {
-				onSuccess: () => {
-					toaster.create({
-						title: 'Proceso eliminado correctamente',
-						type: 'success',
-					});
-					fetchData();
-					setOpen(false);
-				},
-				onError: (error) => {
-					toaster.create({
-						title: error.message,
-						type: 'error',
-					});
-				},
-			});
-		};
 
 		const handleCopy = () => {
 			copyAdmissions(item.id, {
@@ -138,28 +114,6 @@ const Row = memo(
 					<HStack>
 						{permissions?.includes('admissions.proccess.edit') && (
 							<UpdateAdmissionsProccessForm data={item} fetchData={fetchData} />
-						)}
-						{permissions?.includes('admissions.proccess.delete') && (
-							<ConfirmModal
-								placement='center'
-								trigger={
-									<IconButton colorPalette='red' size='xs'>
-										<FiTrash2 />
-									</IconButton>
-								}
-								open={open}
-								onOpenChange={(e) => setOpen(e.open)}
-								onConfirm={() => handleDelete(item.id)}
-								loading={isPending}
-							>
-								<Text>
-									¿Estás seguro que quieres eliminar a
-									<Span fontWeight='semibold' px='1'>
-										{item.admission_process_name}
-									</Span>
-									de la lista de Procesos?
-								</Text>
-							</ConfirmModal>
 						)}
 						{permissions?.includes('admissions.proccess.copy') && (
 							<ConfirmModal

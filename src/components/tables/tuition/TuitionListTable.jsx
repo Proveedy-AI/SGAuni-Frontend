@@ -11,7 +11,6 @@ import {
 	Text,
 } from '@chakra-ui/react';
 import { memo, useState } from 'react';
-import { DeleteTuitionProcessModal } from '@/components/modals/tuition';
 import { useNavigate } from 'react-router';
 import { FiCheckCircle, FiCopy, FiEdit2 } from 'react-icons/fi';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
@@ -170,13 +169,6 @@ const Row = memo(
 								<FiEdit2 />
 							</IconButton>
 						</Tooltip>
-
-						<DeleteTuitionProcessModal
-							permissions={permissions}
-							item={item}
-							fetchData={fetchData}
-						/>
-
 						{permissions?.includes(
 							'enrollments.proccessEnrollments.double'
 						) && (

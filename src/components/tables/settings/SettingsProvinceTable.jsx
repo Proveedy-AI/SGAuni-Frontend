@@ -1,16 +1,13 @@
-//import { UpdateSettingsCountryForm } from '@/components/forms';
 import { UpdateSettingsProvinceForm } from '@/components/forms/settings';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
-import { ConfirmModal, Pagination, toaster } from '@/components/ui';
+import { Pagination } from '@/components/ui';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
-import { useDeleteProvince } from '@/hooks';
 import useSortedData from '@/utils/useSortedData';
 
-import { Box, HStack, IconButton, Span, Table, Text } from '@chakra-ui/react';
+import { Box, HStack, Table } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
-import { FiTrash2 } from 'react-icons/fi';
 
 const Row = memo(
 	({
@@ -22,29 +19,6 @@ const Row = memo(
 		sortConfig,
 		data,
 	}) => {
-		const [open, setOpen] = useState(false);
-
-		const { mutate: deleteProvince, isPending } = useDeleteProvince();
-
-		const handleDelete = () => {
-			deleteProvince(item.id, {
-				onSuccess: () => {
-					toaster.create({
-						title: 'Provincia eliminado correctamente',
-						type: 'success',
-					});
-					fetchData();
-					setOpen(false);
-				},
-				onError: (error) => {
-					toaster.create({
-						title: error.message,
-						type: 'error',
-					});
-				},
-			});
-		};
-
 		return (
 			<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
 				<Table.Cell>
@@ -62,27 +36,6 @@ const Row = memo(
 							fetchData={fetchData}
 							dataDepartment={dataDepartments}
 						/>
-
-						<ConfirmModal
-							placement='center'
-							trigger={
-								<IconButton colorPalette='red' size='xs'>
-									<FiTrash2 />
-								</IconButton>
-							}
-							open={open}
-							onOpenChange={(e) => setOpen(e.open)}
-							onConfirm={() => handleDelete(item.id)}
-							loading={isPending}
-						>
-							<Text>
-								¿Estás seguro que quieres eliminar a
-								<Span fontWeight='semibold' px='1'>
-									{item.name}
-								</Span>
-								de la lista de provincias?
-							</Text>
-						</ConfirmModal>
 					</HStack>
 				</Table.Cell>
 			</Table.Row>
