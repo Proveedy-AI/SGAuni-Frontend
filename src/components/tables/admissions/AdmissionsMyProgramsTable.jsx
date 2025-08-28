@@ -10,43 +10,17 @@ import { PreviewAdmissionsProgramsModal } from '@/components/forms/admissions/Pr
 import { SendAdmissionProgramtoConfirmForm } from '@/components/forms/admissions/SendAdmissionProgramtoConfirmForm';
 import { UpdateStatusAdmissionsProccessForm } from '@/components/forms/admissions/UpdateStatusAdmissionsProccessForm';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
-import { ConfirmModal, Pagination, toaster } from '@/components/ui';
+import { Pagination } from '@/components/ui';
 import { formatDateString } from '@/components/ui/dateHelpers';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
-import { useDeleteAdmissionsPrograms } from '@/hooks/admissions_programs';
 import useSortedData from '@/utils/useSortedData';
-import { Box, HStack, IconButton, Span, Table, Text } from '@chakra-ui/react';
+import { Box, HStack, Table } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
-import { FiTrash2 } from 'react-icons/fi';
 
 const Row = memo(
 	({ item, fetchData, startIndex, index, permissions, sortConfig, data }) => {
-		const [open, setOpen] = useState(false);
-
-		const { mutate: deleteAdmisionsPrograms, isPending } =
-			useDeleteAdmissionsPrograms();
-
-		const handleDelete = () => {
-			deleteAdmisionsPrograms(item.id, {
-				onSuccess: () => {
-					toaster.create({
-						title: 'Proceso eliminado correctamente',
-						type: 'success',
-					});
-					fetchData();
-					setOpen(false);
-				},
-				onError: (error) => {
-					toaster.create({
-						title: error.message,
-						type: 'error',
-					});
-				},
-			});
-		};
-
 		const statusMap = {
 			Borrador: { label: 'Borrador', color: 'gray' },
 			'En revision': { label: 'En revisión', color: 'orange.500' },
@@ -114,36 +88,6 @@ const Row = memo(
 								fetchData={fetchData}
 								permissions={permissions}
 							/>
-						)}
-						{(permissions?.includes('admissions.programs.delete') ||
-							permissions?.includes('admissions.programs.admin')) && (
-							<ConfirmModal
-								placement='center'
-								trigger={
-									<IconButton
-										disabled={
-											!permissions?.includes('admissions.programs.admin') &&
-											item.status === 4
-										}
-										colorPalette='red'
-										size='xs'
-									>
-										<FiTrash2 />
-									</IconButton>
-								}
-								open={open}
-								onOpenChange={(e) => setOpen(e.open)}
-								onConfirm={() => handleDelete(item.id)}
-								loading={isPending}
-							>
-								<Text>
-									¿Estás seguro que quieres eliminar a
-									<Span fontWeight='semibold' px='1'>
-										{item.program_name}
-									</Span>
-									de la lista de Procesos?
-								</Text>
-							</ConfirmModal>
 						)}
 					</HStack>
 				</Table.Cell>
