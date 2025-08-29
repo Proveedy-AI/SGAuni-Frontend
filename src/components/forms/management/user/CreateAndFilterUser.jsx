@@ -55,6 +55,7 @@ export const CreateAndFilterUser = ({
 		num_doc: 'El número de documento ya está registrado.',
 		phone: 'El teléfono ya está en uso.',
 		uni_email: 'El correo institucional ya está registrado.',
+		user: 'El correo de usuario ya está en uso.',
 	};
 
 	const reset = () => {
