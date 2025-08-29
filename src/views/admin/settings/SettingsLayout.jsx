@@ -56,7 +56,7 @@ export const SettingsLayout = () => {
 		},
 		{
 			href: '/settings/Modalities',
-			label: 'Modalidades',
+			label: 'Modalidades Admisión',
 			icon: FiLayers,
 			permission: 'settings.modalities.view',
 		},
