@@ -127,12 +127,12 @@ export const AssignModalityToProgramForm = ({ data, permissions }) => {
 
 	return (
 		<Modal
-			title='Asignar Modalidad a Programa'
+			title='Asignar Modalidad a Admisión'
 			placement='center'
 			trigger={
 				<Box>
 					<Tooltip
-						content='Asignar Modalidad'
+						content='Asignar Modalidad de Admisión'
 						positioning={{ placement: 'bottom-center' }}
 						showArrow
 						openDelay={0}
@@ -170,13 +170,13 @@ export const AssignModalityToProgramForm = ({ data, permissions }) => {
 					<Card.Header pb={0}>
 						<Flex align='center' gap={2}>
 							<Icon as={FiPlus} w={5} h={5} color='purple.600' />
-							<Heading size='sm'>Agregar Nueva Modalidad</Heading>
+							<Heading size='sm'>Nueva Modalidad de Admisión</Heading>
 						</Flex>
 					</Card.Header>
 
 					<Card.Body pt={4}>
 						<Flex direction={{ base: 'column', md: 'row' }} gap={4} align='end'>
-							<Field label='Modalidad:'>
+							<Field label='Modalidad de Admisión:'>
 								<ReactSelect
 									value={selectedModality}
 									onChange={setSelectedModality}
