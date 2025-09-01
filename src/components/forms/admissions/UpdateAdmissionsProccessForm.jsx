@@ -15,12 +15,10 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 	const [startDate, setStartDate] = useState(data?.start_date);
 	const [endDate, setEndDate] = useState(data?.end_date);
 	const [status, setStatus] = useState(null);
-	const [selectedLevel, setSelectedLevel] = useState(null);
 	const [errors, setErrors] = useState({});
 	const validateFields = () => {
 		const newErrors = {};
 		if (!name.trim()) newErrors.name = 'El ciclo es requerido';
-		if (!selectedLevel) newErrors.selectedLevel = 'Seleccione un nivel';
 		if (!startDate) newErrors.startDate = 'La fecha de inicio es requerida';
 		if (!endDate) newErrors.endDate = 'La fecha de fin es requerida';
 		if (!status) newErrors.status = 'Seleccione un estado';
@@ -48,7 +46,6 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 
 		const payload = {
 			admission_process_name: name.trim(),
-			admission_level: selectedLevel.value,
 			start_date: startDate,
 			end_date: endDate,
 			editable: true,
@@ -78,12 +75,6 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 		);
 	};
 
-	const dataLevel = [
-		{ label: 'Maestría', value: 2 },
-		{ label: 'Doctorado', value: 3 },
-		{ label: 'Diplomado', value: 4 },
-	];
-
 	const dataStatus = [
 		{ label: 'Activo', value: 1 },
 		//{ label: 'Cancelado', value: 'Cancelado' },
@@ -91,23 +82,7 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 		{ label: 'Borrador', value: 4 },
 	];
 
-	const LevelOptions = dataLevel.map((level) => ({
-		label: level.label,
-		value: level.value,
-	}));
-
 	useEffect(() => {
-		if (data && data.admission_level) {
-			const matchedLevel = dataLevel.find(
-				(level) => level.value === data.admission_level
-			);
-			if (matchedLevel) {
-				setSelectedLevel({
-					label: matchedLevel.label,
-					value: matchedLevel.value,
-				});
-			}
-		}
 		if (data && data.process_status_display) {
 			const matchedStatus = dataStatus.find(
 				(status) => status.value === data.process_status_display
@@ -165,24 +140,6 @@ export const UpdateAdmissionsProccessForm = ({ data, fetchData }) => {
 						}}
 						placeholder='2025-I'
 						size='xs'
-					/>
-				</Field>
-				<Field
-					label='Nivel:'
-					invalid={!!errors.selectedLevel}
-					errorText={errors.selectedLevel}
-				>
-					<ReactSelect
-						value={selectedLevel}
-						onChange={(select) => {
-							setSelectedLevel(select);
-						}}
-						variant='flushed'
-						size='xs'
-						isSearchable
-						isClearable
-						name='paises'
-						options={LevelOptions}
 					/>
 				</Field>
 				<Field

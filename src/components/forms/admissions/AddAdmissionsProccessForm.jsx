@@ -4,7 +4,6 @@ import { Button, Input, Stack } from '@chakra-ui/react';
 import { Field, Modal, toaster } from '@/components/ui';
 import { FiPlus } from 'react-icons/fi';
 import { useCreateAdmissions } from '@/hooks/admissions_proccess';
-import { ReactSelect } from '@/components/select';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { format } from 'date-fns';
 
@@ -14,7 +13,6 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 	const [name, setName] = useState('');
 	const [startDate, setStartDate] = useState('');
 	const [endDate, setEndDate] = useState('');
-	const [selectedLevel, setSelectedLevel] = useState(null);
 	const [errors, setErrors] = useState({});
 	const { mutate: createAdmissions, isPending } = useCreateAdmissions();
 
@@ -30,7 +28,6 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 	const validateFields = () => {
 		const newErrors = {};
 		if (!name) newErrors.name = 'El ciclo es requerido';
-		if (!selectedLevel) newErrors.selectedLevel = 'Seleccione un nivel';
 		if (!startDate) newErrors.startDate = 'La fecha de inicio es requerida';
 		if (!endDate) newErrors.endDate = 'La fecha de fin es requerida';
 
@@ -46,7 +43,6 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 
 		const payload = {
 			admission_process_name: name.trim(),
-			admission_level: selectedLevel.value,
 			start_date: startDate,
 			end_date: endDate,
 			editable: true,
@@ -61,7 +57,6 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 				setOpen(false);
 				fetchData();
 				setName('');
-				setSelectedLevel(null);
 				setEndDate();
 				setStartDate('');
 			},
@@ -74,17 +69,6 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 			},
 		});
 	};
-
-	const dataLevel = [
-		{ label: 'Maestría', value: 2 },
-		{ label: 'Doctorado', value: 3 },
-		{ label: 'Diplomado', value: 4 },
-	];
-
-	const LevelOptions = dataLevel.map((level) => ({
-		label: level.label,
-		value: level.value,
-	}));
 
 	return (
 		<Modal
@@ -127,24 +111,6 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 						}}
 						placeholder='2025-1'
 						size='xs'
-					/>
-				</Field>
-				<Field
-					label='Nivel:'
-					invalid={!!errors.selectedLevel}
-					errorText={errors.selectedLevel}
-				>
-					<ReactSelect
-						value={selectedLevel}
-						onChange={(select) => {
-							setSelectedLevel(select);
-						}}
-						variant='flushed'
-						size='xs'
-						isSearchable
-						isClearable
-						name='paises'
-						options={LevelOptions}
 					/>
 				</Field>
 				<Field
