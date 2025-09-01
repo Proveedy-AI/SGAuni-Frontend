@@ -24,12 +24,15 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 
 	const handleRowClick = (e) => {
 		if (e.target.closest('button') || e.target.closest('a')) return;
-
-		const now = new Date();
-		const examEnd = item.exam_date_end ? new Date(item.exam_date_end) : null;
+    const now = new Date();
+    const examEnd = item.exam_date_end ? new Date(item.exam_date_end) : null;
+    if (examEnd) {
+      examEnd.setDate(examEnd.getDate() + 1);
+      examEnd.setHours(23, 59, 59, 999);
+    }
 		const isIncomplete = item.status_display === 'Incompleto';
 
-		if (examEnd && isIncomplete && now > examEnd) {
+		if (isIncomplete && now > examEnd) {
 			// Puedes mostrar una alerta o toast si quieres
 			toaster.create({
 				title: 'Acceso denegado',
