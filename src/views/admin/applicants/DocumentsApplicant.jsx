@@ -20,11 +20,20 @@ import { useReadAdmissionApplicantById } from '@/hooks/admissions_applicants/use
 
 export const DocumentsApplicant = ({ onValidationChange }) => {
 	const item = EncryptedStorage.load('selectedApplicant');
+  const [originalDocuments, setOriginalDocuments] = useState([]);
+  const [hasDocumentChanges, setHasDocumentChanges] = useState(false);
 	const [documentsData, setDocumentsData] = useState({});
 	const [isLoading, setIsLoading] = useState(false);
 	const [step, setStep] = useState(1);
 
 	const { data: dataApplicant } = useReadAdmissionApplicantById(item.id);
+  console.log(dataApplicant?.documents);
+
+  useEffect(() => {
+    if (dataApplicant?.documents) {
+      setOriginalDocuments(dataApplicant.documents);
+    }
+  }, [dataApplicant?.documents]);
 
 	const handleFileChange = (key, file) => {
 		setDocumentsData((prev) => ({
@@ -44,6 +53,30 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 			return acc;
 		}, {});
 	}, [item]);
+
+  useEffect(() => {
+    if (!originalDocuments || !documentsData) {
+      setHasDocumentChanges(false);
+      return;
+    }
+
+    // Compara cada documento actual con el original
+    const hasChanges = Object.entries(documentsData).some(([ruleId, { file }]) => {
+      // Busca el documento original por type_document_id
+      const originalDoc = originalDocuments.find(doc => doc.type_document_id === documentRulesMap?.[ruleId]?.document_type);
+
+      // Si no existe en original, es nuevo
+      if (!originalDoc && file) return true;
+
+      // Si existe, compara el nombre del archivo
+      if (originalDoc && typeof file !== 'string' && file?.name !== originalDoc.file_path?.split('/').pop()) return true;
+
+      return false;
+    });
+
+    setHasDocumentChanges(hasChanges);
+  }, [documentsData, originalDocuments, documentRulesMap]);
+
 	const leftColumnIds = [1, 3, 4, 5, 6, 7, 15]; // 👈 reglas que deben ir a la derecha
 
 	const documentConfig = {
@@ -76,7 +109,7 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 			leftColumnDocs: leftColumn,
 			rightColumnDocs: rightColumn,
 		};
-	}, [documentRulesMap]);
+	}, [documentRulesMap, leftColumnIds]);
 
 	const typeDocumentToKeyMap = useMemo(() => {
 		if (!item?.rules) return {};
@@ -146,16 +179,13 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 		}
 
 		setIsLoading(true);
-		const missingRequiredDocs = [];
 
-		// ✅ Combinar docs de ambas columnas
+		const missingRequiredDocs = [];
 		const allDocs = [...leftColumnDocs, ...rightColumnDocs];
 
-		// 1️⃣ Validación de requeridos
 		for (const rule of allDocs) {
 			const isRequired = rule?.is_required ?? false;
 			const uploadedFile = documentsData?.[rule.id]?.file;
-
 			if (isRequired && !uploadedFile) {
 				missingRequiredDocs.push(rule.field_name);
 			}
@@ -164,73 +194,103 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 		if (missingRequiredDocs.length > 0) {
 			toaster.create({
 				title: 'Faltan documentos requeridos',
-				description: `Debes subir los siguientes documentos: ${missingRequiredDocs.join(
-					', '
-				)}.`,
+				description: `Debes subir los siguientes documentos: ${missingRequiredDocs.join(', ')}.`,
 				type: 'info',
 			});
 			setIsLoading(false);
 			return;
 		}
 
-		// 2️⃣ Construcción del payload
-		const documentsPayload = await Promise.all(
-			Object.entries(documentsData).map(
-				async ([ruleId, { file, initialFilePath }]) => {
-					const rule = documentRulesMap?.[ruleId];
-					if (!rule?.id || !file) return null;
+		let uploadedCount = 0;
+		let keptCount = 0;
+		let documentsPayload = await Promise.all(
+			Object.entries(documentsData).map(async ([ruleId, { file }]) => {
+				const rule = documentRulesMap?.[ruleId];
+				if (!rule?.id || !file) return null;
 
-					// ⚠️ Si es string (URL), no subimos nada
-					if (typeof file === 'string') return null;
+				// Buscar el documento original
+				const originalDoc = originalDocuments.find(doc => doc.type_document_id === rule.document_type);
 
-					// ⚠️ Si el nombre no cambió, tampoco lo subimos
-					const originalFileName = initialFilePath?.split('/').pop();
-					if (originalFileName && file.name === originalFileName) return null;
-
-					const filePath = await uploadToS3(
-						file,
-						'sga_uni/applicants_documents',
-						`${item.first_name?.replace(/\s+/g, '_') || 'document'}_${rule.field_name}`
-					);
-
+				// Si el archivo es string, es solo path, se mantiene
+				if (typeof file === 'string') {
+					keptCount++;
 					return {
 						type_document_id: rule.document_type,
-						description: 1, // 👈 aquí podrías usar rule.description si existe
-						file_path: filePath,
+						description: 1,
+						file_path: file,
 					};
 				}
-			)
+
+				// Si existe original y el nombre es igual, se mantiene
+				if (originalDoc && file.name === originalDoc.file_path?.split('/').pop()) {
+					keptCount++;
+					return {
+						type_document_id: rule.document_type,
+						description: 1,
+						file_path: originalDoc.file_path,
+					};
+				}
+
+				// Si es diferente, se sube a S3
+				const filePath = await uploadToS3(
+					file,
+					'sga_uni/applicants_documents',
+					`${item.first_name?.replace(/\s+/g, '_') || 'document'}_${rule.field_name}`
+				);
+				uploadedCount++;
+				return {
+					type_document_id: rule.document_type,
+					description: 1,
+					file_path: filePath,
+				};
+			})
 		).then((res) => res.filter(Boolean));
 
 		const filteredPayload = documentsPayload.filter(Boolean);
 
-		// 3️⃣ Llamada final
-		create(
-			{
-				application_id: applicationId,
-				documents: filteredPayload,
-			},
-			{
-				onSuccess: () => {
-					setIsLoading(false);
-					refetch();
-					toaster.create({
-						title: 'Documentos guardados',
-						description:
-							'Los documentos fueron enviados correctamente. Puede continuar con el proceso.',
-						type: 'success',
-					});
+		console.log('Payload final de documentos:', filteredPayload);
+		console.log(`Subidos a S3: ${uploadedCount}, mantenidos: ${keptCount}`);
+
+			// 3️⃣ Llamada final
+			create(
+				{
+					application_id: applicationId,
+					documents: filteredPayload,
 				},
-				onError: () => {
-					setIsLoading(false);
-					toaster.create({
-						title: 'Error',
-						description: 'No se pudieron enviar los documentos.',
-						status: 'error',
-					});
-				},
-			}
-		);
+				{
+					onSuccess: () => {
+						setIsLoading(false);
+						refetch();
+						// Reinicia originalDocuments y bloquea cambios
+						setOriginalDocuments(filteredPayload.map(doc => ({
+							type_document_id: doc.type_document_id,
+							file_path: doc.file_path
+						})));
+						setHasDocumentChanges(false);
+						toaster.create({
+							title: 'Documentos guardados',
+							description:
+								'Los documentos fueron enviados correctamente. Puede continuar con el proceso.',
+							type: 'success',
+						});
+            if(uploadedCount > 0){
+              toaster.create({
+                title: 'Documentos actualizados',
+                description: `Se actualizaron ${uploadedCount} documentos.`,
+                type: 'info',
+              });
+            }
+					},
+					onError: () => {
+						setIsLoading(false);
+						toaster.create({
+							title: 'Error',
+							description: 'No se pudieron enviar los documentos.',
+							status: 'error',
+						});
+					},
+				}
+			);
 	};
 
 	const handleDownloadGuides = () => {
@@ -465,7 +525,7 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 								display='flex'
 								justifyContent='center'
 							>
-								<Box textAlign={{ base: 'center', md: 'start' }}>
+								<Box textAlign={{ base: 'center', md: 'start' }}  overflowY="hidden">
 									<Heading size='md' color='gray.600'>
 										Plantillas de formatos
 									</Heading>
@@ -559,6 +619,7 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 							color='white'
 							loading={isLoading}
 							onClick={handleSubmitDocuments}
+              disabled={!hasDocumentChanges}
 						>
 							Guardar cambios
 						</Button>

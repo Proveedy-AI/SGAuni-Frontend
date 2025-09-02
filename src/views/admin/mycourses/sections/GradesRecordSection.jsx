@@ -100,13 +100,17 @@ export const ExpandableCourseCard = ({
 								</Text>
 							</Box>
 
-							<Badge colorPalette={getGradeColor(course.final_grade)} size='sm'>
-								{getGradeStatus(course.final_grade)}
-							</Badge>
+              {course.final_grade && (
+                <>
+                  <Badge colorPalette={getGradeColor(course.final_grade)} size='sm'>
+                    {getGradeStatus(course.final_grade)}
+                  </Badge>
 
-							<Text fontSize='sm' color='gray.600'>
-								Promedio: {course.final_grade}
-							</Text>
+                  <Text fontSize='sm' color='gray.600'>
+                    Promedio: {course.final_grade}
+                  </Text>
+                </>
+              )}
 						</HStack>
 
 						<Collapsible.Root overflow='hidden'>
@@ -385,7 +389,7 @@ export const GradesRecordSection = ({ dataCoursesByPeriod, admin = false }) => {
 				<>
 					{/* Resumen General del Período */}
 					<Card.Root shadow='md' borderRadius='xl'>
-						<Card.Header borderBottomWidth='1px' borderColor='gray.100'>
+						<Card.Header>
 							<Text fontSize='lg' fontWeight='bold' color='blue.700'>
 								Resumen General del Período
 							</Text>
@@ -445,7 +449,7 @@ export const GradesRecordSection = ({ dataCoursesByPeriod, admin = false }) => {
 
 					{/* Lista de Cursos */}
 					<Card.Root shadow='md' borderRadius='xl'>
-						<Card.Header borderBottomWidth='1px' borderColor='gray.100'>
+						<Card.Header>
 							<Text fontSize='lg' fontWeight='bold' color='blue.700'>
 								Lista de Cursos
 							</Text>

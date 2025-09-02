@@ -201,13 +201,14 @@ export const MyPaymentUpload = () => {
 									</Box>
 								</Box>
 
-								<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+								<SimpleGrid columns={{ base: 1, md: 2 }} gap={4} overflow='hidden'>
 									<Box>
 										<Field
 											label='Comprobante de Pago:'
 											required
 											invalid={!!errors.selectedFile}
 											errorText={errors.selectedFile}
+                      overflow='hidden'
 										>
 											<CompactFileUpload
 												key={resetFileKey}

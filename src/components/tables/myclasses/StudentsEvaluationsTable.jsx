@@ -6,6 +6,7 @@ import { RegisterEvaluationsModal } from '@/components/modals/myclasses';
 
 const Row = memo(
 	({
+    index,
 		fetchData,
 		fetchGradesReport,
 		student,
@@ -25,7 +26,7 @@ const Row = memo(
 				key={student.uuid}
 				bg={{ base: 'white', _dark: 'its.gray.500' }}
 			>
-				<Table.Cell>{student?.student_code}</Table.Cell>
+				<Table.Cell>{student?.student_code || index}</Table.Cell>
 				<Table.Cell>
 					<Text fontWeight='medium'>{student.student_name}</Text>
 				</Table.Cell>
@@ -83,6 +84,7 @@ const Row = memo(
 Row.displayName = 'StudentRow';
 
 Row.propTypes = {
+  index: PropTypes.number.isRequired,
 	fetchData: PropTypes.func,
 	fetchGradesReport: PropTypes.func,
 	student: PropTypes.object.isRequired,
@@ -139,7 +141,7 @@ export const StudentsEvaluationsTable = ({
 						<Table.Header>
 							<Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
 								<Table.ColumnHeader w='10%'>
-									<Text fontWeight='bold'>ID</Text>
+									<Text fontWeight='bold'>N°</Text>
 								</Table.ColumnHeader>
 								<Table.ColumnHeader w='50%'>
 									<Text fontWeight='bold'>Nombre</Text>
@@ -153,9 +155,10 @@ export const StudentsEvaluationsTable = ({
 							{isLoading ? (
 								<SkeletonTable columns={3} />
 							) : students && students.length > 0 ? (
-								students.map((student) => (
+								students.map((student, index) => (
 									<Row
 										key={student.uuid || student.id}
+                    index={index+1}
 										student={student}
 										evaluationComponents={[]}
 										statusOptions={statusOptions}

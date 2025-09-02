@@ -203,7 +203,7 @@ export const MyCoursesListByAcademicPeriodView = () => {
 					<AcademicProgressSection
 						academicProgress={filteredAcademicProgressByProgram}
 						isLoading={isLoadingAcademicProgress}
-					/>
+          />
 				</Tabs.Content>
 				<Tabs.Content value="grades-record">
 					<GradesRecordSection dataCoursesByPeriod={dataCoursesByPeriod} />

@@ -21,7 +21,6 @@ export const ConfirmMasiveEvaluateApplicantsModal = ({
 					'Hay postulantes que aún no han sido evaluados. Por favor, evalúelos antes de proceder.',
 				type: 'warning',
 			});
-			return;
 		}
 
 		masiveEvaluateApplicants(uuid, {

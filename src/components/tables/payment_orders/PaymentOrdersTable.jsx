@@ -250,7 +250,7 @@ export const PaymentOrdersTable = ({
 							))
 						) : (
 							<Table.Row>
-								<Table.Cell colSpan={8} textAlign='center' py={2}>
+								<Table.Cell colSpan={10} textAlign='center' py={2}>
 									No hay datos disponibles.
 								</Table.Cell>
 							</Table.Row>
