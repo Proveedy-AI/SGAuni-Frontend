@@ -200,6 +200,7 @@ export const AcademicProgressSection = ({ academicProgress, isLoading }) => {
 									if (!credits?.by_cycle) return [];
 									return Object.entries(credits?.by_cycle).map(
 										([cycle, data]) => {
+                      if (!data.average) return;
 											const rawAverage =
 												data.average ||
 												data.weighted_sum / data.grade_credits;

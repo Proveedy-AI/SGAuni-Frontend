@@ -4,21 +4,14 @@ import {
 	Box,
 	Group,
 	HStack,
-	IconButton,
-	Span,
 	Table,
-	Text,
 } from '@chakra-ui/react';
 import {
 	ClipboardRoot,
 	ClipboardText,
-	ConfirmModal,
 	Pagination,
-	toaster,
 } from '@/components/ui';
-import { FiTrash2 } from 'react-icons/fi';
 import { UpdateSettingsPermissionForm } from '@/components/forms/settings';
-import { useDeletePermission } from '@/hooks';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import SkeletonTable from '@/components/ui/SkeletonTable';
@@ -26,27 +19,6 @@ import useSortedData from '@/utils/useSortedData';
 import { usePaginatedInfiniteData } from '@/components/navigation';
 
 const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
-	const [open, setOpen] = useState(false);
-
-	const { mutateAsync: remove, loading } = useDeletePermission();
-
-	const handleDelete = async (id) => {
-		try {
-			await remove(id);
-			toaster.create({
-				title: 'Permiso eliminado correctamente',
-				type: 'success',
-			});
-			setOpen(false);
-			fetchData();
-		} catch (error) {
-			toaster.create({
-				title: error.message,
-				type: 'error',
-			});
-		}
-	};
-
 	return (
 		<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
 			<Table.Cell>
@@ -66,27 +38,6 @@ const Row = memo(({ item, fetchData, startIndex, index, sortConfig, data }) => {
 				<HStack justify='space-between'>
 					<Group>
 						<UpdateSettingsPermissionForm data={item} fetchData={fetchData} />
-
-						<ConfirmModal
-							placement='center'
-							trigger={
-								<IconButton colorPalette='red' size='xs'>
-									<FiTrash2 />
-								</IconButton>
-							}
-							open={open}
-							onOpenChange={(e) => setOpen(e.open)}
-							onConfirm={() => handleDelete(item.id)}
-							loading={loading}
-						>
-							<Text>
-								¿Estás seguro que quieres eliminar el
-								<Span fontWeight='semibold' px='1'>
-									{item.name}
-								</Span>
-								de la lista de permisos?
-							</Text>
-						</ConfirmModal>
 					</Group>
 				</HStack>
 			</Table.Cell>

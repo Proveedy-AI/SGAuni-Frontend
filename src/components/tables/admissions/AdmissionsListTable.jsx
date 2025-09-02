@@ -90,7 +90,6 @@ const Row = memo(
 						: startIndex + index + 1}
 				</Table.Cell>
 				<Table.Cell>{item.admission_process_name}</Table.Cell>
-				<Table.Cell>{item.admission_level_display}</Table.Cell>
 				<Table.Cell>{formatDateString(item.start_date)}</Table.Cell>
 				<Table.Cell>{formatDateString(item.end_date)}</Table.Cell>
 				<Table.Cell>
@@ -194,14 +193,6 @@ export const AdmissionsListTable = ({
 								<SortableHeader
 									label='Nombre'
 									columnKey='admission_process_name'
-									sortConfig={sortConfig}
-									onSort={setSortConfig}
-								/>
-							</Table.ColumnHeader>
-							<Table.ColumnHeader>
-								<SortableHeader
-									label='Nivel'
-									columnKey='admission_level_display'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}
 								/>

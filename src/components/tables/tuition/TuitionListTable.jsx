@@ -126,7 +126,7 @@ const Row = memo(
 								placement='center'
 								trigger={
 									<Box>
-										<IconButton px={2} colorPalette='blue' size='xs'>
+										<IconButton px={2} colorPalette='blue' size='xs' disabled={item.status_enrollment_period === 3}>
 											<FiCheckCircle />
 											Completar
 										</IconButton>

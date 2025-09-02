@@ -181,7 +181,7 @@ export const Step03SummaryEnrollment = ({
 	];
 
 	const handleConfirmEnrollment = () => {
-		confirmCourses.mutate(
+		confirmCourses(
 			{ selection_ids: selections.map((course) => course.id) }, // 👈 payload que viaja en el body
 			{
 				onSuccess: () => {

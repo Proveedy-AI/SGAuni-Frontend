@@ -21,10 +21,9 @@ export const FindAdmissionToPostulation = ({ program, userData, fetchData }) => 
     ?.filter((prog) => prog.academic_status === 3 || prog.academic_status === 5 || prog.academic_status === 7)
     ?.map((prog) => prog.program);
 
-  console.log(dataProgramDetails?.programs);
   const AdmissionOptions = 
     dataProgramDetails?.programs
-    ?.filter((program) => !programsUser.includes(program.program))
+    ?.filter((program) => !programsUser?.includes(program.program))
     ?.map((admision) => ({
       label: admision.program_name,
       value: admision.id
