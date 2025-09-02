@@ -64,7 +64,7 @@ export const MyCoursesListByAcademicPeriodView = () => {
 	const handleClickToProcessEnrollment = () =>
 		navigate('/myprocedures/enrollment-process');
 
-	const { data: dataAcademicProgress, isLoading: isLoadingAcademicProgress, error: errorAcademicProgress } =
+	const { data: dataAcademicProgress, isLoading: isLoadingAcademicProgress } =
 		useReadAcademicProgress(studentUUID);
 
 	const filteredAcademicProgressByProgram =
@@ -203,7 +203,6 @@ export const MyCoursesListByAcademicPeriodView = () => {
 					<AcademicProgressSection
 						academicProgress={filteredAcademicProgressByProgram}
 						isLoading={isLoadingAcademicProgress}
-            error={errorAcademicProgress}
           />
 				</Tabs.Content>
 				<Tabs.Content value="grades-record">

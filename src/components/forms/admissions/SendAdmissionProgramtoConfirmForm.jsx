@@ -49,6 +49,8 @@ export const SendAdmissionProgramtoConfirmForm = ({ fetchData, item }) => {
 		});
 	};
 
+  console.log(item)
+
 	return (
 		<Modal
 			title='Enviar Proceso de Admisión para Aprobación'

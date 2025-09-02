@@ -13,8 +13,8 @@ import {
 } from 'recharts';
 import { LuGoal } from 'react-icons/lu';
 
-export const AcademicProgressSection = ({ academicProgress, isLoading, error }) => {
-	if (isLoading && !academicProgress) {
+export const AcademicProgressSection = ({ academicProgress, isLoading }) => {
+	if (isLoading) {
 		return (
 			<Card.Root mx="auto" bg="white" borderRadius="lg" w="full">
 				<Card.Header
@@ -37,7 +37,7 @@ export const AcademicProgressSection = ({ academicProgress, isLoading, error }) 
 		);
 	}
 
-	if (isLoading && error) {
+	if (!isLoading && !academicProgress) {
 		return (
 			<Card.Root mx="auto" bg="white" borderRadius="lg" w="full">
 				<Card.Header
@@ -268,5 +268,4 @@ export const AcademicProgressSection = ({ academicProgress, isLoading, error }) 
 AcademicProgressSection.propTypes = {
 	academicProgress: PropTypes.object,
 	isLoading: PropTypes.bool,
-	error: PropTypes.bool,
 };
