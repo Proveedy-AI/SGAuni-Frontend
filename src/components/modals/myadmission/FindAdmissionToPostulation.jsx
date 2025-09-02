@@ -17,8 +17,6 @@ export const FindAdmissionToPostulation = ({ program, userData, fetchData }) => 
 
   const { mutate: createAdmissionApplicant, isPending } = useCreateAdmissionAplicant();
 
-  const hasStudentData = !!userData?.student;
-
   const programsUser = userData?.student?.admission_programs
     ?.filter((prog) => prog.academic_status === 3 || prog.academic_status === 5 || prog.academic_status === 7)
     ?.map((prog) => prog.program);
@@ -102,7 +100,6 @@ export const FindAdmissionToPostulation = ({ program, userData, fetchData }) => 
           size='sm'
           bg='uni.secondary'
           onClick={() => setOpen(true)}
-          disabled={!hasStudentData}
         >
           <FiFile /> Postular a otros programas
         </Button>
