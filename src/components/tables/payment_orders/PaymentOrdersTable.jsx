@@ -57,7 +57,7 @@ const Row = memo(
 						: startIndex + index + 1}
 				</Table.Cell>
 				<Table.Cell>{format(parseISO(item.due_date), 'dd/MM/yyyy')}</Table.Cell>
-				<Table.Cell>{item.id_orden}</Table.Cell>
+				<Table.Cell>{item.id_orden || '-'}</Table.Cell>
 				<Table.Cell>{item.document_num}</Table.Cell>
 				<Table.Cell>{item.email}</Table.Cell>
 				<Table.Cell>{item.sub_amount}</Table.Cell>

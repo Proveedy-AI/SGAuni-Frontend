@@ -140,11 +140,13 @@ export const GeneratePaymentOrderModalByRequest = ({
 
 		const payload = {
 			request: item.id,
-			id_orden: orderIdInput | null,
 			discount_value: (Number(discountInput) / 100).toString() || '0',
 			due_date: dueDateInput,
 		};
 
+    if(item?.payment_method !== 2) //Si no es Caja UNI, enviar el ID de orden
+      payload.id_orden = orderIdInput;
+    
 		generatePaymentOrder(payload, {
 			onSuccess: () => {
 				toaster.create({
