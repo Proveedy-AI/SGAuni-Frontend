@@ -122,7 +122,8 @@ function CourseGroupsPanel({
 							isGroupFull ||
 							(!isThisGroupSelected && courseAlreadySel) ||
 							(!isThisGroupSelected && hasConflict) ||
-							course.status === 'blocked';
+							course.status === 'blocked' ||
+              course.status === 'completed';
 
 						return (
 							<Table.Row key={group.id} _hover={{ bg: 'gray.50' }}>
@@ -181,6 +182,11 @@ function CourseGroupsPanel({
 												Curso bloqueado
 											</Text>
 										)}
+                    {course.status === 'completed' && (
+											<Text fontSize='xs' color='blue.500'>
+												Curso aprobado
+											</Text>
+										)}
 									</VStack>
 								</Table.Cell>
 
@@ -212,7 +218,7 @@ function CourseGroupsPanel({
 													? 'Ya seleccionado'
 													: hasConflict
 														? 'Cruce de horario'
-														: course.status === 'blocked'
+														: (course.status === 'blocked' || course.status === 'completed')
 															? 'Bloqueado'
 															: 'Seleccionar'}
 										</Button>
