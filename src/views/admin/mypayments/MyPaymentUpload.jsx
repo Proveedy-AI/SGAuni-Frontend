@@ -76,7 +76,7 @@ export const MyPaymentUpload = () => {
 	const orderOptions = allPaymentOrders
 		? allPaymentOrders.map((order) => ({
 				value: order.id,
-				label: `Orden #${order.id_orden} - S/ ${order.total_amount} - ${order.document_type_display}`,
+				label: `Orden ${order.id_orden ? `#${order.id_orden}` : 'Caja UNI'} - S/ ${order.total_amount} - ${order.document_type_display}`,
 				amount: order.total_amount,
 			}))
 		: [];

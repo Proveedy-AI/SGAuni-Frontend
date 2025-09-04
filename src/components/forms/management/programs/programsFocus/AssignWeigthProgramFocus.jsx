@@ -57,7 +57,7 @@ export const AssignWeigthProgramFocus = ({ item, fetchData }) => {
 		0
 	);
 
-	const maxRemaining = Math.max(0, 101 - totalAssignedWeight);
+	const maxRemaining = Math.max(0, Number((1 - totalAssignedWeight) * 100).toFixed(2));
 
 	const { mutateAsync: assignEvaluator, isPending: isSaving } =
 		useCreateProgramWeight();
