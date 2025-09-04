@@ -61,7 +61,7 @@ const Row = memo(
 				<Table.Cell>{item.document_num}</Table.Cell>
 				<Table.Cell>{item.email}</Table.Cell>
 				<Table.Cell>{item.sub_amount}</Table.Cell>
-				<Table.Cell>{item.discount_value}</Table.Cell>
+				<Table.Cell>{Math.round(Number(item.discount_value) * 100)}</Table.Cell>
 				<Table.Cell>{item.total_amount}</Table.Cell>
 
 				<Table.Cell>
