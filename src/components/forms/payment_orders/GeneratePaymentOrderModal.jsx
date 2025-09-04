@@ -386,7 +386,7 @@ export const GeneratePaymentOrderModal = ({ fetchData }) => {
 									errorText={errors.orderIdInput}
 								>
 									<Input
-										placeholder='Ingresar id de Orden'
+										placeholder='Ingresar id de Ordesn'
 										value={orderIdInput}
 										onChange={(e) => setOrderIdInput(e.target.value)}
 									/>

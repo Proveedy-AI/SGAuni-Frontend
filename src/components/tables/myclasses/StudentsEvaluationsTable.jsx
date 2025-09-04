@@ -14,6 +14,7 @@ const Row = memo(
 		statusOptions,
 		statusColors,
 	}) => {
+    console.log({ student, evaluationComponents })
 		const statusOption = statusOptions.find(
 			(opt) => opt.value === student.qualification_status
 		);
