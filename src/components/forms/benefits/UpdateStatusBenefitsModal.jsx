@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
 	Box,
 	IconButton,
@@ -52,7 +52,7 @@ export const UpdateStatusBenefitsModal = ({ data, fetchData }) => {
 		if (selectedStatus === 4 && !type) {
 			newErrors.type = 'El tipo de beneficio es requerido.';
 		}
-		if (selectedStatus === 4 && !discount_percentage) {
+		if (selectedStatus === 4 && data.type_benefit === 3 && !discount_percentage) {
 			newErrors.discount_percentage =
 				'El porcentaje de descuento es requerido.';
 		}
@@ -60,6 +60,8 @@ export const UpdateStatusBenefitsModal = ({ data, fetchData }) => {
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
 	};
+
+  useEffect(() => setComments(''), [selectedStatus])
 
 	const handleSubmitStatus = async () => {
 		if (!validateFields()) return;
@@ -75,22 +77,20 @@ export const UpdateStatusBenefitsModal = ({ data, fetchData }) => {
 				);
 			}
 
-			const payload =
-				selectedStatus === 4
-					? {
-							comments: selectedStatus === 3 ? comments.trim() : '',
-							status: selectedStatus,
-							founding_source: selectedStatus === 4 ? type?.value : null,
-							other_founding_source:
-								selectedStatus === 4 ? other_founding_source : '',
-							discount_percentage:
-								selectedStatus === 4 ? discount_percentage / 100 : '',
-							review_document_url: selectedStatus === 4 ? s3Url : '',
-						}
-					: {
-							status: selectedStatus,
-							comments: comments.trim(),
-						};
+      const payload = {
+        status: selectedStatus,
+				comments: comments?.trim() || '',
+      }
+
+      if (review_document_url) {
+        payload.review_document_url = s3Url;
+      }
+
+      if (selectedStatus === 4) {
+        payload.founding_source = type?.value;
+        payload.other_founding_source = other_founding_source;
+        data.type_benefit === 3 && (payload.discount_percentage = discount_percentage / 100);
+      }
 
 			aproveeBenefits(
 				{ id: data.request_benefit, payload },
@@ -315,17 +315,18 @@ export const UpdateStatusBenefitsModal = ({ data, fetchData }) => {
 										/>
 									</Field>
 								)}
-
-								<Field label='Porcentaje de descuento (1 -100%)' required>
-									<Input
-										type='text'
-										name='discount_percentage'
-										placeholder='Ingrese el porcentaje de descuento'
-										value={discount_percentage}
-										onChange={(e) => setDiscountPercentage(e.target.value)}
-									/>
-								</Field>
-								<Field label='Adjuntar documento del Beneficio (Opcional)'>
+                {data.type_benefit === 3 && (
+                  <Field label='Porcentaje de descuento (1 -100%)'>
+                    <Input
+                      type='text'
+                      name='discount_percentage'
+                      placeholder='Ingrese el porcentaje de descuento'
+                      value={discount_percentage}
+                      onChange={(e) => setDiscountPercentage(e.target.value)}
+                    />
+                  </Field>
+                )}
+								<Field label='Adjuntar documento del Revisión (Opcional)'>
 									<CompactFileUpload
 										name='review_document_url'
 										accept='application/pdf,image/png,image/jpeg,image/jpg'
@@ -387,9 +388,39 @@ export const UpdateStatusBenefitsModal = ({ data, fetchData }) => {
 									placeholder='Describe las razones por las cuales el Beneficio no puede ser aprobado...'
 									disabled={isPending}
 								/>
-								<Text fontSize='xs' color='gray.500' mt={1}>
+								<Text fontSize='xs' color='gray.500' mt={1} mb={3}>
 									Este comentario será visible para el solicitante.
 								</Text>
+                <Field label='Adjuntar documento del Revisión (Opcional)'>
+									<CompactFileUpload
+										name='review_document_url'
+										accept='application/pdf,image/png,image/jpeg,image/jpg'
+										onChange={(file) => {
+											const allowedTypes = [
+												'application/pdf',
+												'image/png',
+												'image/jpeg',
+												'image/jpg',
+											];
+											if (!file) {
+												setReviewDocumentUrl(null);
+												return;
+											}
+
+											if (allowedTypes.includes(file.type)) {
+												setReviewDocumentUrl(file);
+											} else {
+												setReviewDocumentUrl(null);
+												toaster.create({
+													title:
+														'Solo se permiten archivos PDF o imágenes (JPG, PNG).',
+													type: 'error',
+												});
+											}
+										}}
+										onClear={() => setReviewDocumentUrl('')}
+									/>
+								</Field>
 							</Box>
 						</Card.Body>
 					</Card.Root>
