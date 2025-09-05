@@ -4,6 +4,7 @@ import {
 	GeneratePaymentOrderModal,
 	LoadExcelGeneratePaymentOrderModal,
 	LoadExcelValidationsModal,
+  ReturnSomePaymentOrders,
 	//LoadExcelValidationsModal,
 } from '@/components/forms/payment_orders';
 import { PaymentOrdersTable } from '@/components/tables/payment_orders';
@@ -12,6 +13,7 @@ import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import {
 	useCancelPaymentOrders,
 	useReadPaymentOrders,
+  useReturnMasivePaymentOrders,
 } from '@/hooks/payment_orders';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import {
@@ -88,14 +90,17 @@ export const PaymentOrdersView = () => {
 	);
 
 	const statusOptions = [
-		{ id: 1, label: 'Pendiente', value: 1 },
-		{ id: 2, label: 'Generado', value: 2 },
-		{ id: 3, label: 'Verificado', value: 3 },
-		{ id: 4, label: 'Expirado', value: 4 },
-		{ id: 5, label: 'Cancelado', value: 5 },
+		{ id: 1, label: 'Pendiente', value: 1, bg: 'orange', },
+		{ id: 2, label: 'Generado', value: 2, bg: 'blue', },
+		{ id: 3, label: 'Verificado', value: 3, bg: 'green', },
+		{ id: 4, label: 'Expirado', value: 4, bg: 'red', },
+		{ id: 5, label: 'Cancelado', value: 5, bg: 'gray', },
+		{ id: 6, label: 'Devuelto', value: 6, bg: 'purple', },
+		{ id: 7, label: 'Rectificado', value: 7, bg: 'yellow', },
 	];
 
 	const [isMassiveCancelOpen, setIsMassiveCancelOpen] = useState(false);
+  const [isMassiveReturnOpen, setIsMassiveReturnOpen] = useState(false);
 	const [selectedOrderIds, setSelectedOrderIds] = useState([]);
 
 	const addOrderIdToCancel = (orderId) => {
@@ -109,6 +114,7 @@ export const PaymentOrdersView = () => {
 	};
 
 	const { mutateAsync: cancelPaymentOrders } = useCancelPaymentOrders();
+  const { mutateAsync: returnPaymentOrders } = useReturnMasivePaymentOrders();
 
 	const handleMassiveCancel = () => {
 		const payload = {
@@ -133,6 +139,30 @@ export const PaymentOrdersView = () => {
 			},
 		});
 	};
+
+  const handleMassiveReturn = () => {
+    const payload = {
+			payment_order_ids: selectedOrderIds,
+		};
+
+		returnPaymentOrders(payload, {
+			onSuccess: () => {
+				toaster.create({
+					title: 'Ordenes devueltas con éxito',
+					type: 'success',
+				});
+				fetchPaymentOrders();
+				setIsMassiveReturnOpen(false);
+				setSelectedOrderIds([]);
+			},
+			onError: (error) => {
+				toaster.create({
+					title: error.message || 'Error al devolver las ordenes',
+					type: 'error',
+				});
+			},
+		});
+  }
 
 	return (
 		<Stack gap={4}>
@@ -224,7 +254,7 @@ export const PaymentOrdersView = () => {
 			</Card.Root>
 
 			<Box display='flex' justifyContent='flex-end' gap={2}>
-				{isMassiveCancelOpen && (
+				{(isMassiveCancelOpen || isMassiveReturnOpen) && (
 					<>
 						<Tooltip
 							content='Seleccinar todos'
@@ -261,29 +291,54 @@ export const PaymentOrdersView = () => {
 								<FaTimes />
 							</IconButton>
 						</Tooltip>
-						<CancelSomePaymentOrders
-							selectedOrderIds={selectedOrderIds}
-							onCancel={handleMassiveCancel}
-						/>
+            {isMassiveCancelOpen && (
+              <CancelSomePaymentOrders
+                selectedOrderIds={selectedOrderIds}
+                onCancel={handleMassiveCancel}
+                />
+            )}
+            {isMassiveReturnOpen && (
+              <ReturnSomePaymentOrders
+                selectedOrderIds={selectedOrderIds}
+                onReturn={handleMassiveReturn}
+              />
+            )}
 					</>
 				)}
-				<Button
-					bg={isMassiveCancelOpen ? 'red.500' : 'uni.secondary'}
-					color='white'
-					size='xs'
-					w={{ base: 'full', sm: 'auto' }}
-					onClick={
-						isMassiveCancelOpen
-							? () => setIsMassiveCancelOpen(false)
-							: () => setIsMassiveCancelOpen(true)
-					}
-				>
-					{!isMassiveCancelOpen ? 'Cancelar varias ordenes' : 'Cancelar'}
-				</Button>
+				{!isMassiveReturnOpen && (
+          <Button
+            bg={isMassiveCancelOpen ? 'red.500' : 'uni.secondary'}
+            color='white'
+            size='xs'
+            w={{ base: 'full', sm: 'auto' }}
+            onClick={
+              isMassiveCancelOpen
+                ? () => setIsMassiveCancelOpen(false)
+                : () => setIsMassiveCancelOpen(true)
+            }
+          >
+            {!isMassiveCancelOpen ? 'Cancelar varias ordenes' : 'Cancelar'}
+          </Button>
+        )}
+        {!isMassiveCancelOpen && (
+          <Button
+            bg={isMassiveReturnOpen ? 'red.500' : 'uni.secondary'}
+            color='white'
+            size='xs'
+            w={{ base: 'full', sm: 'auto' }}
+            onClick={
+              isMassiveReturnOpen
+              ? () => setIsMassiveReturnOpen(false)
+              : () => setIsMassiveReturnOpen(true)
+            }
+            >
+            {!isMassiveReturnOpen ? 'Devolver varias ordenes' : 'Cancelar'}
+          </Button>
+        )}
 			</Box>
 
 			<PaymentOrdersTable
-				isSelected={isMassiveCancelOpen}
+				isSelected={isMassiveCancelOpen || isMassiveReturnOpen}
 				selectedOrderIds={selectedOrderIds}
 				addOrderIdToCancel={addOrderIdToCancel}
 				isLoading={loadingPaymentOrders}
@@ -293,6 +348,7 @@ export const PaymentOrdersView = () => {
 				isFetchingNext={isFetchingNextPagePaymentOrders}
 				refetch={fetchPaymentOrders}
 				permissions={permissions}
+        statusOptions={statusOptions}
 			/>
 		</Stack>
 	);

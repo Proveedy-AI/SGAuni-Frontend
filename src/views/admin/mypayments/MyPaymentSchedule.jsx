@@ -40,6 +40,10 @@ export const MyPaymentSchedule = () => {
 	const { data: dataMyEnrollments, isLoading: isLoadingEnrollment } =
 		useReadMyEnrollments();
 
+  const filteredEnrollments = dataMyEnrollments?.filter(
+    (enrollment) => enrollment.status === 5
+  ) || [];
+
 	/*const dataInstallments = {
 		results: [
 			{
@@ -123,7 +127,7 @@ export const MyPaymentSchedule = () => {
 				<Card.Body>
 					<Box overflowX='auto'>
 						<StudentScheduleTable
-							data={dataMyEnrollments}
+							data={filteredEnrollments}
 							isLoading={isLoadingEnrollment}
 						/>
 					</Box>

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
-import { memo, useState } from 'react';
-import { Badge, Box, Group, HStack, Table } from '@chakra-ui/react';
-import { Pagination } from '@/components/ui';
+import { memo, useRef, useState } from 'react';
+import { Badge, Box, Group, HStack, IconButton, Table, Text } from '@chakra-ui/react';
+import { Modal, Pagination, toaster } from '@/components/ui';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 //import { useNavigate } from 'react-router';
@@ -14,35 +14,38 @@ import {
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { usePaginatedInfiniteData } from '@/components/navigation';
 import useSortedData from '@/utils/useSortedData';
+import { FaTimes } from 'react-icons/fa';
+import { useUpdatePaymentRequest } from '@/hooks/payment_requests';
 
 const Row = memo(
-	({ item, startIndex, index, permissions, sortConfig, data, fetchData }) => {
-		const statusDisplay = [
-			{
-				id: 1,
-				label: 'Pendiente',
-				value: 'Pending',
-				bg: 'orange',
-			},
-			{
-				id: 2,
-				label: 'Generado',
-				value: 'Available',
-				bg: 'blue',
-			},
-			{
-				id: 3,
-				label: 'Verificado',
-				value: 'Verified',
-				bg: 'green',
-			},
-			{
-				id: 4,
-				label: 'Expirado',
-				value: 'Expired',
-				bg: 'red',
-			},
-		];
+	({ item, startIndex, index, permissions, sortConfig, data, fetchData, statusOptions }) => {
+    const contentRef = useRef();
+    const [open, setOpen] = useState(false);
+    const { mutate: update, isPending: loadingUpdate } = useUpdatePaymentRequest();
+
+    const handleUpdate = () => {
+      const payload = {
+        status: 5
+      }
+
+      update({id: item?.id, payload}, {
+        onSuccess: () => {
+          toaster.create({
+            title: 'Estado de solicitud actualizada',
+            type: 'success'
+          })
+          setOpen(false);
+          fetchData();
+        },
+        onError: () => {
+          toaster.create({
+            title: 'Hubo un error al cambiar estado de solicitud',
+            type: 'error',
+          })
+        }
+      })
+    }
+    
 
 		return (
 			<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
@@ -67,10 +70,10 @@ const Row = memo(
 				<Table.Cell textAlign='center'>
 					<Badge
 						colorPalette={
-							statusDisplay.find((status) => status.id === item.status)?.bg
+							statusOptions.find((status) => status.id === item.status)?.bg
 						}
 					>
-						{statusDisplay.find((status) => status.id === item.status)?.label ||
+						{statusOptions.find((status) => status.id === item.status)?.label ||
 							'N/A'}
 					</Badge>
 				</Table.Cell>
@@ -87,6 +90,26 @@ const Row = memo(
 									permissions={permissions}
 								/>
 							)}
+              {permissions.includes('payment.requests.view') && (
+                <Modal
+                  title='Cambiar estado de solicitud'
+                  placement='center'
+                  trigger={
+                    <IconButton size='xs' bg="red.500">
+                      <FaTimes />
+                    </IconButton>
+                  }
+                  size='xl'
+                  onSave={handleUpdate}
+                  saveLabel="Aceptar"
+                  loading={loadingUpdate}
+                  open={open}
+                  onOpenChange={(e) => setOpen(e.open)}
+                  contentRef={contentRef}
+                >
+                  <Text>¿Estás seguro de que desea cancelar el estado de esta solicitud?</Text>
+                </Modal>
+              )}
 						</Group>
 					</HStack>
 				</Table.Cell>
@@ -105,6 +128,7 @@ Row.propTypes = {
 	sortConfig: PropTypes.object,
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
+  statusOptions: PropTypes.array
 };
 
 export const PaymentRequestsTable = ({
@@ -116,6 +140,7 @@ export const PaymentRequestsTable = ({
 	totalCount,
 	fetchNextPage,
 	hasNextPage,
+  statusOptions
 }) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [sortConfig, setSortConfig] = useState(null);
@@ -253,6 +278,7 @@ export const PaymentRequestsTable = ({
 									permissions={permissions}
 									sortConfig={sortConfig}
 									data={data}
+                  statusOptions={statusOptions}
 								/>
 							))
 						) : (
@@ -289,5 +315,6 @@ PaymentRequestsTable.propTypes = {
 	totalCount: PropTypes.number,
 	fetchNextPage: PropTypes.func,
 	hasNextPage: PropTypes.bool,
-	fetchData: PropTypes.func
+	fetchData: PropTypes.func,
+  statusOptions: PropTypes.array
 };

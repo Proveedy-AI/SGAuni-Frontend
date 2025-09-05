@@ -42,14 +42,16 @@ export const ViewCourseGroupsModal = ({ item, hasView }) => {
           <Box
             bg={{ base: 'white', _dark: 'its.gray.500' }}
             p='3'
+            border='1px solid'
+            borderColor="gray.200"
             borderRadius='2px'
             overflow='hidden'
-            boxShadow='sm'
           >
-            <Table.ScrollArea>
-              <Table.Root size='sm' w='full'>
+            <Table.ScrollArea borderRadius='2px'>
+              <Table.Root size='sm' w='full' boxShadow='xs'>
                 <Table.Header>
                   <Table.Row bg='gray.100'>
+                    <Table.ColumnHeader>N°</Table.ColumnHeader>
                     <Table.ColumnHeader>Codigo de Grupo</Table.ColumnHeader>
                     <Table.ColumnHeader>Docente</Table.ColumnHeader>
                   </Table.Row>
@@ -65,6 +67,7 @@ export const ViewCourseGroupsModal = ({ item, hasView }) => {
                       bg={ index % 2 === 0 ? 'white' : 'gray.100' }
                       _hover={{ bg: 'blue.200', cursor: 'pointer' }}
                     >
+                      <Table.Cell>{index + 1}</Table.Cell>
                       <Table.Cell>{group.group_code}</Table.Cell>
                       <Table.Cell>{group.teacher_name}</Table.Cell>
                     </Table.Row>

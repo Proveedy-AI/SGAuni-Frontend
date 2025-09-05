@@ -60,11 +60,13 @@ export const FractionateDebt = ({ countDebts }) => {
 	}, [dataMyEnrollment]);
 
 	const programOptions =
-		dataMyEnrollment?.map((enrollment) => ({
-			value: enrollment.program_id,
-			label: enrollment.program_name + ' - ' + enrollment.program_period,
-			enrollment: enrollment.id,
-		})) || [];
+		dataMyEnrollment
+      ?.filter(enrollment => enrollment.status === 3)
+      ?.map((enrollment) => ({
+			  value: enrollment.program_id,
+			  label: enrollment.program_name + ' - ' + enrollment.program_period,
+			  enrollment: enrollment.id,
+		  })) || [];
 
 	const { mutate: fractionateDebt } = useCreatePaymentPlansDebts();
 
@@ -113,16 +115,16 @@ export const FractionateDebt = ({ countDebts }) => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		setDisableUpload(true);
 		if (!validate()) {
-			toaster.create({
-				title: 'Campos incompletos',
+      toaster.create({
+        title: 'Campos incompletos',
 				description: 'Debe ingresar todos los campos',
 				type: 'warning',
 			});
 			return;
 		}
-
+    
+    setDisableUpload(true);
 		let s3Url = fractionateDebtPath;
 		try {
 			// Solo subir a S3 si hay un archivo nuevo

@@ -1,7 +1,7 @@
 //import { UpdateSettingsCountryForm } from '@/components/forms';
-import { UpdateContractsForm } from '@/components/forms';
+import { UpdateContractsForm, ViewSignedContract, ViewTemplateDocs } from '@/components/forms';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
-import { ConfirmModal, Pagination, toaster } from '@/components/ui';
+import { ConfirmModal, Pagination, toaster, Tooltip } from '@/components/ui';
 import { formatDateString } from '@/components/ui/dateHelpers';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { SortableHeader } from '@/components/ui/SortableHeader';
@@ -74,27 +74,38 @@ const Row = memo(
 						: ''}
 				</Table.Cell>
 				<Table.Cell>
-					<a
-						href={item.path_contract}
-						target='_blank'
-						rel='noopener noreferrer'
-						style={{ color: '#3182ce', textDecoration: 'underline' }}
-					>
-						Ver contrato
-					</a>
-				</Table.Cell>
-				<Table.Cell>
 					<HStack>
+            {
+              (permissions?.includes('contracts.list.view') ||
+              permissions?.includes('contracts.mylist.view')) && (
+                <ViewTemplateDocs data={item} />
+              )
+            }
 						{permissions?.includes('contracts.list.edit') && (
 							<UpdateContractsForm data={item} fetchData={fetchData} />
 						)}
+            {
+              (permissions?.includes('contracts.list.view') ||
+              permissions?.includes('contracts.mylist.view')) && (
+                <ViewSignedContract data={item} />
+              )
+            }
 						{permissions?.includes('contracts.list.delete') && (
 							<ConfirmModal
 								placement='center'
 								trigger={
-									<IconButton colorPalette='red' size='xs'>
-										<FiTrash2 />
-									</IconButton>
+                   <Box>
+                      <Tooltip
+                        content='Eliminar contrato'
+                        positioning={{ placement: 'bottom-center' }}
+                        showArrow
+                        openDelay={0}
+                      >
+                        <IconButton colorPalette='red' size='xs'>
+                          <FiTrash2 />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
 								}
 								open={open}
 								onOpenChange={(e) => setOpen(e.open)}
@@ -195,7 +206,6 @@ export const ContractsListTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader>Contrato</Table.ColumnHeader>
 							<Table.ColumnHeader>Acciones</Table.ColumnHeader>
 						</Table.Row>
 					</Table.Header>

@@ -18,6 +18,7 @@ const Row = memo(({ item, startIndex, index, sortConfig, data }) => {
 					: startIndex + index + 1}
 			</Table.Cell>
 			<Table.Cell>{item.student_full_name}</Table.Cell>
+			<Table.Cell>{item.program}</Table.Cell>
 			<Table.Cell>{item.founding_source_display}</Table.Cell>
 			<Table.Cell>{item.type}</Table.Cell>
 			<Table.Cell>{item.discount_percentage * 100}%</Table.Cell>
@@ -92,7 +93,7 @@ export const BenefitsTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='30%'>
+							<Table.ColumnHeader w='25%'>
 								<SortableHeader
 									label='Estudiante'
 									columnKey='student_full_name'
@@ -100,7 +101,15 @@ export const BenefitsTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='35%'>
+              <Table.ColumnHeader w='25%'>
+								<SortableHeader
+									label='Programa'
+									columnKey='program'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+							<Table.ColumnHeader w='15%'>
 								<SortableHeader
 									label='Fuente'
 									columnKey='founding_source_display'

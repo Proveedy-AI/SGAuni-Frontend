@@ -25,16 +25,9 @@ const Row = memo(
 		permissions,
 		sortConfig,
 		data,
+    statusOptions
 	}) => {
-		const statusDisplay = [
-			{ id: 1, label: 'Pendiente', bg: 'orange', color: '#F5F5F5' },
-			{ id: 2, label: 'Generado', bg: 'blue', color: '#0661D8' },
-			{ id: 3, label: 'Verificado', bg: 'green', color: '#2D9F2D' },
-			{ id: 4, label: 'Expirado', bg: 'red', color: '#E0383B' },
-			{ id: 5, label: 'Cancelado', bg: 'red', color: '#B0B0B0' },
-		];
-
-		const selectedStatus = statusDisplay.find(
+		const selectedStatus = statusOptions?.find(
 			(status) => status.id === item.status
 		);
 		return (
@@ -105,6 +98,7 @@ Row.propTypes = {
 	index: PropTypes.number,
 	sortConfig: PropTypes.object,
 	data: PropTypes.array,
+  statusOptions: PropTypes.array
 };
 
 export const PaymentOrdersTable = ({
@@ -118,6 +112,7 @@ export const PaymentOrdersTable = ({
 	fetchNextPage,
 	hasNextPage,
 	isFetchingNextPage,
+  statusOptions,
 }) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [sortConfig, setSortConfig] = useState(null);
@@ -246,6 +241,7 @@ export const PaymentOrdersTable = ({
 									permissions={permissions}
 									sortConfig={sortConfig}
 									data={data}
+                  statusOptions={statusOptions}
 								/>
 							))
 						) : (
@@ -285,4 +281,5 @@ PaymentOrdersTable.propTypes = {
 	fetchNextPage: PropTypes.func,
 	hasNextPage: PropTypes.bool,
 	isFetchingNextPage: PropTypes.bool,
+  statusOptions: PropTypes.array,
 };

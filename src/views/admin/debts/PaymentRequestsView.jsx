@@ -118,10 +118,13 @@ export const PaymentRequestsView = () => {
 	];
 
 	const statusOptions = [
-		{ id: 1, label: 'Pendiente', value: 1 },
-		{ id: 2, label: 'Generado', value: 2 },
-		{ id: 3, label: 'Verificado', value: 3 },
-		{ id: 4, label: 'Expirado', value: 4 },
+		{ id: 1, label: 'Pendiente', value: 1, bg: 'orange', },
+		{ id: 2, label: 'Generado', value: 2, bg: 'blue', },
+		{ id: 3, label: 'Verificado', value: 3, bg: 'green', },
+		{ id: 4, label: 'Expirado', value: 4, bg: 'red', },
+		{ id: 5, label: 'Cancelado', value: 5, bg: 'gray', },
+		{ id: 6, label: 'Devuelto', value: 6, bg: 'purple', },
+		{ id: 7, label: 'Rectificado', value: 7, bg: 'yellow', },
 	];
 
 	// Ya no necesitamos filtrar aquí porque el backend lo hace
@@ -251,6 +254,7 @@ export const PaymentRequestsView = () => {
 				hasNextPage={hasNextPagePaymentRequests}
 				isFetchingNext={isFetchingNextPagePaymentRequests}
 				permissions={permissions}
+        statusOptions={statusOptions}
 			/>
 		</Stack>
 	);
