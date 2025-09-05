@@ -214,11 +214,9 @@ export const CreateAndFilterUser = ({
 					/>
 				</InputGroup>
 				<Button
-					fontSize='16px'
-					minWidth='150px'
+          size='sm'
 					color='white'
-					background='#711610'
-					borderRadius={8}
+					bg='uni.secondary'
 					onClick={() => handleOpenModal('create')}
 				>
 					<HiPlus size={12} /> Crear usuario

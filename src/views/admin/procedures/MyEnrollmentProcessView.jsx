@@ -26,6 +26,7 @@ import { StartEnrollmentProcessModal } from '@/components/modals/procedures';
 import { useNavigate } from 'react-router';
 import { Encryptor } from '@/components/CrytoJS/Encryptor';
 import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
+import { useReadMyPrograms } from '@/hooks/person/useReadMyPrograms';
 
 const EnrollmentCard = ({ enrollment, onStartEnrollment }) => {
 	const cardBg = useColorModeValue('white', 'gray.800');
@@ -141,8 +142,11 @@ export const MyEnrollmentProcessView = () => {
 	const { data: myEnrollments, isLoading: isLoadingEnrollments } =
 		useReadMyEnrollments();
 
+  const { data: MyPrograms } = useReadMyPrograms();
+  console.log('MyPrograms', MyPrograms);
+
 	const eligibleEnrollments = myEnrollments?.filter(
-		(enrollment) => enrollment.status === 4 || enrollment.status === 2
+		(enrollment) => enrollment.status === 4
 	);
 	const bgColor = useColorModeValue('blue.50', 'blue.900');
 

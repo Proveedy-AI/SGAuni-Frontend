@@ -40,6 +40,16 @@ export const GeneratePaymentOrderModalByRequest = ({
 	item,
 	permissions,
 }) => {
+  const statusOptions = [
+		{ id: 1, label: 'Pendiente', value: 1, bg: 'orange', },
+		{ id: 2, label: 'Generado', value: 2, bg: 'blue', },
+		{ id: 3, label: 'Verificado', value: 3, bg: 'green', },
+		{ id: 4, label: 'Expirado', value: 4, bg: 'red', },
+		{ id: 5, label: 'Cancelado', value: 5, bg: 'gray', },
+		{ id: 6, label: 'Devuelto', value: 6, bg: 'purple', },
+		{ id: 7, label: 'Rectificado', value: 7, bg: 'yellow', },
+	];
+
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 	const { mutateAsync: generatePaymentOrder, isPending } =
@@ -501,6 +511,7 @@ export const GeneratePaymentOrderModalByRequest = ({
 									data={sortedFilteredOrders}
 									refetch={fetchPaymentOrders}
 									permissions={permissions}
+                  statusOptions={statusOptions}
 								/>
 							</Card.Body>
 						</Card.Root>

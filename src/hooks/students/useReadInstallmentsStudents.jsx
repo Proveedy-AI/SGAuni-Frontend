@@ -5,7 +5,7 @@ export const useReadInstallmentsStudents = (uuid, options = {}) => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useQuery({
-		queryKey: ['students-installments'],
+		queryKey: ['students-installments', uuid],
 		queryFn: async () => {
 			const res = await axiosPrivate.get(
 				`/api/v1/students/installments/${uuid}/`

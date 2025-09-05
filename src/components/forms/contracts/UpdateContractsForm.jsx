@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
-import { IconButton, Stack } from '@chakra-ui/react';
-import { Field, Modal, toaster } from '@/components/ui';
+import { Box, IconButton, Stack } from '@chakra-ui/react';
+import { Field, Modal, toaster, Tooltip } from '@/components/ui';
 import { FiEdit2 } from 'react-icons/fi';
 import { useUpdateContracts } from '@/hooks/contracts';
 import { useReadUsers } from '@/hooks/users';
@@ -107,9 +107,18 @@ export const UpdateContractsForm = ({ data, fetchData }) => {
 			title='Editar Contrato'
 			placement='center'
 			trigger={
-				<IconButton colorPalette='cyan' size='xs'>
-					<FiEdit2 />
-				</IconButton>
+        <Box>
+          <Tooltip
+            content='Editar contrato'
+            positioning={{ placement: 'bottom-center' }}
+            showArrow
+            openDelay={0}
+          >
+            <IconButton colorPalette='cyan' size='xs'>
+              <FiEdit2 />
+            </IconButton>
+          </Tooltip>
+        </Box>
 			}
 			onSave={handleSubmitData}
 			loading={disableUpload}

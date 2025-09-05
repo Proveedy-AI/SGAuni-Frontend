@@ -14,12 +14,13 @@ import {
 import { formatDateString } from '@/components/ui/dateHelpers';
 import { useReadInstallmentsStudents } from '@/hooks/students/useReadInstallmentsStudents';
 import { FiCalendar } from 'react-icons/fi';
+import SkeletonTable from '@/components/ui/SkeletonTable';
 
 export const ViewInstallmentsPaymentsModal = ({ item }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 
-	const { data: Installments } = useReadInstallmentsStudents(item.uuid, {
+	const { data: Installments, isLoading: loadingInstallments } = useReadInstallmentsStudents(item.uuid, {
 		enabled: open,
 	});
 
@@ -79,7 +80,7 @@ export const ViewInstallmentsPaymentsModal = ({ item }) => {
 										color='green.700'
 										borderColor='green.200'
 									>
-										{Installments?.results?.length || 0} Cuotas
+										{Installments?.length || 0} Cuotas
 									</Badge>
 								</Flex>
 							</Flex>
@@ -98,7 +99,11 @@ export const ViewInstallmentsPaymentsModal = ({ item }) => {
 							</Table.Header>
 
 							<Table.Body>
-								{Installments?.results?.map((item, index) => {
+								{ loadingInstallments ? (
+                  <SkeletonTable columns={5} />
+                ) : !loadingInstallments && 
+                  Installments?.length > 0 ?
+                  Installments?.map((item, index) => {
 									const { colorScheme, label } = getStatusBadgeProps(
 										item.status
 									);
@@ -114,17 +119,16 @@ export const ViewInstallmentsPaymentsModal = ({ item }) => {
 												<Badge colorPalette={colorScheme}>{label}</Badge>
 											</Table.Cell>
 											<Table.Cell>{formatDateString(item.due_date)}</Table.Cell>
-											<Table.Cell>{formatDateString(item.paid_at)}</Table.Cell>
+											<Table.Cell>{item.paid_at ? formatDateString(item.paid_at) : 'No pagado'}</Table.Cell>
 										</Table.Row>
 									);
-								})}
-								{Installments?.results?.length === 0 && (
-									<Table.Row>
-										<Table.Cell colSpan={5} textAlign='center'>
-											Sin datos disponibles
-										</Table.Cell>
-									</Table.Row>
-								)}
+								}) : (
+                  <Table.Row>
+                    <Table.Cell colSpan={5} textAlign='center'>
+                      Plan de pagos no encontrado para esta matrícula
+                    </Table.Cell>
+                  </Table.Row>
+                )}
 							</Table.Body>
 						</Table.Root>
 					</Card.Body>

@@ -75,8 +75,9 @@ export const EnrollmentStudent = ({
 							direction={{ base: 'column', sm: 'row' }}
 							spacing={{ base: 2, md: 4 }}
 							w={{ base: 'full', md: 'auto' }}
+              overflow={{ base: 'auto', md: 'hidden' }}
 						>
-							<Box flex='1' minW={{ base: 'full', sm: '200px', md: '550px' }}>
+							<Box flex='1' minW={{ base: 'full', sm: '200px', md: '400px' }}>
 								<ReactSelect
 									placeholder='Filtrar por programa...'
 									value={selectProgram}
