@@ -60,11 +60,13 @@ export const FractionateDebt = ({ countDebts }) => {
 	}, [dataMyEnrollment]);
 
 	const programOptions =
-		dataMyEnrollment?.map((enrollment) => ({
-			value: enrollment.program_id,
-			label: enrollment.program_name + ' - ' + enrollment.program_period,
-			enrollment: enrollment.id,
-		})) || [];
+		dataMyEnrollment
+      ?.filter(enrollment => enrollment.status === 3)
+      ?.map((enrollment) => ({
+			  value: enrollment.program_id,
+			  label: enrollment.program_name + ' - ' + enrollment.program_period,
+			  enrollment: enrollment.id,
+		  })) || [];
 
 	const { mutate: fractionateDebt } = useCreatePaymentPlansDebts();
 
