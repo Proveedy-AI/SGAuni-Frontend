@@ -108,7 +108,7 @@ export const UserTable = ({ fetchUsers, data, handleOpenModal, isLoading }) => {
 												: startIndex + idx + 1}
 										</Table.Cell>
 										<Table.Cell>{item.full_name}</Table.Cell>
-										<Table.Cell>{item.uni_email}</Table.Cell>
+										<Table.Cell>{item.uni_email || '-'}</Table.Cell>
 										<Table.Cell>
 											{item.roles.length > 0 ? (
 												<HStack spacing={1} wrap='wrap'>
