@@ -58,6 +58,7 @@ const Row = memo(
 				</Table.Cell>
 
 				<Table.Cell>{item.program_period}</Table.Cell>
+				<Table.Cell>{item.cycle}</Table.Cell>
 				<Table.Cell>{item.program_name}</Table.Cell>
 				<Table.Cell>
 					{item.is_first_enrollment ? (
@@ -143,6 +144,15 @@ export const StudentTuitionTable = ({
 								/>
 							</Table.ColumnHeader>
 
+              <Table.ColumnHeader w='10%'>
+								<SortableHeader
+									label='Ciclo'
+									columnKey='cycle'
+									sortConfig={sortConfig}
+									onSort={setSortConfig}
+								/>
+							</Table.ColumnHeader>
+
 							<Table.ColumnHeader w='20%'>
 								<SortableHeader
 									label='Programa'
@@ -151,7 +161,7 @@ export const StudentTuitionTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='10%'>
+							<Table.ColumnHeader w='5%'>
 								<SortableHeader
 									label='Primera Inscripción'
 									columnKey='is_first_enrollment'
@@ -159,7 +169,7 @@ export const StudentTuitionTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
-							<Table.ColumnHeader w='15%'>
+							<Table.ColumnHeader w='10%'>
 								<SortableHeader
 									label='Estado'
 									columnKey='status_display'
