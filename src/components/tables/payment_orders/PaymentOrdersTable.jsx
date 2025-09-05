@@ -27,7 +27,7 @@ const Row = memo(
 		data,
     statusOptions
 	}) => {
-		const selectedStatus = statusOptions.find(
+		const selectedStatus = statusOptions?.find(
 			(status) => status.id === item.status
 		);
 		return (
