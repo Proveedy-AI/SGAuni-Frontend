@@ -113,16 +113,16 @@ export const FractionateDebt = ({ countDebts }) => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		setDisableUpload(true);
 		if (!validate()) {
-			toaster.create({
-				title: 'Campos incompletos',
+      toaster.create({
+        title: 'Campos incompletos',
 				description: 'Debe ingresar todos los campos',
 				type: 'warning',
 			});
 			return;
 		}
-
+    
+    setDisableUpload(true);
 		let s3Url = fractionateDebtPath;
 		try {
 			// Solo subir a S3 si hay un archivo nuevo

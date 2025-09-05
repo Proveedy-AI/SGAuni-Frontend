@@ -273,7 +273,7 @@ export const SettingsCountries = () => {
 						<SettingsProvinceTable
 							isLoading={loadingProvince}
 							data={filteredProvinces}
-							dataDepartments={dataDepartments?.results}
+							dataDepartments={dataDepartments}
 							fetchData={fetchProvince}
 						/>
 					</Stack>

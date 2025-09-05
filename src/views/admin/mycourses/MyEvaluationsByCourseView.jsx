@@ -172,9 +172,15 @@ export const MyEvaluationsByCourseView = () => {
             <Text fontSize="sm" color="gray.500" fontWeight="medium">
               Estado del Curso
             </Text>
-            <Text textAlign="end" fontSize="xl" fontWeight="bold" color={data?.final_grade >= 10.5 ? "blue.700" : "red.600"}>
-              {data?.final_grade >= 10.5 ? "Aprobado" : "Desaprobado"}
-            </Text>
+            {data?.final_grade ? (
+              <Text textAlign="end" fontSize="xl" fontWeight="bold" color={data?.final_grade >= 10.5 ? "blue.700" : "red.600"}>
+                {data?.final_grade >= 10.5 ? "Aprobado" : "Desaprobado"}
+              </Text>
+            ) : (
+              <Text textAlign="end" fontSize="xl" fontWeight="bold" color="gray.600">
+                Pendiente
+              </Text>
+            )}
           </Flex>
         </SimpleGrid>
       </Card.Root>
