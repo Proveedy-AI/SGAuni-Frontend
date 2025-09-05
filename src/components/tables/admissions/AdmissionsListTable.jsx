@@ -126,6 +126,7 @@ const Row = memo(
 								onOpenChange={(e) => setOpenCopy(e.open)}
 								onConfirm={() => handleCopy(item.id)}
 								loading={LoadingcopyAdmissions}
+                confirmLabel='Si, Duplicar'
 							>
 								<Text>
 									¿Estás seguro que quieres duplicar el proceso
