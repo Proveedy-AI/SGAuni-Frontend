@@ -5,8 +5,9 @@ import { useRef, useState } from "react";
 import { Box, Card, Flex, Icon, IconButton, Input, Stack, Textarea } from '@chakra-ui/react';
 import { HiPencil } from 'react-icons/hi2';
 import { FiBookOpen } from 'react-icons/fi';
+import { ReactSelect } from '@/components/select';
 
-export const EditCourseModal = ({ data, item, fetchData }) => {
+export const EditCourseModal = ({ data, item, fetchData, levelOptions }) => {
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
   
@@ -14,7 +15,7 @@ export const EditCourseModal = ({ data, item, fetchData }) => {
   const [name, setName] = useState(item?.name || '');
   const [description, setDescription] = useState(item?.description || '');
   const [defaultCredits, setDefaultCredits] = useState(item?.default_credits || '');
-  const [level, setLevel] = useState(item?.level || '');
+  const [level, setLevel] = useState(levelOptions.find(option => option.value === item?.level) || null);
 
   const { mutate: update, isPending: loading } = useUpdateCourse();
 
@@ -57,7 +58,7 @@ export const EditCourseModal = ({ data, item, fetchData }) => {
       name: name,
       code: code,
       default_credits: defaultCredits,
-      level: level,
+      level: level?.value,
     };
 
     update({ id: item.id, payload}, {
@@ -191,10 +192,14 @@ export const EditCourseModal = ({ data, item, fetchData }) => {
                 errorText={errors.level}
                 required
               >
-                <Input
+                <ReactSelect
+                  name='level'
+                  options={levelOptions}
+                  placeholder='Selecciona el nivel'
                   value={level}
-                  onChange={(event) => setLevel(event.target.value)}
-                  size='xs'
+                  onChange={setLevel}
+                  isClearable
+                  size='sm'
                 />
               </Field>
             </Flex>
@@ -210,4 +215,5 @@ EditCourseModal.propTypes = {
   data: PropTypes.array,
   item: PropTypes.object,
   fetchData: PropTypes.func,
+  levelOptions: PropTypes.array,
 };

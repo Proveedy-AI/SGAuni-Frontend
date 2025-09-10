@@ -20,7 +20,7 @@ const Row = memo(
 		index,
 		sortConfig,
 		data,
-		//professorsOptions,
+		levelOptions,
 	}) => {
 		return (
 			<Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
@@ -38,13 +38,7 @@ const Row = memo(
 					<HStack justify='space-between'>
 						<Group>
 							<ViewCourseModal item={item} />
-							<EditCourseModal data={data} item={item} fetchData={fetchData} />
-							{/*<AssingProfessorModal
-								data={data}
-								item={item}
-								fetchData={fetchData}
-								professorsOptions={professorsOptions}
-							/>*/}
+							<EditCourseModal data={data} item={item} fetchData={fetchData} levelOptions={levelOptions} />
 						</Group>
 					</HStack>
 				</Table.Cell>
@@ -62,14 +56,14 @@ Row.propTypes = {
 	index: PropTypes.number,
 	sortConfig: PropTypes.object,
 	data: PropTypes.array,
-	//professorsOptions: PropTypes.array,
+	levelOptions: PropTypes.array,
 };
 
 export const CoursesTable = ({
 	data,
 	fetchData,
 	isLoading,
-	//professorsOptions,
+  levelOptions
 }) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [currentPage, setCurrentPage] = useState(1);
@@ -147,7 +141,7 @@ export const CoursesTable = ({
 									fetchData={fetchData}
 									startIndex={startIndex}
 									index={index}
-									//professorsOptions={professorsOptions}
+									levelOptions={levelOptions}
 								/>
 							))
 						) : (
@@ -178,5 +172,5 @@ CoursesTable.propTypes = {
 	data: PropTypes.array,
 	fetchData: PropTypes.func,
 	isLoading: PropTypes.bool,
-	//professorsOptions: PropTypes.array,
+  levelOptions: PropTypes.array,
 };
