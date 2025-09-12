@@ -11,7 +11,6 @@ import { AddCoursesToCurriculumMap, PreviewCurriculumMap } from '@/components/fo
 const Row = memo(
   ({
     item,
-    /*fetchData,*/
     startIndex,
     index,
     sortConfig,
@@ -24,12 +23,13 @@ const Row = memo(
             ? data.length - (startIndex + index)
             : startIndex + index + 1}
         </Table.Cell>
-        <Table.Cell>{item.code}</Table.Cell>
-        <Table.Cell>{item.year}</Table.Cell>
-        <Table.Cell>{item.total_courses}</Table.Cell>
+        <Table.Cell>{item.course_code}</Table.Cell>
+        <Table.Cell>{item.course_name}</Table.Cell>
+        <Table.Cell>{item.cycle}</Table.Cell>
+        <Table.Cell>{item.credits}</Table.Cell>
         <Table.Cell textAlign="center">
-          <Badge bg={item.is_current ? 'green.200' : 'red.200'} color={item.is_current ? 'green.500' : 'red.500'}>
-            {item.is_current ? 'Si' : 'No'}
+          <Badge bg={item.credits ? 'green.200' : 'red.200'} color={item.credits ? 'green.500' : 'red.500'}>
+            {item.credits ? 'Si' : 'No'}
           </Badge>
         </Table.Cell>
         <Table.Cell>
@@ -50,16 +50,14 @@ Row.displayName = 'Row';
 Row.propTypes = {
   item: PropTypes.object,
   program: PropTypes.object,
-  fetchData: PropTypes.func,
   startIndex: PropTypes.number,
   index: PropTypes.number,
   sortConfig: PropTypes.object,
   data: PropTypes.array,
 };
 
-export const CurriculumMapsTable = ({
+export const CurriculumMapsCoursesTable = ({
   data,
-  fetchData,
   isLoading,
 }) => {
   const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
@@ -90,32 +88,39 @@ export const CurriculumMapsTable = ({
                   onSort={setSortConfig}
                 />
               </Table.ColumnHeader>
-              <Table.ColumnHeader w='30%'>
+              <Table.ColumnHeader w='35%'>
                 <SortableHeader
                   label='Código'
-                  columnKey='code'
+                  columnKey='course_code'
+                  sortConfig={sortConfig}
+                  onSort={setSortConfig}
+                />
+              </Table.ColumnHeader>
+              <Table.ColumnHeader w='35%'>
+                <SortableHeader
+                  label='Nombre'
+                  columnKey='course_name'
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
                 />
               </Table.ColumnHeader>
               <Table.ColumnHeader w='10%'>
                 <SortableHeader
-                  label='Año'
-                  columnKey='year'
+                  label='Ciclo'
+                  columnKey='cycle'
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
                 />
               </Table.ColumnHeader>
               <Table.ColumnHeader w='10%'>
                 <SortableHeader
-                  label='Cursos'
-                  columnKey='total_courses'
+                  label='Créditos'
+                  columnKey='credits'
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
                 />
               </Table.ColumnHeader>
-              <Table.ColumnHeader w='10%' textAlign="center">Actual</Table.ColumnHeader>
-              <Table.ColumnHeader w='40%' textAlign="center">Acciones</Table.ColumnHeader>
+              <Table.ColumnHeader w='5%' textAlign="center">Obligatorio</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
           <Table.Body>
@@ -128,7 +133,6 @@ export const CurriculumMapsTable = ({
                   item={item}
                   data={data}
                   sortConfig={sortConfig}
-                  fetchData={fetchData}
                   startIndex={startIndex}
                   index={index}
                 />
@@ -158,8 +162,7 @@ export const CurriculumMapsTable = ({
   );
 };
 
-CurriculumMapsTable.propTypes = {
+CurriculumMapsCoursesTable.propTypes = {
   data: PropTypes.array,
-  fetchData: PropTypes.func,
   isLoading: PropTypes.bool,
 };

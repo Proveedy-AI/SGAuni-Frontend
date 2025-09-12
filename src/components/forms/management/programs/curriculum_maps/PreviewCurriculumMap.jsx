@@ -6,9 +6,7 @@ import {
   Stack,
   Text,
   SimpleGrid,
-  Flex,
   Box,
-  Badge,
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 import {
@@ -16,46 +14,22 @@ import {
   HiEye,
 } from 'react-icons/hi2';
 import PropTypes from 'prop-types';
-import { ReactSelect } from '@/components/select';
+import { useReadCurriculumMapsCourses } from '@/hooks/curriculum_maps_courses';
+import { CurriculumMapsCoursesTable } from '@/components/tables/curriculum_maps_courses';
 
 export const PreviewCurriculumMap = ({ item }) => {
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
 
-  // Simulación de cursos de la malla curricular
-  const localCourses = [
-    {
-      id: 1,
-      code: "BIO101",
-      name: "Biología Animal",
-      cycle: "1",
-      pre_requisites: [],
-    },
-    {
-      id: 2,
-      code: "ZOO201",
-      name: "Zoología",
-      cycle: "2",
-      pre_requisites: [
-        { id: 1, name: "Biología Animal", code: "BIO101" },
-      ],
-    },
-    {
-      id: 3,
-      code: "ECO301",
-      name: "Ecología de Fauna",
-      cycle: "3",
-      pre_requisites: [
-        { id: 2, name: "Zoología", code: "ZOO201" },
-      ],
-    },
-  ];
+  const {
+    data: dataCurriculumMapsCourses,
+    isLoading: isLoadingCurriculumMapsCourses,
+  } = useReadCurriculumMapsCourses();
 
-  // Opciones para ReactSelect (prerequisitos)
-  const coursesOptions = localCourses.map((course) => ({
-    value: course.id,
-    label: `${course.code} - ${course.name}`,
-  }));
+  const filteredCoursesByCurriculumMap = dataCurriculumMapsCourses?.results
+    ?.filter(
+      (course) => course.curriculum_map === item.id
+    );
 
   return (
     <Stack css={{ '--field-label-width': '180px' }}>
@@ -75,7 +49,6 @@ export const PreviewCurriculumMap = ({ item }) => {
               </Tooltip>
             </Box>
           }
-          title='🐾 Ver Malla Curricular Animalista'
           placement='center'
           size='6xl'
           open={open}
@@ -95,22 +68,22 @@ export const PreviewCurriculumMap = ({ item }) => {
               >
                 <HiBookOpen size={24} />
                 <Text fontSize='lg' fontWeight='semibold'>
-                  Información del Plan de Estudio
+                  Información de la Malla
                 </Text>
               </Card.Header>
               <Card.Body>
-                <SimpleGrid columns={{ base: 1, sm: 2 }} gap={4}>
-                  <Field label='Código'>
-                    <Input readOnly value={item.code} />
+                <SimpleGrid columns={{ base: 1, md: 5 }} gap={4}>
+                  <Field label='Código' gridColumn={{ base: 'span 1',  md: 'span 2' }}>
+                    <Input readOnly variant="flushed" value={item.code} />
                   </Field>
                   <Field label='Año'>
-                    <Input readOnly value={item.year} />
+                    <Input readOnly variant="flushed" value={item.year} />
                   </Field>
                   <Field label='Total de cursos'>
-                    <Input readOnly value={item.total_courses} />
+                    <Input readOnly variant="flushed" value={item.total_courses} />
                   </Field>
                   <Field label='¿Es actual?'>
-                    <Input readOnly value={item.is_current ? 'Sí' : 'No'} />
+                    <Input readOnly variant="flushed" value={item.is_current ? 'Sí' : 'No'} />
                   </Field>
                 </SimpleGrid>
               </Card.Body>
@@ -130,6 +103,12 @@ export const PreviewCurriculumMap = ({ item }) => {
                 </Text>
               </Card.Header>
               <Card.Body>
+                <CurriculumMapsCoursesTable
+                  data={filteredCoursesByCurriculumMap}
+                  isLoading={isLoadingCurriculumMapsCourses}
+                />
+              </Card.Body>
+              {/* <Card.Body>
                 <Stack spacing={4}>
                   {localCourses.map((course) => (
                     <Box
@@ -168,7 +147,7 @@ export const PreviewCurriculumMap = ({ item }) => {
                     </Box>
                   ))}
                 </Stack>
-              </Card.Body>
+              </Card.Body> */}
             </Card.Root>
           </Stack>
         </ModalSimple>
