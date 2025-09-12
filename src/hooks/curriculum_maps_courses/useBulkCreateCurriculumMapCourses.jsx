@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import useAxiosPrivate from "../axios/useAxiosPrivate";
 
-export const useBulkCreateCurriculumMap = () => {
+export const useBulkCreateCurriculumMapCourses = () => {
   const axiosPrivate = useAxiosPrivate();
 
 	return useMutation({

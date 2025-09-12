@@ -24,6 +24,7 @@ export const PreviewCurriculumMap = ({ item }) => {
   const {
     data: dataCurriculumMapsCourses,
     isLoading: isLoadingCurriculumMapsCourses,
+    refetch: fetchCurriculumMapsCourses,
   } = useReadCurriculumMapsCourses();
 
   const filteredCoursesByCurriculumMap = dataCurriculumMapsCourses?.results
@@ -106,6 +107,7 @@ export const PreviewCurriculumMap = ({ item }) => {
                 <CurriculumMapsCoursesTable
                   data={filteredCoursesByCurriculumMap}
                   isLoading={isLoadingCurriculumMapsCourses}
+                  fetchData={fetchCurriculumMapsCourses}
                 />
               </Card.Body>
               {/* <Card.Body>

@@ -1,2 +1,3 @@
 export * from './useReadCurriculumMapsCourses';
-export * from './useBulkCreateCurriculumMap';
+export * from './useBulkCreateCurriculumMapCourses';
+export * from './useDeleteCurriculumMapCourse';

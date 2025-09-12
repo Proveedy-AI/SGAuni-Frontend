@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
-import { Badge, Box, Table } from '@chakra-ui/react';
-import { Pagination } from '@/components/ui';
+import { Badge, Box, Card, Group, Heading, HStack, IconButton, Table } from '@chakra-ui/react';
+import { ModalSimple, Pagination/*, toaster*/, Tooltip } from '@/components/ui';
 import useSortedData from '@/utils/useSortedData';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import SkeletonTable from '@/components/ui/SkeletonTable';
+import { HiBookOpen/*, HiTrash*/ } from 'react-icons/hi2';
+//import { useDeleteCurriculumMapCourse } from '@/hooks/curriculum_maps_courses';
 
 const Row = memo(
   ({
@@ -14,7 +16,33 @@ const Row = memo(
     index,
     sortConfig,
     data,
+    //fetchData,
   }) => {
+    //const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [viewPreRequisitesModalOpen, setViewPreRequisitesModalOpen] = useState(false);
+
+    //const { mutate: deleteCurriculumMapCourse, isLoading } = useDeleteCurriculumMapCourse();
+
+    // const handleDeleteCourse = () => {
+    //   deleteCurriculumMapCourse(item.id, {
+    //     onSuccess: () => {
+    //       toaster.create({
+    //         title: 'Curso eliminado de la malla curricular',
+    //         type: 'success',
+    //       });
+    //       setDeleteModalOpen(false);
+    //       fetchData();
+    //     },
+    //     onError: (error) => {
+    //       toaster.create({
+    //         title: 'Error al eliminar el curso de la malla curricular',
+    //         description: error?.response?.data?.message || error.message,
+    //         type: 'error',
+    //       });
+    //     }
+    //   });
+    // };
+
     return (
       <Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
         <Table.Cell>
@@ -31,6 +59,68 @@ const Row = memo(
             {item.credits ? 'Si' : 'No'}
           </Badge>
         </Table.Cell>
+        <Table.Cell>
+          <HStack justify='space-between'>
+            <Group>
+              <ModalSimple
+                trigger={
+                  <Box>
+                    <Tooltip
+                      content={item?.prerequisite?.length === 0 ? 'No hay Prerrequisitos' : 'Ver Prerrequisitos'}
+                      positioning={{ placement: 'bottom-center' }}
+                      showArrow
+                      openDelay={0}
+                    >
+                      <IconButton 
+                        colorPalette='blue' 
+                        size='xs'
+                        disabled={item?.prerequisite?.length === 0}
+                      >
+                        <HiBookOpen />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                }
+                placement='center'
+                open={viewPreRequisitesModalOpen}
+                onOpenChange={(e) => setViewPreRequisitesModalOpen(e.open)}
+                size='4xl'
+                hiddenFooter={true}
+              >
+                <Card.Root>
+                  <Card.Header>
+                    <Heading size='lg'>Prerrequisitos del Curso {item.course_code}</Heading>
+                  </Card.Header>
+                  <Card.Body>
+            
+                  </Card.Body>
+                </Card.Root>
+              </ModalSimple>
+              {/* <ModalSimple
+                trigger={
+                  <Box>
+                    <Tooltip
+                      content='Eliminar Curso de la Malla'
+                    >
+                      <IconButton colorPalette='red' size='xs'>
+                        <HiTrash />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                }
+                placement='center'
+                open={deleteModalOpen}
+                onOpenChange={(e) => setDeleteModalOpen(e.open)}
+                size='4xl'
+                onSave={handleDeleteCourse}
+                isLoading={isLoading}
+                saveLabel='Si, Eliminar'
+              >
+
+              </ModalSimple> */}
+            </Group>
+          </HStack>
+        </Table.Cell>
       </Table.Row>
     );
   }
@@ -40,16 +130,17 @@ Row.displayName = 'Row';
 
 Row.propTypes = {
   item: PropTypes.object,
-  program: PropTypes.object,
   startIndex: PropTypes.number,
   index: PropTypes.number,
   sortConfig: PropTypes.object,
   data: PropTypes.array,
+  fetchData: PropTypes.func,
 };
 
 export const CurriculumMapsCoursesTable = ({
   data,
   isLoading,
+  fetchData,
 }) => {
   const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
   const [currentPage, setCurrentPage] = useState(1);
@@ -71,7 +162,7 @@ export const CurriculumMapsCoursesTable = ({
         <Table.Root size='sm' w='full' striped>
           <Table.Header>
             <Table.Row bg={{ base: 'its.100', _dark: 'its.gray.400' }}>
-              <Table.ColumnHeader w='5%'>
+              <Table.ColumnHeader textAlign="center" w='5%'>
                 <SortableHeader
                   label='N°'
                   columnKey='index'
@@ -79,7 +170,7 @@ export const CurriculumMapsCoursesTable = ({
                   onSort={setSortConfig}
                 />
               </Table.ColumnHeader>
-              <Table.ColumnHeader w='35%'>
+              <Table.ColumnHeader textAlign="center" w='25%'>
                 <SortableHeader
                   label='Código'
                   columnKey='course_code'
@@ -87,7 +178,7 @@ export const CurriculumMapsCoursesTable = ({
                   onSort={setSortConfig}
                 />
               </Table.ColumnHeader>
-              <Table.ColumnHeader w='35%'>
+              <Table.ColumnHeader textAlign="center" w='30%'>
                 <SortableHeader
                   label='Nombre'
                   columnKey='course_name'
@@ -95,7 +186,7 @@ export const CurriculumMapsCoursesTable = ({
                   onSort={setSortConfig}
                 />
               </Table.ColumnHeader>
-              <Table.ColumnHeader w='10%'>
+              <Table.ColumnHeader textAlign="center" w='10%'>
                 <SortableHeader
                   label='Ciclo'
                   columnKey='cycle'
@@ -103,15 +194,17 @@ export const CurriculumMapsCoursesTable = ({
                   onSort={setSortConfig}
                 />
               </Table.ColumnHeader>
-              <Table.ColumnHeader w='10%'>
+              <Table.ColumnHeader textAlign="center" w='10%'>
                 <SortableHeader
                   label='Créditos'
                   columnKey='credits'
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
+                  textAlign="center"
                 />
               </Table.ColumnHeader>
-              <Table.ColumnHeader w='5%' textAlign="center">Obligatorio</Table.ColumnHeader>
+              <Table.ColumnHeader textAlign="center" w='5%'>Obligatorio</Table.ColumnHeader>
+              <Table.ColumnHeader textAlign="center" w='15%'>Acciones</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
           <Table.Body>
@@ -126,6 +219,7 @@ export const CurriculumMapsCoursesTable = ({
                   sortConfig={sortConfig}
                   startIndex={startIndex}
                   index={index}
+                  fetchData={fetchData}
                 />
               ))
             ) : (
@@ -156,4 +250,5 @@ export const CurriculumMapsCoursesTable = ({
 CurriculumMapsCoursesTable.propTypes = {
   data: PropTypes.array,
   isLoading: PropTypes.bool,
+  fetchData: PropTypes.func,
 };
