@@ -41,6 +41,7 @@ export const AddCoursesToCurriculumMap = ({ item }) => {
 	const {
 		data: dataCurriculumMapsCourses,
 		isLoading: isLoadingCurriculumMapsCourses,
+    refetch: fetchCurriculumMapsCourses,
 	} = useReadCurriculumMapsCourses();
 
 	const filteredCoursesByCurriculumMap =
@@ -155,6 +156,7 @@ export const AddCoursesToCurriculumMap = ({ item }) => {
 					description: 'Los cursos se han asignado correctamente a la malla.',
 					type: 'success',
 				});
+        fetchCurriculumMapsCourses();
 				setCoursesList([]);
 				setOpen(false);
 			},
@@ -340,11 +342,10 @@ export const AddCoursesToCurriculumMap = ({ item }) => {
 								<Heading size='sm' mb={2} color='gray.600'>
 									Cursos agregados
 								</Heading>
-								{coursesList.length === 0 ? (
-									<Box color='gray.400'>No hay cursos agregados.</Box>
-								) : (
 									<Stack gap={2}>
-										{coursesList.map((c, idx) => {
+										{coursesList.length === 0 && filteredCoursesByCurriculumMap?.length === 0 ? (
+                      <Box color='gray.400'>No hay cursos agregados.</Box>
+                    ) : coursesList.map((c, idx) => {
 											const courseLabel =
 												dataCourses?.results?.find(
 													(dc) => dc.id === c.course_id
@@ -391,8 +392,25 @@ export const AddCoursesToCurriculumMap = ({ item }) => {
 												</Card.Root>
 											);
 										})}
+                    {filteredCoursesByCurriculumMap?.map((fc, idx) => (
+                      <Card.Root key={idx} border='1px solid #e2e8f0' borderRadius='md' bg='blue.50'>
+                        <Flex justify='space-between' align='center' p={2}>
+                          <Box>
+                            <b>{fc.course_name}</b> | Ciclo: {fc.cycle} | Créditos: {fc.credits} |{' '}
+                            {fc.is_mandatory ? 'Obligatorio' : 'Opcional'}
+                            <br />
+                            Prerrequisitos:{' '}
+                            {fc.prerequisite_ids
+                              ?.map((pid) => {
+                                const pre = dataCourses?.results?.find((dc) => dc.id === pid);
+                                return pre ? pre.name : '';
+                              })
+                              .join(', ') || 'Ninguno'}
+                          </Box>
+                        </Flex>
+                      </Card.Root>
+                    ))}
 									</Stack>
-								)}
 							</Box>
 						</SimpleGrid>
 					</Card.Body>

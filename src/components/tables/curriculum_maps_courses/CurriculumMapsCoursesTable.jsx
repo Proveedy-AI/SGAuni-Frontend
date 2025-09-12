@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
 import { Badge, Box, Card, Group, Heading, HStack, IconButton, Table } from '@chakra-ui/react';
-import { ModalSimple, Pagination/*, toaster*/, Tooltip } from '@/components/ui';
+import { ModalSimple, Pagination, toaster, Tooltip } from '@/components/ui';
 import useSortedData from '@/utils/useSortedData';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import SkeletonTable from '@/components/ui/SkeletonTable';
-import { HiBookOpen/*, HiTrash*/ } from 'react-icons/hi2';
-//import { useDeleteCurriculumMapCourse } from '@/hooks/curriculum_maps_courses';
+import { HiBookOpen,HiTrash} from 'react-icons/hi2';
+import { useDeleteCurriculumMapCourse } from '@/hooks/curriculum_maps_courses';
 
 const Row = memo(
   ({
@@ -16,32 +16,32 @@ const Row = memo(
     index,
     sortConfig,
     data,
-    //fetchData,
+    fetchData,
   }) => {
-    //const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [viewPreRequisitesModalOpen, setViewPreRequisitesModalOpen] = useState(false);
 
-    //const { mutate: deleteCurriculumMapCourse, isLoading } = useDeleteCurriculumMapCourse();
+    const { mutate: deleteCurriculumMapCourse, isLoading } = useDeleteCurriculumMapCourse();
 
-    // const handleDeleteCourse = () => {
-    //   deleteCurriculumMapCourse(item.id, {
-    //     onSuccess: () => {
-    //       toaster.create({
-    //         title: 'Curso eliminado de la malla curricular',
-    //         type: 'success',
-    //       });
-    //       setDeleteModalOpen(false);
-    //       fetchData();
-    //     },
-    //     onError: (error) => {
-    //       toaster.create({
-    //         title: 'Error al eliminar el curso de la malla curricular',
-    //         description: error?.response?.data?.message || error.message,
-    //         type: 'error',
-    //       });
-    //     }
-    //   });
-    // };
+    const handleDeleteCourse = () => {
+      deleteCurriculumMapCourse(item.id, {
+        onSuccess: () => {
+          toaster.create({
+            title: 'Curso eliminado de la malla curricular',
+            type: 'success',
+          });
+          setDeleteModalOpen(false);
+          fetchData();
+        },
+        onError: (error) => {
+          toaster.create({
+            title: 'Error al eliminar el curso de la malla curricular',
+            description: error?.response?.data?.message || error.message,
+            type: 'error',
+          });
+        }
+      });
+    };
 
     return (
       <Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
@@ -96,7 +96,7 @@ const Row = memo(
                   </Card.Body>
                 </Card.Root>
               </ModalSimple>
-              {/* <ModalSimple
+              <ModalSimple
                 trigger={
                   <Box>
                     <Tooltip
@@ -117,7 +117,7 @@ const Row = memo(
                 saveLabel='Si, Eliminar'
               >
 
-              </ModalSimple> */}
+              </ModalSimple>
             </Group>
           </HStack>
         </Table.Cell>
