@@ -9,6 +9,7 @@ import { SortableHeader } from '../ui/SortableHeader';
 import { usePaginationSettings } from '../navigation/usePaginationSettings';
 import useSortedData from '@/utils/useSortedData';
 import SkeletonTable from '../ui/SkeletonTable';
+import { ViewCurriculumMaps } from '../forms/management/programs';
 
 const Row = memo(
 	({
@@ -50,6 +51,7 @@ const Row = memo(
 								loadingCoordinators={loadingCoordinators}
 							/>
 							<DeleteProgram item={item} fetchData={fetchData} />
+              <ViewCurriculumMaps item={item} />
 						</Group>
 					</HStack>
 				</Table.Cell>
