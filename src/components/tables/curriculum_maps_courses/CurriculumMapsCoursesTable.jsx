@@ -1,12 +1,11 @@
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
-import { Badge, Box, Group, HStack, Table } from '@chakra-ui/react';
+import { Badge, Box, Table } from '@chakra-ui/react';
 import { Pagination } from '@/components/ui';
 import useSortedData from '@/utils/useSortedData';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import SkeletonTable from '@/components/ui/SkeletonTable';
-import { AddCoursesToCurriculumMap, PreviewCurriculumMap } from '@/components/forms/management/programs/curriculum_maps';
 
 const Row = memo(
   ({
@@ -31,14 +30,6 @@ const Row = memo(
           <Badge bg={item.credits ? 'green.200' : 'red.200'} color={item.credits ? 'green.500' : 'red.500'}>
             {item.credits ? 'Si' : 'No'}
           </Badge>
-        </Table.Cell>
-        <Table.Cell>
-          <HStack justify='space-between'>
-            <Group>
-              <PreviewCurriculumMap item={item} />
-              <AddCoursesToCurriculumMap item={item} />
-            </Group>
-          </HStack>
         </Table.Cell>
       </Table.Row>
     );

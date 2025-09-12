@@ -10,7 +10,6 @@ import {
 import { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { BsBook } from 'react-icons/bs';
-//import { useReadCurriculumMaps } from '@/hooks/curriculum_maps';
 import { CreateCurriculumMaps } from './curriculum_maps';
 import { CurriculumMapsTable } from '@/components/tables/curriculum_maps';
 import { useReadCurriculumMaps } from '@/hooks/curriculum_maps';
@@ -46,7 +45,6 @@ export const ViewCurriculumMaps = ({ item }) => {
 					size='5xl'
 					open={open}
 					onOpenChange={(e) => setOpen(e.open)}
-					onSave={() => {}}
 					hiddenFooter={true}
 					contentRef={contentRef}
 				>
