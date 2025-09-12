@@ -96,7 +96,9 @@ export const CreateCurriculumMaps = ({
 					display='flex'
 					alignItems='center'
 					gap={2}
-					color='blue.500'
+					color='orange.500'
+          fontSize='lg'
+          fontWeight='semibold'
 				>
 					<FiFile size={24} /> Crear Nueva Malla Curricular
 				</Heading>
