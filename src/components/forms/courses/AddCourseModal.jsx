@@ -4,8 +4,9 @@ import { useCreateCourse } from "@/hooks/courses";
 import { useRef, useState } from "react";
 import { FiBookOpen, FiPlus } from 'react-icons/fi';
 import { Card, Flex, Icon, Input, Stack, Textarea } from '@chakra-ui/react';
+import { ReactSelect } from '@/components/select';
 
-export const AddCourseModal = ({ data, fetchData }) => {
+export const AddCourseModal = ({ data, fetchData, levelOptions }) => {
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
   
@@ -13,23 +14,7 @@ export const AddCourseModal = ({ data, fetchData }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [credits, setCredits] = useState('');
-  const [level, setLevel] = useState('');
-  //const [preRequisite, setPreRequisite] = useState([]);
-
-  // const preRequisiteOptions = data
-  //   ?.filter((course) => 
-  //     !preRequisite.some((selected) => selected.value === course.id)
-  //   )
-  //   .map((course) => ({
-  //     value: course.id,
-  //     label: `${course.code} - ${course.name}`,
-  //   }));
-
-  // const handleRequisiteToggle = (id) => {
-	// 	setPreRequisite((prev) =>
-	// 		prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
-	// 	);
-	// };
+  const [level, setLevel] = useState(null);
 
   const [errors, setErrors] = useState({});
 
@@ -75,8 +60,7 @@ export const AddCourseModal = ({ data, fetchData }) => {
       description: description,
       code: code,
       default_credits: credits,
-      level: level,
-      //ids_preRequisite: preRequisite,
+      level: level.value,
     };
 
     register(payload, {
@@ -202,15 +186,19 @@ export const AddCourseModal = ({ data, fetchData }) => {
                   />
                 </Field>
                 <Field
-                  label='Ciclo al que pertenece: (1-10)'
+                  label='Nivel del curso:'
                   invalid={!!errors.level}
 								  errorText={errors.level}
 								  required
                 >
-                  <Input
+                  <ReactSelect
+                    name='level'
+                    options={levelOptions}
+                    placeholder='Selecciona el nivel'
                     value={level}
-                    onChange={(event) => setLevel(event.target.value)}
-                    size='xs'
+                    onChange={setLevel}
+                    isClearable
+                    size='sm'
                   />
                 </Field>
               </Flex>
@@ -268,4 +256,5 @@ export const AddCourseModal = ({ data, fetchData }) => {
 AddCourseModal.propTypes = {
   data: PropTypes.array,
   fetchData: PropTypes.func,
+  levelOptions: PropTypes.array,
 };
