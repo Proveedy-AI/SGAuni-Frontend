@@ -8,7 +8,7 @@ import { usePaginationSettings } from '@/components/navigation/usePaginationSett
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import {
 	AddCoursesToCurriculumMap,
-	//CreateConvalidations,
+	CreateConvalidations,
 	PreviewCurriculumMap,
   UpdateCurriculumMap,
 } from '@/components/forms/management/programs/curriculum_maps';
@@ -44,9 +44,9 @@ const Row = memo(
 					<HStack justify='space-between'>
 						<Group>
 							<PreviewCurriculumMap item={item} />
-							<AddCoursesToCurriculumMap item={item} />
+							<AddCoursesToCurriculumMap item={item} fetchData={fetchData} />
               <UpdateCurriculumMap item={item} fetchData={fetchData} />
-							{/* <CreateConvalidations item={item} /> */}
+							<CreateConvalidations item={item} data={data} fetchData={fetchData} />
 						</Group>
 					</HStack>
 				</Table.Cell>

@@ -91,6 +91,7 @@ const Row = memo(
                   <Card.Header>
                     <Heading size='lg'>Prerrequisitos del Curso {item.course_code}</Heading>
                   </Card.Header>
+                  {/*  */}
                   <Card.Body>
             
                   </Card.Body>

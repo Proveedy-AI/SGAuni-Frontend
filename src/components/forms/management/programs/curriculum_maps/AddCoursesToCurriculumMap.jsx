@@ -17,11 +17,11 @@ import {
 	Stack,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BsBook, BsPencil, BsTrash } from 'react-icons/bs';
 import { FiBook, FiPlus } from 'react-icons/fi';
 
-export const AddCoursesToCurriculumMap = ({ item }) => {
+export const AddCoursesToCurriculumMap = ({ item, fetchData }) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 
@@ -41,7 +41,7 @@ export const AddCoursesToCurriculumMap = ({ item }) => {
 	const {
 		data: dataCurriculumMapsCourses,
 		isLoading: isLoadingCurriculumMapsCourses,
-    refetch: fetchCurriculumMapsCourses,
+		refetch: fetchCurriculumMapsCourses,
 	} = useReadCurriculumMapsCourses();
 
 	const filteredCoursesByCurriculumMap =
@@ -71,11 +71,38 @@ export const AddCoursesToCurriculumMap = ({ item }) => {
 				label: `${course.code} - ${course.name}`,
 			})) || [];
 
-	const prerequisiteOptions =
-		dataCourses?.results?.map((course) => ({
-			value: course.id,
-			label: `${course.code} - ${course.name}`,
-		})) || [];
+	useEffect(() => {
+		if (form.course_id && (form.credits === '' || form.credits === null)) {
+			const selectedCourse = dataCourses?.results?.find(
+				(c) => c.id === form.course_id
+			);
+			if (selectedCourse && selectedCourse.default_credits) {
+				setForm((prev) => ({
+					...prev,
+					credits: selectedCourse.default_credits,
+				}));
+			}
+		}
+		// eslint-disable-next-line
+	}, [form.course_id, dataCourses]);
+
+	// Opciones de prerrequisitos: cursos de coursesList y de filteredCoursesByCurriculumMap
+	const PrerequisiteOptions = [
+		...(coursesList
+			.map((c) => {
+				const course = dataCourses?.results?.find(
+					(dc) => dc.id === c.course_id
+				);
+				return course
+					? { value: course.id, label: `${course.code} - ${course.name}` }
+					: null;
+			})
+			.filter(Boolean) || []),
+		...(filteredCoursesByCurriculumMap?.map((fc) => ({
+			value: fc.course,
+			label: `${fc.course_code} - ${fc.course_name}`,
+		})) || []),
+	];
 
 	const handleFormChange = (field, value) => {
 		setForm((prev) => ({ ...prev, [field]: value }));
@@ -156,7 +183,8 @@ export const AddCoursesToCurriculumMap = ({ item }) => {
 					description: 'Los cursos se han asignado correctamente a la malla.',
 					type: 'success',
 				});
-        fetchCurriculumMapsCourses();
+        fetchData();
+				fetchCurriculumMapsCourses();
 				setCoursesList([]);
 				setOpen(false);
 			},
@@ -209,7 +237,7 @@ export const AddCoursesToCurriculumMap = ({ item }) => {
 							fontWeight='semibold'
 						>
 							<FiBook size={24} />
-							Asignar cursos
+							Agregar cursos
 						</Heading>
 					</Card.Header>
 					<Card.Body maxH={{ base: '90vh', md: '600px' }} overflow='hidden'>
@@ -291,10 +319,10 @@ export const AddCoursesToCurriculumMap = ({ item }) => {
 									errorText={errors.prerequisite_ids}
 								>
 									<ReactSelect
-										options={prerequisiteOptions.filter(
+										options={PrerequisiteOptions.filter(
 											(opt) => opt.value !== form.course_id
 										)}
-										value={prerequisiteOptions.filter((opt) =>
+										value={PrerequisiteOptions.filter((opt) =>
 											form.prerequisite_ids.includes(opt.value)
 										)}
 										onChange={(opts) =>
@@ -342,10 +370,12 @@ export const AddCoursesToCurriculumMap = ({ item }) => {
 								<Heading size='sm' mb={2} color='gray.600'>
 									Cursos agregados
 								</Heading>
-									<Stack gap={2}>
-										{coursesList.length === 0 && filteredCoursesByCurriculumMap?.length === 0 ? (
-                      <Box color='gray.400'>No hay cursos agregados.</Box>
-                    ) : coursesList.map((c, idx) => {
+								<Stack gap={2}>
+									{coursesList.length === 0 &&
+									filteredCoursesByCurriculumMap?.length === 0 ? (
+										<Box color='gray.400'>No hay cursos agregados.</Box>
+									) : (
+										coursesList.map((c, idx) => {
 											const courseLabel =
 												dataCourses?.results?.find(
 													(dc) => dc.id === c.course_id
@@ -391,26 +421,32 @@ export const AddCoursesToCurriculumMap = ({ item }) => {
 													</Flex>
 												</Card.Root>
 											);
-										})}
-                    {filteredCoursesByCurriculumMap?.map((fc, idx) => (
-                      <Card.Root key={idx} border='1px solid #e2e8f0' borderRadius='md' bg='blue.50'>
-                        <Flex justify='space-between' align='center' p={2}>
-                          <Box>
-                            <b>{fc.course_name}</b> | Ciclo: {fc.cycle} | Créditos: {fc.credits} |{' '}
-                            {fc.is_mandatory ? 'Obligatorio' : 'Opcional'}
-                            <br />
-                            Prerrequisitos:{' '}
-                            {fc.prerequisite_ids
-                              ?.map((pid) => {
-                                const pre = dataCourses?.results?.find((dc) => dc.id === pid);
-                                return pre ? pre.name : '';
-                              })
-                              .join(', ') || 'Ninguno'}
-                          </Box>
-                        </Flex>
-                      </Card.Root>
-                    ))}
-									</Stack>
+										})
+									)}
+									{filteredCoursesByCurriculumMap?.map((fc, idx) => (
+										<Card.Root
+											key={idx}
+											border='1px solid #e2e8f0'
+											borderRadius='md'
+											bg='blue.50'
+										>
+											<Flex justify='space-between' align='center' p={2}>
+												<Box>
+													<b>{fc.course_name}</b> | Ciclo: {fc.cycle} |
+													Créditos: {fc.credits} |{' '}
+													{fc.is_mandatory ? 'Obligatorio' : 'Opcional'}
+													<br />
+													Prerrequisitos:{' '}
+													{fc.prerequisite
+														?.map((pid) => {
+															return pid;
+														})
+														.join(', ') || 'Ninguno'}
+												</Box>
+											</Flex>
+										</Card.Root>
+									))}
+								</Stack>
 							</Box>
 						</SimpleGrid>
 					</Card.Body>
@@ -422,4 +458,5 @@ export const AddCoursesToCurriculumMap = ({ item }) => {
 
 AddCoursesToCurriculumMap.propTypes = {
 	item: PropTypes.object,
+  fetchData: PropTypes.func,
 };
