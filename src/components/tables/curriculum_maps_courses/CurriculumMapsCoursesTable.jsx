@@ -11,6 +11,7 @@ import { useDeleteCurriculumMapCourse } from '@/hooks/curriculum_maps_courses';
 
 const Row = memo(
   ({
+    curriculumMap,
     item,
     startIndex,
     index,
@@ -103,7 +104,7 @@ const Row = memo(
                     <Tooltip
                       content='Eliminar Curso de la Malla'
                     >
-                      <IconButton colorPalette='red' size='xs'>
+                      <IconButton colorPalette='red' size='xs' disabled={!curriculumMap?.is_editable}>
                         <HiTrash />
                       </IconButton>
                     </Tooltip>
@@ -130,6 +131,7 @@ const Row = memo(
 Row.displayName = 'Row';
 
 Row.propTypes = {
+  curriculumMap: PropTypes.object,
   item: PropTypes.object,
   startIndex: PropTypes.number,
   index: PropTypes.number,
@@ -139,6 +141,7 @@ Row.propTypes = {
 };
 
 export const CurriculumMapsCoursesTable = ({
+  curriculumMap,
   data,
   isLoading,
   fetchData,
@@ -215,6 +218,7 @@ export const CurriculumMapsCoursesTable = ({
               visibleRows.map((item, index) => (
                 <Row
                   key={item.id}
+                  curriculumMap={curriculumMap}
                   item={item}
                   data={data}
                   sortConfig={sortConfig}
@@ -249,6 +253,7 @@ export const CurriculumMapsCoursesTable = ({
 };
 
 CurriculumMapsCoursesTable.propTypes = {
+  curriculumMap: PropTypes.object,
   data: PropTypes.array,
   isLoading: PropTypes.bool,
   fetchData: PropTypes.func,

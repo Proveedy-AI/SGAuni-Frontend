@@ -18,7 +18,10 @@ import { ReactSelect } from '@/components/select';
 import { FiPlus, FiX } from 'react-icons/fi';
 import { useReadCurriculumMapsCourses } from '@/hooks/curriculum_maps_courses';
 import { LuBookPlus } from 'react-icons/lu';
-import { useBulkCreateConvalidations } from '@/hooks/curriculum_course_convalidations';
+import {
+	useBulkCreateConvalidations,
+	useReadCourseConvalidations,
+} from '@/hooks/curriculum_course_convalidations';
 
 export const CreateConvalidations = ({
 	item, // Malla que viene como parámetro
@@ -32,10 +35,43 @@ export const CreateConvalidations = ({
 		useState([]);
 	const [selectedCourseParameter, setSelectedCourseParameter] = useState(null);
 	const [convalidations, setConvalidations] = useState([]);
+
+	// Estado para convalidaciones ya existentes (no editable)
+	const [existingConvalidations, setExistingConvalidations] = useState([]);
 	const [readInstructions, setReadInstructions] = useState(false);
 	const contentRef = useRef();
 
-  const { mutate: createBulkConvalidations, isPending } = useBulkCreateConvalidations();
+	const { mutate: createBulkConvalidations, isPending } =
+		useBulkCreateConvalidations();
+
+	// Hook para leer convalidaciones existentes
+	const { data: dataCourseConvalidations } = useReadCourseConvalidations({
+		enabled: open && !!item?.id,
+	});
+	// IDs de cursos ya convalidados (para filtrar en ReactSelect)
+	const alreadyConvalidatedCourseIds = (dataCourseConvalidations?.results || [])
+		.filter((c) => c.curriculum_map_current === item?.id)
+		.reduce((acc, c) => {
+			// from_curriculum_map puede ser array
+			if (Array.isArray(c.from_curriculum_map)) {
+				acc.push(...c.from_curriculum_map);
+			}
+			if (c.to_curriculum_map) {
+				acc.push(c.to_curriculum_map);
+			}
+			return acc;
+		}, []);
+
+	// Guardar convalidaciones existentes en estado solo para mostrar
+	useEffect(() => {
+		if (dataCourseConvalidations?.results) {
+			setExistingConvalidations(
+				dataCourseConvalidations.results.filter(
+					(c) => c.curriculum_map_current === item?.id
+				)
+			);
+		}
+	}, [dataCourseConvalidations, item?.id]);
 
 	// Hook para obtener cursos de la malla seleccionada (parámetro)
 	const { data: parameterCurriculumCourses } = useReadCurriculumMapsCourses(
@@ -59,11 +95,11 @@ export const CreateConvalidations = ({
 				...map,
 			})) || [];
 
-
-	// Filtrar cursos de la malla parámetro usando 'course' como value
+	// Filtrar cursos de la malla parámetro usando 'course' como value y excluyendo los ya convalidados
 	const parameterCoursesOptions =
 		parameterCurriculumCourses?.results
 			?.filter((course) => course.curriculum_map === item?.id)
+			?.filter((course) => !alreadyConvalidatedCourseIds?.includes(course.id))
 			?.map((course) => ({
 				value: course.course, // Cambiado de id a course
 				label: `${course.course_code} - ${course.course_name}`,
@@ -72,12 +108,13 @@ export const CreateConvalidations = ({
 				...course,
 			})) || [];
 
-	// Filtrar cursos de la otra malla seleccionada usando 'course' como value
+	// Filtrar cursos de la otra malla seleccionada usando 'course' como value y excluyendo los ya convalidados
 	const otherCoursesOptions =
 		otherCurriculumCourses?.results
 			?.filter(
 				(course) => course.curriculum_map === selectedOtherCurriculumMap?.value
 			)
+			?.filter((course) => !alreadyConvalidatedCourseIds?.includes(course.id))
 			?.map((course) => ({
 				value: course.course, // Cambiado de id a course
 				label: `${course.course_code} - ${course.course_name}`,
@@ -138,7 +175,6 @@ export const CreateConvalidations = ({
 			return;
 		}
 
-
 		const newConvalidation = {
 			courses_to_convalidate: selectedCoursesToConvalidate.map((c) => c.value), // value ahora es course
 			course_parameter: selectedCourseParameter.value, // value ahora es course
@@ -186,25 +222,25 @@ export const CreateConvalidations = ({
 			})),
 		};
 
-    createBulkConvalidations(payload, {
-      onSuccess: () => {
-        toaster.create({
-          title: 'Convalidaciones creadas correctamente',
-          type: 'success',
-        });
-        setOpen(false);
-        setConvalidations([]);
-        setSelectedOtherCurriculumMap(null);
-        fetchData?.();
-      },
-      onError: (error) => {
-        toaster.create({
-          title: 'Error al crear convalidaciones',
-          description: error?.response?.data?.message || error.message,
-          type: 'error',
-        });
-      }
-    });
+		createBulkConvalidations(payload, {
+			onSuccess: () => {
+				toaster.create({
+					title: 'Convalidaciones creadas correctamente',
+					type: 'success',
+				});
+				setOpen(false);
+				setConvalidations([]);
+				setSelectedOtherCurriculumMap(null);
+				fetchData?.();
+			},
+			onError: (error) => {
+				toaster.create({
+					title: 'Error al crear convalidaciones',
+					description: error?.response?.data?.message || error.message,
+					type: 'error',
+				});
+			},
+		});
 	};
 
 	const totalCoursesToConvalidate = convalidations.reduce(
@@ -212,23 +248,23 @@ export const CreateConvalidations = ({
 		0
 	);
 
-  useEffect(() => {
-    if (!open) {
-      setConvalidations([]);
-      setSelectedOtherCurriculumMap(null);
-      setSelectedCoursesToConvalidate([]);
-      setSelectedCourseParameter(null);
-      setEditingIndex(null);
-      setReadInstructions(false);
-    }
-  }, [open]);
+	useEffect(() => {
+		if (!open) {
+			setConvalidations([]);
+			setSelectedOtherCurriculumMap(null);
+			setSelectedCoursesToConvalidate([]);
+			setSelectedCourseParameter(null);
+			setEditingIndex(null);
+			setReadInstructions(false);
+		}
+	}, [open]);
 
-  useEffect(() => {
-    setConvalidations([]);
-    setSelectedCoursesToConvalidate([]);
-    setSelectedCourseParameter(null);
-    setEditingIndex(null);
-  }, [selectedOtherCurriculumMap]);
+	useEffect(() => {
+		setConvalidations([]);
+		setSelectedCoursesToConvalidate([]);
+		setSelectedCourseParameter(null);
+		setEditingIndex(null);
+	}, [selectedOtherCurriculumMap]);
 
 	return (
 		<Modal
@@ -242,7 +278,7 @@ export const CreateConvalidations = ({
 						showArrow
 						openDelay={0}
 					>
-						<IconButton colorPalette='yellow' size='xs'>
+						<IconButton colorPalette='yellow' size='xs' disabled={!item?.is_editable}>
 							<LuBookPlus />
 						</IconButton>
 					</Tooltip>
@@ -449,6 +485,45 @@ export const CreateConvalidations = ({
 												>
 													Editar
 												</Button>
+											</Card.Body>
+										</Card.Root>
+									))}
+								</VStack>
+							</VStack>
+						)}
+						{/* Lista de convalidaciones ya existentes (solo lectura) */}
+						{existingConvalidations.length > 0 && (
+							<VStack gap={4} align='stretch'>
+								<Flex justify='space-between' align='center'>
+									<Heading fontSize='md' fontWeight='medium' color='gray.900'>
+										Convalidaciones Existentes (No editables)
+									</Heading>
+									<Badge colorScheme='gray' fontSize='sm'>
+										Total: {existingConvalidations.length}
+									</Badge>
+								</Flex>
+								<VStack gap={3} align='stretch'>
+									{existingConvalidations.map((c, idx) => (
+										<Card.Root
+											key={c.id}
+											border='1px solid'
+											borderColor='gray.100'
+											rounded='lg'
+											bg='gray.50'
+										>
+											<Card.Header>
+												<Card.Title>Convalidación #{idx + 1}</Card.Title>
+											</Card.Header>
+											<Card.Body>
+												<Text fontSize='sm' color='gray.700'>
+													<b>De cursos:</b>{' '}
+													{Array.isArray(c.from_curriculum_map)
+														? c.from_curriculum_map.join(', ')
+														: c.from_curriculum_map}
+												</Text>
+												<Text fontSize='sm' color='gray.700'>
+													<b>A curso:</b> {c.to_curriculum_map}
+												</Text>
 											</Card.Body>
 										</Card.Root>
 									))}

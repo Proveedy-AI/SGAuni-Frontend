@@ -105,6 +105,7 @@ export const PreviewCurriculumMap = ({ item }) => {
               </Card.Header>
               <Card.Body>
                 <CurriculumMapsCoursesTable
+                  curriculumMap={item}
                   data={filteredCoursesByCurriculumMap}
                   isLoading={isLoadingCurriculumMapsCourses}
                   fetchData={fetchCurriculumMapsCourses}

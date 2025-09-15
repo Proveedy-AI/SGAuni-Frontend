@@ -217,7 +217,7 @@ export const AddCoursesToCurriculumMap = ({ item, fetchData }) => {
 						showArrow
 						openDelay={0}
 					>
-						<IconButton colorPalette='green' size='xs'>
+						<IconButton colorPalette='green' size='xs' disabled={!item?.is_editable}>
 							<BsBook />
 						</IconButton>
 					</Tooltip>
