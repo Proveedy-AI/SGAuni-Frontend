@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
-import { Badge, Box, Card, Group, Heading, HStack, IconButton, Table } from '@chakra-ui/react';
+import { Badge, Box, Card, Flex, Group, Heading, HStack, IconButton, Table } from '@chakra-ui/react';
 import { ModalSimple, Pagination, toaster, Tooltip } from '@/components/ui';
 import useSortedData from '@/utils/useSortedData';
 import { SortableHeader } from '@/components/ui/SortableHeader';
@@ -88,13 +88,20 @@ const Row = memo(
                 size='4xl'
                 hiddenFooter={true}
               >
-                <Card.Root>
+                <Card.Root minH='250px'>
                   <Card.Header>
                     <Heading size='lg'>Prerrequisitos del Curso {item.course_code}</Heading>
                   </Card.Header>
-                  {/*  */}
                   <Card.Body>
-            
+                    <Flex wrap='wrap'>
+                      {item?.prerequisite?.length === 0 ? (
+                        <Box>No hay prerrequisitos para este curso.</Box>
+                      ) : item?.prerequisite?.map((prereq, idx) => (
+                        <Badge size="md" key={idx} colorPalette='blue' variant='subtle' m={1}>
+                          {prereq}
+                        </Badge>
+                      ))}
+                    </Flex>
                   </Card.Body>
                 </Card.Root>
               </ModalSimple>
@@ -229,7 +236,7 @@ export const CurriculumMapsCoursesTable = ({
               ))
             ) : (
               <Table.Row>
-                <Table.Cell colSpan={6} textAlign='center' py={2}>
+                <Table.Cell colSpan={7} textAlign='center' py={2}>
                   No hay datos disponibles.
                 </Table.Cell>
               </Table.Row>

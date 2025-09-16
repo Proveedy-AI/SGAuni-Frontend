@@ -26,7 +26,7 @@ export const PreviewCurriculumMap = ({ item }) => {
     isLoading: isLoadingCurriculumMapsCourses,
     refetch: fetchCurriculumMapsCourses,
   } = useReadCurriculumMapsCourses(
-    { curriculum_map_id: item.id },
+    { curriculum_map: item.id },
     { enabled: open && !!item.id }
   );
 

@@ -279,6 +279,7 @@ export const CreateConvalidations = ({
 						<IconButton
 							colorPalette='yellow'
 							size='xs'
+              disabled={!item?.is_editable}
 						>
 							<LuBookPlus />
 						</IconButton>
