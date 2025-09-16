@@ -43,7 +43,7 @@ export const AddCoursesToCurriculumMap = ({ item, fetchData }) => {
 		isLoading: isLoadingCurriculumMapsCourses,
 		refetch: fetchCurriculumMapsCourses,
 	} = useReadCurriculumMapsCourses(
-    { curriculum_map_id: item.id },
+    { curriculum_map: item.id },
     {  enabled: open && !!item?.id }
   );
 
@@ -217,7 +217,7 @@ export const AddCoursesToCurriculumMap = ({ item, fetchData }) => {
 						showArrow
 						openDelay={0}
 					>
-						<IconButton colorPalette='green' size='xs' disabled={!item?.is_editable}>
+						<IconButton colorPalette='green' size='xs' disabled={!item?.editable}>
 							<BsBook />
 						</IconButton>
 					</Tooltip>

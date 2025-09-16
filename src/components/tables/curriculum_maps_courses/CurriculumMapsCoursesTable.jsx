@@ -111,7 +111,7 @@ const Row = memo(
                     <Tooltip
                       content='Eliminar Curso de la Malla'
                     >
-                      <IconButton colorPalette='red' size='xs' disabled={!curriculumMap?.is_editable}>
+                      <IconButton colorPalette='red' size='xs' disabled={!curriculumMap?.editable}>
                         <HiTrash />
                       </IconButton>
                     </Tooltip>
