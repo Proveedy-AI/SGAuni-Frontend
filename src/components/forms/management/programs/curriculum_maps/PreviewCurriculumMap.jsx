@@ -111,46 +111,6 @@ export const PreviewCurriculumMap = ({ item }) => {
                   fetchData={fetchCurriculumMapsCourses}
                 />
               </Card.Body>
-              {/* <Card.Body>
-                <Stack spacing={4}>
-                  {localCourses.map((course) => (
-                    <Box
-                      key={course.id}
-                      border='2px solid'
-                      borderColor='orange.200'
-                      borderRadius='xl'
-                      p={4}
-                      bg='orange.50'
-                    >
-                      <Flex align='center' gap={3}>
-                        <Badge colorScheme='orange' fontSize='md'>
-                          {course.code}
-                        </Badge>
-                        <Text fontWeight='bold' fontSize='lg'>
-                          {course.name}
-                        </Text>
-                        <Badge colorScheme='yellow'>Ciclo {course.cycle}</Badge>
-                      </Flex>
-                      <Box mt={2}>
-                        <Field label='Prerequisitos'>
-                          <ReactSelect
-                            value={course.pre_requisites.map((pr) => ({
-                              value: pr.id,
-                              label: `${pr.code} - ${pr.name}`,
-                            }))}
-                            options={coursesOptions}
-                            isMulti
-                            isClearable
-                            isSearchable
-                            placeholder='Sin prerequisitos'
-                            isDisabled
-                          />
-                        </Field>
-                      </Box>
-                    </Box>
-                  ))}
-                </Stack>
-              </Card.Body> */}
             </Card.Root>
           </Stack>
         </ModalSimple>
