@@ -47,7 +47,7 @@ import {
 	toaster,
 } from '@/components/ui';
 import { ReactSelect } from '@/components/select';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useReadCourseSchedule } from '@/hooks/enrollments_programs/schedule/useReadCourseSchedule';
 import { LuUpload } from 'react-icons/lu';
 import { useUploadCourseScheduleExcel } from '@/hooks/enrollments_programs/schedule/useUploadCourseScheduleExcel';
@@ -57,7 +57,6 @@ import { useProccessCourseScheduleExcel } from '@/hooks/enrollments_programs/sch
 //import { useCreateCourseScheduleReview } from '@/hooks/enrollments_programs/schedule/useCreateCourseScheduleReview';
 import { useDeleteCourseSchedule } from '@/hooks/enrollments_programs/schedule/useDeleteCourseSchedule';
 import { FaClock, FaGraduationCap } from 'react-icons/fa';
-import { useReadCourses } from '@/hooks/courses';
 import { useReadUsers } from '@/hooks/users';
 import { useCreateCourseSchedule } from '@/hooks/enrollments_programs/schedule/useCreateCourseSchedule';
 import { HistoryStatusCourseSheduleView } from '@/components/forms/enrollment_proccess/HistoryStatusCourseSheduleView';
@@ -67,6 +66,8 @@ import { usePaginationSettings } from '@/components/navigation/usePaginationSett
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import { useCreateCourseScheduleReviewMasive } from '@/hooks/enrollments_programs/schedule/useCreateCourseScheduleReviewMasive';
+import { useReadCurriculumMaps } from '@/hooks/curriculum_maps';
+import { useReadCurriculumMapsCourses } from '@/hooks/curriculum_maps_courses';
 
 const timeSlots = [
 	'07:00',
@@ -109,6 +110,7 @@ const daysOfWeek2 = [
 ];
 
 const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
+  console.log(data)
 	const [formData, setFormData] = useState({
 		course_id: null,
 		prerequisite_ids: [],
@@ -120,7 +122,8 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 		capacity: '',
 		schedules: [{ day_of_week: null, start_time: '', end_time: '' }],
 	});
-	const { data: dataCourses } = useReadCourses({}, { enabled: open });
+
+	// Ya no se usa dataCourses, solo dataCurriculumMapCourses
 
 	const [errors, setErrors] = useState({});
 	const { data: dataUsers } = useReadUsers(
@@ -130,14 +133,24 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 		}
 	);
 
+  const { data: curriculumMap } = useReadCurriculumMaps(
+    { program: data?.program, is_current: true },
+		{
+			enabled: open && !!data?.program,
+		}
+  )
+
+  const curriculumMapId = curriculumMap?.results?.[0]?.id;
+
+  const { data: dataCurriculumMapCourses } = useReadCurriculumMapsCourses(
+    { curriculum_map: curriculumMapId },
+    { enabled: !!curriculumMapId }
+  );
+
+	// Estado para prerrequisitos solo para mostrar
 	const [selectedPrerequisites, setSelectedPrerequisites] = useState([]);
 
-	useEffect(() => {
-		setFormData((prev) => ({
-			...prev,
-			prerequisite_ids: selectedPrerequisites.map((opt) => opt.value),
-		}));
-	}, [selectedPrerequisites]);
+	// Ya no se actualiza formData.prerequisite_ids desde selectedPrerequisites, se autocompleta desde el curso
 
 	const validateFields = () => {
 		const newErrors = {};
@@ -165,12 +178,17 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 		return Object.keys(newErrors).length === 0;
 	};
 
+	// Usar dataCurriculumMapCourses para las opciones de cursos
 	const coursesOptions =
-		dataCourses?.results?.map((course) => ({
-			value: course.id,
-			label: course.name,
-			credits: course.default_credits,
-			cycle: course.level,
+		dataCurriculumMapCourses?.results?.map((course) => ({
+			value: course.course, // id del curso
+			label: `${course.course_name} (${course.course_code})`,
+			credits: course.credits,
+			cycle: course.cycle,
+			is_mandatory: course.is_mandatory,
+			prerequisite: course.prerequisite,
+			course_code: course.course_code,
+			curriculum_map_course_id: course.id,
 		})) || [];
 
 	const handleInputChange = (e) => {
@@ -273,16 +291,6 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 			label: c.full_name,
 		}));
 
-	// Estado para el campo "¿Es obligatorio?"
-	const [isMandatory, setIsMandatory] = useState(formData.is_mandatory);
-
-	// Actualiza el campo en formData cuando cambia isMandatory
-	useEffect(() => {
-		setFormData((prev) => ({
-			...prev,
-			is_mandatory: isMandatory,
-		}));
-	}, [isMandatory]);
 
 	return (
 		<Modal
@@ -332,7 +340,7 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 									value={
 										coursesOptions.find(
 											(opt) => opt.value === formData.course_id
-										) || null
+									) || null
 									}
 									onChange={(opt) => {
 										if (opt) {
@@ -341,14 +349,20 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 												course_id: opt.value,
 												credits: opt.credits,
 												cycle: opt.cycle,
+												is_mandatory: opt.is_mandatory,
+												prerequisite_ids: opt.prerequisite,
 											}));
+											setSelectedPrerequisites(opt.prerequisite || []);
 										} else {
 											setFormData((prev) => ({
 												...prev,
 												course_id: null,
-												credits: null,
-												cycle: null,
+												credits: '',
+												cycle: '',
+												is_mandatory: true,
+												prerequisite_ids: [],
 											}));
+											setSelectedPrerequisites([]);
 										}
 									}}
 									options={coursesOptions}
@@ -404,6 +418,7 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 									onChange={handleInputChange}
 									type='number'
 									min={1}
+									disabled
 								/>
 							</Field>
 
@@ -421,6 +436,7 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 									type='number'
 									min={1}
 									max={10}
+									disabled
 								/>
 							</Field>
 
@@ -439,15 +455,7 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 								/>
 							</Field>
 							<Field label='¿Es obligatorio?'>
-								<RadioGroup
-									value={isMandatory ? 'yes' : 'no'}
-									onChange={(e) => {
-										const selected = e.target.value === 'yes';
-										setIsMandatory(selected);
-									}}
-									direction='row'
-									spaceX={4}
-								>
+								<RadioGroup value={formData.is_mandatory ? 'yes' : 'no'} isDisabled direction='row' spaceX={4}>
 									<Radio value='yes'>Sí</Radio>
 									<Radio value='no'>No</Radio>
 								</RadioGroup>
@@ -464,17 +472,17 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 						</Flex>
 					</Card.Header>
 					<Card.Body>
-						<Flex gap={2} mb={2}>
-							<ReactSelect
-								value={selectedPrerequisites}
-								onChange={setSelectedPrerequisites}
-								options={coursesOptions}
-								isMulti
-								isClearable
-								isSearchable
-								placeholder='Selecciona uno o varios pre requisito'
-							/>
-						</Flex>
+						{selectedPrerequisites && selectedPrerequisites.length > 0 ? (
+							<VStack align='start' spacing={1}>
+								{selectedPrerequisites.map((prereq, idx) => (
+									<Badge size="md" key={idx} colorPalette='blue' variant='subtle'>
+										{prereq}
+									</Badge>
+								))}
+							</VStack>
+						) : (
+							<Text color='gray.500'>No tiene prerrequisitos</Text>
+						)}
 					</Card.Body>
 				</Card.Root>
 

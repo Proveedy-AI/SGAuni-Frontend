@@ -23,14 +23,13 @@ export const ViewCurriculumMaps = ({ item }) => {
 		data: curriculumMaps,
 		isLoading,
 		refetch: fetchCurriculumMaps,
-	} = useReadCurriculumMaps({ enabled: open && !!item.id });
+	} = useReadCurriculumMaps(
+    { program: item.id },
+    { enabled: open && !!item.id }
+  );
 
-	const filteredCurriculumMaps =
-		curriculumMaps?.results?.filter((map) => map.program === item.id) || [];
-
-	const filteredCurrentMap = filteredCurriculumMaps.filter(
-		(map) => map.is_current
-	);
+	const filteredCurriculumMaps = curriculumMaps?.results || [];
+	const filteredCurrentMap = filteredCurriculumMaps.filter((map) => map.is_current);
 
 	return (
 		<Stack css={{ '--field-label-width': '180px' }}>
