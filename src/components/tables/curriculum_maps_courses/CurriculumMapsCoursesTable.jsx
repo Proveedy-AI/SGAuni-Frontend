@@ -213,7 +213,7 @@ export const CurriculumMapsCoursesTable = ({
           </Table.Header>
           <Table.Body>
             {isLoading ? (
-              <SkeletonTable columns={6} />
+              <SkeletonTable columns={7} />
             ) : visibleRows?.length > 0 ? (
               visibleRows.map((item, index) => (
                 <Row

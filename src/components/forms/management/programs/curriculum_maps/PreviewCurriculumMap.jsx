@@ -25,12 +25,12 @@ export const PreviewCurriculumMap = ({ item }) => {
     data: dataCurriculumMapsCourses,
     isLoading: isLoadingCurriculumMapsCourses,
     refetch: fetchCurriculumMapsCourses,
-  } = useReadCurriculumMapsCourses();
+  } = useReadCurriculumMapsCourses(
+    { curriculum_map_id: item.id },
+    { enabled: open && !!item.id }
+  );
 
-  const filteredCoursesByCurriculumMap = dataCurriculumMapsCourses?.results
-    ?.filter(
-      (course) => course.curriculum_map === item.id
-    );
+  const filteredCoursesByCurriculumMap = dataCurriculumMapsCourses?.results || [];
 
   return (
     <Stack css={{ '--field-label-width': '180px' }}>

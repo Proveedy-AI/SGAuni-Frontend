@@ -74,7 +74,7 @@ export const CreateConvalidations = ({
 
 	// Hook para obtener cursos de la malla seleccionada (parámetro)
 	const { data: parameterCurriculumCourses } = useReadCurriculumMapsCourses(
-		{},
+		{ curriculum_map: item?.id },
 		{ enabled: open && !!item?.id }
 	);
 
@@ -97,7 +97,6 @@ export const CreateConvalidations = ({
 	// Filtrar cursos de la malla parámetro usando 'course' como value y excluyendo los ya convalidados
 	const parameterCoursesOptions =
 		parameterCurriculumCourses?.results
-			?.filter((course) => course.curriculum_map === item?.id)
 			?.filter((course) => !alreadyConvalidatedCourseIds?.includes(course.id))
 			?.map((course) => ({
 				value: course.course, // Cambiado de id a course
@@ -280,7 +279,6 @@ export const CreateConvalidations = ({
 						<IconButton
 							colorPalette='yellow'
 							size='xs'
-							disabled={!item?.is_editable}
 						>
 							<LuBookPlus />
 						</IconButton>

@@ -42,12 +42,12 @@ export const AddCoursesToCurriculumMap = ({ item, fetchData }) => {
 		data: dataCurriculumMapsCourses,
 		isLoading: isLoadingCurriculumMapsCourses,
 		refetch: fetchCurriculumMapsCourses,
-	} = useReadCurriculumMapsCourses();
+	} = useReadCurriculumMapsCourses(
+    { curriculum_map_id: item.id },
+    {  enabled: open && !!item?.id }
+  );
 
-	const filteredCoursesByCurriculumMap =
-		dataCurriculumMapsCourses?.results?.filter(
-			(course) => course.curriculum_map === item.id
-		);
+	const filteredCoursesByCurriculumMap = dataCurriculumMapsCourses?.results || [];
 
 	const { data: dataCourses, isLoading: loadingCourses } = useReadCourses(
 		{},
