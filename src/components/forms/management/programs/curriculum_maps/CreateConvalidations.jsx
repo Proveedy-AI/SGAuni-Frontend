@@ -45,31 +45,30 @@ export const CreateConvalidations = ({
 		useBulkCreateConvalidations();
 
 	// Hook para leer convalidaciones existentes
-	const { data: dataCourseConvalidations } = useReadCourseConvalidations({
-		enabled: open && !!item?.id,
-	});
+	const { data: dataCourseConvalidations } = useReadCourseConvalidations(
+		{ curriculum_map_current: item?.id },
+		{
+			enabled: open && !!item?.id,
+		}
+	);
 	// IDs de cursos ya convalidados (para filtrar en ReactSelect)
-	const alreadyConvalidatedCourseIds = (dataCourseConvalidations?.results || [])
-		.filter((c) => c.curriculum_map_current === item?.id)
-		.reduce((acc, c) => {
-			// from_curriculum_map puede ser array
-			if (Array.isArray(c.from_curriculum_map)) {
-				acc.push(...c.from_curriculum_map);
-			}
-			if (c.to_curriculum_map) {
-				acc.push(c.to_curriculum_map);
-			}
-			return acc;
-		}, []);
+	const alreadyConvalidatedCourseIds = (
+		dataCourseConvalidations?.results || []
+	).reduce((acc, c) => {
+		// from_curriculum_map puede ser array
+		if (Array.isArray(c.from_curriculum_map)) {
+			acc.push(...c.from_curriculum_map);
+		}
+		if (c.to_curriculum_map) {
+			acc.push(c.to_curriculum_map);
+		}
+		return acc;
+	}, []);
 
 	// Guardar convalidaciones existentes en estado solo para mostrar
 	useEffect(() => {
 		if (dataCourseConvalidations?.results) {
-			setExistingConvalidations(
-				dataCourseConvalidations.results.filter(
-					(c) => c.curriculum_map_current === item?.id
-				)
-			);
+			setExistingConvalidations(dataCourseConvalidations.results);
 		}
 	}, [dataCourseConvalidations, item?.id]);
 
@@ -278,7 +277,11 @@ export const CreateConvalidations = ({
 						showArrow
 						openDelay={0}
 					>
-						<IconButton colorPalette='yellow' size='xs' disabled={!item?.is_editable}>
+						<IconButton
+							colorPalette='yellow'
+							size='xs'
+							disabled={!item?.is_editable}
+						>
 							<LuBookPlus />
 						</IconButton>
 					</Tooltip>
@@ -293,7 +296,7 @@ export const CreateConvalidations = ({
 			contentRef={contentRef}
 		>
 			<Stack gap={4} ref={contentRef}>
-				<Box p={6} maxH='calc(90vh - 140px)' overflowY='auto'>
+				<Box p={6} maxH='calc(90vh - 120px)' overflowY='auto'>
 					<Stack gap={6}>
 						{/* Información de la malla parámetro */}
 						<Card.Root bg='blue.50' border='1px solid' borderColor='blue.200'>
@@ -322,241 +325,283 @@ export const CreateConvalidations = ({
 							/>
 						</Field>
 
-						{/* Formulario de convalidación */}
-						{selectedOtherCurriculumMap && (
-							<Card.Root>
-								<Card.Header>
-									<Card.Title>Agregar Convalidación</Card.Title>
-								</Card.Header>
-								<Card.Body>
-									<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-										{/* Cursos a convalidar (múltiple selección) */}
-										<Field
-											label={`Cursos de ${selectedOtherCurriculumMap.label} (Múltiple)`}
-											required
-										>
-											<ReactSelect
-												options={filteredOtherCoursesOptions}
-												value={selectedCoursesToConvalidate}
-												onChange={setSelectedCoursesToConvalidate}
-												placeholder='Selecciona cursos a convalidar'
-												isMulti
-												isClearable
-												isSearchable
-											/>
-										</Field>
-
-										{/* Curso parámetro (selección única) */}
-										<Field
-											label={`Curso de ${item?.code} - ${item?.year}`}
-											required
-										>
-											<ReactSelect
-												options={filteredParameterCoursesOptions}
-												value={selectedCourseParameter}
-												onChange={setSelectedCourseParameter}
-												placeholder='Selecciona curso parámetro'
-												isClearable
-												isSearchable
-											/>
-										</Field>
-									</SimpleGrid>
-
-									{/* Botones para agregar o editar convalidación */}
-									<Flex gap={2} mt={4}>
-										{editingIndex !== null ? (
-											<>
-												<Button
-													onClick={handleAddConvalidation}
-													colorPalette='blue'
-													disabled={
-														!selectedCoursesToConvalidate.length ||
-														!selectedCourseParameter
-													}
+						{/* Grid principal: formulario a la izquierda, listas a la derecha */}
+						<SimpleGrid
+							columns={{ base: 1, md: 2 }}
+							gap={8}
+							alignItems='flex-start'
+						>
+							{/* Columna izquierda: Formulario de convalidación */}
+							<Box>
+								{selectedOtherCurriculumMap && (
+									<Card.Root>
+										<Card.Header>
+											<Card.Title>Agregar Convalidación</Card.Title>
+										</Card.Header>
+										<Card.Body>
+											<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+												{/* Cursos a convalidar (múltiple selección) */}
+												<Field
+													label={`Cursos de ${selectedOtherCurriculumMap.label} (Múltiple)`}
+													required
 												>
-													Guardar Edición
-												</Button>
-												<Button
-													onClick={handleCancelEdit}
-													colorPalette='gray'
-													variant='outline'
+													<ReactSelect
+														options={filteredOtherCoursesOptions}
+														value={selectedCoursesToConvalidate}
+														onChange={setSelectedCoursesToConvalidate}
+														placeholder='Selecciona cursos a convalidar'
+														isMulti
+														isClearable
+														isSearchable
+													/>
+												</Field>
+
+												{/* Curso parámetro (selección única) */}
+												<Field
+													label={`Curso de ${item?.code} - ${item?.year} (Malla Actual)`}
+													required
 												>
-													Cancelar
-												</Button>
-											</>
-										) : (
-											<Button
-												onClick={handleAddConvalidation}
-												colorPalette='blue'
-												disabled={
-													!selectedCoursesToConvalidate.length ||
-													!selectedCourseParameter
-												}
-											>
-												<FiPlus /> Agregar Convalidación
-											</Button>
-										)}
-									</Flex>
-								</Card.Body>
-							</Card.Root>
-						)}
+													<ReactSelect
+														options={filteredParameterCoursesOptions}
+														value={selectedCourseParameter}
+														onChange={setSelectedCourseParameter}
+														placeholder='Selecciona curso parámetro'
+														isClearable
+														isSearchable
+													/>
+												</Field>
+											</SimpleGrid>
 
-						{/* Lista de convalidaciones agregadas */}
-						{convalidations.length > 0 && (
-							<VStack gap={4} align='stretch'>
-								<Flex justify='space-between' align='center'>
-									<Heading fontSize='md' fontWeight='medium' color='gray.900'>
-										Convalidaciones Configuradas
-									</Heading>
-									<Badge colorScheme='green' fontSize='sm'>
-										Total: {totalCoursesToConvalidate} cursos a convalidar
-									</Badge>
-								</Flex>
-
-								<VStack gap={3} align='stretch'>
-									{convalidations.map((convalidation, index) => (
-										<Card.Root
-											key={index}
-											border='1px solid'
-											borderColor='gray.200'
-											rounded='lg'
-										>
-											<Card.Header>
-												<Flex justify='space-between' align='center' w='full'>
-													<Card.Title>Convalidación #{index + 1}</Card.Title>
+											{/* Botones para agregar o editar convalidación */}
+											<Flex gap={2} mt={4}>
+												{editingIndex !== null ? (
+													<>
+														<Button
+															onClick={handleAddConvalidation}
+															colorPalette='blue'
+															disabled={
+																!selectedCoursesToConvalidate.length ||
+																!selectedCourseParameter
+															}
+														>
+															Guardar Edición
+														</Button>
+														<Button
+															onClick={handleCancelEdit}
+															colorPalette='gray'
+															variant='outline'
+														>
+															Cancelar
+														</Button>
+													</>
+												) : (
 													<Button
-														onClick={() => removeConvalidation(index)}
-														size='sm'
-														variant='ghost'
-														colorScheme='red'
+														onClick={handleAddConvalidation}
+														colorPalette='blue'
+														disabled={
+															!selectedCoursesToConvalidate.length ||
+															!selectedCourseParameter
+														}
 													>
-														<FiX size={16} />
+														<FiPlus /> Agregar Convalidación
 													</Button>
-												</Flex>
-											</Card.Header>
-											<Card.Body>
-												<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-													<Box>
-														<Text
-															fontSize='sm'
-															fontWeight='medium'
-															color='gray.700'
-															mb={2}
-														>
-															Cursos a Convalidar (
-															{convalidation.coursesToConvalidateData.length}):
-														</Text>
-														<VStack align='start' gap={1}>
-															{convalidation.coursesToConvalidateData.map(
-																(course) => (
-																	<Text
-																		key={course.value}
-																		fontSize='sm'
-																		color='gray.600'
-																	>
-																		• {course.label} ({course.credits} créditos)
-																	</Text>
-																)
-															)}
-														</VStack>
-													</Box>
+												)}
+											</Flex>
+										</Card.Body>
+									</Card.Root>
+								)}
 
-													<Box>
-														<Text
-															fontSize='sm'
-															fontWeight='medium'
-															color='gray.700'
-															mb={2}
-														>
-															Curso Parámetro:
-														</Text>
-														<Text fontSize='sm' color='gray.600'>
-															{convalidation.courseParameterData.label} (
-															{convalidation.courseParameterData.credits}{' '}
-															créditos)
-														</Text>
-													</Box>
-												</SimpleGrid>
-												<Button
-													onClick={() => handleEditConvalidation(index)}
-													size='sm'
-													variant='ghost'
-													colorScheme='blue'
-												>
-													Editar
-												</Button>
-											</Card.Body>
-										</Card.Root>
-									))}
-								</VStack>
-							</VStack>
-						)}
-						{/* Lista de convalidaciones ya existentes (solo lectura) */}
-						{existingConvalidations.length > 0 && (
-							<VStack gap={4} align='stretch'>
-								<Flex justify='space-between' align='center'>
-									<Heading fontSize='md' fontWeight='medium' color='gray.900'>
-										Convalidaciones Existentes (No editables)
-									</Heading>
-									<Badge colorScheme='gray' fontSize='sm'>
-										Total: {existingConvalidations.length}
-									</Badge>
+								{/* Instrucciones y confirmación */}
+								<Alert
+									status='info'
+									title='Información sobre Convalidaciones'
+									mt={6}
+								>
+									Las convalidaciones permitirán que los cursos seleccionados de
+									otras mallas curriculares sean equivalentes al curso parámetro
+									de la malla base.
+								</Alert>
+
+								<Flex align='center' gap={2} mt={4}>
+									<input
+										type='checkbox'
+										id='readInstructions'
+										checked={readInstructions}
+										onChange={(e) => setReadInstructions(e.target.checked)}
+										style={{ accentColor: '#3182CE', width: 18, height: 18 }}
+									/>
+									<label
+										htmlFor='readInstructions'
+										style={{
+											fontSize: '0.95em',
+											color: '#2D3748',
+											fontWeight: 500,
+										}}
+									>
+										He revisado las convalidaciones y confirmo la configuración.
+									</label>
 								</Flex>
-								<VStack gap={3} align='stretch'>
-									{existingConvalidations.map((c, idx) => (
-										<Card.Root
-											key={c.id}
-											border='1px solid'
-											borderColor='gray.100'
-											rounded='lg'
-											bg='gray.50'
+							</Box>
+
+							{/* Columna derecha: Listas de convalidaciones */}
+							<Box>
+								{/* Listado con scroll y altura máxima */}
+								<Box maxH='420px' overflowY='auto'>
+									{/* Lista de convalidaciones agregadas */}
+									{convalidations.length > 0 && (
+										<VStack gap={4} align='stretch'>
+											<Flex justify='space-between' align='center'>
+												<Heading
+													fontSize='md'
+													fontWeight='medium'
+													color='gray.900'
+												>
+													Convalidaciones Configuradas
+												</Heading>
+												<Badge colorScheme='green' fontSize='sm'>
+													Total: {totalCoursesToConvalidate} cursos a convalidar
+												</Badge>
+											</Flex>
+
+											<VStack gap={3} align='stretch'>
+												{convalidations.map((convalidation, index) => (
+													<Card.Root
+														key={index}
+														border='1px solid'
+														borderColor='gray.200'
+														rounded='lg'
+													>
+														<Card.Header>
+															<Flex
+																justify='space-between'
+																align='center'
+																w='full'
+															>
+																<Card.Title>
+																	Convalidación #{index + 1}
+																</Card.Title>
+																<Button
+																	onClick={() => removeConvalidation(index)}
+																	size='sm'
+																	variant='ghost'
+																	colorScheme='red'
+																>
+																	<FiX size={16} />
+																</Button>
+															</Flex>
+														</Card.Header>
+														<Card.Body>
+															<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+																<Box>
+																	<Text
+																		fontSize='sm'
+																		fontWeight='medium'
+																		color='gray.700'
+																		mb={2}
+																	>
+																		Cursos a Convalidar (
+																		{
+																			convalidation.coursesToConvalidateData
+																				.length
+																		}
+																		):
+																	</Text>
+																	<VStack align='start' gap={1}>
+																		{convalidation.coursesToConvalidateData.map(
+																			(course) => (
+																				<Text
+																					key={course.value}
+																					fontSize='sm'
+																					color='gray.600'
+																				>
+																					• {course.label} ({course.credits}{' '}
+																					créditos)
+																				</Text>
+																			)
+																		)}
+																	</VStack>
+																</Box>
+
+																<Box>
+																	<Text
+																		fontSize='sm'
+																		fontWeight='medium'
+																		color='gray.700'
+																		mb={2}
+																	>
+																		Curso Parámetro:
+																	</Text>
+																	<Text fontSize='sm' color='gray.600'>
+																		{convalidation.courseParameterData.label} (
+																		{convalidation.courseParameterData.credits}{' '}
+																		créditos)
+																	</Text>
+																</Box>
+															</SimpleGrid>
+															<Button
+																onClick={() => handleEditConvalidation(index)}
+																size='sm'
+																variant='ghost'
+																colorScheme='blue'
+															>
+																Editar
+															</Button>
+														</Card.Body>
+													</Card.Root>
+												))}
+											</VStack>
+										</VStack>
+									)}
+									{/* Lista de convalidaciones ya existentes (solo lectura) */}
+									{existingConvalidations.length > 0 && (
+										<VStack
+											gap={4}
+											align='stretch'
+											mt={convalidations.length > 0 ? 8 : 0}
 										>
-											<Card.Header>
-												<Card.Title>Convalidación #{idx + 1}</Card.Title>
-											</Card.Header>
-											<Card.Body>
-												<Text fontSize='sm' color='gray.700'>
-													<b>De cursos:</b>{' '}
-													{Array.isArray(c.from_curriculum_map)
-														? c.from_curriculum_map.join(', ')
-														: c.from_curriculum_map}
-												</Text>
-												<Text fontSize='sm' color='gray.700'>
-													<b>A curso:</b> {c.to_curriculum_map}
-												</Text>
-											</Card.Body>
-										</Card.Root>
-									))}
-								</VStack>
-							</VStack>
-						)}
-
-						{/* Instrucciones y confirmación */}
-						<Alert status='info' title='Información sobre Convalidaciones'>
-							Las convalidaciones permitirán que los cursos seleccionados de
-							otras mallas curriculares sean equivalentes al curso parámetro de
-							la malla base.
-						</Alert>
-
-						<Flex align='center' gap={2}>
-							<input
-								type='checkbox'
-								id='readInstructions'
-								checked={readInstructions}
-								onChange={(e) => setReadInstructions(e.target.checked)}
-								style={{ accentColor: '#3182CE', width: 18, height: 18 }}
-							/>
-							<label
-								htmlFor='readInstructions'
-								style={{
-									fontSize: '0.95em',
-									color: '#2D3748',
-									fontWeight: 500,
-								}}
-							>
-								He revisado las convalidaciones y confirmo la configuración.
-							</label>
-						</Flex>
+											<Flex justify='space-between' align='center'>
+												<Heading
+													fontSize='md'
+													fontWeight='medium'
+													color='gray.900'
+												>
+													Convalidaciones Existentes (No editables)
+												</Heading>
+												<Badge colorScheme='gray' fontSize='sm'>
+													Total: {existingConvalidations.length}
+												</Badge>
+											</Flex>
+											<VStack gap={3} align='stretch'>
+												{existingConvalidations.map((c, idx) => (
+													<Card.Root
+														key={c.id}
+														border='1px solid'
+														borderColor='gray.100'
+														rounded='lg'
+														bg='blue.50'
+													>
+														<Card.Header>
+															<Card.Title>Convalidación #{idx + 1}</Card.Title>
+														</Card.Header>
+														<Card.Body>
+															<Text fontSize='sm' color='gray.700'>
+																<b>De cursos:</b>{' '}
+																{Array.isArray(c.from_curriculum_map)
+																	? c.from_curriculum_map.join(', ')
+																	: c.from_curriculum_map}
+															</Text>
+															<Text fontSize='sm' color='gray.700'>
+																<b>A curso:</b> {c.to_curriculum_map}
+															</Text>
+														</Card.Body>
+													</Card.Root>
+												))}
+											</VStack>
+										</VStack>
+									)}
+								</Box>
+							</Box>
+						</SimpleGrid>
 					</Stack>
 				</Box>
 			</Stack>
