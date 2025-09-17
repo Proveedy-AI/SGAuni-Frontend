@@ -18,6 +18,7 @@ import {
 	FiShield,
 	FiGlobe,
 	FiSettings,
+  FiCalendar,
 } from 'react-icons/fi';
 import { Link, Outlet, useLocation } from 'react-router';
 
@@ -84,6 +85,12 @@ export const SettingsLayout = () => {
 			icon: FiGlobe,
 			permission: 'settings.countries.view',
 		},
+    {
+      href: '/settings/schedules-types',
+      label: 'Tipos de Horarios',
+      icon: FiCalendar,
+      permission: 'settings.schedules-types.view',
+    }
 	];
 
 	return (
