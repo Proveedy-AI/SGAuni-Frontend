@@ -4,3 +4,4 @@ export * from './useReadMyCourseGroups';
 export * from './useConfigureEvaluationByCourse';
 export * from './useReadEvaluationSummaryByCourse';
 export * from './useGenerateGradesReport';
+export * from './useDeleteCourseGroups';
