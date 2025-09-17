@@ -68,6 +68,7 @@ import SkeletonTable from '@/components/ui/SkeletonTable';
 import { useCreateCourseScheduleReviewMasive } from '@/hooks/enrollments_programs/schedule/useCreateCourseScheduleReviewMasive';
 import { useReadCurriculumMaps } from '@/hooks/curriculum_maps';
 import { useReadCurriculumMapsCourses } from '@/hooks/curriculum_maps_courses';
+import { useDeleteCourseGroups } from '@/hooks/course_groups';
 
 const timeSlots = [
 	'07:00',
@@ -1169,16 +1170,27 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 	};
 
 	const { mutate: deleteCourseSchedule, isPending } = useDeleteCourseSchedule();
+  const { mutate: deleteCouseGroup, isPending: isDeletingGroup } = useDeleteCourseGroups();
 
 	const handleDelete = (course) => {
 		deleteCourseSchedule(course.id, {
 			onSuccess: () => {
-				toaster.create({
-					title: 'Curso eliminado correctamente',
-					type: 'success',
-				});
-				refetchCourseSchedule();
-				setCourseToDelete(null);
+        deleteCouseGroup(course.course_group, {
+          onSuccess: () => {
+            toaster.create({
+              title: 'Curso eliminado correctamente',
+              type: 'success',
+            });
+            refetchCourseSchedule();
+            setCourseToDelete(null);
+          },
+          onError: (error) => {
+            toaster.create({
+              title: error.message,
+              type: 'error',
+            });
+          },
+        });
 			},
 			onError: (error) => {
 				toaster.create({
@@ -1548,7 +1560,7 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 															if (!e.open) setCourseToDelete(null); // 👈 cerrar limpia el estado
 														}}
 														onConfirm={() => handleDelete(courseToDelete)}
-														loading={isPending}
+														loading={isPending || isDeletingGroup}
 													>
 														<Text>
 															¿Estás seguro que quieres eliminar a

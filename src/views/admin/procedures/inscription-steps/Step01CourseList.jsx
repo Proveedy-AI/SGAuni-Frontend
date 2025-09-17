@@ -6,12 +6,10 @@ import {
 	Box,
 	Grid,
 	HStack,
-	Icon,
 	Table,
 	Text,
 	VStack,
 } from '@chakra-ui/react';
-import { FiX } from 'react-icons/fi';
 import {
 	useCreateCourseSelection,
 	useDeleteCourseSelection,
@@ -195,7 +193,6 @@ function CourseGroupsPanel({
 										<Button
 											bg='red'
 											size='sm'
-											leftIcon={<Icon as={FiX} />}
 											onClick={() => handleRemoveGroup(group.course_name)}
 											loading={loadingGroupRemoval === group.id}
 											isDisabled={
