@@ -11,6 +11,7 @@ import {
 	SettingsModalities,
 	AccountStudentProfile,
 	SettingsDataProccess,
+  SettingsSchedulesTypes,
 } from './views/admin/settings';
 import { UserList } from './views/admin/UserList';
 import { PrivateRoute, ProtectedRoute } from './PrivateRoute ';
@@ -526,6 +527,16 @@ function App() {
 									<Route
 										path='data-processing'
 										element={<SettingsDataProccess />}
+									/>
+								</Route>
+                <Route
+									element={
+										<ProtectedRoute requiredPermission='settings.schedules-types.view' />
+									}
+								>
+									<Route
+										path='schedules-types'
+										element={<SettingsSchedulesTypes />}
 									/>
 								</Route>
 							</Route>

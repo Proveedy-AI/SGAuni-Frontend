@@ -255,6 +255,7 @@ const groupTitles = {
 		myenrollments: 'Mi Matrícula (Estudiante)',
 		mycourses: 'Mis Cursos (Estudiante)',
 		'data-proccess': 'Procesamiento de Datos',
+    'schedules-types': 'Tipos de Horarios',
 		myclasses: 'Mis Clases (Docente)',
 		teacher: 'Docente',
 		enrolled: 'Matriculados',
