@@ -69,6 +69,7 @@ import { useCreateCourseScheduleReviewMasive } from '@/hooks/enrollments_program
 import { useReadCurriculumMaps } from '@/hooks/curriculum_maps';
 import { useReadCurriculumMapsCourses } from '@/hooks/curriculum_maps_courses';
 import { useDeleteCourseGroups } from '@/hooks/course_groups';
+import { useReadScheduleTypes } from '@/hooks/schedule_types';
 
 const timeSlots = [
 	'07:00',
@@ -111,7 +112,6 @@ const daysOfWeek2 = [
 ];
 
 const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
-  console.log(data)
 	const [formData, setFormData] = useState({
 		course_id: null,
 		prerequisite_ids: [],
@@ -122,7 +122,18 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 		teacher_id: '',
 		capacity: '',
 		schedules: [{ day_of_week: null, start_time: '', end_time: '' }],
+    type_schedule: null,
 	});
+
+  const { data: dataTypeSchedules, isLoading: isLoadingTypeSchedules } = useReadScheduleTypes();
+
+  const TypeSchedulesOptions = 
+    dataTypeSchedules?.results
+      ?.filter((item) => item.enabled)
+      ?.map((item) => ({
+        label: item?.name,
+        value: item?.id
+      })) 
 
 	// Ya no se usa dataCourses, solo dataCurriculumMapCourses
 
@@ -163,6 +174,7 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 		if (!formData.credits) newErrors.credits = 'Los créditos son requeridos';
 		if (!formData.cycle) newErrors.cycle = 'El ciclo es requerido';
 		if (!formData.capacity) newErrors.capacity = 'La capacidad es requerida';
+    if (!formData.type_schedule) newErrors.type_schedule = 'El tipo de horario es requerido';
 		if (!formData.schedules?.length)
 			newErrors.schedules = 'Debe agregar al menos un horario';
 
@@ -182,7 +194,7 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 	// Usar dataCurriculumMapCourses para las opciones de cursos
 	const coursesOptions =
 		dataCurriculumMapCourses?.results?.map((course) => ({
-			value: course.course, // id del curso
+			value: course.id, // id del curso X -> Id del curriculum map course
 			label: `${course.course_name} (${course.course_code})`,
 			credits: course.credits,
 			cycle: course.cycle,
@@ -239,15 +251,17 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 		if (!validateFields()) {
 			return;
 		}
+    
+    console.log({formData})
 
 		const payload = {
 			enrollment_period_id: data.enrollment_period,
 			enrollment_program_id: data.id,
 			course_id: formData.course_id,
-			prerequisite_ids: formData.prerequisite_ids,
-			is_mandatory: formData.is_mandatory,
-			cycle: formData.cycle,
-			credits: parseInt(formData.credits),
+			//prerequisite_ids: formData.prerequisite_ids,
+			//is_mandatory: formData.is_mandatory,
+			//cycle: formData.cycle,
+			//credits: parseInt(formData.credits),
 			group_code: formData.group_code,
 			teacher_id: parseInt(formData.teacher_id),
 			capacity: parseInt(formData.capacity),
@@ -256,6 +270,7 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 				start_time: schedule.start_time,
 				end_time: schedule.end_time,
 			})),
+      type_schedule: formData?.type_schedule
 		};
 
 		createCourseSchedule(payload, {
@@ -269,8 +284,7 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 			},
 			onError: (error) => {
 				const backendError =
-					error.response?.data?.error || error.message || 'Error desconocido';
-
+					error.response?.data?.error || error.message || 'Error desconocido'
 				toaster.create({
 					title: 'Error al agregar curso',
 					description: backendError,
@@ -420,6 +434,7 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 									type='number'
 									min={1}
 									disabled
+                  variant="flushed"
 								/>
 							</Field>
 
@@ -438,6 +453,7 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 									min={1}
 									max={10}
 									disabled
+                  variant="flushed"
 								/>
 							</Field>
 
@@ -454,6 +470,26 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 									type='number'
 									min={1}
 								/>
+							</Field>
+              <Field
+								label='Tipo de horario:'
+								required
+								invalid={!!errors.type_schedule}
+								errorText={errors.type_schedule}
+							>
+								<ReactSelect
+                  options={TypeSchedulesOptions}
+                  loading={isLoadingTypeSchedules}
+                  value={
+										TypeSchedulesOptions?.find(
+											(opt) => opt.value === formData.type_schedule
+										) || null
+									}
+									onChange={(opt) => handleSelectChange('type_schedule')(opt)}
+									isClearable
+									isSearchable
+									placeholder='Selecciona un tipo de horario'
+                />
 							</Field>
 							<Field label='¿Es obligatorio?'>
 								<RadioGroup value={formData.is_mandatory ? 'yes' : 'no'} isDisabled direction='row' spaceX={4}>
