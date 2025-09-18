@@ -3,23 +3,30 @@ import { Field, Modal, toaster, Tooltip } from "@/components/ui";
 import { useRef, useState } from "react";
 import { Box, IconButton, Input, Stack } from '@chakra-ui/react';
 import { HiPencil } from 'react-icons/hi2';
+import { useUpdateScheduleType } from '@/hooks/schedule_types';
+import { ReactSelect } from '@/components/select';
 
 export const EditScheduleTypeModal = ({ data, item, fetchData }) => {
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
   
   const [name, setName] = useState(item?.name || '');
+  const [isSingle, setIsSingle] = useState(item?.is_single ? { label: 'Sí', value: true } : { label: 'No', value: false });
+
+  const isSingleOptions = [
+    { label: 'Sí', value: true },
+    { label: 'No', value: false },
+  ];
 
   const [errors, setErrors] = useState({});
 
-  //const { mutate: update, isPending: loading } = useUpdateCourse();
-  const update = () => {};
-  const loading = false;
+  const { mutate: update, isPending: loading } = useUpdateScheduleType();
 
   const validate = () => {
     const newErrors = {};
     if (!name) newErrors.name = 'El nombre del curso es requerido';
-    if (data.find((scheduleType) => scheduleType?.name === name)) newErrors.name = 'El nombre ya fue registrado';
+    if (data.find((scheduleType) => scheduleType?.name === name && scheduleType.id !== item.id)) newErrors.name = 'El nombre ya fue registrado';
+    if (isSingle === null) newErrors.isSingle = 'El campo es único es requerido';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -32,6 +39,7 @@ export const EditScheduleTypeModal = ({ data, item, fetchData }) => {
 
     const payload = {
       name: name,
+      is_single: isSingle?.value,
     };
 
     update({ id: item.id, payload }, {
@@ -54,13 +62,13 @@ export const EditScheduleTypeModal = ({ data, item, fetchData }) => {
 
   return (
     <Modal
-      title='Editar curso'
+      title='Editar tipo de horario'
       placement='center'
       size='xl'
       trigger={
         <Box>
           <Tooltip
-            content='Editar curso'
+            content='Editar tipo de horario'
             positioning={{ placement: 'bottom-center' }}
             showArrow
             openDelay={0}
@@ -92,7 +100,7 @@ export const EditScheduleTypeModal = ({ data, item, fetchData }) => {
         >
         <Box>
           <Field
-            label='Nombre del curso:'
+            label='Nombre del tipo de horario:'
             invalid={!!errors.name}
             errorText={errors.name}
             required
@@ -100,6 +108,19 @@ export const EditScheduleTypeModal = ({ data, item, fetchData }) => {
             <Input
               value={name}
               onChange={(event) => setName(event.target.value)}
+            />
+          </Field>
+          <Field
+            label='¿Es único?:'
+            invalid={!!errors.isSingle}
+            errorText={errors.isSingle}
+            required
+          >
+            <ReactSelect
+              options={isSingleOptions}
+              value={isSingle}
+              onChange={setIsSingle}
+              isClearable
             />
           </Field>
         </Box>

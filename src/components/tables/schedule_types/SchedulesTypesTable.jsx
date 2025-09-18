@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
-import { Box, Group, HStack, Table } from '@chakra-ui/react';
-import { Pagination } from '@/components/ui';
+import { Box, Group, HStack, Switch, Table } from '@chakra-ui/react';
+import { Pagination, toaster } from '@/components/ui';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { SortableHeader } from '@/components/ui/SortableHeader';
 import SkeletonTable from '@/components/ui/SkeletonTable';
 import useSortedData from '@/utils/useSortedData';
-import { EditScheduleTypeModal, DeleteScheduleTypeModal } from '@/components/forms/schedule_types';
+import { EditScheduleTypeModal } from '@/components/forms/schedule_types';
+import { useUpdateScheduleType } from '@/hooks/schedule_types';
 
 const Row = memo(
   ({
@@ -17,6 +18,29 @@ const Row = memo(
     sortConfig,
     data,
   }) => {
+    const { mutate: update, isPending: isPendingToggle } = useUpdateScheduleType();
+
+    const handleStatusChange = (id) => {
+      const payload = { enabled: !item.enabled };
+      update({ id, payload }, {
+        onSuccess: () => {
+          toaster.create({
+            title: `Estado del tipo de horario actualizado correctamente`,
+            type: 'success',
+          })
+          fetchData();
+        },
+        onError: (error) => {
+          console.error(error);
+          toaster.create({
+            title:
+              error?.message || 'Ocurrió un error al cambiar el estado del tipo de horario',
+            type: 'error',
+          });
+        },
+      });
+    };
+
     return (
       <Table.Row key={item.id} bg={{ base: 'white', _dark: 'its.gray.500' }}>
         <Table.Cell>
@@ -25,12 +49,30 @@ const Row = memo(
             : startIndex + index + 1}
         </Table.Cell>
         <Table.Cell>{item.name}</Table.Cell>
+        <Table.Cell>{item.is_single ? 'Sí' : 'No'}</Table.Cell>
+        <Table.Cell>
+          <Switch.Root
+            checked={item.enabled}
+            onCheckedChange={() => handleStatusChange(item.id)}
+            disabled={isPendingToggle}
+          >
+            <Switch.Label mr={5} w="64px">
+              {item.enabled ? 'Activo' : 'Inactivo'}
+            </Switch.Label>
+            <Switch.HiddenInput />
+            <Switch.Control
+              _checked={{
+                bg: 'uni.secondary',
+              }}
+              bg='uni.red.400'
+            />
+          </Switch.Root>
+        </Table.Cell>
 
         <Table.Cell>
           <HStack justify='space-between'>
             <Group>
               <EditScheduleTypeModal data={data} item={item} fetchData={fetchData} />
-              <DeleteScheduleTypeModal item={item} fetchData={fetchData} />
             </Group>
           </HStack>
         </Table.Cell>
@@ -82,10 +124,26 @@ export const SchedulesTypesTable = ({
                   onSort={setSortConfig}
                 />
               </Table.ColumnHeader>
-              <Table.ColumnHeader w='60%'>
+              <Table.ColumnHeader w='30%'>
                 <SortableHeader
                   label='Nombre'
                   columnKey='name'
+                  sortConfig={sortConfig}
+                  onSort={setSortConfig}
+                />
+              </Table.ColumnHeader>
+              <Table.ColumnHeader w='20%'>
+                <SortableHeader
+                  label='¿Es único?'
+                  columnKey='is_single'
+                  sortConfig={sortConfig}
+                  onSort={setSortConfig}
+                />
+              </Table.ColumnHeader>
+              <Table.ColumnHeader w='20%'>
+                <SortableHeader
+                  label='Estado'
+                  columnKey='enabled'
                   sortConfig={sortConfig}
                   onSort={setSortConfig}
                 />
@@ -95,7 +153,7 @@ export const SchedulesTypesTable = ({
           </Table.Header>
           <Table.Body>
             {isLoading ? (
-              <SkeletonTable columns={7} />
+              <SkeletonTable columns={5} />
             ) : visibleRows?.length > 0 ? (
               visibleRows.map((item, index) => (
                 <Row
@@ -109,7 +167,7 @@ export const SchedulesTypesTable = ({
                 />
               ))
             ) : (
-              <Table.Cell colSpan={7} textAlign='center' py={2}>
+              <Table.Cell colSpan={5} textAlign='center' py={2}>
                 No hay datos disponibles.
               </Table.Cell>
             )}

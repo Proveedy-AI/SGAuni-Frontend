@@ -1,4 +1,5 @@
 import { ConfirmModal, toaster } from "@/components/ui";
+import { useDeleteScheduleType } from "@/hooks/schedule_types";
 import { IconButton, Span, Text } from "@chakra-ui/react";
 import PropTypes from "prop-types";
 import { useState } from "react";
@@ -6,9 +7,9 @@ import { FiTrash2 } from "react-icons/fi";
 
 export const DeleteScheduleTypeModal = ({ item, fetchData }) => {
   const [open, setOpen] = useState(false);
-  //const { mutateAsync: remove, isPending: loadingDelete } = useDeleteScheduleTypeModal();
-  const remove = () => {};
-  const loadingDelete = false;
+  const { mutateAsync: remove, isPending: loadingDelete } = useDeleteScheduleType();
+  // const remove = () => {};
+  // const loadingDelete = false;
 
   const handleDelete = async (id) => {
     try {

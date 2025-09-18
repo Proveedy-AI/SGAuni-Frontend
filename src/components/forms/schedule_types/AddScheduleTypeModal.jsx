@@ -3,27 +3,36 @@ import { Button, Field, Modal, toaster } from "@/components/ui";
 import { useRef, useState } from "react";
 import { FiPlus } from 'react-icons/fi';
 import { Box, Input, Stack } from '@chakra-ui/react';
+import { useCreateScheduleType } from '@/hooks/schedule_types';
+import { ReactSelect } from '@/components/select';
 
 export const AddScheduleTypeModal = ({ data, fetchData }) => {
   const contentRef = useRef();
   const [open, setOpen] = useState(false);
   
   const [name, setName] = useState('');
+  const [isSingle, setIsSingle] = useState(null);
+
+  const isSingleOptions = [
+    { label: 'Sí', value: true },
+    { label: 'No', value: false },
+  ];
 
   const [errors, setErrors] = useState({});
 
   const validate = () => {
     const newErrors = {};
     if (!name) newErrors.name = 'El nombre del curso es requerido';
-    if (data.find((scheduleType) => scheduleType?.name === name)) newErrors.name = 'El nombre ya fue registrado';
-
+    if (data.find((scheduleType) => scheduleType?.name?.trim() === name?.trim())) newErrors.name = 'El nombre ya fue registrado';
+    if (isSingle === null) newErrors.isSingle = 'El campo es único es requerido';
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }
 
-  //const { mutate: register, isPending: loading } = useCreateScheduleType();
-  const register = () => {};
-  const loading = false;
+  const { mutate: register, isPending: loading } = useCreateScheduleType();
+  // const register = () => {};
+  // const loading = false;
 
   const handleSubmitData = async (e) => {
     e.preventDefault();
@@ -32,7 +41,11 @@ export const AddScheduleTypeModal = ({ data, fetchData }) => {
 
     const payload = {
       name: name,
+      is_single: isSingle?.value,
+      enabled: true,
     };
+
+    console.log(payload);
 
     register(payload, {
       onSuccess: () => {
@@ -43,6 +56,7 @@ export const AddScheduleTypeModal = ({ data, fetchData }) => {
         setOpen(false);
         fetchData();
         setName('');
+        setIsSingle(null);
       },
       onError: (error) => {
         toaster.create({
@@ -55,7 +69,7 @@ export const AddScheduleTypeModal = ({ data, fetchData }) => {
 
   return (
     <Modal
-      title='Agregar nuevo curso'
+      title='Agregar nuevo tipo de horario'
       placement='center'
       size='xl'
       trigger={
@@ -89,7 +103,7 @@ export const AddScheduleTypeModal = ({ data, fetchData }) => {
       >
         <Box>
           <Field
-            label='Nombre del curso:'
+            label='Nombre del tipo de horario:'
             invalid={!!errors.name}
             errorText={errors.name}
             required
@@ -97,6 +111,19 @@ export const AddScheduleTypeModal = ({ data, fetchData }) => {
             <Input
               value={name}
               onChange={(event) => setName(event.target.value)}
+            />
+          </Field>
+          <Field
+            label='¿Es único?:'
+            invalid={!!errors.isSingle}
+            errorText={errors.isSingle}
+            required
+          >
+            <ReactSelect
+              options={isSingleOptions}
+              value={isSingle}
+              onChange={setIsSingle}
+              isClearable
             />
           </Field>
         </Box>
