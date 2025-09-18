@@ -1,11 +1,14 @@
 import PropTypes from 'prop-types';
-import { Button, toaster, useColorModeValue } from '@/components/ui';
+import { Button, Modal, toaster, Tooltip, useColorModeValue } from '@/components/ui';
 import {
 	Accordion,
 	Badge,
 	Box,
 	Grid,
+	Group,
+	Heading,
 	HStack,
+	IconButton,
 	Table,
 	Text,
 	VStack,
@@ -15,6 +18,93 @@ import {
 	useDeleteCourseSelection,
 	useReadCourseGroupsById,
 } from '@/hooks/course-selections';
+import { FiCalendar } from 'react-icons/fi';
+import { useRef, useState } from 'react';
+
+const ViewCourseGroupSchedulesModal = ({ item }) => {
+  const [open, setOpen] = useState(false);
+  const contentRef = useRef();
+  console.log(item)
+
+  return (
+    <Modal
+      trigger={
+        <Box>
+          <Tooltip
+            content='Ver horarios del grupo'
+						positioning={{ placement: 'bottom-center' }}
+						showArrow
+						openDelay={0}
+          >
+            <IconButton
+              variant='outline'
+							aria-label='Ver horarios del grupo'
+							size='sm'
+              bg="yellow.300"
+							_hover={{ bg: 'yellow.400' }}
+							css={{
+								_icon: {
+									width: '5',
+									height: '5',
+								},
+							}}
+            >
+              <FiCalendar />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      }
+      size='3xl'
+			open={open}
+			hiddenFooter={true}
+			onOpenChange={(e) => setOpen(e.open)}
+			contentRef={contentRef}
+    >
+      <Box p={4}>
+        <Heading mb={4} gap={2}>
+          <Text fontWeight="bold" fontSize="lg">{item.course_name}</Text>
+          <Badge colorPalette="blue" variant="subtle" fontSize="md">
+            Sección: {item.group_code}
+          </Badge>
+        </Heading>
+        <Table.Root variant="simple" size="sm" w="100%">
+          <Table.Header bg="gray.50">
+            <Table.Row>
+              <Table.Cell w="20%">Día</Table.Cell>
+              <Table.Cell w="30%">Horas de clase</Table.Cell>
+              <Table.Cell w="20%">Tipo</Table.Cell>
+              <Table.Cell w="30%">Docente</Table.Cell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {Array.isArray(item?.schedule_info) && item.schedule_info.length > 0 ? (
+              item.schedule_info.map((s, idx) => (
+                <Table.Row key={idx}>
+                  <Table.Cell>{s.day}</Table.Cell>
+                  <Table.Cell>{s.duration}</Table.Cell>
+                  <Table.Cell>{s.type_schedule || '-'}</Table.Cell>
+                  <Table.Cell>{s.teacher_name || '-'}</Table.Cell>
+                </Table.Row>
+              ))
+            ) : (
+              <Table.Row>
+                <Table.Cell colSpan={5}>
+                  <Text color="gray.400" textAlign="center">
+                    Sin horarios registrados
+                  </Text>
+                </Table.Cell>
+              </Table.Row>
+            )}
+          </Table.Body>
+        </Table.Root>
+      </Box>
+    </Modal>
+  )
+}
+
+ViewCourseGroupSchedulesModal.propTypes = {
+  item: PropTypes.object,
+}
 
 // ---------- Utils compartidos ----------
 const timeToMinutes = (timeString) => {
@@ -189,37 +279,40 @@ function CourseGroupsPanel({
 								</Table.Cell>
 
 								<Table.Cell textAlign='right'>
-									{isThisGroupSelected ? (
-										<Button
-											bg='red'
-											size='sm'
-											onClick={() => handleRemoveGroup(group.course_name)}
-											loading={loadingGroupRemoval === group.id}
-											isDisabled={
-												loadingGroupRemoval === group.id || isSomeRequestPending
-											}
-										>
-											Quitar
-										</Button>
-									) : (
-										<Button
-											bg={isDisabled ? 'gray.400' : 'green'}
-											size='sm'
-											onClick={() => handleSelectGroup(group.id)}
-											loading={loadingGroupSelection === group.id}
-											disabled={isDisabled}
-										>
-											{isGroupFull
-												? 'Lleno'
-												: courseAlreadySel
-													? 'Ya seleccionado'
-													: hasConflict
-														? 'Cruce de horario'
-														: (course.status === 'blocked' || course.status === 'completed')
-															? 'Bloqueado'
-															: 'Seleccionar'}
-										</Button>
-									)}
+									<Group>
+                    {isThisGroupSelected ? (
+                      <Button
+                        bg='red'
+                        size='sm'
+                        onClick={() => handleRemoveGroup(group.course_name)}
+                        loading={loadingGroupRemoval === group.id}
+                        isDisabled={
+                          loadingGroupRemoval === group.id || isSomeRequestPending
+                        }
+                      >
+                        Quitar
+                      </Button>
+                    ) : (
+                      <Button
+                        bg={isDisabled ? 'gray.400' : 'green'}
+                        size='sm'
+                        onClick={() => handleSelectGroup(group.id)}
+                        loading={loadingGroupSelection === group.id}
+                        disabled={isDisabled}
+                      >
+                        {isGroupFull
+                          ? 'Lleno'
+                          : courseAlreadySel
+                            ? 'Ya seleccionado'
+                            : hasConflict
+                              ? 'Cruce de horario'
+                              : (course.status === 'blocked' || course.status === 'completed')
+                                ? 'Bloqueado'
+                                : 'Seleccionar'}
+                      </Button>
+                    )}
+                    <ViewCourseGroupSchedulesModal item={group} />
+                  </Group>
 								</Table.Cell>
 							</Table.Row>
 						);

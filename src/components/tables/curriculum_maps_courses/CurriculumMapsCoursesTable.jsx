@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { memo, useState } from 'react';
-import { Badge, Box, Card, Flex, Group, Heading, HStack, IconButton, Table } from '@chakra-ui/react';
+import { Badge, Box, Card, Flex, Group, Heading, HStack, IconButton, Span, Table, Text } from '@chakra-ui/react';
 import { ModalSimple, Pagination, toaster, Tooltip } from '@/components/ui';
 import useSortedData from '@/utils/useSortedData';
 import { SortableHeader } from '@/components/ui/SortableHeader';
@@ -85,7 +85,6 @@ const Row = memo(
                 placement='center'
                 open={viewPreRequisitesModalOpen}
                 onOpenChange={(e) => setViewPreRequisitesModalOpen(e.open)}
-                size='4xl'
                 hiddenFooter={true}
               >
                 <Card.Root minH='250px'>
@@ -125,7 +124,13 @@ const Row = memo(
                 isLoading={isLoading}
                 saveLabel='Si, Eliminar'
               >
-
+                <Text>
+                  ¿Estás seguro que quieres eliminar el curso
+                  <Span fontWeight='semibold' px='1'>
+                    {item.name}
+                  </Span>
+                  de la lista de modalidades?
+                </Text>
               </ModalSimple>
             </Group>
           </HStack>
