@@ -127,7 +127,7 @@ const Row = memo(
                 <Text>
                   ¿Estás seguro que quieres eliminar el curso
                   <Span fontWeight='semibold' px='1'>
-                    {item.name}
+                    {item.course_name} ({item.course_code})
                   </Span>
                   de la lista de modalidades?
                 </Text>
