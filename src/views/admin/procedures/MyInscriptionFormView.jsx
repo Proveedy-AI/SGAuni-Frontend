@@ -141,11 +141,6 @@ export const MyInscriptionFormView = () => {
 		);
 	}
 
-	// Handlers
-	const handleRefreshSelections = () => {
-		refetchMySelections();
-	};
-
 	return (
 		<Box spaceY='5' p={{ base: 4, md: 6 }} maxW='8xl' mx='auto'>
 			<ResponsiveBreadcrumb
@@ -207,7 +202,7 @@ export const MyInscriptionFormView = () => {
 						mySelections={mySelections?.selections}
 						selectedCourse={selectedCourse}
 						setSelectedCourse={setSelectedCourse}
-						onRefreshSelections={handleRefreshSelections}
+						onRefreshSelections={refetchMySelections}
 						isSomeRequestPending={isSomeRequestPending}
 					/>
 				)}
