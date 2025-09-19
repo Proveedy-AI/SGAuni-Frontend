@@ -153,11 +153,8 @@ function CourseGroupsPanel({
 	course,
 	currentEnrollment,
 	mySelections,
+  onRefreshSelections,
 	isSomeRequestPending,
-	loadingGroupSelection,
-	loadingGroupRemoval,
-	handleSelectGroup,
-	handleRemoveGroup,
 }) {
 	const { data: courseGroups, isLoading: isLoadingGroups } =
 		useReadCourseGroupsById(
@@ -167,6 +164,53 @@ function CourseGroupsPanel({
 			{ enabled: true }
 		);
 
+	const { mutateAsync: createSelection, isPending: loadingGroupSelection } =
+		useCreateCourseSelection();
+	const { mutateAsync: removeSelection, isPending: loadingGroupRemoval } =
+		useDeleteCourseSelection();
+
+	const handleAddCourseGroup = async (groupCode, courseGroups) => {
+		try {
+			const groups = courseGroups.filter(g => g.group_code === groupCode);
+			await Promise.all(
+				groups.map((g) =>
+					createSelection({ courseGroupId: g.id, uuid: currentEnrollment?.uuid })
+				)
+			);
+			toaster.create({
+				title: 'Se agregó el grupo a su selección',
+				type: 'success'
+			});
+		} catch {
+			toaster.create({
+				title: 'Error al agregar grupo de curso',
+				type: 'error'
+			});
+		} finally {
+			await onRefreshSelections();
+		}
+	}
+
+	const handleRemoveCourseGroup = async (groupCode, mySelections) => {
+		try {
+			const groups = mySelections.filter(g => g.group_code === groupCode);
+			await Promise.all(
+				groups.map((g) => removeSelection(g.id))
+			);
+			toaster.create({
+				title: 'Se eliminó el grupo de su selección',
+				type: 'success'
+			});
+		} catch {
+			toaster.create({
+				title: 'Error al eliminar grupo de curso',
+				type: 'error'
+			});
+		} finally {
+			await onRefreshSelections();
+		}
+	}
+  
 	const uniqueGroups = courseGroups
 		? Object.values(
 				courseGroups.reduce((acc, group) => {
@@ -185,16 +229,6 @@ function CourseGroupsPanel({
 			</Box>
 		);
 	}
-
-  const handleAddCourseGroup = (groupCode, courseGroups) => {
-    const groups = courseGroups.filter(g => g.group_code === groupCode);
-    console.log(groups);
-  }
-
-  const handleRemoveCourseGroup = (groupCode, courseGroups) => {
-    const groups = courseGroups.filter(g => g.group_code === groupCode);
-    console.log(groups);
-  }
 
 	return (
 		<Box
@@ -328,7 +362,7 @@ function CourseGroupsPanel({
 												bg='red'
 												size='sm'
 												//onClick={() => handleRemoveGroup(group.course_name)}
-												onClick={() => handleRemoveCourseGroup(group.group_code, courseGroups)}
+												onClick={() => handleRemoveCourseGroup(group.group_code, mySelections)}
                         loading={loadingGroupRemoval === group.id}
 												isDisabled={
 													loadingGroupRemoval === group.id ||
@@ -380,10 +414,6 @@ CourseGroupsPanel.propTypes = {
 	mySelections: PropTypes.array,
 	onRefreshSelections: PropTypes.func.isRequired,
 	isSomeRequestPending: PropTypes.bool,
-	loadingGroupSelection: PropTypes.any,
-	loadingGroupRemoval: PropTypes.any,
-	handleSelectGroup: PropTypes.func.isRequired,
-	handleRemoveGroup: PropTypes.func.isRequired,
 };
 
 // ---------- Componente principal con Accordion ----------
@@ -396,150 +426,100 @@ export const Step01CourseList = ({
 }) => {
 	const bgColor = useColorModeValue('white', 'gray.800');
 
-	const { mutateAsync: createSelection, isPending: loadingGroupSelection } =
-		useCreateCourseSelection();
-	const { mutateAsync: removeSelection, isPending: loadingGroupRemoval } =
-		useDeleteCourseSelection();
+  const uniqueMySelections = mySelections?.filter(
+    (sel, idx, arr) =>
+      arr.findIndex(
+        (s) =>
+          s.course_code === sel.course_code && s.group_code === sel.group_code
+      ) === idx
+  );
 
-	const handleSelectGroup = async (groupId) => {
-		await createSelection(
-			{ courseGroupId: groupId, uuid: currentEnrollment?.uuid },
-			{
-				onSuccess: () => {
-					toaster.create({
-						title: 'Grupo añadido a la matrícula',
-						type: 'success',
-					});
-					onRefreshSelections();
-				},
-				onError: (error) => {
-					toaster.create({
-						title: error?.message || 'Error al añadir el grupo',
-						type: 'error',
-					});
-				},
-			}
-		);
-	};
+  return (
+    <Box>
+      <HStack justify='space-between' mb={4}>
+        <Text fontSize='lg' fontWeight='semibold'>
+          Listado de Cursos
+        </Text>
+        <Badge
+          colorPalette='blue'
+          fontSize='lg'
+          px={4}
+          py={2}
+          borderRadius='full'
+        >
+          {uniqueMySelections?.length || 0}{' '}
+          cursos seleccionados
+        </Badge>
+      </HStack>
 
-	const handleRemoveGroup = async (groupName) => {
-		const selection = mySelections?.find((s) => s.course_name === groupName);
-		if (!selection) {
-			toaster.create({
-				title: 'Grupo no encontrado en la selección',
-				type: 'error',
-			});
-			return;
-		}
+      <Accordion.Root multiple>
+        {courses?.map((course, index) => (
+          <Accordion.Item
+            key={course.course_id}
+            value={String(index)}
+            border='1px solid'
+            borderColor='gray.200'
+            borderRadius='lg'
+            mb={3}
+            bg={bgColor}
+          >
+            <>
+              <h2>
+                <Accordion.ItemTrigger _expanded={{ bg: 'blue.50' }} p={4}>
+                  <Grid
+                    templateColumns={{ base: '1fr', md: '2fr 1fr' }}
+                    gap={4}
+                    alignItems='center'
+                    w='100%'
+                  >
+                    <VStack align='start' gap={0}>
+                      <Text fontWeight='semibold'>{course.course_name}</Text>
+                      <Text fontSize='sm' color='gray.500'>
+                        {course.course_code} · Ciclo {course.cycle} ·{' '}
+                        {course.credits} créditos
+                      </Text>
 
-		await removeSelection(selection.id, {
-			onSuccess: () => {
-				toaster.create({
-					title: 'Grupo eliminado de la matrícula',
-					type: 'success',
-				});
-				onRefreshSelections();
-			},
-			onError: (error) => {
-				toaster.create({
-					title: error?.message || 'Error al eliminar el grupo',
-					type: 'error',
-				});
-			},
-		});
-	};
+                      {course.status === 'blocked' &&
+                        course.reasons?.length > 0 && (
+                          <Text fontSize='xs' color='red.500' mt={1}>
+                            {course.reasons[0]}
+                          </Text>
+                        )}
+                    </VStack>
 
-	return (
-		<Box>
-			<HStack justify='space-between' mb={4}>
-				<Text fontSize='lg' fontWeight='semibold'>
-					Listado de Cursos
-				</Text>
-				<Badge
-					colorPalette='blue'
-					fontSize='lg'
-					px={4}
-					py={2}
-					borderRadius='full'
-				>
-					{mySelections?.length || 0} cursos seleccionados
-				</Badge>
-			</HStack>
+                    <HStack justify={{ base: 'start', md: 'end' }} gap={2}>
+                      {course.status === 'blocked' && (
+                        <Badge colorPalette='red' variant='subtle'>
+                          Bloqueado
+                        </Badge>
+                      )}
+                      {isCourseSelected(mySelections, course.course_code) && (
+                        <Badge colorPalette='green' variant='subtle'>
+                          Seleccionado
+                        </Badge>
+                      )}
+                    </HStack>
+                  </Grid>
 
-			<Accordion.Root multiple>
-				{courses?.map((course, index) => (
-					<Accordion.Item
-						key={course.course_id}
-						value={String(index)}
-						border='1px solid'
-						borderColor='gray.200'
-						borderRadius='lg'
-						mb={3}
-						bg={bgColor}
-					>
-						<>
-							<h2>
-								<Accordion.ItemTrigger _expanded={{ bg: 'blue.50' }} p={4}>
-									<Grid
-										templateColumns={{ base: '1fr', md: '2fr 1fr' }} // 1 columna en móvil, 2 en desktop
-										gap={4}
-										alignItems='center'
-										w='100%'
-									>
-										{/* Columna izquierda: info del curso */}
-										<VStack align='start' gap={0}>
-											<Text fontWeight='semibold'>{course.course_name}</Text>
-											<Text fontSize='sm' color='gray.500'>
-												{course.course_code} · Ciclo {course.cycle} ·{' '}
-												{course.credits} créditos
-											</Text>
+                  <Accordion.ItemIndicator />
+                </Accordion.ItemTrigger>
+              </h2>
 
-											{course.status === 'blocked' &&
-												course.reasons?.length > 0 && (
-													<Text fontSize='xs' color='red.500' mt={1}>
-														{course.reasons[0]}
-													</Text>
-												)}
-										</VStack>
-
-										{/* Columna derecha: estado / badges */}
-										<HStack justify={{ base: 'start', md: 'end' }} gap={2}>
-											{course.status === 'blocked' && (
-												<Badge colorPalette='red' variant='subtle'>
-													Bloqueado
-												</Badge>
-											)}
-											{isCourseSelected(mySelections, course.course_code) && (
-												<Badge colorPalette='green' variant='subtle'>
-													Seleccionado
-												</Badge>
-											)}
-										</HStack>
-									</Grid>
-
-									<Accordion.ItemIndicator />
-								</Accordion.ItemTrigger>
-							</h2>
-
-							<Accordion.ItemContent pb={4}>
-								<CourseGroupsPanel
-									course={course}
-									currentEnrollment={currentEnrollment}
-									mySelections={mySelections}
-									onRefreshSelections={onRefreshSelections}
-									isSomeRequestPending={isSomeRequestPending}
-									loadingGroupSelection={loadingGroupSelection}
-									loadingGroupRemoval={loadingGroupRemoval}
-									handleSelectGroup={handleSelectGroup}
-									handleRemoveGroup={handleRemoveGroup}
-								/>
-							</Accordion.ItemContent>
-						</>
-					</Accordion.Item>
-				))}
-			</Accordion.Root>
-		</Box>
-	);
+              <Accordion.ItemContent pb={4}>
+                <CourseGroupsPanel
+                  course={course}
+                  currentEnrollment={currentEnrollment}
+                  mySelections={mySelections}
+                  onRefreshSelections={onRefreshSelections}
+                  isSomeRequestPending={isSomeRequestPending}
+                />
+              </Accordion.ItemContent>
+            </>
+          </Accordion.Item>
+        ))}
+      </Accordion.Root>
+    </Box>
+  );
 };
 
 Step01CourseList.propTypes = {
