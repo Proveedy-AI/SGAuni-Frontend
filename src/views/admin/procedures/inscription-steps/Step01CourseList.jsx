@@ -217,15 +217,40 @@ function CourseGroupsPanel({
 		}
 	};
   
+	// Agrupar por group_code y combinar los horarios de todos los grupos con el mismo group_code
 	const uniqueGroups = courseGroups
 		? Object.values(
-				courseGroups.reduce((acc, group) => {
-					if (!acc[group.group_code]) {
-						acc[group.group_code] = group;
-					}
-					return acc;
-				}, {})
-			)
+			courseGroups.reduce((acc, group) => {
+				if (!acc[group.group_code]) {
+					// Copia el grupo base
+					acc[group.group_code] = { ...group };
+					// Inicializa schedule_info como array
+					acc[group.group_code].schedule_info = Array.isArray(group.schedule_info)
+						? [...group.schedule_info]
+						: group.schedule_info
+							? [group.schedule_info]
+							: [];
+				} else {
+					// Si ya existe, suma los horarios
+					const current = acc[group.group_code].schedule_info || [];
+					const newSchedules = Array.isArray(group.schedule_info)
+						? group.schedule_info
+						: group.schedule_info
+							? [group.schedule_info]
+							: [];
+					// Evitar duplicados exactos de horario (por day, start_time, end_time)
+					newSchedules.forEach((sch) => {
+						if (!current.some(
+							(c) => c.day === sch.day && c.start_time === sch.start_time && c.end_time === sch.end_time
+						)) {
+							current.push(sch);
+						}
+					});
+					acc[group.group_code].schedule_info = current;
+				}
+				return acc;
+			}, {})
+		)
 		: [];
 
 	if (isLoadingGroups) {
