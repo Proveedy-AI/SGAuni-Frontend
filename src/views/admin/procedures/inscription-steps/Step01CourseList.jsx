@@ -153,7 +153,7 @@ function CourseGroupsPanel({
 	course,
 	currentEnrollment,
 	mySelections,
-  onRefreshSelections,
+	onRefreshSelections,
 	isSomeRequestPending,
 }) {
 	const { data: courseGroups, isLoading: isLoadingGroups } =
@@ -164,12 +164,15 @@ function CourseGroupsPanel({
 			{ enabled: true }
 		);
 
-	const { mutateAsync: createSelection, isPending: loadingGroupSelection } =
-		useCreateCourseSelection();
-	const { mutateAsync: removeSelection, isPending: loadingGroupRemoval } =
-		useDeleteCourseSelection();
+	const { mutateAsync: createSelection } = useCreateCourseSelection();
+	const { mutateAsync: removeSelection } = useDeleteCourseSelection();
+
+	// Estados locales para loading por grupo
+	const [addingGroupCode, setAddingGroupCode] = useState(null);
+	const [removingGroupCode, setRemovingGroupCode] = useState(null);
 
 	const handleAddCourseGroup = async (groupCode, courseGroups) => {
+		setAddingGroupCode(groupCode);
 		try {
 			const groups = courseGroups.filter(g => g.group_code === groupCode);
 			await Promise.all(
@@ -187,11 +190,13 @@ function CourseGroupsPanel({
 				type: 'error'
 			});
 		} finally {
+			setAddingGroupCode(null);
 			await onRefreshSelections();
 		}
-	}
+	};
 
 	const handleRemoveCourseGroup = async (groupCode, mySelections) => {
+		setRemovingGroupCode(groupCode);
 		try {
 			const groups = mySelections.filter(g => g.group_code === groupCode);
 			await Promise.all(
@@ -207,9 +212,10 @@ function CourseGroupsPanel({
 				type: 'error'
 			});
 		} finally {
+			setRemovingGroupCode(null);
 			await onRefreshSelections();
 		}
-	}
+	};
   
 	const uniqueGroups = courseGroups
 		? Object.values(
@@ -230,182 +236,167 @@ function CourseGroupsPanel({
 		);
 	}
 
-	return (
-		<Box
-			bg='white'
-			borderRadius='lg'
-			border='1px solid'
-			borderColor='gray.200'
-			overflowX='auto'
-		>
-			<Table.Root variant='simple' size='sm'>
-				<Table.Header bg='gray.50'>
-					<Table.Row>
-						<Table.Cell>Sección</Table.Cell>
-						{/* <Table.Cell>Horario</Table.Cell>
-						<Table.Cell>Docente</Table.Cell> */}
-						<Table.Cell>Capacidad</Table.Cell>
-						<Table.Cell>Estado</Table.Cell>
-						<Table.Cell textAlign='right'>Acciones</Table.Cell>
-					</Table.Row>
-				</Table.Header>
-				<Table.Body>
-					{uniqueGroups?.map((group) => {
-						const isThisGroupSelected =
-							mySelections?.some(
-								(selection) =>
-									selection.course_name === group.course_name &&
-									selection.group_code === group.group_code
-							) || false;
+		// Si hay algún grupo en loading, desactivar todos los demás botones
+		const isAnyLoading = addingGroupCode !== null || removingGroupCode !== null;
 
-						const courseAlreadySel = isCourseAlreadySelected(
-							mySelections,
-							group.course_name
-						);
+		return (
+			<Box
+				bg='white'
+				borderRadius='lg'
+				border='1px solid'
+				borderColor='gray.200'
+				overflowX='auto'
+			>
+				<Table.Root variant='simple' size='sm'>
+					<Table.Header bg='gray.50'>
+						<Table.Row>
+							<Table.Cell>Sección</Table.Cell>
+							<Table.Cell>Capacidad</Table.Cell>
+							<Table.Cell>Estado</Table.Cell>
+							<Table.Cell textAlign='right'>Acciones</Table.Cell>
+						</Table.Row>
+					</Table.Header>
+					<Table.Body>
+						{uniqueGroups?.map((group) => {
+							const isThisGroupSelected =
+								mySelections?.some(
+									(selection) =>
+										selection.course_name === group.course_name &&
+										selection.group_code === group.group_code
+								) || false;
 
-						const groupSlots = Array.isArray(group.schedule_info)
-							? group.schedule_info
-							: group.schedule_info
-								? [group.schedule_info]
-								: [];
+							const courseAlreadySel = isCourseAlreadySelected(
+								mySelections,
+								group.course_name
+							);
 
-						const hasConflict =
-							mySelections?.some((selection) => {
-								if (!Array.isArray(selection.schedule)) return false;
-								return groupSlots.some((groupSlot) =>
-									selection.schedule.some((selectionSlot) => {
-										if (groupSlot.day !== selectionSlot.day) return false;
-										const gS = timeToMinutes(groupSlot.start_time);
-										const gE = timeToMinutes(groupSlot.end_time);
-										const sS = timeToMinutes(selectionSlot.start_time);
-										const sE = timeToMinutes(selectionSlot.end_time);
-										return gS < sE && gE > sS;
-									})
+							const groupSlots = Array.isArray(group.schedule_info)
+								? group.schedule_info
+								: group.schedule_info
+									? [group.schedule_info]
+									: [];
+
+							const hasConflict =
+								mySelections?.some((selection) => {
+									if (!Array.isArray(selection.schedule)) return false;
+									return groupSlots.some((groupSlot) =>
+										selection.schedule.some((selectionSlot) => {
+											if (groupSlot.day !== selectionSlot.day) return false;
+											const gS = timeToMinutes(groupSlot.start_time);
+											const gE = timeToMinutes(groupSlot.end_time);
+											const sS = timeToMinutes(selectionSlot.start_time);
+											const sE = timeToMinutes(selectionSlot.end_time);
+											return gS < sE && gE > sS;
+										})
+									);
+								}) || false;
+
+							const isGroupFull = group.enrolled_count >= group.capacity;
+
+							// Si hay loading, desactivar todos menos el que está en loading
+							const isOtherLoading =
+								isAnyLoading &&
+								!(
+									addingGroupCode === group.group_code ||
+									removingGroupCode === group.group_code
 								);
-							}) || false;
 
-						const isGroupFull = group.enrolled_count >= group.capacity;
+							const isDisabled =
+								isOtherLoading ||
+								isSomeRequestPending ||
+								isGroupFull ||
+								(!isThisGroupSelected && courseAlreadySel) ||
+								(!isThisGroupSelected && hasConflict) ||
+								course.status === 'blocked' ||
+								course.status === 'completed';
 
-						const isDisabled =
-							isSomeRequestPending ||
-							isGroupFull ||
-							(!isThisGroupSelected && courseAlreadySel) ||
-							(!isThisGroupSelected && hasConflict) ||
-							course.status === 'blocked' ||
-							course.status === 'completed';
+							// Nueva lógica de badges de estado
+							let badgeLabel = '';
+							let badgeColor = 'gray';
+							if (isThisGroupSelected) {
+								badgeLabel = 'Curso seleccionado';
+								badgeColor = 'blue';
+							} else if (isGroupFull) {
+								badgeLabel = 'Lleno';
+								badgeColor = 'red';
+							} else if (
+								isSomeRequestPending ||
+								(!isThisGroupSelected && courseAlreadySel) ||
+								(!isThisGroupSelected && hasConflict) ||
+								course.status === 'blocked' ||
+								course.status === 'completed'
+							) {
+								badgeLabel = 'No disponible';
+								badgeColor = 'gray';
+							} else {
+								badgeLabel = 'Disponible';
+								badgeColor = 'green';
+							}
 
-						// Nueva lógica de badges de estado
-						let badgeLabel = '';
-						let badgeColor = 'gray';
-						if (isThisGroupSelected) {
-							badgeLabel = 'Curso seleccionado';
-							badgeColor = 'blue';
-						} else if (isGroupFull) {
-							badgeLabel = 'Lleno';
-							badgeColor = 'red';
-						} else if (
-							isSomeRequestPending ||
-							(!isThisGroupSelected && courseAlreadySel) ||
-							(!isThisGroupSelected && hasConflict) ||
-							course.status === 'blocked' ||
-							course.status === 'completed'
-						) {
-							badgeLabel = 'No disponible';
-							badgeColor = 'gray';
-						} else {
-							badgeLabel = 'Disponible';
-							badgeColor = 'green';
-						}
+							return (
+								<Table.Row key={group.id} _hover={{ bg: 'gray.50' }}>
+									<Table.Cell>
+										<Text fontWeight='medium'>{group.group_code}</Text>
+									</Table.Cell>
+									<Table.Cell>
+										<Text fontSize='sm'>
+											{group.enrolled_count}/{group.capacity}
+										</Text>
+									</Table.Cell>
 
-						return (
-							<Table.Row key={group.id} _hover={{ bg: 'gray.50' }}>
-								<Table.Cell>
-									<Text fontWeight='medium'>{group.group_code}</Text>
-								</Table.Cell>
+									<Table.Cell>
+										<Badge colorPalette={badgeColor} variant='subtle' size='sm'>
+											{badgeLabel}
+										</Badge>
+									</Table.Cell>
 
-								<Table.Cell>
-									<VStack align='start' gap={1}>
-										{groupSlots.length > 0 ? (
-											groupSlots.map((s, idx) => (
-												<Text key={idx} fontSize='sm'>
-													{s.day}: {s.duration}
-												</Text>
-											))
-										) : (
-											<Text fontSize='sm' color='gray.400'>
-												Sin horario
-											</Text>
-										)}
-									</VStack>
-								</Table.Cell>
-
-								<Table.Cell>
-									<Text fontSize='sm'>{group.teacher_name}</Text>
-								</Table.Cell>
-
-								<Table.Cell>
-									<Text fontSize='sm'>
-										{group.enrolled_count}/{group.capacity}
-									</Text>
-								</Table.Cell>
-
-								<Table.Cell>
-									<Badge colorPalette={badgeColor} variant='subtle' size='sm'>
-										{badgeLabel}
-									</Badge>
-								</Table.Cell>
-
-								<Table.Cell textAlign='right'>
-									<Group>
-										{isThisGroupSelected ? (
-											<Button
-												bg='red'
-												size='sm'
-												//onClick={() => handleRemoveGroup(group.course_name)}
-												onClick={() => handleRemoveCourseGroup(group.group_code, mySelections)}
-                        loading={loadingGroupRemoval === group.id}
-												isDisabled={
-													loadingGroupRemoval === group.id ||
-													isSomeRequestPending
-												}
-											>
-												Quitar
-											</Button>
-										) : (
-											<Button
-												bg={isDisabled ? 'gray.400' : 'green'}
-												size='sm'
-												//onClick={() => handleSelectGroup(group.id)}
-                        onClick={() => handleAddCourseGroup(group.group_code, courseGroups)}
-												loading={loadingGroupSelection === group.id}
-												disabled={isDisabled}
-											>
-												{isGroupFull
-													? 'Lleno'
-													: courseAlreadySel
-														? 'Ya seleccionado'
-														: hasConflict
-															? 'Cruce de horario'
-															: course.status === 'blocked' ||
-																  course.status === 'completed'
-																? 'Bloqueado'
-																: 'Seleccionar'}
-											</Button>
-										)}
-										<ViewCourseGroupSchedulesModal
-											item={group}
-											courseGroups={courseGroups}
-										/>
-									</Group>
-								</Table.Cell>
-							</Table.Row>
-						);
-					})}
-				</Table.Body>
-				;
-			</Table.Root>
-		</Box>
-	);
+									<Table.Cell textAlign='right'>
+										<Group>
+											{isThisGroupSelected ? (
+												<Button
+													bg='red'
+													size='sm'
+													onClick={() => handleRemoveCourseGroup(group.group_code, mySelections)}
+													loading={removingGroupCode === group.group_code}
+													loadingText='Quitando...'
+													isDisabled={removingGroupCode === group.group_code || isDisabled}
+												>
+													Quitar
+												</Button>
+											) : (
+												<Button
+													bg={isDisabled ? 'gray.400' : 'green'}
+													size='sm'
+													onClick={() => handleAddCourseGroup(group.group_code, courseGroups)}
+													loading={addingGroupCode === group.group_code}
+													loadingText='Agregando...'
+													disabled={isDisabled}
+												>
+													{isGroupFull
+														? 'Lleno'
+														: courseAlreadySel
+															? 'Ya seleccionado'
+															: hasConflict
+																? 'Cruce de horario'
+																: course.status === 'blocked' ||
+																	course.status === 'completed'
+																	? 'Bloqueado'
+																	: 'Seleccionar'}
+												</Button>
+											)}
+											<ViewCourseGroupSchedulesModal
+												item={group}
+												courseGroups={courseGroups}
+											/>
+										</Group>
+									</Table.Cell>
+								</Table.Row>
+							);
+						})}
+					</Table.Body>
+				</Table.Root>
+			</Box>
+		);
 }
 
 CourseGroupsPanel.propTypes = {
