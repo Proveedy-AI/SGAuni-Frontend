@@ -322,27 +322,6 @@ function CourseGroupsPanel({
 								<Table.Cell>
 									<Text fontWeight='medium'>{group.group_code}</Text>
 								</Table.Cell>
-
-								<Table.Cell>
-									<VStack align='start' gap={1}>
-										{groupSlots.length > 0 ? (
-											groupSlots.map((s, idx) => (
-												<Text key={idx} fontSize='sm'>
-													{s.day}: {s.duration}
-												</Text>
-											))
-										) : (
-											<Text fontSize='sm' color='gray.400'>
-												Sin horario
-											</Text>
-										)}
-									</VStack>
-								</Table.Cell>
-
-								<Table.Cell>
-									<Text fontSize='sm'>{group.teacher_name}</Text>
-								</Table.Cell>
-
 								<Table.Cell>
 									<Text fontSize='sm'>
 										{group.enrolled_count}/{group.capacity}
@@ -361,7 +340,6 @@ function CourseGroupsPanel({
 											<Button
 												bg='red'
 												size='sm'
-												//onClick={() => handleRemoveGroup(group.course_name)}
 												onClick={() => handleRemoveCourseGroup(group.group_code, mySelections)}
                         loading={loadingGroupRemoval === group.id}
 												isDisabled={
@@ -375,7 +353,6 @@ function CourseGroupsPanel({
 											<Button
 												bg={isDisabled ? 'gray.400' : 'green'}
 												size='sm'
-												//onClick={() => handleSelectGroup(group.id)}
                         onClick={() => handleAddCourseGroup(group.group_code, courseGroups)}
 												loading={loadingGroupSelection === group.id}
 												disabled={isDisabled}
