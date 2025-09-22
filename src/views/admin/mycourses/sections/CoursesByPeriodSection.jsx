@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useColorModeValue } from '@/components/ui';
+import { Modal, useColorModeValue } from '@/components/ui';
 import {
 	Badge,
 	Box,
@@ -8,12 +8,114 @@ import {
 	Heading,
 	HStack,
 	Icon,
+	IconButton,
 	Spinner,
 	Table,
 	Text,
 	VStack,
 } from '@chakra-ui/react';
 import { FiArrowRight, FiBookOpen, FiCalendar } from 'react-icons/fi';
+import { useRef, useState } from 'react';
+
+export const ViewCourseGroupSchedulesModal = ({ item, courseGroups }) => {
+  const [open, setOpen] = useState(false);
+  const contentRef = useRef();
+
+  // Filtrar todos los grupos con el mismo group_code
+  const sameGroupCode = Array.isArray(courseGroups)
+    ? courseGroups.filter((g) => g.group_section === item.group_section)
+    : [item];
+
+  // Unir todos los horarios de los grupos con el mismo group_code
+  const allSchedules = sameGroupCode.flatMap((g) => {
+    // Si schedule_info es un array, mapear cada uno, si no, devolver array vacío
+    if (Array.isArray(g.schedules)) {
+      return g.schedules.map((s) => ({
+        day: s.day,
+        duration: s.start_time && s.end_time ? `${s.start_time} - ${s.end_time}` : '-',
+        type_schedule: g.type_schedule || s.type_schedule || '-',
+        teacher_name: g.teacher || s.teacher || '-',
+      }));
+    }
+    return [];
+  });
+
+  return (
+    <Modal
+      trigger={
+        <IconButton
+          variant='outline'
+          aria-label='Ver horarios del grupo'
+          size='sm'
+          bg='yellow.300'
+          _hover={{ bg: 'yellow.400' }}
+          css={{
+            _icon: {
+              width: '5',
+              height: '5',
+            },
+          }}
+        >
+          <FiCalendar />
+        </IconButton>
+      }
+      size='3xl'
+      open={open}
+      hiddenFooter={true}
+      onOpenChange={(e) => setOpen(e.open)}
+      contentRef={contentRef}
+    >
+      <Box>
+        <Heading mb={4} gap={2}>
+          <Text fontWeight='semibold' fontSize='lg'>
+            Curso: <strong>{item.course_name}</strong>
+          </Text>
+          <Text fontWeight='semibold' fontSize='lg'>
+            Sección:{' '}
+            <Badge colorPalette='blue' variant='subtle' fontSize='md'>
+              {item.group_section}
+            </Badge>
+          </Text>
+        </Heading>
+        <Table.Root variant='simple' size='sm' w='100%'>
+          <Table.Header bg='gray.50'>
+            <Table.Row>
+              <Table.Cell w='20%'>Día</Table.Cell>
+              <Table.Cell w='30%'>Horas de clase</Table.Cell>
+              <Table.Cell w='20%'>Tipo</Table.Cell>
+              <Table.Cell w='30%'>Docente</Table.Cell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {allSchedules.length > 0 ? (
+              allSchedules.map((s, idx) => (
+                <Table.Row key={idx}>
+                  <Table.Cell>{s.day}</Table.Cell>
+                  <Table.Cell>{s.duration}</Table.Cell>
+                  <Table.Cell>{s.type_schedule || '-'}</Table.Cell>
+                  <Table.Cell>{s.teacher_name || '-'}</Table.Cell>
+                </Table.Row>
+              ))
+            ) : (
+              <Table.Row>
+                <Table.Cell colSpan={5}>
+                  <Text color='gray.400' textAlign='center'>
+                    Sin horarios registrados
+                  </Text>
+                </Table.Cell>
+              </Table.Row>
+            )}
+          </Table.Body>
+        </Table.Root>
+      </Box>
+    </Modal>
+  );
+};
+
+ViewCourseGroupSchedulesModal.propTypes = {
+  item: PropTypes.object,
+  courseGroups: PropTypes.array,
+};
 
 export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
 	const bgColor = useColorModeValue('white', 'gray.800');
@@ -28,16 +130,11 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
 		return 'red';
 	};
 
-	const formatSchedule = (schedules) => {
-		if (!schedules || schedules.length === 0) return 'Sin horario';
-
-		return schedules
-			.map(
-				(schedule) =>
-					`${schedule.day}: ${schedule.start_time} - ${schedule.end_time}`
-			)
-			.join(', ');
-	};
+  // Filtrar cursos para mostrar solo los que tengan diferente group_section
+  const uniqueCourses = data.courses.filter(
+    (course, index, self) =>
+      index === self.findIndex(c => c.group_section === course.group_section)
+  );
 
 	return (
 		<Box mb={3}>
@@ -130,7 +227,17 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
 								>
 									Sección
 								</Table.Cell>
-								<Table.Cell
+                <Table.Cell
+									borderRight={'1px solid'}
+									borderColor={borderColor}
+									fontWeight='bold'
+									color='blue.700'
+									textAlign='center'
+									minWidth='100px'
+								>
+									Horario(s)
+								</Table.Cell>
+								{/* <Table.Cell
 									borderRight={'1px solid'}
 									borderColor={borderColor}
 									fontWeight='bold'
@@ -147,11 +254,11 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
 									width='320px'
 								>
 									Horario
-								</Table.Cell>
+								</Table.Cell> */}
 							</Table.Row>
 						</Table.Header>
 						<Table.Body>
-							{data.courses.map((course, index) => (
+							{uniqueCourses?.map((course, index) => (
 								<Table.Row
 									key={index}
 									_hover={{ bg: hoverBg }}
@@ -159,83 +266,90 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
 									onClick={(e) => {
 										if (e.target.closest('button') || e.target.closest('a'))
 											return;
-										handleRowClick(course);
-									}}
-									cursor='pointer'
-								>
-									<Table.Cell
-										borderRight={'1px solid'}
-										borderColor={borderColor}
-									>
-										<Text
-											fontSize='sm'
-											color='blue.600'
-											fontWeight='medium'
-											textAlign='center'
-										>
-											{course.cycle || 'N/A'}
-										</Text>
-									</Table.Cell>
-									<Table.Cell
-										borderRight={'1px solid'}
-										borderColor={borderColor}
-									>
-										<VStack align='start' spacing={1}>
-											<Text fontSize='sm' fontWeight='medium' color='blue.600'>
-												{course.course_code} - {course.course_name}
-											</Text>
-											{course.is_repeated && (
-												<Badge bg='orange' size='sm'>
-													Repetido
-												</Badge>
-											)}
-										</VStack>
-									</Table.Cell>
-									<Table.Cell
-										textAlign='center'
-										borderRight={'1px solid'}
-										borderColor={borderColor}
-									>
-										{course.final_grade && (
-											<Badge
-												colorPalette={getGradeColor(course.final_grade)}
-												variant='solid'
-												px={2}
-												borderRadius='md'
-											>
-												{course.final_grade}
-											</Badge>
-										)}
-									</Table.Cell>
-									<Table.Cell
-										textAlign='center'
-										borderRight={'1px solid'}
-										borderColor={borderColor}
-									>
-										<Text fontSize='sm' fontWeight='medium'>
-											{course.credits}
-										</Text>
-									</Table.Cell>
-									<Table.Cell
-										textAlign='center'
-										borderRight={'1px solid'}
-										borderColor={borderColor}
-									>
-										<Text fontSize='sm' fontWeight='medium'>
-											{course.group_section}
-										</Text>
-									</Table.Cell>
-									<Table.Cell
-										borderRight={'1px solid'}
-										borderColor={borderColor}
-									>
-										<Text fontSize='sm'>{course.teacher}</Text>
-									</Table.Cell>
-									<Table.Cell>
-										<Text fontSize='sm' color='gray.600'>
-											{formatSchedule(course.schedules)}
-										</Text>
-									</Table.Cell>
+                    handleRowClick(course);
+                    }}
+                    cursor='pointer'
+                  >
+                    <Table.Cell
+                      borderRight={'1px solid'}
+                      borderColor={borderColor}
+                    >
+                      <Text
+                        fontSize='sm'
+                        color='blue.600'
+                        fontWeight='medium'
+                        textAlign='center'
+                      >
+                        {course.cycle || 'N/A'}
+                      </Text>
+                    </Table.Cell>
+                    <Table.Cell
+                      borderRight={'1px solid'}
+                      borderColor={borderColor}
+                    >
+                      <VStack align='start' spacing={1}>
+                        <Text fontSize='sm' fontWeight='medium' color='blue.600'>
+                          {course.course_code} - {course.course_name}
+                        </Text>
+                        {course.is_repeated && (
+                          <Badge bg='orange' size='sm'>
+                            Repetido
+                          </Badge>
+                        )}
+                      </VStack>
+                    </Table.Cell>
+                    <Table.Cell
+                      textAlign='center'
+                      borderRight={'1px solid'}
+                      borderColor={borderColor}
+                    >
+                      {course.final_grade && (
+                        <Badge
+                          colorPalette={getGradeColor(course.final_grade)}
+                          variant='solid'
+                          px={2}
+                          borderRadius='md'
+                        >
+                          {course.final_grade}
+                        </Badge>
+                      )}
+                    </Table.Cell>
+                    <Table.Cell
+                      textAlign='center'
+                      borderRight={'1px solid'}
+                      borderColor={borderColor}
+                    >
+                      <Text fontSize='sm' fontWeight='medium'>
+                        {course.credits}
+                      </Text>
+                    </Table.Cell>
+                    <Table.Cell
+                      textAlign='center'
+                      borderRight={'1px solid'}
+                      borderColor={borderColor}
+                    >
+                      <Text fontSize='sm' fontWeight='medium'>
+                        {course.group_section}
+                      </Text>
+                    </Table.Cell>
+                    <Table.Cell
+                      textAlign='center'
+                      borderRight={'1px solid'}
+                      borderColor={borderColor}
+                    >
+                      <ViewCourseGroupSchedulesModal item={course} courseGroups={data?.courses} />
+                    </Table.Cell>
+                    {/* <Table.Cell
+                      borderRight={'1px solid'}
+                      borderColor={borderColor}
+                    >
+                      <Text fontSize='sm'>{course.teacher}</Text>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Text fontSize='sm' color='gray.600'>
+                        {formatSchedule(course.schedules)}
+                      </Text>
+                    </Table.Cell> */}
 								</Table.Row>
 							))}
 						</Table.Body>
@@ -254,8 +368,8 @@ CoursesListByPeriodCard.propTypes = {
 export const CoursesByPeriodSection = ({
 	isLoadingCoursesByPeriod,
 	dataCoursesByPeriod,
-	handleRowClick,
-	handleClickToProcessEnrollment,
+	handleRowClick = () => {},
+	handleClickToProcessEnrollment = () => {},
 }) => {
 	const borderColor = useColorModeValue('gray.200', 'gray.600');
 
