@@ -199,6 +199,9 @@ export const MyEvaluationsByCourseView = () => {
                     <Table.Cell minW="240px" textAlign="center" borderRightColor={borderColor}>
                       Evaluación
                     </Table.Cell>
+                    <Table.Cell minW="240px" textAlign="center" borderRightColor={borderColor}>
+                      Docente encargado
+                    </Table.Cell>
                     {hasConfiguratedWithWeight && (
                       <Table.Cell width="120px" textAlign="center" borderRightColor={borderColor}>
                         Peso
@@ -213,59 +216,66 @@ export const MyEvaluationsByCourseView = () => {
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {data?.evaluations?.map((evaluation, index) => {
-                    const statusConfig = getStatusConfig(evaluation.grade_obtained);
-                    return (
-                      <Table.Row 
-                        key={index}
-                        bg={index % 2 === 0 ? "white" : "gray.100"}
-                        borderColor={borderColor}
-                      >
-                        <Table.Cell borderRightColor={borderColor}>
-                          <Text fontWeight="medium" color="gray.700">
-                            Evaluación {index + 1} - {evaluation.evaluation_name}
-                          </Text>
-                        </Table.Cell>
-                        {
-                          hasConfiguratedWithWeight && (
-                            <Table.Cell textAlign="center" borderRightColor={borderColor}>
-                              {evaluation.weight_percentage}%
-                            </Table.Cell>
-                          )
-                        }
-                        <Table.Cell textAlign="center" borderRightColor={borderColor}>
-                          {evaluation.grade_obtained ? (
-                            <Badge 
-                              bg={getGradeColor(evaluation.grade_obtained)}
-                              variant="solid"
-                              px={3}
-                              py={1}
-                              boxSize={4}
-                              textAlign="center"
-                              justifyContent="center"
-                              color="white"
-                              borderRadius="sm"
-                            >
-                              {evaluation.grade_obtained}
-                            </Badge>
-                          ) : '-' }
-                        </Table.Cell>
-                        <Table.Cell textAlign="center" borderRightColor={borderColor}>
-                          <Badge 
-                            bg={statusConfig.bg}
-                            color={statusConfig.color}
-                            variant="subtle"
-                            fontSize="xs"
-                            px={2}
-                            py={1}
-                            borderRadius="md"
+                  {data?.other_professors?.length > 0 ? (
+                    data.other_professors.map((prof, profIdx) =>
+                      prof.evaluations?.map((evaluation, evalIdx) => {
+                        const statusConfig = getStatusConfig(evaluation.grade_obtained);
+                        return (
+                          <Table.Row
+                            key={`prof-${profIdx}-eval-${evalIdx}`}
+                            bg={(profIdx + evalIdx) % 2 === 0 ? "white" : "gray.100"}
+                            borderColor={borderColor}
                           >
-                            {statusConfig.label}
-                          </Badge>
-                        </Table.Cell>
-                      </Table.Row>
-                    );
-                  }) || []}
+                            <Table.Cell borderRightColor={borderColor}>
+                              <Text fontWeight="medium" color="gray.700">
+                                Evaluación {evalIdx + 1} - {evaluation.evaluation_name}
+                              </Text>
+                            </Table.Cell>
+                            <Table.Cell borderRightColor={borderColor}>
+                              <Text fontWeight="medium" color="gray.700">
+                                {prof.professor_name || '-'}
+                              </Text>
+                            </Table.Cell>
+                            {hasConfiguratedWithWeight && (
+                              <Table.Cell textAlign="center" borderRightColor={borderColor}>
+                                {evaluation.weight_percentage}%
+                              </Table.Cell>
+                            )}
+                            <Table.Cell textAlign="center" borderRightColor={borderColor}>
+                              {evaluation.grade_obtained !== null && evaluation.grade_obtained !== undefined ? (
+                                <Badge
+                                  bg={getGradeColor(evaluation.grade_obtained)}
+                                  variant="solid"
+                                  px={3}
+                                  py={1}
+                                  boxSize={4}
+                                  textAlign="center"
+                                  justifyContent="center"
+                                  color="white"
+                                  borderRadius="sm"
+                                >
+                                  {evaluation.grade_obtained}
+                                </Badge>
+                              ) : '-' }
+                            </Table.Cell>
+                            <Table.Cell textAlign="center" borderRightColor={borderColor}>
+                              <Badge
+                                bg={statusConfig.bg}
+                                color={statusConfig.color}
+                                variant="subtle"
+                                fontSize="xs"
+                                px={2}
+                                py={1}
+                                borderRadius="md"
+                              >
+                                {statusConfig.label}
+                              </Badge>
+                            </Table.Cell>
+                          </Table.Row>
+                        );
+                      })
+                    )
+                  ) : null}
                 </Table.Body>
               </Table.Root>
             </TableScrollArea>
