@@ -123,7 +123,19 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 		capacity: '',
 		schedules: [{ day_of_week: null, start_time: '', end_time: '' }],
     type_schedule: null,
+    credits_per_group: null,
 	});
+
+  // function calcMaxCreditsPerGroup() {
+  //   if (!formData?.group_code) return;
+  //   // Suma los créditos usados en ese grupo
+  //   const credits_used = allCourseGroups
+  //     ?.filter((g) => g.course_group_code === formData?.group_code)
+  //     ?.reduce((sum, g) => sum + (g.credits_per_group || 0), 0) || 0;
+  //   // Devuelve la resta entre los créditos del curso y los usados
+  //   console.log((formData.credits || 0) - credits_used);
+  //   return (formData.credits || 0) - credits_used;
+  // }
 
   const { data: dataTypeSchedules, isLoading: isLoadingTypeSchedules } = useReadScheduleTypes();
 
@@ -134,8 +146,6 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
         label: item?.name,
         value: item?.id
       })) 
-
-	// Ya no se usa dataCourses, solo dataCurriculumMapCourses
 
 	const [errors, setErrors] = useState({});
 	const { data: dataUsers } = useReadUsers(
@@ -159,13 +169,11 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
     { enabled: !!curriculumMapId }
   );
 
-	// Estado para prerrequisitos solo para mostrar
 	const [selectedPrerequisites, setSelectedPrerequisites] = useState([]);
-
-	// Ya no se actualiza formData.prerequisite_ids desde selectedPrerequisites, se autocompleta desde el curso
 
 	const validateFields = () => {
 		const newErrors = {};
+    //const maxCreditsPerGroup = calcMaxCreditsPerGroup();
 
 		if (!formData.course_id) newErrors.course_id = 'El curso es requerido';
 		if (!formData.group_code)
@@ -177,6 +185,12 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
     if (!formData.type_schedule) newErrors.type_schedule = 'El tipo de horario es requerido';
 		if (!formData.schedules?.length)
 			newErrors.schedules = 'Debe agregar al menos un horario';
+
+    if (!formData.credits_per_group) newErrors.credits_per_group = 'La cantidad de créditos por grupo es requerido'
+    // if (
+    //   formData.credits_per_group < 0 &&
+    //   formData.credits_per_group > maxCreditsPerGroup
+    // ) newErrors.credits_per_group = `La cantidad de créditos por grupo debe ser entre 1 y ${maxCreditsPerGroup}`
 
 		if (formData.schedules?.[0]) {
 			if (!formData.schedules[0].day_of_week)
@@ -251,8 +265,6 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 		if (!validateFields()) {
 			return;
 		}
-    
-    console.log({formData})
 
 		const payload = {
 			enrollment_period_id: data.enrollment_period,
@@ -270,7 +282,8 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 				start_time: schedule.start_time,
 				end_time: schedule.end_time,
 			})),
-      type_schedule: formData?.type_schedule
+      type_schedule: formData?.type_schedule,
+      credits_per_group: formData?.credits_per_group
 		};
 
 		createCourseSchedule(payload, {
@@ -491,6 +504,20 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 									placeholder='Selecciona un tipo de horario'
                 />
 							</Field>
+              <Field
+								label='Total de créditos por grupo:'
+								required
+								invalid={!!errors.credits_per_group}
+								errorText={errors.credits_per_group}
+							>
+								<Input
+									name='credits_per_group'
+									value={formData.credits_per_group}
+									onChange={handleInputChange}
+									type='number'
+									min={1}
+								/>
+							</Field>
 							<Field label='¿Es obligatorio?'>
 								<RadioGroup value={formData.is_mandatory ? 'yes' : 'no'} isDisabled direction='row' spaceX={4}>
 									<Radio value='yes'>Sí</Radio>
@@ -661,6 +688,7 @@ AddCourseModal.propTypes = {
 	setOpen: PropTypes.func,
 	data: PropTypes.object,
 	fetchData: PropTypes.func,
+  allCourseGroups: PropTypes.array,
 };
 
 const AddExcelScheduleModal = ({ open, setOpen, data, fetchData }) => {
@@ -1121,6 +1149,7 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 	//const [selectedIds, setSelectedIds] = useState([]);
 	const allCourseSchedules =
 		dataCourseSchedule?.pages?.flatMap((page) => page.results) ?? [];
+  console.log({ allCourseSchedules })
 
 	const [selectedIds, setSelectedIds] = useState([]);
 	const scheduleData = allCourseSchedules || [];
@@ -1270,6 +1299,7 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 					open={addCourseOpen}
 					fetchData={refetchCourseSchedule}
 					setOpen={setAddCourseOpen}
+          allCourseGroups={allCourseSchedules}
 				/>
 				<AddExcelScheduleModal
 					data={data}
