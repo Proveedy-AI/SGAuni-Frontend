@@ -27,6 +27,11 @@ export const MyCoursesListByAcademicPeriodView = () => {
 	const { data: dataUser, isLoading } = useReadUserLogged();
 	const studentUUID = dataUser?.student?.uuid;
 
+  const roles = dataUser?.roles || [];
+	const permissions = roles
+		.flatMap((r) => r.permissions || [])
+		.map((p) => p.guard_name);
+
 	const MyProgramsOptions = dataUser?.student?.admission_programs?.map(
 		(program) => ({
 			value: program.program,
@@ -56,6 +61,7 @@ export const MyCoursesListByAcademicPeriodView = () => {
 	const navigate = useNavigate();
 
 	const handleRowClick = (course) => {
+    if (!permissions.includes('enrollments.mycourses.view')) return;
 		const encrypted = Encryptor.encrypt(course.id_course_selection);
 		const encoded = encodeURIComponent(encrypted);
 		navigate(`/mycourses/${encoded}`);

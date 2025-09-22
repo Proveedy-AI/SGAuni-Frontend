@@ -17,7 +17,7 @@ import {
 import { FiArrowRight, FiBookOpen, FiCalendar } from 'react-icons/fi';
 import { useRef, useState } from 'react';
 
-const ViewCourseGroupSchedulesModal = ({ item, courseGroups }) => {
+export const ViewCourseGroupSchedulesModal = ({ item, courseGroups }) => {
   const [open, setOpen] = useState(false);
   const contentRef = useRef();
 
@@ -368,8 +368,8 @@ CoursesListByPeriodCard.propTypes = {
 export const CoursesByPeriodSection = ({
 	isLoadingCoursesByPeriod,
 	dataCoursesByPeriod,
-	handleRowClick,
-	handleClickToProcessEnrollment,
+	handleRowClick = () => {},
+	handleClickToProcessEnrollment = () => {},
 }) => {
 	const borderColor = useColorModeValue('gray.200', 'gray.600');
 
