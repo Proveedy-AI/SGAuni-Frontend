@@ -3,7 +3,12 @@ import { Document, Page, Text, View, StyleSheet, Image, PDFViewer } from '@react
 
 export const RegistrationDocument = ({ registration_info }) => {
   const faviconUrl = `${window.location.origin}/favicon.png`;
-  
+
+  const uniqueCourseGroupsRegistered = registration_info.courses_groups.filter(
+    (course, index, self) =>
+      index === self.findIndex(c => c.group_code === course.group_code)
+  );
+
   const styles = StyleSheet.create({
     page: {
       flexDirection: 'column',
@@ -202,7 +207,8 @@ export const RegistrationDocument = ({ registration_info }) => {
             </View>
 
             {/* Filas de cursos */}
-            {registration_info.courses_groups.map((course, index) => (
+            {uniqueCourseGroupsRegistered
+              ?.map((course, index) => (
               <View key={index} style={styles.tableRow}>
                 <Text style={styles.tableColCiclo}>{course.cycle}</Text>
                 <Text style={styles.tableColCurso}>{course.group_code}</Text>

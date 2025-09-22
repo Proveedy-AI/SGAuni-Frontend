@@ -183,7 +183,7 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
 									fontWeight='bold'
 									color='blue.700'
 									textAlign='center'
-									minWidth='100px'
+									minWidth='20px'
 								>
 									Ciclo
 								</Table.Cell>
@@ -197,13 +197,23 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
 								>
 									Asignatura
 								</Table.Cell>
+                <Table.Cell
+									borderRight={'1px solid'}
+									borderColor={borderColor}
+									fontWeight='bold'
+									color='blue.700'
+									textAlign='center'
+									minWidth='80px'
+								>
+									Repetido
+								</Table.Cell>
 								<Table.Cell
 									borderRight={'1px solid'}
 									borderColor={borderColor}
 									fontWeight='bold'
 									color='blue.700'
 									textAlign='center'
-									minWidth='100px'
+									minWidth='80px'
 								>
 									Calificación
 								</Table.Cell>
@@ -213,7 +223,7 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
 									fontWeight='bold'
 									color='blue.700'
 									textAlign='center'
-									minWidth='100px'
+									minWidth='80px'
 								>
 									Créditos
 								</Table.Cell>
@@ -237,24 +247,6 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
 								>
 									Horario(s)
 								</Table.Cell>
-								{/* <Table.Cell
-									borderRight={'1px solid'}
-									borderColor={borderColor}
-									fontWeight='bold'
-									color='blue.700'
-									textAlign='center'
-									minWidth='320px'
-								>
-									Docente
-								</Table.Cell>
-								<Table.Cell
-									fontWeight='bold'
-									color='blue.700'
-									textAlign='center'
-									width='320px'
-								>
-									Horario
-								</Table.Cell> */}
 							</Table.Row>
 						</Table.Header>
 						<Table.Body>
@@ -291,12 +283,15 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
                         <Text fontSize='sm' fontWeight='medium' color='blue.600'>
                           {course.course_code} - {course.course_name}
                         </Text>
-                        {course.is_repeated && (
-                          <Badge bg='orange' size='sm'>
-                            Repetido
-                          </Badge>
-                        )}
                       </VStack>
+                    </Table.Cell>
+                    <Table.Cell
+                      borderRight={'1px solid'}
+                      borderColor={borderColor}
+                      textAlign="center"
+                      fontWeight="semibold"
+                    >
+                      {course.is_repeated ? 'SI' : 'NO'}
                     </Table.Cell>
                     <Table.Cell
                       textAlign='center'
