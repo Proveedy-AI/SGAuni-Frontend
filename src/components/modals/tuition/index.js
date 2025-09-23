@@ -7,3 +7,4 @@ export * from "./DeleteTuitionProgramsModal"
 export * from "./ApproveTuitionProgramsModal"
 export * from "./ScheduleEnrollmentProgramsModal"
 export * from "./ScheduleEnrollmentProgramsReviewModal"
+export * from './ScheduleEnrollmentCoursesPdf'

@@ -70,6 +70,7 @@ import { useReadCurriculumMaps } from '@/hooks/curriculum_maps';
 import { useReadCurriculumMapsCourses } from '@/hooks/curriculum_maps_courses';
 import { useDeleteCourseGroups } from '@/hooks/course_groups';
 import { useReadScheduleTypes } from '@/hooks/schedule_types';
+import { ScheduleEnrollmentCoursesPdf } from '.';
 
 const timeSlots = [
 	'07:00',
@@ -1149,7 +1150,6 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 	//const [selectedIds, setSelectedIds] = useState([]);
 	const allCourseSchedules =
 		dataCourseSchedule?.pages?.flatMap((page) => page.results) ?? [];
-  console.log({ allCourseSchedules })
 
 	const [selectedIds, setSelectedIds] = useState([]);
 	const scheduleData = allCourseSchedules || [];
@@ -1293,7 +1293,8 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 			hiddenFooter={true}
 		>
 			{/* Botones de Acción */}
-			<HStack gap={3} borderBottomWidth={1} justifyContent={'end'}>
+			<HStack gap={3} pb={2} borderBottomWidth={1} justifyContent={'end'}>
+        <ScheduleEnrollmentCoursesPdf program={data} allCourseGroups={allCourseSchedules} />
 				<AddCourseModal
 					data={data}
 					open={addCourseOpen}

@@ -85,7 +85,7 @@ const filteredModalityRules = dataModalityRules?.results
 							align={{ base: 'start', sm: 'center' }}
 							justify='space-between'
 						>
-							<Heading size='md'>Gestión de Modalidades</Heading>
+							<Heading size='md'>Gestión de Modalidades de Admisión</Heading>
 
 							<HStack>
 								<InputGroup flex='1' startElement={<FiSearch />}>

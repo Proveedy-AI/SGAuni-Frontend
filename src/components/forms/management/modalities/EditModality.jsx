@@ -150,7 +150,7 @@ export const EditModality = ({ fetchData, item }) => {
 
 	return (
 		<Modal
-			title='Editar Modalidad'
+			title='Editar Modalidad de Admisión'
 			placement='center'
 			trigger={
 				<Box>

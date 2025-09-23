@@ -224,7 +224,7 @@ export const AssignModalityToProgramForm = ({ data, permissions }) => {
 						<Flex justify='space-between' align='center'>
 							<Flex align='center' gap={2}>
 								<Icon as={FiTag} w={5} h={5} color='blue.600' />
-								<Heading size='sm'>Modalidades Asignadas</Heading>
+								<Heading size='sm'>Modalidades de Admisión Asignadas</Heading>
 								<Badge
 									variant='subtle'
 									colorScheme='blue'

@@ -203,7 +203,7 @@ export const SendConfirmationModal = ({
 								{item.study_mode_display && (
 									<HStack spacing={2} fontSize='sm' color='gray.600'>
 										<LuFileCheck size={16} color='#3B82F6' />
-										<Text>Modo:</Text>
+										<Text>Modalidad de estudio:</Text>
 										<Text fontWeight='medium' color='gray.800'>
 											{item.study_mode_display}
 										</Text>

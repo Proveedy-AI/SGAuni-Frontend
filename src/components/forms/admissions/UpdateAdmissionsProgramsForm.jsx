@@ -66,7 +66,7 @@ export const UpdateAdmissionsProgramsForm = ({
 	const validateFields = () => {
 		const newErrors = {};
 
-		if (!selectedMode) newErrors.selectedMode = 'Seleccione un modo de estudio';
+		if (!selectedMode) newErrors.selectedMode = 'Seleccione una modalidad de estudio';
 		if (!selectedProgram) newErrors.selectedProgram = 'Seleccione un programa';
 		if (!registrationStart)
 			newErrors.registrationStart =
@@ -229,7 +229,7 @@ export const UpdateAdmissionsProgramsForm = ({
 								/>
 							</Field>
 							<Field
-								label='Modo de estudio:'
+								label='Modalidad de estudio:'
 								invalid={!!errors.selectedMode}
 								errorText={errors.selectedMode}
 								required
