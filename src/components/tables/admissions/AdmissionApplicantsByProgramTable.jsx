@@ -243,7 +243,7 @@ export const AdmissionApplicantsByProgramTable = ({
 							</Table.ColumnHeader>
 							<Table.ColumnHeader>
 								<SortableHeader
-									label='Modalidad'
+									label='Modalidad de Admisión'
 									columnKey='modality_display'
 									sortConfig={sortConfig}
 									onSort={setSortConfig}

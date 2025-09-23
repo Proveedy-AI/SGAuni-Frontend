@@ -153,8 +153,7 @@ export const ApplicationDataDocument = ({ applicationData }) => {
   const semester = new Date().getMonth() < 6 ? '1' : '2';
   const academicPeriod = `${new Date().getFullYear()}-${semester}`;
 
-  const modalities = ['Examen', 'Pre-Maestría', '24h. Maestría', 'Seg. Exp. Prof.', 'Convenio', 'Traslado', 'Docente - UNI', 'Quinto Superior UNI'];
-  const languages = ['Inglés', 'Francés', 'Alemán', 'Ruso'];
+  const languages = ['Inglés', 'Francés', 'Alemán', 'Ruso', 'Chino', 'Portugués'];
   return (
     <PDFViewer height="600" width="100%">
       <Document>
@@ -178,6 +177,8 @@ export const ApplicationDataDocument = ({ applicationData }) => {
               <Text style={{ textAlign: 'center', margin: 5 }}>Período Académico</Text>
               <Text style={{ fontWeight: 'bold' }}>Programas:</Text>
               <Text>{applicationData.postgrade_name}</Text>
+              <Text style={styles.inlineLabel}>Modalidad de Ingreso:</Text>
+              <Text>{applicationData.modality_display}</Text>
             </View>
             <View style={{ width: '50%', paddingBottom: 5 }}>
               <Text style={{ textAlign: 'center', border: '1px solid #000' }}>FIEECS</Text>
@@ -189,8 +190,10 @@ export const ApplicationDataDocument = ({ applicationData }) => {
             </View>
           </View>
 
-          <View style={[styles.inlineSection, { marginTop: 10 }]}>
+          {/* <View style={[styles.inlineSection, { marginTop: 10 }]}>
             <Text style={styles.inlineLabel}>Modalidad de Ingreso:</Text>
+            <Text>{applicationData.modality_display}</Text>
+
             <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
               {modalities.map((item) => (
                 <View key={item} style={styles.checkboxContainer}>
@@ -199,7 +202,7 @@ export const ApplicationDataDocument = ({ applicationData }) => {
                 </View>
               ))}
             </View>
-          </View>
+          </View> */}
 
           <View>
             <Text style={{ textAlign: 'center', border: '1px solid #000' }}>{applicationData.specialty}</Text>
@@ -234,36 +237,30 @@ export const ApplicationDataDocument = ({ applicationData }) => {
           {/* Tabla de datos personales */}
           <View style={styles.table}>
             <View style={styles.tableRow}>
-              <View style={[styles.tableCol, {width: '20%'}]}>
+              <View style={[styles.tableCol, {width: '25%'}]}>
                 <Text style={styles.tableCell}>{p.nationality_name}</Text>
               </View>
-              <View style={[styles.tableCol, {width: '20%'}]}>
+              <View style={[styles.tableCol, {width: '25%'}]}>
                 <Text style={styles.tableCell}>{p.document_number}</Text>
               </View>
-              <View style={[styles.tableCol, {width: '20%'}]}>
+              <View style={[styles.tableCol, {width: '25%'}]}>
                 <Text style={styles.tableCell}>{formatDate(p.birth_date)}</Text>
               </View>
-              <View style={[styles.tableCol, {width: '20%'}]}>
-                <Text style={styles.tableCell}></Text>
-              </View>
-              <View style={[styles.tableCol, {width: '20%'}]}>
-                <Text style={styles.tableCell}></Text>
+              <View style={[styles.tableCol, {width: '25%'}]}>
+                <Text style={styles.tableCell}>{p.gender ?? '-'}</Text>
               </View>
             </View>
             <View style={styles.tableRow}>
-              <View style={[styles.tableColHeader, {width: '20%'}]}>
+              <View style={[styles.tableColHeader, {width: '25%'}]}>
                 <Text style={styles.tableCellHeader}>Nacionalidad</Text>
               </View>
-              <View style={[styles.tableColHeader, {width: '20%'}]}>
+              <View style={[styles.tableColHeader, {width: '25%'}]}>
                 <Text style={styles.tableCellHeader}>DNI; C.E; Pasaporte</Text>
               </View>
-              <View style={[styles.tableColHeader, {width: '20%'}]}>
+              <View style={[styles.tableColHeader, {width: '25%'}]}>
                 <Text style={styles.tableCellHeader}>Fecha de Nacimiento</Text>
               </View>
-              <View style={[styles.tableColHeader, {width: '20%'}]}>
-                <Text style={styles.tableCellHeader}>Código Docente UNI</Text>
-              </View>
-              <View style={[styles.tableColHeader, {width: '20%'}]}>
+              <View style={[styles.tableColHeader, {width: '25%'}]}>
                 <Text style={styles.tableCellHeader}>Sexo (M/F)</Text>
               </View>
             </View>
@@ -305,7 +302,7 @@ export const ApplicationDataDocument = ({ applicationData }) => {
           <View style={styles.table}>
             <View style={styles.tableRow}>
               <View style={[styles.tableCol, {width: '33%'}]}>
-                <Text style={styles.tableCell}></Text>
+                <Text style={styles.tableCell}>{p.home_phone ?? '-'}</Text>
               </View>
               <View style={[styles.tableCol, {width: '33%'}]}>
                 <Text style={styles.tableCell}>{p.phone}</Text>
