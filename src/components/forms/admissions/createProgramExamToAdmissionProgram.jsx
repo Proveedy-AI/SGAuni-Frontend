@@ -255,7 +255,7 @@ export const CreateProgramExamToAdmissionProgram = ({
 
 							<GridItem>
 								<Text fontSize='sm' color='gray.600' fontWeight='medium'>
-									Modalidad
+									Modalidad de Admisión
 								</Text>
 								<Text
 									fontSize='20px'
@@ -338,7 +338,7 @@ export const CreateProgramExamToAdmissionProgram = ({
 									isDisabled={filteredApplicationTypeOptions.length === 0}
 									placeholder={
 										filteredApplicationTypeOptions.length === 0
-											? 'Esta modalidad no requiere evaluaciones'
+											? 'Esta modalidad de admisión no requiere evaluaciones'
 											: 'Selecciona un tipo'
 									}
 								/>

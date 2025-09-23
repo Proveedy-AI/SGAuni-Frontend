@@ -140,7 +140,7 @@ export const AddModalityForm = ({ fetchData }) => {
 
 	return (
 		<Modal
-			title='Crear Modalidad'
+			title='Crear Modalidad de Admisión'
 			placement='center'
 			trigger={
 				<Button
@@ -149,7 +149,7 @@ export const AddModalityForm = ({ fetchData }) => {
 					size='xs'
 					w={{ base: 'full', sm: 'auto' }}
 				>
-					<FiPlus /> Crear Modalidad
+					<FiPlus /> Crear Modalidad de Admisión
 				</Button>
 			}
 			onSave={handleSubmitData}

@@ -28,7 +28,7 @@ export const DeleteModality = ({ item, fetchData }) => {
 
 	return (
 		<ConfirmModal
-			title='Eliminar Modalidad'
+			title='Eliminar Modalidad de Admisión'
 			placement='center'
 			trigger={
 				<Box>
@@ -54,7 +54,7 @@ export const DeleteModality = ({ item, fetchData }) => {
 				<Span fontWeight='semibold' px='1'>
 					{item.name}
 				</Span>
-				de la lista de modalidades?
+				de la lista de modalidades de admisión?
 			</Text>
 		</ConfirmModal>
 	);
