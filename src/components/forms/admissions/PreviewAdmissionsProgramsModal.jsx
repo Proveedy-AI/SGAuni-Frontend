@@ -207,7 +207,7 @@ export const PreviewAdmissionsProgramsModal = ({ data }) => {
 						<Card.Header pb={3}>
 							<Flex align='center' gap={2}>
 								<Icon as={FaUsers} boxSize={5} color='purple.600' />
-								<Heading fontSize='lg'>Modalidades Asignadas</Heading>
+								<Heading fontSize='lg'>Modalidades de Admisión Asignadas</Heading>
 								<Badge
 									variant='outline'
 									bg='purple.50'

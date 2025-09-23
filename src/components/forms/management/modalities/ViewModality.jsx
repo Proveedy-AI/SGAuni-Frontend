@@ -33,7 +33,7 @@ export const ViewModality = ({ item }) => {
 							</Tooltip>
 						</Box>
 					}
-					title='Ver Modalidad'
+					title='Ver Modalidad de Admisión'
 					placement='center'
 					size='xl'
 					open={open}
