@@ -47,7 +47,6 @@ export const SendAEnrollmentProgramtoConfirmForm = ({ fetchData, item }) => {
 			},
 		});
 	};
-  console.log(item)
 
 	return (
 		<Modal
