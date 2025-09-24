@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import useAxiosPrivate from '../axios/useAxiosPrivate';
 
-export const useReadAcademicDegrees = (params = {}) => {
+export const useReadAcademicDegrees = (params = {}, options = {}) => {
   const axiosPrivate = useAxiosPrivate();
 
 	return useQuery({
@@ -11,5 +11,6 @@ export const useReadAcademicDegrees = (params = {}) => {
 			const res = await axiosPrivate.get('/api/v1/academic-degrees/', { params });
 			return res.data;
 		},
+    ...options,
 	});
 };

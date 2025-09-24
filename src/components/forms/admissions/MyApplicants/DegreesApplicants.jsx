@@ -47,7 +47,7 @@ export const DegreesApplicants = ({ data }) => {
 		data: dataAcademicDegrees,
 		isLoading,
 		refetch: fetchAcademicDegrees,
-	} = useReadAcademicDegrees({ person_id: data?.id });
+	} = useReadAcademicDegrees({ person: data?.id });
 
 	const { mutate: createDegree, isPending: isCreating } =
 		useCreateAcademicDegreeByPerson();
