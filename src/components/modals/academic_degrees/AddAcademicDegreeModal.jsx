@@ -73,7 +73,7 @@ export const AddAcademicDegreeModal = ({ dataUser, fetchData, options }) => {
 						{
 							name: degreeName,
 							university: university,
-							type_degree: typeDegree,
+							type_degree: typeDegree?.value,
 							path_url: uploadedUrl,
 						},
 					],
@@ -194,7 +194,7 @@ export const AddAcademicDegreeModal = ({ dataUser, fetchData, options }) => {
 									options={options}
 									placeholder='Selecciona el tipo de título'
 									value={typeDegree}
-									onChange={(selected) => setTypeDegree(selected?.value)}
+									onChange={setTypeDegree}
 									isClearable
 									size='sm'
 								/>

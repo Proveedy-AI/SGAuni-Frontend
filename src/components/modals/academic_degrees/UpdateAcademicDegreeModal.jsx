@@ -132,7 +132,6 @@ export const UpdateAcademicDegreeModal = ({ item, options, fetchData }) => {
 
 	return (
 		<Modal
-			title='Actualizar Título Académico'
 			placement='center'
 			size='4xl'
 			trigger={
