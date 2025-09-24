@@ -15,9 +15,7 @@ export const ReactSelect = (props) => {
 			...provided,
 			backgroundColor: 'transparent',
 			borderColor: 'border',
-			boxShadow: state.isFocused
-				? `0 0 0 1px ${isDarkMode ? '' : ''}`
-				: 'none',
+			boxShadow: state.isFocused ? `0 0 0 1px ${isDarkMode ? '' : ''}` : 'none',
 			'&:hover': {
 				borderColor: 'border.inverted',
 			},
@@ -37,11 +35,7 @@ export const ReactSelect = (props) => {
 						? '#1A2129'
 						: '#F2F2F2'
 					: null,
-			color: state.isSelected
-				? 'white'
-				: isDarkMode
-					? 'white'
-					: '#151A20',
+			color: state.isSelected ? 'white' : isDarkMode ? 'white' : '#151A20',
 			'&:hover': {
 				backgroundColor: isDarkMode ? '#1A2129' : '#F2F2F2',
 				color: isDarkMode ? 'white' : '#151A20',
@@ -65,11 +59,7 @@ export const ReactSelect = (props) => {
 			const color = state.data.color;
 			return {
 				...provided,
-				backgroundColor: color
-					? color
-					: isDarkMode
-						? '#1A2129'
-						: '#F2F2F2',
+				backgroundColor: color ? color : isDarkMode ? '#1A2129' : '#F2F2F2',
 			};
 		},
 		multiValueLabel: (provided, state) => {
@@ -77,11 +67,7 @@ export const ReactSelect = (props) => {
 			return {
 				...provided,
 				fontSize: '10px',
-				color: color
-					? contrast(color)
-					: isDarkMode
-						? 'white'
-						: '#1A2129',
+				color: color ? contrast(color) : isDarkMode ? 'white' : '#1A2129',
 				backgroundColor: color || 'transparent',
 			};
 		},
@@ -89,13 +75,25 @@ export const ReactSelect = (props) => {
 			const color = state.data.color;
 			return {
 				...provided,
-				color: color
-					? contrast(color)
-					: isDarkMode
-						? 'white'
-						: '#1A2129',
+				color: color ? contrast(color) : isDarkMode ? 'white' : '#1A2129',
 			};
 		},
+		valueContainer: (provided, state) => ({
+			...provided,
+			maxHeight: state.hasValue ? '40px' : 'auto', // scroll solo si hay valores
+			overflowY: state.hasValue ? 'auto' : 'visible',
+			flexWrap: 'wrap',
+			'&::-webkit-scrollbar': {
+				width: '6px',
+			},
+			'&::-webkit-scrollbar-thumb': {
+				background: isDarkMode ? '#4A5568' : '#A0AEC0',
+				borderRadius: '10px',
+			},
+			'&::-webkit-scrollbar-thumb:hover': {
+				background: isDarkMode ? '#718096' : '#718096',
+			},
+		}),
 	};
 
 	const mergedStyles = { ...customStyles };
