@@ -85,6 +85,7 @@ import {
 	EnrolledStudentsView,
 } from './views/admin/tuitions/enrolled';
 import { TransferRequestsView } from './views/admin/transfer_requests';
+import { MyAcademicDegreesView } from './views/admin/my_academic_degrees';
 
 function App() {
 	return (
@@ -406,6 +407,21 @@ function App() {
 									</Route>
 								</Route>
 							</Route>
+
+              {/* ------------------------- ACADEMIC DEGREES STUDENT ------------------------- */}
+
+              <Route path='myacademicdegrees'>
+                <Route
+									element={
+										<ProtectedRoute
+											requiredDebt
+											requiredPermission='academicdegrees.myacademicdegrees.view'
+										/>
+									}
+								>
+                  <Route index element={<MyAcademicDegreesView />} />
+                </Route>
+              </Route>
 
 							{/* ---------------------------- DEBTS ADMIN ROUTES ---------------------------- */}
 
