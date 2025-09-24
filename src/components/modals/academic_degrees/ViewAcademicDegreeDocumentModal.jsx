@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
 import { Modal, Tooltip } from '@/components/ui';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Box, IconButton } from '@chakra-ui/react';
 import { FiEye } from 'react-icons/fi';
 
 export const ViewAcademicDegreeDocumentModal = ({ item }) => {
+  const contentRef = useRef(null);
 	const [open, setOpen] = useState(false);
 
 	return (
@@ -29,6 +30,7 @@ export const ViewAcademicDegreeDocumentModal = ({ item }) => {
 			open={open}
 			onOpenChange={(e) => setOpen(e.open)}
 			hiddenFooter={true}
+      contentRef={contentRef}
 		>
 			<Box minH='500px'>
 				{item?.path_url ? (

@@ -220,6 +220,7 @@ const groupTitles = {
 		procedures: 'Trámites',
 		students: 'Estudiantes',
 		transfer: 'Traslados Internos',
+    academicdegrees: 'Títulos Académicos',
 	},
 	subCategory: {
 		program: 'Programas',
@@ -263,5 +264,6 @@ const groupTitles = {
 		students: 'Estudiantes',
 		programsEnrollments: 'Programas de Matrícula',
 		requeststransfer: 'Solicitudes Traslados Internos',
+    myacademicdegrees: 'Mis Títulos',
 	},
 };

@@ -92,7 +92,7 @@ export const EvaluationSummaryTable = ({ data }) => {
 					const statusConfig = getStatusConfig(evaluation.grade_obtained);
 					return (
 						<Table.Row
-							key={`eval-${evaluation.id}`}
+							key={`eval-${evaluation.id}-${evaluation.evaluation_name}-${idx}`}
 							bg={idx % 2 === 0 ? 'white' : 'gray.100'}
 							borderColor={borderColor}
 						>
@@ -179,7 +179,7 @@ export const EvaluationSummaryTable = ({ data }) => {
 				data.other_professors.map((prof, idx) => {
 					const hasWeight = prof.evaluations?.some(e => e.weight_percentage !== null);
 					return (
-						<Card.Root bg={bgColor} borderColor={borderColor} mb={6} key={`prof-table-${idx}`}>
+						<Card.Root bg={bgColor} borderColor={borderColor} mb={6} key={`prof-table-${prof.professor_name}-${idx}`}>
 							<Card.Header>
 								<Flex direction='column' align='start' gap={1}>
 									<Text fontWeight='bold' color='blue.700'>
@@ -228,7 +228,16 @@ export const MyEvaluationsByCourseView = () => {
 	const otherEvals = (data?.other_professors || []).flatMap(
 		(p) => p.evaluations || []
 	);
-	const allEvals = [...mainEvals, ...otherEvals];
+	
+	// Filtrar evaluaciones duplicadas usando un Set de IDs
+	const seenIds = new Set();
+	const allEvals = [...mainEvals, ...otherEvals].filter(evaluation => {
+		if (seenIds.has(evaluation.id)) {
+			return false; // Ya hemos visto esta evaluación
+		}
+		seenIds.add(evaluation.id);
+		return true;
+	});
 
 	const completedEvaluations = allEvals.filter(
 		(e) => e.grade_obtained !== null && e.grade_obtained !== undefined
@@ -393,7 +402,7 @@ export const MyEvaluationsByCourseView = () => {
 						<Text fontSize='sm' color='gray.500' fontWeight='medium'>
 							Estado del Curso
 						</Text>
-						{data?.shared_final_grade ? (
+						{data?.shared_final_grade && pendingEvaluations === 0 ? (
               <Text
 								textAlign='end'
 								fontSize='xl'
@@ -402,7 +411,7 @@ export const MyEvaluationsByCourseView = () => {
 							>
 								{data?.shared_final_grade >= 10.5 ? 'Aprobado' : 'Desaprobado'}
 							</Text>
-            ) : data?.final_grade ? (
+            ) : data?.final_grade && pendingEvaluations === 0 ? (
 							<Text
 								textAlign='end'
 								fontSize='xl'

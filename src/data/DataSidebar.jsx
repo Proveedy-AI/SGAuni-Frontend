@@ -98,6 +98,12 @@ export const useDataSidebar = () => {
 			label: 'Mis Trámites',
 			permission: 'procedures.myprocedures.view',
 		},
+    {
+      href: '/myacademicdegrees',
+      icon: FiFolder,
+      label: 'Mis Títulos',
+      permission: 'academicdegrees.myacademicdegrees.view',
+    },
 		{
 			href: '/contracts',
 			icon: FaFileContract,
