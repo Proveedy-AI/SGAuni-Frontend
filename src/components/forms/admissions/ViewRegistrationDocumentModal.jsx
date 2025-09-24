@@ -9,9 +9,15 @@ import { Modal, Tooltip } from '@/components/ui';
 import { useState } from 'react';
 import { ApplicationDataDocument } from '@/components/pdf';
 import { FiFile } from 'react-icons/fi';
+import { useReadAcademicDegrees } from '@/hooks/academic_degrees';
 
 export const ViewRegistrationDocumentModal = ({ data }) => {
   const [open, setOpen] = useState(false);
+
+  const { data: academicDegrees } = useReadAcademicDegrees(
+    { person: data?.person_details?.id },
+    { enabled: open && !!data?.person_details?.id },
+  );
 
   return (
     <Modal
@@ -42,7 +48,7 @@ export const ViewRegistrationDocumentModal = ({ data }) => {
       }
     >
       <Stack css={{ '--field-label-width': '140px' }}>
-        <ApplicationDataDocument applicationData={data} />
+        <ApplicationDataDocument applicationData={data} academicDegrees={academicDegrees?.results} />
       </Stack>
     </Modal>
   );
