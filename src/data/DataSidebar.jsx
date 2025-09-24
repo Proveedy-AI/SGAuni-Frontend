@@ -16,12 +16,13 @@ import {
 	FiFolder,
 	FiEdit3,
 	FiClipboard,
+	FiPieChart,
 } from 'react-icons/fi';
 import { FaFileContract, FaRegFile, FaUserGraduate } from 'react-icons/fa';
 import { HiOutlineClipboardList } from 'react-icons/hi';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { HiOutlineDocumentText } from 'react-icons/hi2';
-import { MdChangeCircle } from 'react-icons/md';
+import { MdAssessment, MdChangeCircle } from 'react-icons/md';
 
 export const useDataSidebar = () => {
 	const { data: profile } = useReadUserLogged();
@@ -225,6 +226,31 @@ export const useDataSidebar = () => {
 			icon: FiUsers,
 			label: 'Usuarios',
 			permission: 'users.users.view',
+		},
+		{
+			href: '/reports',
+			label: 'Reportes',
+			icon: MdAssessment,
+			subItems: [
+				{
+					href: '/reports/admission',
+					label: 'Reporte de Admisión',
+					icon: FiPieChart,
+					permission: 'reports.admission.view',
+				},
+				{
+					href: '/reports/enrollments',
+					label: 'Reporte de Matrícula',
+					icon: FiBookOpen,
+					permission: 'reports.enrollments.view',
+				},
+				{
+					href: '/reports/financial',
+					label: 'Reporte Financiero',
+					icon: FiDollarSign,
+					permission: 'reports.financial.view',
+				},
+			],
 		},
 	];
 

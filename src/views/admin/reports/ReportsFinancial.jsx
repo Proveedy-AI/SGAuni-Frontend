@@ -1,4 +1,3 @@
-// dashboard/AdminDashboard.jsx
 import { ReactSelect } from '@/components';
 import { Field } from '@/components/ui';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
@@ -7,32 +6,14 @@ import { useReadAdmissions } from '@/hooks/admissions_proccess';
 import { useReadEnrollments } from '@/hooks/enrollments_proccess';
 import { useReadMethodPayment } from '@/hooks/method_payments';
 import { useReadDataDashPayment } from '@/hooks/reports';
-
-import {
-	Box,
-	Card,
-	Grid,
-	Heading,
-	SimpleGrid,
-	Stack,
-	Text,
-} from '@chakra-ui/react';
+import * as react from '@chakra-ui/react';
 import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
 import { FiCreditCard, FiDollarSign, FiFileText } from 'react-icons/fi';
 import { HiClipboardList } from 'react-icons/hi';
-import {
-	CartesianGrid,
-	Legend,
-	Line,
-	LineChart,
-	ResponsiveContainer,
-	Tooltip,
-	XAxis,
-	YAxis,
-} from 'recharts';
+import * as recharts from 'recharts';
 
-export const DebtDashboard = () => {
+export const ReportsFinancial = () => {
 	const today = new Date();
 
 	// primer día del mes actual
@@ -109,16 +90,25 @@ export const DebtDashboard = () => {
 				{ date: '2024-06-01', PEN: 1300 },
 			],
 		},
+		programData: [
+			{ name: 'Ingeniería de Sistemas', income: 120, debts: 20 },
+			{ name: 'Administración de Empresas', income: 80, debts: 10 },
+		],
+		semesterData: [
+			{ name: '2023-1', income: 1200, debts: 1000 },
+			{ name: '2023-2', income: 1350, debts: 1250 },
+			{ name: '2024-1', income: 1100, debts: 1050 },
+			{ name: '2024-2', income: 1450, debts: 1300 },
+		],
 		totalIncome: 5000,
 		totalDebts: 4000,
 		totalRequest: 900,
 		totalOrders: 500,
-		totalEntrants: 300,
-		totalRetired: 100,
 	};*/
 
 	//const loadingIncomesFlow = false;
-
+	const barData = dataIncomesFlow?.programData;
+	const areaData = dataIncomesFlow?.semesterData;
 	const lineData =
 		loadingIncomesFlow || incomesFlow === '1'
 			? dataIncomesFlow?.income?.dailyRevenue?.map((entry, index) => ({
@@ -175,9 +165,9 @@ export const DebtDashboard = () => {
 	}, [selectedTypePeriod, dataPeriodEnrollments, dataPeriodAdmission]);
 
 	return (
-		<Stack gap={4}>
-			<Box bg='white' p={4} rounded='lg' shadow='sm'>
-				<SimpleGrid columns={{ base: 1, md: 4 }} gap={4}>
+		<react.Stack gap={4}>
+			<react.Box bg='white' p={4} rounded='lg' shadow='sm'>
+				<react.SimpleGrid columns={{ base: 1, md: 4 }} gap={4}>
 					{/* Filtrar por Fecha */}
 					<Field label='Tipo de Periodo:'>
 						<ReactSelect
@@ -290,23 +280,30 @@ export const DebtDashboard = () => {
 							options={MethodsPaymentOptions}
 						/>
 					</Field>
-				</SimpleGrid>
-			</Box>
+				</react.SimpleGrid>
+			</react.Box>
 
-			<Grid templateColumns={{ base: '1fr', md: 'repeat(4, 1fr)' }} gap={6}>
+			<react.Grid
+				templateColumns={{ base: '1fr', md: 'repeat(4, 1fr)' }}
+				gap={6}
+			>
 				{/* Total de Ingresos */}
-				<Card.Root bg='white' shadow='sm'>
-					<Card.Header
+				<react.Card.Root bg='white' shadow='sm'>
+					<react.Card.Header
 						display='flex'
 						flexDirection='row'
 						alignItems='center'
 						justifyContent='space-between'
 						pb={2}
 					>
-						<Card.Title fontSize='sm' fontWeight='medium' color='gray.600'>
+						<react.Card.Title
+							fontSize='sm'
+							fontWeight='medium'
+							color='gray.600'
+						>
 							Total de Ingresos
-						</Card.Title>
-						<Box
+						</react.Card.Title>
+						<react.Box
 							w={10}
 							h={10}
 							bg='green.100'
@@ -316,28 +313,32 @@ export const DebtDashboard = () => {
 							justifyContent='center'
 						>
 							<FiDollarSign size={20} color='#16a34a' />
-						</Box>
-					</Card.Header>
-					<Card.Body>
-						<Text fontSize='2xl' fontWeight='bold' color='gray.900'>
+						</react.Box>
+					</react.Card.Header>
+					<react.Card.Body>
+						<react.Text fontSize='2xl' fontWeight='bold' color='gray.900'>
 							S/.{dataIncomesFlow?.totalIncome || 0}
-						</Text>
-					</Card.Body>
-				</Card.Root>
+						</react.Text>
+					</react.Card.Body>
+				</react.Card.Root>
 
 				{/* Total de Deuda */}
-				<Card.Root bg='white' shadow='sm'>
-					<Card.Header
+				<react.Card.Root bg='white' shadow='sm'>
+					<react.Card.Header
 						display='flex'
 						flexDirection='row'
 						alignItems='center'
 						justifyContent='space-between'
 						pb={2}
 					>
-						<Card.Title fontSize='sm' fontWeight='medium' color='gray.600'>
+						<react.Card.Title
+							fontSize='sm'
+							fontWeight='medium'
+							color='gray.600'
+						>
 							Total de Deuda
-						</Card.Title>
-						<Box
+						</react.Card.Title>
+						<react.Box
 							w={10}
 							h={10}
 							bg='red.100'
@@ -347,28 +348,32 @@ export const DebtDashboard = () => {
 							justifyContent='center'
 						>
 							<FiFileText size={20} color='#dc2626' />
-						</Box>
-					</Card.Header>
-					<Card.Body>
-						<Text fontSize='2xl' fontWeight='bold' color='gray.900'>
+						</react.Box>
+					</react.Card.Header>
+					<react.Card.Body>
+						<react.Text fontSize='2xl' fontWeight='bold' color='gray.900'>
 							S/. {dataIncomesFlow?.totalDebts || 0}
-						</Text>
-					</Card.Body>
-				</Card.Root>
+						</react.Text>
+					</react.Card.Body>
+				</react.Card.Root>
 
 				{/* Solicitudes */}
-				<Card.Root bg='white' shadow='sm'>
-					<Card.Header
+				<react.Card.Root bg='white' shadow='sm'>
+					<react.Card.Header
 						display='flex'
 						flexDirection='row'
 						alignItems='center'
 						justifyContent='space-between'
 						pb={2}
 					>
-						<Card.Title fontSize='sm' fontWeight='medium' color='gray.600'>
+						<react.Card.Title
+							fontSize='sm'
+							fontWeight='medium'
+							color='gray.600'
+						>
 							Solicitudes
-						</Card.Title>
-						<Box
+						</react.Card.Title>
+						<react.Box
 							w={10}
 							h={10}
 							bg='blue.100'
@@ -378,28 +383,32 @@ export const DebtDashboard = () => {
 							justifyContent='center'
 						>
 							<HiClipboardList size={20} color='#2563eb' />
-						</Box>
-					</Card.Header>
-					<Card.Body>
-						<Text fontSize='2xl' fontWeight='bold' color='gray.900'>
+						</react.Box>
+					</react.Card.Header>
+					<react.Card.Body>
+						<react.Text fontSize='2xl' fontWeight='bold' color='gray.900'>
 							{dataIncomesFlow?.totalRequest || 0}
-						</Text>
-					</Card.Body>
-				</Card.Root>
+						</react.Text>
+					</react.Card.Body>
+				</react.Card.Root>
 
 				{/* Órdenes de Pago */}
-				<Card.Root bg='white' shadow='sm'>
-					<Card.Header
+				<react.Card.Root bg='white' shadow='sm'>
+					<react.Card.Header
 						display='flex'
 						flexDirection='row'
 						alignItems='center'
 						justifyContent='space-between'
 						pb={2}
 					>
-						<Card.Title fontSize='sm' fontWeight='medium' color='gray.600'>
+						<react.Card.Title
+							fontSize='sm'
+							fontWeight='medium'
+							color='gray.600'
+						>
 							Órdenes de Pago
-						</Card.Title>
-						<Box
+						</react.Card.Title>
+						<react.Box
 							w={10}
 							h={10}
 							bg='purple.100'
@@ -409,76 +418,17 @@ export const DebtDashboard = () => {
 							justifyContent='center'
 						>
 							<FiCreditCard size={20} color='#7e22ce' />
-						</Box>
-					</Card.Header>
-					<Card.Body>
-						<Text fontSize='2xl' fontWeight='bold' color='gray.900'>
+						</react.Box>
+					</react.Card.Header>
+					<react.Card.Body>
+						<react.Text fontSize='2xl' fontWeight='bold' color='gray.900'>
 							{dataIncomesFlow?.totalOrders || 0}
-						</Text>
-					</Card.Body>
-				</Card.Root>
-			</Grid>
+						</react.Text>
+					</react.Card.Body>
+				</react.Card.Root>
+			</react.Grid>
 
-			<Card.Root bg='white' shadow='sm'>
-				<Card.Header>
-					<Card.Title fontSize='lg' fontWeight='semibold' color='gray.900'>
-						Cantidad de Estudiantes
-					</Card.Title>
-				</Card.Header>
-				<Card.Body>
-					<Card.Root
-						display='grid'
-						gridTemplateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }}
-						gap={6}
-					>
-						<Card.Root
-							bg='green.50'
-							p={4}
-							rounded='lg'
-							borderWidth='1px'
-							borderColor='green.200'
-						>
-							<Card.Body p={0}>
-								<Card.Title
-									fontSize='sm'
-									fontWeight='medium'
-									color='green.700'
-									mb={1}
-								>
-									Inscritos
-								</Card.Title>
-								<Card.Title fontSize='3xl' fontWeight='bold' color='green.900'>
-									{dataIncomesFlow?.totalEntrants || 0}
-								</Card.Title>
-							</Card.Body>
-						</Card.Root>
-
-						<Card.Root
-							bg='red.50'
-							p={4}
-							rounded='lg'
-							borderWidth='1px'
-							borderColor='red.200'
-						>
-							<Card.Body p={0}>
-								<Card.Title
-									fontSize='sm'
-									fontWeight='medium'
-									color='red.700'
-									mb={1}
-								>
-									Retirados
-								</Card.Title>
-								<Card.Title fontSize='3xl' fontWeight='bold' color='red.900'>
-									{dataIncomesFlow?.totalRetired || 0}
-								</Card.Title>
-							</Card.Body>
-						</Card.Root>
-					</Card.Root>
-				</Card.Body>
-			</Card.Root>
-
-			<Stack
+			<react.Stack
 				bg={{ base: 'white', _dark: 'its.gray.500' }}
 				p='4'
 				borderRadius='10px'
@@ -486,14 +436,14 @@ export const DebtDashboard = () => {
 				boxShadow='md'
 				gap='1'
 			>
-				<Stack
+				<react.Stack
 					justify='space-between'
 					align='center'
 					w='full'
 					direction={{ base: 'column', sm: 'row' }}
 				>
-					<Box w='full'>
-						<Heading
+					<react.Box w='full'>
+						<react.Heading
 							size={{
 								xs: 'xs',
 								sm: 'sm',
@@ -501,13 +451,13 @@ export const DebtDashboard = () => {
 							}}
 						>
 							Flujo monetario neto
-						</Heading>
-					</Box>
-				</Stack>
+						</react.Heading>
+					</react.Box>
+				</react.Stack>
 
-				<Box w='full' h='400px'>
-					<ResponsiveContainer width='100%' height='100%'>
-						<LineChart
+				<react.Box w='full' h='400px'>
+					<recharts.ResponsiveContainer width='100%' height='100%'>
+						<recharts.LineChart
 							width={500}
 							height={300}
 							data={lineData}
@@ -518,33 +468,155 @@ export const DebtDashboard = () => {
 								bottom: 5,
 							}}
 						>
-							<CartesianGrid strokeDasharray='3 3' />
-							<XAxis dataKey='name' />
-							<YAxis />
-							<Tooltip />
-							<Legend
+							<recharts.CartesianGrid strokeDasharray='3 3' />
+							<recharts.XAxis dataKey='name' />
+							<recharts.YAxis />
+							<recharts.Tooltip />
+							<recharts.Legend
 								align='center'
 								verticalAlign='top'
 								wrapperStyle={{ paddingBottom: '10px' }}
 							/>
-							<Line
+							<recharts.Line
 								type='monotone'
 								dataKey='currentRevenue'
 								name='Ingresos'
 								stroke='green'
 								activeDot={{ r: 8 }}
 							/>
-							<Line
+							<recharts.Line
 								type='monotone'
 								dataKey='previousRevenue'
 								name='Deudas'
 								stroke='red'
 								activeDot={{ r: 8 }}
 							/>
-						</LineChart>
-					</ResponsiveContainer>
-				</Box>
-			</Stack>
-		</Stack>
+						</recharts.LineChart>
+					</recharts.ResponsiveContainer>
+				</react.Box>
+			</react.Stack>
+
+			<react.Stack
+				bg={{ base: 'white', _dark: 'its.gray.500' }}
+				p='4'
+				borderRadius='10px'
+				overflow='hidden'
+				boxShadow='md'
+				gap='1'
+			>
+				<react.Stack
+					justify='space-between'
+					align='center'
+					w='full'
+					direction={{ base: 'column', sm: 'row' }}
+				>
+					<react.Box w='full'>
+						<react.Heading
+							size={{
+								xs: 'xs',
+								sm: 'sm',
+								md: 'md',
+							}}
+						>
+							Flujo por Semestre
+						</react.Heading>
+					</react.Box>
+				</react.Stack>
+
+				<react.Box w='full' h='400px'>
+					<recharts.ResponsiveContainer width='100%' height='100%'>
+						<recharts.AreaChart
+							width={500}
+							height={300}
+							data={areaData}
+							margin={{
+								top: 5,
+								right: 30,
+								left: 20,
+								bottom: 5,
+							}}
+						>
+							<recharts.CartesianGrid strokeDasharray='3 3' />
+							<recharts.XAxis dataKey='name' />
+							<recharts.YAxis />
+							<recharts.Tooltip />
+							<recharts.Legend
+								align='center'
+								verticalAlign='top'
+								wrapperStyle={{ paddingBottom: '10px' }}
+							/>
+							<recharts.Area
+								type='monotone'
+								dataKey='income'
+								name='Ingresos'
+								stroke='green'
+								fill='rgba(0, 128, 0, 0.3)'
+								activeDot={{ r: 8 }}
+							/>
+
+							<recharts.Area
+								type='monotone'
+								dataKey='debts'
+								name='Deudas'
+								stroke='red'
+								fill='rgba(255, 0, 0, 0.3)'
+								activeDot={{ r: 8 }}
+							/>
+						</recharts.AreaChart>
+					</recharts.ResponsiveContainer>
+				</react.Box>
+			</react.Stack>
+
+			<react.Stack
+				bg={{ base: 'white', _dark: 'its.gray.500' }}
+				p='4'
+				borderRadius='10px'
+				overflow='hidden'
+				boxShadow='md'
+				gap='1'
+			>
+				<react.Stack
+					justify='space-between'
+					align='center'
+					w='full'
+					mb={10}
+					direction={{ base: 'column', sm: 'row' }}
+				>
+					<react.Box w='full'>
+						<react.Heading
+							size={{
+								xs: 'xs',
+								sm: 'sm',
+								md: 'md',
+							}}
+						>
+							Flujo por Programa
+						</react.Heading>
+					</react.Box>
+				</react.Stack>
+				<react.Box w='full' h='400px'>
+					<recharts.ResponsiveContainer width='100%' height='100%'>
+						<recharts.BarChart
+							width={500}
+							height={300}
+							data={barData}
+							margin={{
+								top: 5,
+								right: 30,
+								left: 20,
+								bottom: 5,
+							}}
+						>
+							<recharts.CartesianGrid strokeDasharray='3 3' />
+							<recharts.XAxis dataKey='name' />
+							<recharts.YAxis />
+							<recharts.Tooltip />
+							<recharts.Bar dataKey='income' name='Ingresos' fill='#3182CE' />
+							<recharts.Bar dataKey='debts' name='Deudas' fill='#E53E3E' />
+						</recharts.BarChart>
+					</recharts.ResponsiveContainer>
+				</react.Box>
+			</react.Stack>
+		</react.Stack>
 	);
 };
