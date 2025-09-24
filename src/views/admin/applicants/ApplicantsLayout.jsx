@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { PersonalDataApplicants } from '@/components/forms/admissions/MyApplicants';
+import { DegreesApplicants } from '@/components/forms/admissions/MyApplicants/DegreesApplicants';
 import { FaCheckCircle, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import ResponsiveBreadcrumb from '@/components/ui/ResponsiveBreadcrumb';
 import { DocumentsApplicant } from './DocumentsApplicant';
@@ -102,6 +103,10 @@ export const ApplicantsLayout = () => {
 				/>
 			),
 		},
+    {
+      title: 'Títulos',
+      component: <DegreesApplicants data={dataUser} />,
+    },
 		{
 			title: 'Solicitudes',
 			component: (
