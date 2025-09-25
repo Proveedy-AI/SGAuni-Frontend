@@ -12,11 +12,19 @@ import { FiClock, FiUserCheck, FiUsers, FiUserX } from 'react-icons/fi';
 import * as recharts from 'recharts';
 
 export const ReportsAdmission = () => {
+	const today = new Date();
+
+	// primer día del mes actual
+	const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+	// formatear en YYYY-MM-DD
+	const formatDate = (date) => date.toISOString().split('T')[0];
 	const [selectedProgram, setSelectedProgram] = useState([]);
 	const [selectedPeriod, setSelectedPeriod] = useState([]);
-	const [startDate, setStartDate] = useState(null);
-	const [endDate, setEndDate] = useState(null);
-	const { data: dataPeriod, isLoading: isLoadingPeriod } = useReadAdmissions();
+	const [startDate, setStartDate] = useState(formatDate(firstDayOfMonth));
+	const [endDate, setEndDate] = useState(formatDate(today));
+	const { data: dataPeriod, isLoading: isLoadingPeriodAdmission } =
+		useReadAdmissions();
 
 	const { data: dataPrograms, isLoading: isLoadingPrograms } =
 		useReadPrograms();
@@ -65,6 +73,8 @@ export const ReportsAdmission = () => {
 			dataPeriod?.results?.map((program) => ({
 				label: program.admission_process_name,
 				value: program.id,
+				start_date: program.start_date,
+				end_date: program.end_date,
 			})) || [],
 		[dataPeriod]
 	);
@@ -113,13 +123,33 @@ export const ReportsAdmission = () => {
 						<ReactSelect
 							placeholder='Seleccionar'
 							value={selectedPeriod}
-							onChange={(option) => {
-								setSelectedPeriod(option);
+							onChange={(options) => {
+								setSelectedPeriod(options);
+
+								if (options && options.length > 0) {
+									// Encuentra la fecha más antigua y la más reciente
+									const minDate = options.reduce(
+										(min, opt) => (opt.start_date < min ? opt.start_date : min),
+										options[0].start_date
+									);
+
+									const maxDate = options.reduce(
+										(max, opt) => (opt.end_date > max ? opt.end_date : max),
+										options[0].end_date
+									);
+
+									setStartDate(minDate);
+									setEndDate(maxDate);
+								} else {
+									// Si no hay selección, resetea al default
+									setStartDate(formatDate(firstDayOfMonth));
+									setEndDate(formatDate(today));
+								}
 							}}
-							isLoading={isLoadingPeriod}
+							isLoading={isLoadingPeriodAdmission}
 							variant='flushed'
 							size='xs'
-							isMulti={true}
+							isMulti
 							isSearchable
 							isClearable
 							options={PeriodOptions}
