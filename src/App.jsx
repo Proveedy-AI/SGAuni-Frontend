@@ -11,7 +11,7 @@ import {
 	SettingsModalities,
 	AccountStudentProfile,
 	SettingsDataProccess,
-  SettingsSchedulesTypes,
+	SettingsSchedulesTypes,
 } from './views/admin/settings';
 import { UserList } from './views/admin/UserList';
 import { PrivateRoute, ProtectedRoute } from './PrivateRoute ';
@@ -85,6 +85,12 @@ import {
 	EnrolledStudentsView,
 } from './views/admin/tuitions/enrolled';
 import { TransferRequestsView } from './views/admin/transfer_requests';
+import {
+	ReportsAdmission,
+	ReportsEnrollments,
+	ReportsFinancial,
+} from './views/admin/reports';
+import { MyAcademicDegreesView } from './views/admin/my_academic_degrees';
 
 function App() {
 	return (
@@ -407,6 +413,21 @@ function App() {
 								</Route>
 							</Route>
 
+              {/* ------------------------- ACADEMIC DEGREES STUDENT ------------------------- */}
+
+              <Route path='myacademicdegrees'>
+                <Route
+									element={
+										<ProtectedRoute
+											requiredDebt
+											requiredPermission='academicdegrees.myacademicdegrees.view'
+										/>
+									}
+								>
+                  <Route index element={<MyAcademicDegreesView />} />
+                </Route>
+              </Route>
+
 							{/* ---------------------------- DEBTS ADMIN ROUTES ---------------------------- */}
 
 							<Route path='debts' element={<DebtsLayout />}>
@@ -529,7 +550,7 @@ function App() {
 										element={<SettingsDataProccess />}
 									/>
 								</Route>
-                <Route
+								<Route
 									element={
 										<ProtectedRoute requiredPermission='settings.schedules-types.view' />
 									}
@@ -538,6 +559,32 @@ function App() {
 										path='schedules-types'
 										element={<SettingsSchedulesTypes />}
 									/>
+								</Route>
+							</Route>
+
+							{/* ----------------------------- REPORTS ROUTES ---------------------------- */}
+
+							<Route path='reports'>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='reports.admission.view' />
+									}
+								>
+									<Route path='admission' element={<ReportsAdmission />} />
+								</Route>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='reports.enrollments.view' />
+									}
+								>
+									<Route path='enrollments' element={<ReportsEnrollments />} />
+								</Route>
+								<Route
+									element={
+										<ProtectedRoute requiredPermission='reports.financial.view' />
+									}
+								>
+									<Route path='financial' element={<ReportsFinancial />} />
 								</Route>
 							</Route>
 						</Route>
