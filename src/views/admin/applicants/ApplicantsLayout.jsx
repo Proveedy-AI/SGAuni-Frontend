@@ -68,15 +68,19 @@ export const ApplicantsLayout = () => {
 					setIsStepValid(isValid);
 					break;
 				}
-				case 1: {
+        case 1: {
+          setIsStepValid(true); // Los títulos académicos son opcionales...
+          break;
+        }
+				case 2: {
 					setIsStepValid(isPaymentStepValid);
 					break;
 				}
-				case 2: {
+				case 3: {
 					setIsStepValid(isDocumentsStepValid);
 					break;
 				}
-				case 3: {
+				case 4: {
 					setIsStepValid(allWorksCompleted);
 					break;
 				}
