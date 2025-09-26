@@ -92,6 +92,9 @@ export const ReportsAdmission = () => {
 		})) || [];
 
 	// Simulación de datos reales
+  const totalApplicants = dataAdmissionReport ? 
+    (dataAdmissionReport?.totalApproved + dataAdmissionReport?.totalRejected + dataAdmissionReport?.totalInProgress) 
+    : 0
 
 	return (
 		<react.Stack gap={4}>
@@ -225,7 +228,7 @@ export const ReportsAdmission = () => {
 					</react.Card.Header>
 					<react.Card.Body>
 						<react.Text fontSize='2xl' fontWeight='bold' color='gray.900'>
-							{dataAdmissionReport?.totalInProgress || 0}
+							{totalApplicants}
 						</react.Text>
 					</react.Card.Body>
 				</react.Card.Root>
@@ -260,7 +263,7 @@ export const ReportsAdmission = () => {
 					</react.Card.Header>
 					<react.Card.Body>
 						<react.Text fontSize='2xl' fontWeight='bold' color='gray.900'>
-							S/. {dataAdmissionReport?.totalInProgress || 0}
+							{dataAdmissionReport?.totalInProgress || 0}
 						</react.Text>
 					</react.Card.Body>
 				</react.Card.Root>
