@@ -8,6 +8,7 @@ import { ConvalidacionForm } from '../modals/ConvalidacionForm';
 
 export const ValidationsStudent = ({ dataStudent }) => {
 	const [selectProgram, setSelectProgram] = useState(null);
+  console.log(selectProgram)
 	const { data: dataAcademicTransfers, refetch: refetchAcademicTransfers } =
 		useReadTransferRequest({
 			to_program: selectProgram?.value,
@@ -124,7 +125,7 @@ export const ValidationsStudent = ({ dataStudent }) => {
 					</Flex>
 				)}
 			</Stack>
-			<ConvalidacionesList convalidationsData={academicProgress} />
+			<ConvalidacionesList convalidationsData={academicProgress} student={dataStudent} program={selectProgram} />
 		</Stack>
 	);
 };
