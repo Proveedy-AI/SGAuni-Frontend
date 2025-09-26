@@ -13,12 +13,21 @@ import {
 	Center,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
+import { useMemo } from 'react';
 import { FiRepeat, FiInbox } from 'react-icons/fi';
 
-export const ConvalidacionesList = ({ convalidationsData }) => {
+export const ConvalidacionesList = ({ convalidationsData, student, program }) => {
+  const filterParams = useMemo(() => {
+      const params = {};
+      if (convalidationsData) params.transfer_request = convalidationsData?.id;
+      if (!convalidationsData && student) params.to_program = program?.value;
+      if (!convalidationsData && program) params.student = student?.id;
+      return params;
+    }, [convalidationsData, program, student]);
+
 	const { data: convalidacionesDatCourses } = useReadConvalidationRegister(
-		{ transfer_request: convalidationsData?.id },
-		{ enabled: !!convalidationsData?.id }
+		filterParams,
+		{ enabled: Object.keys(filterParams).length > 0 }
 	);
 
 	const convalidaciones = convalidacionesDatCourses?.results || [];
@@ -59,6 +68,7 @@ export const ConvalidacionesList = ({ convalidationsData }) => {
 											<Text fontSize='sm' color='gray.500'>
 												Créditos: {conv.new_course.credits} | Ciclo:{' '}
 												{conv.new_course.cycle} |{' '}
+                        Tipo: {conv.type_convalidation ?? 'Convalidado'} |{' '}
 												<Badge colorScheme='green'>
 													Convalidado
 												</Badge>
@@ -107,4 +117,6 @@ export const ConvalidacionesList = ({ convalidationsData }) => {
 
 ConvalidacionesList.propTypes = {
 	convalidationsData: PropTypes.object,
+	student: PropTypes.object,
+	program: PropTypes.object,
 };
