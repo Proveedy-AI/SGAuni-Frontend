@@ -124,7 +124,7 @@ export const LoginAdmin = () => {
 	};
 
 	return (
-		<Flex alignItems='center' justifyContent='flex-end' w='full'>
+		<Flex alignItems='center' justifyContent={{ base: 'center', xl: 'flex-end' }} w='full'>
 			<Box
 				bg='white'
 				borderRadius='0'
@@ -136,7 +136,7 @@ export const LoginAdmin = () => {
 				alignItems='center'
 				pb={10}
 				w='full'
-				maxW='lg'
+				maxW={{ base: 'full', xl: 'lg' }}
 			>
 				<VStack
 					as='form'

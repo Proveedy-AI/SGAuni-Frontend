@@ -6,27 +6,26 @@ export const AuthLayout = () => {
 
 	let bgImage = '';
 	if (location.pathname === '/auth/login') {
-		bgImage = "url('/img/bg-admin.png')";
+		bgImage = "url('/img/bg-login.png')";
 	} else {
-		bgImage = "url('/img/bg-admin.png')";
+		bgImage = "url('/img/bg-login.png')";
 	}
 	return (
 		<Box
 			height='100svh'
 			position='relative'
-			bg={'uni.gray.200'}
+			bg='white'
 			display='flex'
 			alignItems='center'
 			justifyContent='center'
 		>
 			<Box
 				position='absolute'
-				top={0}
-				left={0}
-				width='full'
-				height='full'
-				bgImage={bgImage}
-				backgroundSize='79%'
+        w="full"
+        height='100dvh'
+        backgroundSize="cover"
+        bgRepeat='no-repeat'
+				bgImage={{ base: null, xl: bgImage }}
 				backgroundPosition='start'
 				zIndex={1}
 			/>
