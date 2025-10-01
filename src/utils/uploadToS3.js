@@ -15,7 +15,7 @@ export const uploadToS3 = async (file, folder, name, format='pdf') => {
   const randomString = Math.random().toString(36).substring(2, 15);
 	const timestamp = new Date().toISOString().split('T')[0];
 	const fileName = `${file.name.split('.')[0]}-${name}-${timestamp}-${randomString}.${format}`;
-	const key = `${folder}/${fileName}`;
+	const key = `${folder}/${fileName.replace(/\s+/g, '_')}`;
 
 	// Parámetros para el comando
 	const params = {
