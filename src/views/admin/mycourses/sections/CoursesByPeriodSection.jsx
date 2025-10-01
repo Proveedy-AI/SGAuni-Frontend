@@ -5,6 +5,7 @@ import {
 	Box,
 	Button,
 	Card,
+	Flex,
 	Heading,
 	HStack,
 	Icon,
@@ -55,6 +56,7 @@ export const ViewCourseGroupSchedulesModal = ({ item, courseGroups }) => {
               height: '5',
             },
           }}
+          disabled={item.group_section === "N/A"}
         >
           <FiCalendar />
         </IconButton>
@@ -130,10 +132,16 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
 		return 'red';
 	};
 
+  console.log(data.courses)
+
   // Filtrar cursos para mostrar solo los que tengan diferente group_section
   const uniqueCourses = data.courses.filter(
     (course, index, self) =>
-      index === self.findIndex(c => c.group_section === course.group_section)
+      index === self.findIndex(c => c.group_section === course.group_section && c.group_section !== "N/A")
+  );
+
+  const ConvalidateCourses = data.courses.filter(
+    (course) => course.group_section === "N/A"
   );
 
 	return (
@@ -250,7 +258,7 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
 							</Table.Row>
 						</Table.Header>
 						<Table.Body>
-							{uniqueCourses?.map((course, index) => (
+							{[...ConvalidateCourses, ...uniqueCourses]?.map((course, index) => (
 								<Table.Row
 									key={index}
 									_hover={{ bg: hoverBg }}
@@ -258,6 +266,7 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
 									onClick={(e) => {
 										if (e.target.closest('button') || e.target.closest('a'))
 											return;
+                    if (course.group_section === "N/A") return;
                     handleRowClick(course);
                     }}
                     cursor='pointer'
@@ -272,7 +281,7 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
                         fontWeight='medium'
                         textAlign='center'
                       >
-                        {course.cycle || 'N/A'}
+                        {course.cycle || '-'}
                       </Text>
                     </Table.Cell>
                     <Table.Cell
@@ -280,9 +289,16 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
                       borderColor={borderColor}
                     >
                       <VStack align='start' spacing={1}>
-                        <Text fontSize='sm' fontWeight='medium' color='blue.600'>
-                          {course.course_code} - {course.course_name}
-                        </Text>
+                        <Flex align='center' gap={2}>
+                          <Text fontSize='sm' fontWeight='medium' color='blue.600'>
+                            {course.course_code} - {course.course_name}
+                          </Text>
+                          {course?.course_status !== "" &&
+                            <Badge>
+                              {course.course_status}
+                            </Badge>
+                          }
+                        </Flex>
                       </VStack>
                     </Table.Cell>
                     <Table.Cell
