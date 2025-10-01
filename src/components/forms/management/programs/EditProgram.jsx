@@ -105,12 +105,12 @@ export const EditProgram = ({
 			newErrors.essay_guide_path = 'La guía de ensayo es requerida';
 		}
 
-		if (programRequest.essay_guide_path instanceof File) {
-			if (!['application/pdf'].includes(programRequest.essay_guide_path.type)) {
-				newErrors.essay_guide_path =
-					'Solo se permite PDF para la guía de ensayo';
-			}
-		}
+		// if (programRequest.essay_guide_path instanceof File) {
+		// 	if (!['application/pdf'].includes(programRequest.essay_guide_path.type)) {
+		// 		newErrors.essay_guide_path =
+		// 			'Solo se permite PDF para la guía de ensayo';
+		// 	}
+		// }
 
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
@@ -125,7 +125,8 @@ export const EditProgram = ({
 			pathDocUrl = await uploadToS3(
 				programRequest.essay_guide_path,
 				'sga_uni/essays',
-				programRequest.name?.replace(/\s+/g, '_') || 'cv'
+				programRequest.name?.replace(/\s+/g, '_') || 'cv',
+        programRequest.essay_guide_path.type === 'application/pdf' ? 'pdf' : 'docx'
 			);
 		}
 		const payload = {
@@ -409,6 +410,7 @@ export const EditProgram = ({
 											essay_guide_path: null,
 										})
 									}
+                  accept={'.docx, .pdf'}
 								/>
 							</Field>
 						</SimpleGrid>
