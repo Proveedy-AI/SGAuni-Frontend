@@ -145,7 +145,7 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
       ?.filter((item) => item.enabled)
       ?.map((item) => ({
         label: item?.name,
-        value: item?.id
+        value: item?.id,
       })) 
 
 	const [errors, setErrors] = useState({});
@@ -187,7 +187,7 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 		if (!formData.schedules?.length)
 			newErrors.schedules = 'Debe agregar al menos un horario';
 
-    if (!formData.credits_per_group) newErrors.credits_per_group = 'La cantidad de créditos por grupo es requerido'
+    if (!dataTypeSchedules?.results?.find((ts) => ts?.id === formData?.type_schedule)?.is_single && !formData.credits_per_group) newErrors.credits_per_group = 'La cantidad de créditos por grupo es requerido'
     // if (
     //   formData.credits_per_group < 0 &&
     //   formData.credits_per_group > maxCreditsPerGroup
@@ -286,6 +286,10 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
       type_schedule: formData?.type_schedule,
       credits_per_group: formData?.credits_per_group
 		};
+
+    if (!dataTypeSchedules?.results?.find((ts) => ts?.id === formData?.type_schedule)?.is_single) {
+      payload.credits_per_group = formData?.credits_per_group
+    }
 
 		createCourseSchedule(payload, {
 			onSuccess: () => {
@@ -505,20 +509,26 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 									placeholder='Selecciona un tipo de horario'
                 />
 							</Field>
-              <Field
-								label='Total de créditos por grupo:'
-								required
-								invalid={!!errors.credits_per_group}
-								errorText={errors.credits_per_group}
-							>
-								<Input
-									name='credits_per_group'
-									value={formData.credits_per_group}
-									onChange={handleInputChange}
-									type='number'
-									min={1}
-								/>
-							</Field>
+              {
+                formData?.type_schedule &&
+                dataTypeSchedules?.results &&
+                !dataTypeSchedules?.results?.find((ts) => ts?.id === formData?.type_schedule)?.is_single &&
+              (
+                <Field
+                  label='Créditos por horario:'
+                  required
+                  invalid={!!errors.credits_per_group}
+                  errorText={errors.credits_per_group}
+                >
+                  <Input
+                    name='credits_per_group'
+                    value={formData.credits_per_group}
+                    onChange={handleInputChange}
+                    type='number'
+                    min={1}
+                  />
+                </Field>
+              )}
 							<Field label='¿Es obligatorio?'>
 								<RadioGroup value={formData.is_mandatory ? 'yes' : 'no'} isDisabled direction='row' spaceX={4}>
 									<Radio value='yes'>Sí</Radio>

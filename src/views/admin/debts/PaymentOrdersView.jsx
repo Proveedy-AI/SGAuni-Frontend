@@ -74,7 +74,7 @@ export const PaymentOrdersView = () => {
 
 	const filteredPaymentOrders = allPaymentOrders?.filter((request) => {
 		const matchOrdenId = ordenId
-			? request?.id_orden.toString().includes(ordenId)
+			? request?.id_orden?.toString().includes(ordenId)
 			: true;
 		const matchDocumentNum = documentNum
 			? request.document_num.toString().includes(documentNum)

@@ -89,7 +89,8 @@ export const AddProgram = ({
 			pathDocUrl = await uploadToS3(
 				programRequest.essay_guide_path,
 				'sga_uni/essays',
-				programRequest.name?.replace(/\s+/g, '_') || 'cv'
+				programRequest.name?.replace(/\s+/g, '_') || 'cv',
+        programRequest.essay_guide_path.type === 'application/pdf' ? 'pdf' : 'docx'
 			);
 		}
 
@@ -390,6 +391,7 @@ export const AddProgram = ({
 											essay_guide_path: null,
 										})
 									}
+									accept={'.docx, .pdf'}
 								/>
 							</Field>
 						</SimpleGrid>
