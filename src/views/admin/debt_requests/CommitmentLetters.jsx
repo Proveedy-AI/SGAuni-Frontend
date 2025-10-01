@@ -81,13 +81,13 @@ export const CommitmentLetters = () => {
 
 	const filteredRequests = allFractionation?.filter((request) => {
 		const matchRecipeType = selectedRecipeType
-			? request.payment_document_type === selectedRecipeType.value
+			? request?.payment_document_type === selectedRecipeType.value
 			: true;
 		const matchStatus = selectedStatus
-			? request.status_review === selectedStatus.value
+			? request?.status_review === selectedStatus.value
 			: true;
 		const matchApplicantDocNumber = applicantDocNumber
-			? request.num_document_person.includes(applicantDocNumber)
+			? request?.num_document_person.includes(applicantDocNumber)
 			: true;
 		return matchRecipeType && matchStatus && matchApplicantDocNumber;
 	});
