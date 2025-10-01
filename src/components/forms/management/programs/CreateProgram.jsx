@@ -83,13 +83,28 @@ export const AddProgram = ({
 		if (!validateFields()) return;
 
 		let pathDocUrl = programRequest?.essay_guide_path;
+    // Determinar el tipo de archivo (pdf o word)
+    if (programRequest?.essay_guide_path instanceof File) {
+      const fileType = programRequest.essay_guide_path.type;
+      if (fileType === 'application/pdf') {
+        console.log('Es un PDF');
+      } else if (
+        fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+        fileType === 'application/msword'
+      ) {
+        console.log('Es un Word');
+      } else {
+        console.log('Tipo de archivo no soportado:', fileType);
+      }
+    }
 		setDisableUpload(true);
 		// Solo subir a S3 si hay un archivo nuevo
 		if (programRequest?.essay_guide_path instanceof File) {
 			pathDocUrl = await uploadToS3(
 				programRequest.essay_guide_path,
 				'sga_uni/essays',
-				programRequest.name?.replace(/\s+/g, '_') || 'cv'
+				programRequest.name?.replace(/\s+/g, '_') || 'cv',
+        programRequest.essay_guide_path.type === 'application/pdf' ? 'pdf' : 'docx'
 			);
 		}
 
@@ -390,6 +405,7 @@ export const AddProgram = ({
 											essay_guide_path: null,
 										})
 									}
+									accept={'.docx, .pdf'}
 								/>
 							</Field>
 						</SimpleGrid>
