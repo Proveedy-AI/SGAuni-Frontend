@@ -36,6 +36,7 @@ import { CompactFileUpload } from '@/components/ui/CompactFileInput';
 import { uploadToS3 } from '@/utils/uploadToS3';
 
 export const ProcessEnrollmentModal = ({
+  dataUser,
 	paymentPlan,
 	baseAmount,
 	onConfirmEnrollment,
@@ -66,6 +67,16 @@ export const ProcessEnrollmentModal = ({
 		mutate: createPaymentPlansCredits,
 		isLoading: isLoadingPaymentPlansCredits,
 	} = useCreatePaymentPlansCredits();
+
+  useEffect(() => {
+    if (!selectedDocumentType) return;
+
+    setNumDoc(
+      selectedDocumentType?.value === 1
+        ? dataUser?.num_doc
+        : ''
+    );
+  }, [selectedDocumentType]);
 
 	const validateFields = () => {
 		const newErrors = {};
@@ -259,7 +270,7 @@ export const ProcessEnrollmentModal = ({
 			value: method.id,
 			label: method.name,
 		})) || [];
-
+  
 	const downloadSampleFile = () => {
 		const link = document.createElement('a');
 		link.href = '/templates/Compromiso-Pagos-armadas.docx';
@@ -346,6 +357,7 @@ export const ProcessEnrollmentModal = ({
 															? 'Ingrese número de RUC'
 															: 'Ingrese número de documento'
 												}
+                        disabled={selectedDocumentType?.value === 1}
 											/>
 										</Field>
 										<Field
@@ -584,6 +596,7 @@ export const ProcessEnrollmentModal = ({
 };
 
 ProcessEnrollmentModal.propTypes = {
+  dataUser: PropTypes.object,
 	paymentPlan: PropTypes.number,
 	discountValue: PropTypes.string,
 	baseAmount: PropTypes.number,
