@@ -712,6 +712,7 @@ export const Step03SummaryEnrollment = ({
 				{((!isSomeRequestPending && !selectedGroups?.paid_complete_master) ||
 					paymentPlan === 9) && (
 					<ProcessEnrollmentModal
+            dataUser={dataUser}
 						paymentPlan={paymentPlan}
 						discountValue={discountValue}
 						baseAmount={baseAmount}
