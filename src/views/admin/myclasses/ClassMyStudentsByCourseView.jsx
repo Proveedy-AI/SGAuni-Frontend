@@ -85,12 +85,10 @@ export const ClassMyStudentsByCourseView = () => {
 
 	const {
 		data: dataGradesReport,
-		isLoading: loadingGradesReport,
 		refetch: fetchGradesReport,
 	} = useGenerateGradesReport(decrypted);
 
-	const isDownloadable =
-		!loadingGradesReport && studentsData?.students?.length > 0;
+	const isDownloadable = studentsData?.students?.length > 0 && dataGradesReport?.length > 0;
 
 	return (
 		<Box>
