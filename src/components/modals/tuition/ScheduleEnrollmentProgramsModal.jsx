@@ -332,6 +332,7 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 			trigger={
 				<Box>
 					<IconButton
+            disabled={data?.status === 4}
 						variant='outline'
 						size='xs'
 						px={2}
@@ -832,6 +833,7 @@ const AddExcelScheduleModal = ({ open, setOpen, data, fetchData }) => {
 			trigger={
 				<Box>
 					<IconButton
+            disabled={data?.status === 4}
 						variant='solid'
 						size='xs'
 						px={2}
@@ -940,6 +942,7 @@ AddExcelScheduleModal.propTypes = {
 	setOpen: PropTypes.func,
 	data: PropTypes.shape({
 		id: PropTypes.number,
+    status: PropTypes.number,
 	}),
 	fetchData: PropTypes.func,
 };
@@ -1137,6 +1140,7 @@ CalendarView.propTypes = {
 };
 
 export const ScheduleEnrollmentProgramsModal = ({ data }) => {
+  console.log({ data })
 	const [open, setOpen] = useState(false);
 
 	const [courseToDelete, setCourseToDelete] = useState(null);
