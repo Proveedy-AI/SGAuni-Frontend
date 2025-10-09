@@ -47,8 +47,22 @@ export const ClassMyProgramView = () => {
 		useReadMyCourseGroups({}, {});
 
 	const dateNow = new Date();
+
+  const allProgramsWithCourses = dataCourseGroups?.programs?.map(
+    program => {
+      const semesterEndDate = dataEnrollments?.results?.find(
+      enrollment => enrollment.academic_period_name === program.enrollment_period_name
+      )?.status_enrollment_period;
+
+      return {
+      status_enrollment_period: semesterEndDate,
+      ...program
+      };
+    }
+  ) || [];
+
 	const filteredProgramsWithCourses =
-		dataCourseGroups?.programs?.filter((program) => {
+		allProgramsWithCourses?.filter((program) => {
 			const semesterStartDate = new Date(program.semester_start_date);
 
 			const matchesName =

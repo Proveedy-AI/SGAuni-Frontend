@@ -13,8 +13,8 @@ const Row = memo(
 		evaluationComponents,
 		statusOptions,
 		statusColors,
+    hasQualificated,
 	}) => {
-    console.log({ student, evaluationComponents })
 		const statusOption = statusOptions.find(
 			(opt) => opt.value === student.qualification_status
 		);
@@ -72,6 +72,7 @@ const Row = memo(
                   fetchGradesReport={fetchGradesReport}
                   student={student}
                   evaluationComponents={evaluationComponents}
+                  hasQualificated={hasQualificated}
                 />
               </Group>
             </Table.Cell>
@@ -85,13 +86,14 @@ const Row = memo(
 Row.displayName = 'StudentRow';
 
 Row.propTypes = {
-  index: PropTypes.number.isRequired,
+  index: PropTypes.number,
 	fetchData: PropTypes.func,
 	fetchGradesReport: PropTypes.func,
 	student: PropTypes.object.isRequired,
 	evaluationComponents: PropTypes.array,
 	statusOptions: PropTypes.array.isRequired,
 	statusColors: PropTypes.array.isRequired,
+  hasQualificated: PropTypes.bool.isRequired,
 };
 
 export const StudentsEvaluationsTable = ({
@@ -101,6 +103,7 @@ export const StudentsEvaluationsTable = ({
 	evaluationComponents,
 	isLoading,
 	hasConfiguration,
+  hasQualificated,
 }) => {
 	const statusOptions = [
 		{ value: 1, label: 'En Curso' },
@@ -240,7 +243,7 @@ export const StudentsEvaluationsTable = ({
 					<Table.Body>
 						{isLoading ? (
 							<SkeletonTable columns={getColumnCount()} />
-						) : students && students.length > 0 ? (
+						) : students && students?.length > 0 ? (
 							students.map((student) => (
 								<Row
 									key={student.uuid || student.id}
@@ -250,6 +253,7 @@ export const StudentsEvaluationsTable = ({
 									evaluationComponents={evaluationComponents}
 									statusOptions={statusOptions}
 									statusColors={statusColors}
+                  hasQualificated={hasQualificated}
 								/>
 							))
 						) : (
@@ -279,4 +283,5 @@ StudentsEvaluationsTable.propTypes = {
 	evaluationComponents: PropTypes.array,
 	isLoading: PropTypes.bool,
 	hasConfiguration: PropTypes.bool.isRequired,
+  hasQualificated: PropTypes.bool.isRequired,
 };
