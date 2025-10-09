@@ -21,6 +21,7 @@ import {
 	FiCheckCircle,
 	FiMessageSquare,
 	FiXCircle,
+	FiTrash2,
 } from 'react-icons/fi';
 import { FiUser, FiArrowRight, FiEdit, FiRepeat } from 'react-icons/fi';
 import { useUpdateTransferRequest } from '@/hooks/transfer_requests';
@@ -59,11 +60,44 @@ export const UpdateStatusRequestModal = ({ data, fetchData }) => {
 		setDocuments([...documents, { file: null }]);
 	};
 
+	const removeDocumentInput = (index) => {
+		if (documents.length > 1) {
+			const updated = documents.filter((_, i) => i !== index);
+			setDocuments(updated);
+			// Limpiar errores relacionados con este documento
+			const newErrors = { ...errors };
+			delete newErrors[`document_${index}`];
+			setErrors(newErrors);
+		}
+	};
+
 	const validateFields = () => {
 		const newErrors = {};
 		if (selectedStatus === 3 && !comments.trim()) {
 			newErrors.comments = 'El comentario es requerido para rechazar.';
 		}
+
+		// Si documentos tiene tamaño 0 ya sea cualquier estado
+		if (documents.length === 0) {
+			newErrors.documents = 'Se requiere al menos un documento.';
+		} else {
+			// Validar cada documento individualmente
+			let hasAtLeastOneValidDocument = false;
+			
+			documents.forEach((doc, i) => {
+				if (!doc.file || doc.file === null) {
+					newErrors[`document_${i}`] = 'Se requiere un documento.';
+				} else {
+					hasAtLeastOneValidDocument = true;
+				}
+			});
+
+			// Si no hay ningún documento válido, agregar error general adicional
+			if (!hasAtLeastOneValidDocument) {
+				newErrors.documents = 'Se requiere al menos un documento válido.';
+			}
+		}
+
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
 	};
@@ -101,7 +135,7 @@ export const UpdateStatusRequestModal = ({ data, fetchData }) => {
 				comment: comments || 'Aprobado',
 			};
 
-			if (selectedStatus === 4 && uploadedDocs.length > 0) {
+			if (uploadedDocs.length > 0) {
 				payload.documents = uploadedDocs;
 			}
 
@@ -146,6 +180,7 @@ export const UpdateStatusRequestModal = ({ data, fetchData }) => {
 			setComments('');
 			setErrors({});
 			setReadInstructions(false);
+      setDocuments([{ file: null }]);
 		}
 	};
 
@@ -259,31 +294,52 @@ export const UpdateStatusRequestModal = ({ data, fetchData }) => {
 									<Text color={selectedStatus === 4 ? 'green.800' : 'red.800'}>
 										{selectedStatus === 4
 											? 'La solicitud será aprobada y se notificará automáticamente.'
-											: 'La solicitud será rechazada. Por favor, proporciona un comentario explicativo.'}
+											: 'La solicitud será rechazada. Por favor, proporciona un documento de sustento.'}
 									</Text>
+                  {documents.map((doc, i) => (
+                    <Field 
+                      key={i}
+                      label={
+                        <Flex justify="space-between" align="center" w="full">
+                          <Text>{`Documento ${i + 1}:`}</Text>
+                          {documents.length > 1 && (
+                            <IconButton
+                              size="xs"
+                              variant="ghost"
+                              colorPalette="red"
+                              onClick={() => removeDocumentInput(i)}
+                              aria-label={`Remover documento ${i + 1}`}
+                            >
+                              <FiTrash2 />
+                            </IconButton>
+                          )}
+                        </Flex>
+                      }
+                      isRequired
+                      invalid={!!errors[`document_${i}`]}
+                      errorText={errors[`document_${i}`]}>
+                      <CompactFileUpload
+                        name={`document_${i}`}
+                        accept='.pdf'
+                        value={doc.file}
+                        onChange={(file) => handleFileChange(file, i)}
+                        onClear={() => handleClear(i)}
+                      />
+                    </Field>
+                  ))}
+
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={addNewDocumentInput}
+                    className='mt-2'
+                    color={selectedStatus === 4 ? 'green.600' : 'red.600'}
+                    _hover={{ bg: selectedStatus === 4 ? 'green.200' : 'red.200' }}
+                  >
+                    ➕ Agregar otro documento
+                  </Button>
 									{selectedStatus === 4 && (
 										<>
-											{documents.map((doc, i) => (
-												<Field key={i} label={`Documento ${i + 1}:`}>
-													<CompactFileUpload
-														name={`document_${i}`}
-														accept='.pdf'
-														value={doc.file}
-														onChange={(file) => handleFileChange(file, i)}
-														onClear={() => handleClear(i)}
-													/>
-												</Field>
-											))}
-
-											<Button
-												type='button'
-												variant='outline'
-												onClick={addNewDocumentInput}
-												className='mt-2'
-											>
-												➕ Agregar otro documento
-											</Button>
-
 											<Box mt={2} p={3} bg='green.100' borderRadius='md'>
 												<Stack spacing={3}>
 													<Flex align='center' gap={2} wrap='wrap'>
