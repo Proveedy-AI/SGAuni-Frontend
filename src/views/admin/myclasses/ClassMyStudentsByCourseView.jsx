@@ -29,14 +29,18 @@ import {
 	LoadEvaluationsByExcelModal,
 } from '@/components/modals/myclasses';
 import { GenerateGradesReportPdfModal } from '@/components/modals/myclasses/GenerateGradesReportPdfModal';
+import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
 
 export const ClassMyStudentsByCourseView = () => {
 	const { courseId } = useParams();
+
 	const decoded = decodeURIComponent(courseId);
 	const decrypted = Encryptor.decrypt(decoded);
 	const navigate = useNavigate();
 	const { data: dataCourseGroup, isLoading: loadingCourseGroup } =
 		useReadCourseGroupById(decrypted, { enabled: !!decrypted });
+
+  const itemProgram = EncryptedStorage.load('selectedProgramItem');
 
 	const { data: dataEvaluationSummary, refetch: refetchEvaluationSummary } =
 		useReadEvaluationSummaryByCourse(decrypted, {}, { enabled: !!decrypted });
@@ -70,10 +74,11 @@ export const ClassMyStudentsByCourseView = () => {
 
 	const StatusOptions = [
 		{ value: 1, label: 'En Curso' },
-		{ value: 2, label: 'Calificado' },
-		{ value: 3, label: 'No Calificado' },
+		{ value: 2, label: 'Parcialmente calificado' },
+		{ value: 3, label: 'Totalmente calificado' },
 		{ value: 4, label: 'Aprobado' },
 		{ value: 5, label: 'Reprobado' },
+		{ value: 6, label: 'Convalidado' },
 	];
 
 	const hasActiveFilters = filteredName || selectedStatus;
@@ -86,9 +91,16 @@ export const ClassMyStudentsByCourseView = () => {
 	const {
 		data: dataGradesReport,
 		refetch: fetchGradesReport,
-	} = useGenerateGradesReport(decrypted);
+	} = useGenerateGradesReport(
+    decrypted,
+    { enabled: !!decrypted && has_configured, }
+  );
 
-	const isDownloadable = studentsData?.students?.length > 0 && dataGradesReport?.length > 0;
+	const isDownloadable = 
+    studentsData?.students?.length > 0
+    && dataGradesReport?.length > 0
+    && itemProgram?.status_enrollment_period === 3;
+  // Solo ^ se puede descargar el reporte cuando el periodo está completado (3: Completado)
 
 	return (
 		<Box>
@@ -239,6 +251,7 @@ export const ClassMyStudentsByCourseView = () => {
 				evaluationComponents={evaluationComponents}
 				isLoading={loadingStudents}
 				hasConfiguration={has_configured}
+        hasQualificated={itemProgram?.status_enrollment_period === 1} //Solo se califica cuando el periodo está activo (1: Activo)
 			/>
 		</Box>
 	);

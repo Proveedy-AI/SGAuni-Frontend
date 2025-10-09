@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { useCreateBulkEvaluations } from '@/hooks/evaluations';
 
-export const RegisterEvaluationsModal = ({ fetchData, fetchGradesReport, student, evaluationComponents }) => {
+export const RegisterEvaluationsModal = ({ fetchData, fetchGradesReport, student, evaluationComponents, hasQualificated }) => {
   const { mutate: registerEvaluation, isPending } = useCreateBulkEvaluations();
 
   const [open, setOpen] = useState(false);
@@ -138,6 +138,7 @@ export const RegisterEvaluationsModal = ({ fetchData, fetchGradesReport, student
           size='xs'
           w={{ base: 'full', sm: 'auto' }}
           onClick={handleModalOpen}
+          disabled={!hasQualificated}
         >
           <FiFile /> Calificar
         </Button>
@@ -273,4 +274,5 @@ RegisterEvaluationsModal.propTypes = {
   fetchGradesReport: PropTypes.func,
   student: PropTypes.object,
   evaluationComponents: PropTypes.array,
+  hasQualificated: PropTypes.bool,
 };
