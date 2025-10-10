@@ -85,8 +85,6 @@ export const UpdateTuitionProcessModal = ({
       newErrors.status_enrollment_period = 'El estado es requerido';
     }
 
-    console.log({newErrors})
-
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
 	};
