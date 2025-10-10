@@ -33,6 +33,7 @@ const Row = memo(
 		setModalData,
 		setActionType,
 	}) => {
+    console.log(item);
 		const navigate = useNavigate();
 		const encrypted = Encryptor.encrypt(item.id);
 		const encoded = encodeURIComponent(encrypted);
@@ -158,7 +159,9 @@ const Row = memo(
 								size='xs'
 								colorPalette='green'
 								disabled={
-									!permissions?.includes('enrollments.proccessEnrollments.edit')
+									(!permissions?.includes('enrollments.proccessEnrollments.edit') ||
+                  !permissions?.includes('enrollments.programsEnrollments.admin')) &&
+                  item.status_enrollment_period === 3
 								}
 								onClick={() => {
 									setModalData(item);
