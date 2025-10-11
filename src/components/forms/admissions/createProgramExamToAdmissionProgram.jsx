@@ -25,7 +25,7 @@ import {
 } from '@chakra-ui/react';
 import { format } from 'date-fns';
 import PropTypes from 'prop-types';
-import { useRef, useState } from 'react';
+import { useRef, useState, useMemo } from 'react';
 import { FaSave, FaTimes } from 'react-icons/fa';
 import {
 	FiAlertTriangle,
@@ -66,12 +66,6 @@ export const CreateProgramExamToAdmissionProgram = ({
 		{ enabled: open && !!programId }
 	);
 
-	const evaluatorOptions = dataAdmissionEvaluators?.results?.map((c) => ({
-		value: c.id.toString(),
-		evaluator: c.evaluator,
-		label: c.evaluator_display,
-	}));
-
 	const applicationTypeOptions = [
 		{ value: 1, label: 'Entrevista', key: 'requires_interview' },
 		{ value: 2, label: 'Ensayo', key: 'requires_essay' },
@@ -91,6 +85,35 @@ export const CreateProgramExamToAdmissionProgram = ({
 	const [evaluatorInput, setEvaluatorInput] = useState(null);
 	const [applicationTypeInput, setApplicationTypeInput] = useState(null);
 	const [editingId, setEditingId] = useState(null);
+
+	// Filtrar evaluadores por tipo de examen seleccionado y eliminar duplicados
+	const evaluatorOptions = useMemo(() => {
+		if (!applicationTypeInput?.value || !dataAdmissionEvaluators?.results) {
+			return [];
+		}
+
+		// Filtrar por el role que coincida con el value del tipo de examen
+		const filteredByRole = dataAdmissionEvaluators.results.filter(
+			(evaluator) => evaluator.role === applicationTypeInput.value
+		);
+
+		// Eliminar duplicados basándose en el campo 'evaluator' y mapear a opciones
+		const uniqueEvaluators = filteredByRole.reduce((acc, current) => {
+			const existingEvaluator = acc.find(
+				(item) => item.evaluator === current.evaluator
+			);
+			if (!existingEvaluator) {
+				acc.push(current);
+			}
+			return acc;
+		}, []);
+
+		return uniqueEvaluators.map((c) => ({
+			value: c.id.toString(),
+			evaluator: c.evaluator,
+			label: c.evaluator_display,
+		}));
+	}, [applicationTypeInput?.value, dataAdmissionEvaluators?.results]);
 
 	const handleResetForm = () => {
 		setStartDateExamInput('');
@@ -334,7 +357,11 @@ export const CreateProgramExamToAdmissionProgram = ({
 								<ReactSelect
 									value={applicationTypeInput}
 									options={filteredApplicationTypeOptions}
-									onChange={(value) => setApplicationTypeInput(value)}
+									onChange={(value) => {
+										setApplicationTypeInput(value);
+										// Resetear el evaluador cuando cambia el tipo de examen
+										setEvaluatorInput(null);
+									}}
 									isDisabled={filteredApplicationTypeOptions.length === 0}
 									placeholder={
 										filteredApplicationTypeOptions.length === 0
@@ -344,12 +371,20 @@ export const CreateProgramExamToAdmissionProgram = ({
 								/>
 							</Field>
 
-							<Field label='Evaluador: (Opcional)' w='full'>
+							<Field label='Evaluador:' w='full'>
 								<ReactSelect
 									value={evaluatorInput}
 									options={evaluatorOptions}
 									isLoading={isLoadingAdmissionEvaluators}
 									onChange={(value) => setEvaluatorInput(value)}
+									isDisabled={!applicationTypeInput}
+									placeholder={
+										!applicationTypeInput
+											? 'Primero selecciona un tipo de examen'
+											: evaluatorOptions.length === 0
+											? 'No hay evaluadores disponibles para este tipo'
+											: 'Selecciona un evaluador'
+									}
 								/>
 							</Field>
 						</Grid>

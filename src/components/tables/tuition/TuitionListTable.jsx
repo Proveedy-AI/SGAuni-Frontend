@@ -158,7 +158,9 @@ const Row = memo(
 								size='xs'
 								colorPalette='green'
 								disabled={
-									!permissions?.includes('enrollments.proccessEnrollments.edit')
+									(!permissions?.includes('enrollments.proccessEnrollments.edit') ||
+                  !permissions?.includes('enrollments.programsEnrollments.admin')) &&
+                  item.status_enrollment_period === 3
 								}
 								onClick={() => {
 									setModalData(item);
