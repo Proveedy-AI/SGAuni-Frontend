@@ -30,6 +30,8 @@ import {
 } from '@/components/modals/myclasses';
 import { GenerateGradesReportPdfModal } from '@/components/modals/myclasses/GenerateGradesReportPdfModal';
 import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
+import { useReadCourseEnrollmentReport } from '@/hooks/enrollments_programs/reports';
+import { GenerateStudentsByCoursePdfModal } from '@/components/modals/tuition/enrolled';
 
 export const ClassMyStudentsByCourseView = () => {
 	const { courseId } = useParams();
@@ -37,6 +39,19 @@ export const ClassMyStudentsByCourseView = () => {
 	const decoded = decodeURIComponent(courseId);
 	const decrypted = Encryptor.decrypt(decoded);
 	const navigate = useNavigate();
+
+  const {
+    data: dataEnrollmentReport,
+    isLoading: isLoadingEnrollmentReport,
+  } = useReadCourseEnrollmentReport(
+    decrypted,
+    {},
+    {}
+  );
+
+  const courseInfo = dataEnrollmentReport?.[0];
+  const studentsInfo = dataEnrollmentReport?.[0]?.enrolled_students;
+
 	const { data: dataCourseGroup, isLoading: loadingCourseGroup } =
 		useReadCourseGroupById(decrypted, { enabled: !!decrypted });
 
@@ -191,6 +206,12 @@ export const ClassMyStudentsByCourseView = () => {
 									Limpiar Filtros
 								</Button>
 							)}
+
+              <GenerateStudentsByCoursePdfModal
+                isDownloadable={!isLoadingEnrollmentReport && studentsInfo?.length > 0}
+                data={courseInfo}
+                students={studentsInfo}
+              />
 
 							<GenerateGradesReportPdfModal
 								dataGradesReport={dataGradesReport}

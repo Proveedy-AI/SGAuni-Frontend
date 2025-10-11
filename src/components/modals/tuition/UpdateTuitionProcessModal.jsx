@@ -43,6 +43,52 @@ export const UpdateTuitionProcessModal = ({
 		semesterStart: '',
 		status_enrollment_period: null,
 	});
+
+  const reset = () => {
+    setFormData({
+      academicPeriod: '',
+      startDate: '',
+      endDate: '',
+      evalStart: '',
+      evalEnd: '',
+      semesterStart: '',
+      status_enrollment_period: null,
+    });
+    setTouched({ academicPeriod: false });
+    setToasterShown(false);
+    setErrors({});
+  }
+
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (!open) reset();
+  }, [actionType, open]);
+
+  const validateForm = () => {
+		const newErrors = {};
+
+		if (!isAcademicPeriodValid) {
+			newErrors.academicPeriod = 'Formato de período académico inválido';
+		}
+
+    if (!formData.academicPeriod.trim()) {
+      newErrors.academicPeriod = 'El nombre del período académico es requerido';
+    }
+    if (!formData.startDate) {
+      newErrors.startDate = 'La fecha de inicio es requerida';
+    }
+    if (!formData.endDate) {
+      newErrors.endDate = 'La fecha de fin es requerida';
+    }
+    if (actionType === 'edit' && !formData.status_enrollment_period) {
+      newErrors.status_enrollment_period = 'El estado es requerido';
+    }
+
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
+
 	const initialData = {
 		academicPeriod: data?.academic_period_name || '',
 	};
@@ -95,6 +141,8 @@ export const UpdateTuitionProcessModal = ({
 	};
 
 	const handleSave = () => {
+    if (!validateForm()) return;
+
 		if (toasterShown) return;
 		setToasterShown(true);
 
@@ -110,7 +158,8 @@ export const UpdateTuitionProcessModal = ({
 
 			if (existingNames.includes(normalizedName)) {
 				toaster.create({
-					title: 'Ya existe un periodo con este nombre',
+					title: 'Error al registrar el Proceso',
+					description: 'Ya existe un periodo con este nombre',
 					type: 'error',
 					onStatusChange({ status }) {
 						if (status === 'unmounted') setToasterShown(false);
@@ -137,8 +186,9 @@ export const UpdateTuitionProcessModal = ({
 					},
 					onError: (error) => {
 						toaster.create({
-							title: error.message || 'Error al duplicar el Periodo',
-							type: 'error',
+							title: 'Error al duplicar el Periodo',
+							description: error?.response?.data[0] || 'Error al duplicar el Periodo',
+              type: 'error',
 							onStatusChange({ status }) {
 								if (status === 'unmounted') setToasterShown(false);
 							},
@@ -156,7 +206,8 @@ export const UpdateTuitionProcessModal = ({
 
 			if (existingNames.includes(normalizedName)) {
 				toaster.create({
-					title: 'Ya existe un periodo con este nombre',
+          title: 'Error al registrar el Proceso',
+					description: 'Ya existe un periodo con este nombre',
 					type: 'error',
 					onStatusChange({ status }) {
 						if (status === 'unmounted') setToasterShown(false);
@@ -182,7 +233,8 @@ export const UpdateTuitionProcessModal = ({
 				onError: (error) => {
 					console.log(error);
 					toaster.create({
-						title: error.message || 'Error al registrar el Proceso',
+						title: 'Error al registrar el Proceso',
+            description: error?.response?.data[0],
 						type: 'error',
 						onStatusChange({ status }) {
 							if (status === 'unmounted') setToasterShown(false);
@@ -248,6 +300,7 @@ export const UpdateTuitionProcessModal = ({
 				}
 			);
 		}
+    reset();
 	};
 
 	const statusOptions = [
@@ -283,6 +336,8 @@ export const UpdateTuitionProcessModal = ({
 					<Field
 						label='Nombre del Período Académico'
 						invalid={touched.academicPeriod && !isAcademicPeriodValid}
+            required
+						errorText={errors.academicPeriod}
 					>
 						<Input
 							type='text'
@@ -298,7 +353,7 @@ export const UpdateTuitionProcessModal = ({
 					</Field>
 
 					{actionType === 'edit' && (
-						<Field label='Estado'>
+						<Field label='Estado' required errorText={errors.status_enrollment_period} invalid={!!errors.status_enrollment_period}>
 							<ReactSelect
 								options={statusOptions}
 								value={formData.status_enrollment_period}
@@ -317,7 +372,7 @@ export const UpdateTuitionProcessModal = ({
 						Inscripción
 					</Heading>
 					<SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-						<Field label='Fecha de inicio'>
+						<Field label='Fecha de inicio' required errorText={errors.startDate} invalid={!!errors.startDate}>
 							<CustomDatePicker
 								selectedDate={formData.startDate}
 								onDateChange={(date) => handleChange('startDate', date)}
@@ -326,7 +381,7 @@ export const UpdateTuitionProcessModal = ({
 								size='100%'
 							/>
 						</Field>
-						<Field label='Fecha de fin'>
+						<Field label='Fecha de fin' required errorText={errors.endDate} invalid={!!errors.endDate}>
 							<CustomDatePicker
 								selectedDate={formData.endDate}
 								onDateChange={(date) => handleChange('endDate', date)}

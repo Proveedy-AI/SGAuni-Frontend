@@ -20,7 +20,7 @@ export const GenerateStudentsByCoursePdfModal = ({ isDownloadable, data, student
           onClick={() => setOpen(true)}
           disabled={!isDownloadable}
         >
-          <FiDownload /> Descargar
+          <FiDownload /> Descargar Matriculados
         </Button>
       }
       open={open}
