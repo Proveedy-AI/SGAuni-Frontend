@@ -33,7 +33,7 @@ export const AcademicRegister = ({ dataStudent }) => {
 	const borderColor = useColorModeValue('gray.200', 'gray.600');
 	const [selectProgram, setSelectProgram] = useState(null);
 	const [tab, setTab] = useState('courses');
-	const { data: dataCoursesByPeriod, isLoading: isLoadingCoursesByPeriod } = useReadCoursesByPeriod(
+	const { data: dataCoursesByPeriod, isLoading: isLoadingCoursesByPeriod, refetch: refetchCoursesByPeriod } = useReadCoursesByPeriod(
 		dataStudent?.uuid,
 		selectProgram?.value
 	);
@@ -242,6 +242,7 @@ export const AcademicRegister = ({ dataStudent }) => {
                 isLoadingCoursesByPeriod={isLoadingCoursesByPeriod}
                 dataCoursesByPeriod={dataCoursesByPeriod}
                 permissions={permissions}
+                fetchData={refetchCoursesByPeriod}
               />
 						)}
 					</VStack>

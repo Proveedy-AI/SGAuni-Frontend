@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Modal, useColorModeValue, ConfirmModal, Alert, Checkbox } from '@/components/ui';
+import { Modal, useColorModeValue, ConfirmModal, Alert, Checkbox, toaster } from '@/components/ui';
 import {
 	Badge,
 	Box,
@@ -19,24 +19,44 @@ import {
 import { FiArrowRight, FiBookOpen, FiCalendar } from 'react-icons/fi';
 import { useRef, useState } from 'react';
 import { FaUserTimes } from 'react-icons/fa';
+import { useRemoveStudentToCourse } from '@/hooks/students';
 
-export const RemoveStudentCourseModal = ({ item }) => {
+export const RemoveStudentCourseModal = ({ item, fetchData = () => {} }) => {
   const [open, setOpen] = useState(false);
   const [confirmRead, setConfirmRead] = useState(false);
   const contentRef = useRef();
 
   const [error, setError] = useState(null);
 
+  const { mutate: removeStudentToCourse, isPending } = useRemoveStudentToCourse();
+
   const handleRemove = () => {
     if (!confirmRead) {
       setError('Debes confirmar que has leído las consecuencias.');
       return;
     }
-    // Lógica para eliminar el curso del estudiante
-    console.log('Eliminando curso:', item);
-    setOpen(false);
-    setConfirmRead(false);
-    setError(null);
+
+    removeStudentToCourse(item?.id_course_selection, {
+      onSuccess: () => {
+        toaster.create({
+          title: 'Estudiante retirado del curso',
+          description: `El estudiante ha sido retirado del curso ${item.course_name} exitosamente.`,
+          type: 'success',
+        })
+        setOpen(false);
+        setConfirmRead(false);
+        setError(null);
+        fetchData();
+      },
+      onError: (err) => {
+        setError(err?.response?.data?.error || 'Error al retirar al estudiante del curso.');
+        toaster.create({
+          title: 'Error',
+          description: err?.response?.data?.error || 'Error al retirar al estudiante del curso.',
+          type: 'error',
+        })
+      },
+    });
   }
   return (
     <ConfirmModal
@@ -64,10 +84,11 @@ export const RemoveStudentCourseModal = ({ item }) => {
       contentRef={contentRef}
       disabled={!confirmRead}
       onConfirm={handleRemove}
+      loading={isPending}
     >
       <Box>
         <Text>
-          ¿Estás seguro de que deseas eliminar el registro del estudiante en el curso <b>{item?.course_name}</b> (Sección: <b>{item?.group_section}</b>)?
+          ¿Estás seguro de que deseas retirar al estudiante del curso <b>{item?.course_name}</b> (Sección: <b>{item?.group_section}</b>)?
         </Text>
         <Alert status='warning' mt={4}>
           <Text fontSize='sm'>
@@ -81,7 +102,7 @@ export const RemoveStudentCourseModal = ({ item }) => {
           mt={4} 
         >
           <Text fontSize='sm'>
-            He leído y entiendo las consecuencias de eliminar este curso.
+            He leído y entiendo las consecuencias de retirar al estudiante.
           </Text>
         </Checkbox>
         {error && (
@@ -96,6 +117,7 @@ export const RemoveStudentCourseModal = ({ item }) => {
 
 RemoveStudentCourseModal.propTypes = {
   item: PropTypes.object,
+  fetchData: PropTypes.func,
 }
 
 export const ViewCourseGroupSchedulesModal = ({ item, courseGroups }) => {
@@ -199,7 +221,7 @@ ViewCourseGroupSchedulesModal.propTypes = {
   courseGroups: PropTypes.array,
 };
 
-export const CoursesListByPeriodCard = ({ data, handleRowClick, permissions = [] }) => {
+export const CoursesListByPeriodCard = ({ data, handleRowClick, permissions = [], fetchData = () => {} }) => {
 	const bgColor = useColorModeValue('white', 'gray.800');
 	const borderColor = useColorModeValue('gray.200', 'gray.600');
 	const headerBg = useColorModeValue('blue.50', 'blue.900');
@@ -429,7 +451,7 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick, permissions = []
                       <Group>
                         <ViewCourseGroupSchedulesModal item={course} courseGroups={data?.courses} />
                         {permissions?.includes("students.students.removecourse") && (
-                          <RemoveStudentCourseModal item={course} />
+                          <RemoveStudentCourseModal item={course} fetchData={fetchData} />
                         )}
                       </Group>
                     </Table.Cell>
@@ -458,6 +480,7 @@ CoursesListByPeriodCard.propTypes = {
 	data: PropTypes.object,
 	handleRowClick: PropTypes.func,
   permissions: PropTypes.array,
+  fetchData: PropTypes.func,
 };
 
 export const CoursesByPeriodSection = ({
@@ -466,6 +489,7 @@ export const CoursesByPeriodSection = ({
 	handleRowClick = () => {},
 	handleClickToProcessEnrollment = () => {},
   permissions = [],
+  fetchData = () => {},
 }) => {
 	const borderColor = useColorModeValue('gray.200', 'gray.600');
 
@@ -557,6 +581,7 @@ export const CoursesByPeriodSection = ({
 								data={periodData}
 								handleRowClick={handleRowClick}
                 permissions={permissions}
+                fetchData={fetchData}
 							/>
 						))
 					)}
@@ -572,4 +597,5 @@ CoursesByPeriodSection.propTypes = {
 	handleRowClick: PropTypes.func,
 	handleClickToProcessEnrollment: PropTypes.func,
   permissions: PropTypes.array,
+  fetchData: PropTypes.func,
 };
