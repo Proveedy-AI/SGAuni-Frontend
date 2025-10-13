@@ -57,7 +57,7 @@ export const ClassMyStudentsByCourseView = () => {
 
   const itemProgram = EncryptedStorage.load('selectedProgramItem');
 
-	const { data: dataEvaluationSummary, refetch: refetchEvaluationSummary } =
+	const { data: dataEvaluationSummary, refetch: refetchEvaluationSummary, isLoading: loadingEvaluationSummary } =
 		useReadEvaluationSummaryByCourse(decrypted, {}, { enabled: !!decrypted });
 
 	const evaluationComponents =
@@ -259,6 +259,7 @@ export const ClassMyStudentsByCourseView = () => {
 								data={dataEvaluationSummary?.data}
 								evaluationComponents={evaluationComponents}
 								hasConfiguration={has_configured}
+                isLoading={loadingEvaluationSummary}
 							/>
 						</SimpleGrid>
 					</Stack>

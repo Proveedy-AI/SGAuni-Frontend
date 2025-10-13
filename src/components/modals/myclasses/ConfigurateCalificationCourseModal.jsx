@@ -1,5 +1,5 @@
 import { ReactSelect } from '@/components/select';
-import { Field, Button, Modal, toaster } from '@/components/ui';
+import { Field, Button, Modal, toaster, Checkbox } from '@/components/ui';
 import {
 	Card,
 	Flex,
@@ -10,18 +10,93 @@ import {
 	VStack,
 	HStack,
 	Badge,
-	Alert,
+  Alert,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { FiSave, FiSettings, FiAlertTriangle } from 'react-icons/fi';
 import { useConfigureEvaluationByCourse } from '@/hooks/course_groups';
 
+export const ChangeConfigurationModal = ({ setHasConfigurationState }) => {
+  const [open, setOpen] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  
+  const handleOpenConfiguration = () => {
+    setHasConfigurationState(false);
+  };
+
+  // Reset checkbox cuando se cierra el modal
+  useEffect(() => {
+    if (!open) {
+      setIsConfirmed(false);
+    }
+  }, [open]);
+
+  return (
+    <Modal
+			placement='center'
+			title='Configurar Evaluaciones del Curso'
+			size='xl'
+			trigger={
+				<Button
+					size='sm'
+					bg='uni.secondary'
+					color='white'
+					px={2}
+					onClick={() => setOpen(true)}
+				>
+					Actualizar configuración
+				</Button>
+			}
+			open={open}
+			onOpenChange={(e) => setOpen(e.open)}
+			hiddenFooter={true}
+		>
+      <VStack align="start" spacing={4}>
+        <Alert.Root status='warning' variant='subtle' w='full'>
+          <Alert.Indicator>
+            <FiAlertTriangle />
+          </Alert.Indicator>
+          <Alert.Title>¡Advertencia!</Alert.Title>
+          <Alert.Description>
+            Al cambiar la configuración, se perderá la configuración actual y deberás configurar nuevamente las evaluaciones del curso.
+          </Alert.Description>
+				</Alert.Root>
+        <Checkbox
+          checked={isConfirmed}
+          onChange={(e) =>
+            setIsConfirmed(e.target.checked)
+          }
+        >
+          Entiendo que al cambiar la configuración, no podré modificarla nuevamente y que los datos anteriores se perderán.
+        </Checkbox>
+        <Button
+          size='sm'
+          bg="red.500"
+          color="white"
+          disabled={!isConfirmed}
+          onClick={() => {
+            handleOpenConfiguration();
+            setOpen(false);
+          }}
+        >
+          Cambiar configuración
+        </Button>
+      </VStack>
+    </Modal>
+  );
+};
+
+ChangeConfigurationModal.propTypes = {
+  setHasConfigurationState: PropTypes.any,
+};
+
 export const ConfigurateCalificationCourseModal = ({
 	fetchData,
 	courseGroup,
 	data,
 	hasConfiguration,
+  isLoading,
 }) => {
 	const [open, setOpen] = useState(false);
 	const [evaluationMethod, setEvaluationMethod] = useState(null); // Nueva: Método de evaluación
@@ -30,6 +105,7 @@ export const ConfigurateCalificationCourseModal = ({
 	const [evaluations, setEvaluations] = useState([]);
 	const [errors, setErrors] = useState({});
 	const [currentStep, setCurrentStep] = useState(1); // 1: Método, 2: Tipo, 3: Número, 4: Configurar
+  const [hasConfigurationState, setHasConfigurationState] = useState(hasConfiguration);
 
 	const evaluationComponents = data?.evaluation_components || [];
 
@@ -46,13 +122,18 @@ export const ConfigurateCalificationCourseModal = ({
 		{ value: 2, label: 'Promedio simple' },
 	];
 
-	// Determinar si ya está configurado
-	const isAlreadyConfigured = hasConfiguration;
+	// Determinar si ya está configurado - usar el estado local que puede cambiar
+	const isAlreadyConfigured = hasConfigurationState;
 	const currentQualificationLabel =
 		QualificationTypes.find((q) => q.value === data?.qualification_type_code)
 			?.label || 'No definido';
 
-	// Reset form cuando se abre la modal
+	// Sincronizar estado local con prop cuando cambie
+	useEffect(() => {
+		setHasConfigurationState(hasConfiguration);
+	}, [hasConfiguration]);
+
+	// Reset form cuando se abre la modal o cuando cambia la configuración
 	useEffect(() => {
 		if (open && !isAlreadyConfigured) {
 			setCurrentStep(1);
@@ -63,6 +144,18 @@ export const ConfigurateCalificationCourseModal = ({
 			setErrors({});
 		}
 	}, [open, isAlreadyConfigured]);
+
+	// Reset form cuando cambia de configurado a no configurado (reconfigurar)
+	useEffect(() => {
+		if (!isAlreadyConfigured) {
+			setCurrentStep(1);
+			setEvaluationMethod(null);
+			setQualificationType(null);
+			setNumberOfEvaluations('');
+			setEvaluations([]);
+			setErrors({});
+		}
+	}, [isAlreadyConfigured]);
 
 	// Inicializar evaluaciones vacías cuando cambia el número
 	useEffect(() => {
@@ -211,6 +304,8 @@ export const ConfigurateCalificationCourseModal = ({
 					description: 'Las evaluaciones se han configurado correctamente',
 					type: 'success',
 				});
+				// Actualizar el estado local para reflejar que ya está configurado
+				setHasConfigurationState(true);
 				setOpen(false);
 				fetchData && fetchData();
 			},
@@ -263,10 +358,11 @@ export const ConfigurateCalificationCourseModal = ({
 								))}
 							</VStack>
 
-							<Text fontSize='sm' color='gray.500' fontStyle='italic'>
+							{/* <Text fontSize='sm' color='gray.500' fontStyle='italic'>
 								La configuración ya está definida. No se puede modificar una vez
 								establecida.
-							</Text>
+							</Text> */}
+              <ChangeConfigurationModal setHasConfigurationState={setHasConfigurationState} />
 						</VStack>
 					</Card.Body>
 				</Card.Root>
@@ -581,6 +677,7 @@ export const ConfigurateCalificationCourseModal = ({
 					color='white'
 					px={2}
 					onClick={() => setOpen(true)}
+          loading={isLoading}
 				>
 					{isAlreadyConfigured ? 'Ver Configuración' : 'Configurar'}
 				</Button>
@@ -597,7 +694,7 @@ export const ConfigurateCalificationCourseModal = ({
 						<Button
 							variant='outline'
 							onClick={handleBack}
-							isDisabled={currentStep === 1}
+							disabled={currentStep === 1}
 						>
 							Anterior
 						</Button>
@@ -647,4 +744,5 @@ ConfigurateCalificationCourseModal.propTypes = {
 	courseGroup: PropTypes.object,
 	evaluationComponents: PropTypes.array,
 	hasConfiguration: PropTypes.bool,
+  isLoading: PropTypes.bool,
 };
