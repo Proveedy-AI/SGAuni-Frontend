@@ -1,5 +1,5 @@
 import { Button, Pagination, toaster, Tooltip } from '@/components/ui';
-import { Badge, Box, HStack, Switch, Table } from '@chakra-ui/react';
+import { Badge, Box, HStack, Switch, Table, Text } from '@chakra-ui/react';
 import { FiUserPlus } from 'react-icons/fi';
 import { HiPencil } from 'react-icons/hi2';
 import PropTypes from 'prop-types';
@@ -11,7 +11,16 @@ import useSortedData from '@/utils/useSortedData';
 import SkeletonTable from '../ui/SkeletonTable';
 import { useState } from 'react';
 
-export const UserTable = ({ fetchUsers, data, handleOpenModal, isLoading }) => {
+export const UserTable = ({ 
+	fetchUsers, 
+	data, 
+	allUsersData,
+	fetchNextPage,
+	hasNextPage,
+	isFetchingNextPage,
+	handleOpenModal, 
+	isLoading 
+}) => {
 	const { pageSize, setPageSize, pageSizeOptions } = usePaginationSettings();
 	const [currentPage, setCurrentPage] = useState(1);
 	const startIndex = (currentPage - 1) * pageSize;
@@ -19,6 +28,34 @@ export const UserTable = ({ fetchUsers, data, handleOpenModal, isLoading }) => {
 	const [sortConfig, setSortConfig] = useState(null);
 	const sortedData = useSortedData(data, sortConfig);
 	const visibleRows = sortedData?.slice(startIndex, endIndex);
+
+	// Calcular el total de usuarios de todas las páginas
+	const totalUsers = allUsersData?.pages?.[0]?.count || data?.length || 0;
+
+	// Lógica para precargar datos automáticamente
+	const handlePageChange = (page) => {
+		setCurrentPage(page);
+		// Si la página solicitada requiere más datos y hay más páginas disponibles
+		const requiredUsers = page * pageSize;
+		const currentUsers = data?.length || 0;
+		const buffer = pageSize * 2; // Precarga cuando estamos a 2 páginas del final
+		
+		if (requiredUsers + buffer > currentUsers && hasNextPage && !isFetchingNextPage) {
+			fetchNextPage();
+		}
+	};
+
+	const handlePageSizeChange = (size) => {
+		setPageSize(size);
+		setCurrentPage(1);
+		// Verificar si necesitamos cargar más datos para el nuevo tamaño de página
+		const requiredUsers = size * 3; // Precarga 3 páginas del nuevo tamaño
+		const currentUsers = data?.length || 0;
+		
+		if (requiredUsers > currentUsers && hasNextPage && !isFetchingNextPage) {
+			fetchNextPage();
+		}
+	};
 
 	const { mutateAsync: toggleUser, isPending: isPendingToggle } =
 		useToggleUser();
@@ -214,16 +251,32 @@ export const UserTable = ({ fetchUsers, data, handleOpenModal, isLoading }) => {
 						</Table.Body>
 					</Table.Root>
 				</Table.ScrollArea>
+				
+				{/* Indicador de carga y botón para cargar más */}
+				{hasNextPage && (
+					<Box textAlign="center" py={4}>
+						{isFetchingNextPage ? (
+							<Text color="gray.500">Cargando más usuarios...</Text>
+						) : (
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={fetchNextPage}
+								colorScheme="blue"
+							>
+								Cargar más usuarios
+							</Button>
+						)}
+					</Box>
+				)}
+				
 				<Pagination
-					count={data?.length}
+					count={totalUsers}
 					pageSize={pageSize}
 					currentPage={currentPage}
 					pageSizeOptions={pageSizeOptions}
-					onPageChange={setCurrentPage}
-					onPageSizeChange={(size) => {
-						setPageSize(size);
-						setCurrentPage(1);
-					}}
+					onPageChange={handlePageChange}
+					onPageSizeChange={handlePageSizeChange}
 				/>
 			</Box>
 		</HStack>
@@ -232,9 +285,13 @@ export const UserTable = ({ fetchUsers, data, handleOpenModal, isLoading }) => {
 
 UserTable.propTypes = {
 	data: PropTypes.array,
+	allUsersData: PropTypes.object,
 	setUsers: PropTypes.func,
 	handleOpenModal: PropTypes.func,
 	loading: PropTypes.bool,
 	fetchUsers: PropTypes.func,
+	fetchNextPage: PropTypes.func,
+	hasNextPage: PropTypes.bool,
+	isFetchingNextPage: PropTypes.bool,
 	isLoading: PropTypes.bool,
 };

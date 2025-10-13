@@ -4,6 +4,8 @@ import { Field } from '@/components/ui';
 import { useReadAdmissionsPrograms } from '@/hooks/admissions_programs';
 
 import { useReadStudents } from '@/hooks/students/useReadStudents';
+import { useReadUsers } from '@/hooks/users';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 
 import {
 	Heading,
@@ -29,6 +31,46 @@ export const StudentsView = () => {
 	const [selectedStatus, setSelectedStatus] = useState(null);
 	const [selectedProgramStatus, setSelectedProgramStatus] = useState(null);
 	const [selectedYear, setSelectedYear] = useState(null);
+  const [selectedCoordinator, setSelectedCoordinator] = useState(null);
+
+  const { data: profile } = useReadUserLogged();
+  const roles = profile?.roles || [];
+  const permissions = roles
+		.flatMap((r) => r.permissions || [])
+		.map((p) => p.guard_name);
+    
+  const isAdmin = permissions.includes('students.students.admin')
+
+  const admissionsProgramsParams = useMemo(() => {
+    const params = {
+      status: 4,
+    };
+
+    if (!isAdmin) params.coordinator = profile?.id;
+    if (isAdmin && selectedCoordinator) params.coordinator = selectedCoordinator.value;
+
+    return params;
+  }, [
+    isAdmin,
+    profile?.id,
+    selectedCoordinator
+  ])
+
+  const { data: dataUsers, isLoading: isLoadingUsers } = useReadUsers(
+    { /*role: 9, user__is_active: true*/ },
+    { enabled: isAdmin }
+  );
+  const filteredCoordinators = useMemo(() => {
+    if (!dataUsers) return [];
+    return dataUsers.results.filter((user) =>
+      user.roles.some((role) => role.id === 9 && user.is_active)
+    );
+  }, [dataUsers]);
+  
+  const CoordinatorOptions = filteredCoordinators.map((user) => ({
+    label: `${user.full_name}`,
+    value: user.id,
+  }));
 
 	const hasActiveFilters =
 		selectedProgram ||
@@ -37,7 +79,8 @@ export const StudentsView = () => {
 		scholarshipStatus ||
 		selectedStatus ||
 		selectedProgramStatus ||
-		selectedYear;
+		selectedYear ||
+    selectedCoordinator;
 
 	const clearFilters = () => {
 		setSelectedProgram(null);
@@ -47,6 +90,7 @@ export const StudentsView = () => {
 		setSelectedStatus(null);
 		setSelectedProgramStatus(null);
 		setSelectedYear(null);
+    setSelectedCoordinator(null);
 	};
 
 	const filterParams = useMemo(() => {
@@ -58,6 +102,8 @@ export const StudentsView = () => {
 		if (selectedProgramStatus)
 			params.academic_type = selectedProgramStatus.value;
 		if (selectedYear) params.admission_year = selectedYear.value;
+    if (!isAdmin) params.coordinator = profile?.id;
+    if (isAdmin && selectedCoordinator) params.coordinator = selectedCoordinator.value;
 
 		return params;
 	}, [
@@ -66,11 +112,16 @@ export const StudentsView = () => {
 		scholarshipStatus,
 		selectedStatus,
 		selectedProgramStatus,
-		selectedYear
+		selectedYear,
+    selectedCoordinator,
+    isAdmin,
+    profile?.id
 	]);
 
 	const { data: dataPrograms, isLoading: isLoadingPrograms } =
-		useReadAdmissionsPrograms({ status: 4 });
+		useReadAdmissionsPrograms(
+      admissionsProgramsParams
+    );
 
 	const {
 		data: dataStudents,
@@ -206,6 +257,21 @@ export const StudentsView = () => {
 									options={statusProgramOptions}
 								/>
 							</Field>
+              {isAdmin && (
+                <Field label='Coordinador:'>
+                  <ReactSelect
+                    placeholder='Seleccionar'
+                    value={selectedCoordinator}
+                    onChange={setSelectedCoordinator}
+                    variant='flushed'
+                    size='xs'
+                    isSearchable
+                    isClearable
+                    options={CoordinatorOptions}
+                    isLoading={isLoadingUsers}
+                  />
+                </Field>
+              )}
 						</SimpleGrid>
 					</Stack>
 				</Card.Body>
