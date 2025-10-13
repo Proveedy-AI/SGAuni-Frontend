@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
-import { Modal, useColorModeValue } from '@/components/ui';
+import { Modal, useColorModeValue, ConfirmModal, Alert, Checkbox, toaster } from '@/components/ui';
 import {
 	Badge,
 	Box,
 	Button,
 	Card,
 	Flex,
+	Group,
 	Heading,
 	HStack,
 	Icon,
@@ -17,6 +18,107 @@ import {
 } from '@chakra-ui/react';
 import { FiArrowRight, FiBookOpen, FiCalendar } from 'react-icons/fi';
 import { useRef, useState } from 'react';
+import { FaUserTimes } from 'react-icons/fa';
+import { useRemoveStudentToCourse } from '@/hooks/students';
+
+export const RemoveStudentCourseModal = ({ item, fetchData = () => {} }) => {
+  const [open, setOpen] = useState(false);
+  const [confirmRead, setConfirmRead] = useState(false);
+  const contentRef = useRef();
+
+  const [error, setError] = useState(null);
+
+  const { mutate: removeStudentToCourse, isPending } = useRemoveStudentToCourse();
+
+  const handleRemove = () => {
+    if (!confirmRead) {
+      setError('Debes confirmar que has leído las consecuencias.');
+      return;
+    }
+
+    removeStudentToCourse(item?.id_course_selection, {
+      onSuccess: () => {
+        toaster.create({
+          title: 'Estudiante retirado del curso',
+          description: `El estudiante ha sido retirado del curso ${item.course_name} exitosamente.`,
+          type: 'success',
+        })
+        setOpen(false);
+        setConfirmRead(false);
+        setError(null);
+        fetchData();
+      },
+      onError: (err) => {
+        setError(err?.response?.data?.error || 'Error al retirar al estudiante del curso.');
+        toaster.create({
+          title: 'Error',
+          description: err?.response?.data?.error || 'Error al retirar al estudiante del curso.',
+          type: 'error',
+        })
+      },
+    });
+  }
+  return (
+    <ConfirmModal
+      placement='center'
+      trigger={
+        <IconButton
+          variant='outline'
+          size='sm'
+          bg='red.500'
+          _hover={{ bg: 'red.600' }}
+          css={{
+            _icon: {
+              width: '5',
+              height: '5',
+            },
+          }}
+          disabled={item.group_section === "N/A"}
+        >
+          <FaUserTimes />
+        </IconButton>
+      }
+      size='md'
+      open={open}
+      onOpenChange={(e) => setOpen(e.open)}
+      contentRef={contentRef}
+      disabled={!confirmRead}
+      onConfirm={handleRemove}
+      loading={isPending}
+    >
+      <Box>
+        <Text>
+          ¿Estás seguro de que deseas retirar al estudiante del curso <b>{item?.course_name}</b> (Sección: <b>{item?.group_section}</b>)?
+        </Text>
+        <Alert status='warning' mt={4}>
+          <Text fontSize='sm'>
+            El estudiante ya no estará inscrito en este curso.<br />
+            <b>Esta acción es irreversible.</b>
+          </Text>
+        </Alert>
+        <Checkbox
+          isChecked={confirmRead}
+          onChange={(e) => setConfirmRead(e.target.checked)}
+          mt={4} 
+        >
+          <Text fontSize='sm'>
+            He leído y entiendo las consecuencias de retirar al estudiante.
+          </Text>
+        </Checkbox>
+        {error && (
+            <Text fontSize='xs' color='red.500' mt={1}>
+              {error}
+            </Text>
+          )}
+      </Box>
+    </ConfirmModal>
+  );
+}
+
+RemoveStudentCourseModal.propTypes = {
+  item: PropTypes.object,
+  fetchData: PropTypes.func,
+}
 
 export const ViewCourseGroupSchedulesModal = ({ item, courseGroups }) => {
   const [open, setOpen] = useState(false);
@@ -119,7 +221,7 @@ ViewCourseGroupSchedulesModal.propTypes = {
   courseGroups: PropTypes.array,
 };
 
-export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
+export const CoursesListByPeriodCard = ({ data, handleRowClick, permissions = [], fetchData = () => {} }) => {
 	const bgColor = useColorModeValue('white', 'gray.800');
 	const borderColor = useColorModeValue('gray.200', 'gray.600');
 	const headerBg = useColorModeValue('blue.50', 'blue.900');
@@ -131,8 +233,6 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
 		if (grade >= 11) return 'blue';
 		return 'red';
 	};
-
-  console.log(data.courses)
 
   // Filtrar cursos para mostrar solo los que tengan diferente group_section
   const uniqueCourses = data.courses.filter(
@@ -348,7 +448,12 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
                       borderRight={'1px solid'}
                       borderColor={borderColor}
                     >
-                      <ViewCourseGroupSchedulesModal item={course} courseGroups={data?.courses} />
+                      <Group>
+                        <ViewCourseGroupSchedulesModal item={course} courseGroups={data?.courses} />
+                        {permissions?.includes("students.students.removecourse") && (
+                          <RemoveStudentCourseModal item={course} fetchData={fetchData} />
+                        )}
+                      </Group>
                     </Table.Cell>
                     {/* <Table.Cell
                       borderRight={'1px solid'}
@@ -374,6 +479,8 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
 CoursesListByPeriodCard.propTypes = {
 	data: PropTypes.object,
 	handleRowClick: PropTypes.func,
+  permissions: PropTypes.array,
+  fetchData: PropTypes.func,
 };
 
 export const CoursesByPeriodSection = ({
@@ -381,6 +488,8 @@ export const CoursesByPeriodSection = ({
 	dataCoursesByPeriod,
 	handleRowClick = () => {},
 	handleClickToProcessEnrollment = () => {},
+  permissions = [],
+  fetchData = () => {},
 }) => {
 	const borderColor = useColorModeValue('gray.200', 'gray.600');
 
@@ -471,6 +580,8 @@ export const CoursesByPeriodSection = ({
 								key={periodIndex}
 								data={periodData}
 								handleRowClick={handleRowClick}
+                permissions={permissions}
+                fetchData={fetchData}
 							/>
 						))
 					)}
@@ -485,4 +596,6 @@ CoursesByPeriodSection.propTypes = {
 	dataCoursesByPeriod: PropTypes.object,
 	handleRowClick: PropTypes.func,
 	handleClickToProcessEnrollment: PropTypes.func,
+  permissions: PropTypes.array,
+  fetchData: PropTypes.func,
 };

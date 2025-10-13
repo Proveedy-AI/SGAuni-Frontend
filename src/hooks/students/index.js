@@ -5,3 +5,5 @@ export * from './useReadCourseGradesByCourseId';
 export * from './useReadAcademicTranscript';
 export * from './useReadAcademicProgress';
 export * from './useUpdateStudent';
+
+export * from './useRemoveStudentToCourse';
