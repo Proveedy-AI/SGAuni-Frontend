@@ -414,7 +414,7 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick, permissions = []
                       borderRight={'1px solid'}
                       borderColor={borderColor}
                     >
-                      {course.final_grade && (
+                      {course?.course_status_id !== 3 ? course.final_grade && (
                         <Badge
                           colorPalette={getGradeColor(course.final_grade)}
                           variant='solid'
@@ -422,6 +422,10 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick, permissions = []
                           borderRadius='md'
                         >
                           {course.final_grade}
+                        </Badge>
+                      ) : (
+                        <Badge colorPalette='gray' variant='solid' px={2} borderRadius='md'>
+                          R
                         </Badge>
                       )}
                     </Table.Cell>
