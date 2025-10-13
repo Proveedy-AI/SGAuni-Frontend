@@ -154,9 +154,10 @@ export const UpdateStatusRequestModal = ({ data, fetchData }) => {
 					onError: (error) => {
 						toaster.create({
 							title: 'Error al actualizar la solicitud de traslado.',
-							description: error.message || 'Inténtalo de nuevo más tarde.',
+							description: error?.response?.data[0] || 'Inténtalo de nuevo más tarde.',
 							type: 'error',
 						});
+            
 					},
 				}
 			);

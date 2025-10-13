@@ -8,3 +8,5 @@ export * from './useReadUserById';
 export * from './profile';
 export * from './useReadDataDashTeacher';
 export * from './useReadDataDirectorMain';
+
+export * from './useReadInfiniteUsers';
