@@ -4,17 +4,20 @@ import { useState } from 'react';
 import { CreateAndFilterUser } from '@/components/forms/management/user/CreateAndFilterUser';
 import { EditUserModal } from '@/components/forms/management/user/EditUserModal';
 import { ToogleRoleUserModal } from '@/components/forms/management/user/ToogleRoleUserModal';
-import { useReadUsers } from '@/hooks/users';
+import { useReadInfiniteUsers } from '@/hooks/users';
 import { Link } from 'react-router';
 import { FiAlertCircle } from 'react-icons/fi';
 
 export const UserList = () => {
 	const {
-		data: dataUsers,
-		refetch: fetchUsers,
+		data: dataInfiniteUsers,
+		fetchNextPage: fetchNextPageUsers,
+		hasNextPage: hasNextPageUsers,
+		isFetchingNextPage: isFetchingNextPageUsers,
 		isLoading,
+		refetch: fetchInfiniteUsers,
 		error,
-	} = useReadUsers();
+	} = useReadInfiniteUsers();
 
 	const [selectedUser, setSelectedUser] = useState(null);
 	const [isModalOpen, setIsModalOpen] = useState({
@@ -36,9 +39,14 @@ export const UserList = () => {
 		setSelectedUser(null);
 	};
 
+	// Combinar todos los usuarios de todas las páginas
+	const allUsers = dataInfiniteUsers?.pages?.reduce((acc, page) => {
+		return [...acc, ...(page.results || [])];
+	}, []) || [];
+
 	// Filtro de búsqueda
 	const [search, setSearch] = useState('');
-	const filteredUsers = dataUsers?.results?.filter((user) => {
+	const filteredUsers = allUsers?.filter((user) => {
 		const searchLower = search.toLowerCase();
 		return (
 			(user.username || '').toLowerCase().includes(searchLower) ||
@@ -98,7 +106,7 @@ export const UserList = () => {
 						handleOpenModal={handleOpenModal}
 						isCreateModalOpen={isModalOpen.create}
 						setIsModalOpen={setIsModalOpen}
-						fetchUsers={fetchUsers}
+						fetchUsers={fetchInfiniteUsers}
 						handleCloseModal={handleCloseModal}
 					/>
 
@@ -107,14 +115,18 @@ export const UserList = () => {
 					<UserTable
 						isLoading={isLoading}
 						data={filteredUsers}
-						fetchUsers={fetchUsers}
+						allUsersData={dataInfiniteUsers}
+						fetchUsers={fetchInfiniteUsers}
+						fetchNextPage={fetchNextPageUsers}
+						hasNextPage={hasNextPageUsers}
+						isFetchingNextPage={isFetchingNextPageUsers}
 						handleOpenModal={handleOpenModal}
 					/>
 				</VStack>
 
 				{/* Modal para editar usuario */}
 				<EditUserModal
-					fetchUsers={fetchUsers}
+					fetchUsers={fetchInfiniteUsers}
 					selectedUser={selectedUser}
 					setSelectedUser={setSelectedUser}
 					isEditModalOpen={isModalOpen.edit}
@@ -124,7 +136,7 @@ export const UserList = () => {
 				{/* Modal para agregar/quitar rol al usuario */}
 				<ToogleRoleUserModal
 					users={filteredUsers}
-					fetchUsers={fetchUsers}
+					fetchUsers={fetchInfiniteUsers}
 					selectedUser={selectedUser}
 					setSelectedUser={setSelectedUser}
 					handleCloseModal={handleCloseModal}
