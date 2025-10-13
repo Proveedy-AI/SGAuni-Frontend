@@ -255,6 +255,7 @@ export const ClassMyStudentsByCourseView = () => {
 
 							<ConfigurateCalificationCourseModal
 								fetchData={refetchEvaluationSummary}
+                fetchStudents={fetchStudents}
 								courseGroup={dataCourseGroup}
 								data={dataEvaluationSummary?.data}
 								evaluationComponents={evaluationComponents}

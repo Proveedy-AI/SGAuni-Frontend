@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
-import { Modal, useColorModeValue } from '@/components/ui';
+import { Modal, useColorModeValue, ConfirmModal, Alert, Checkbox } from '@/components/ui';
 import {
 	Badge,
 	Box,
 	Button,
 	Card,
 	Flex,
+	Group,
 	Heading,
 	HStack,
 	Icon,
@@ -17,6 +18,85 @@ import {
 } from '@chakra-ui/react';
 import { FiArrowRight, FiBookOpen, FiCalendar } from 'react-icons/fi';
 import { useRef, useState } from 'react';
+import { FaUserTimes } from 'react-icons/fa';
+
+export const RemoveStudentCourseModal = ({ item }) => {
+  const [open, setOpen] = useState(false);
+  const [confirmRead, setConfirmRead] = useState(false);
+  const contentRef = useRef();
+
+  const [error, setError] = useState(null);
+
+  const handleRemove = () => {
+    if (!confirmRead) {
+      setError('Debes confirmar que has leído las consecuencias.');
+      return;
+    }
+    // Lógica para eliminar el curso del estudiante
+    console.log('Eliminando curso:', item);
+    setOpen(false);
+    setConfirmRead(false);
+    setError(null);
+  }
+  return (
+    <ConfirmModal
+      placement='center'
+      trigger={
+        <IconButton
+          variant='outline'
+          size='sm'
+          bg='red.500'
+          _hover={{ bg: 'red.600' }}
+          css={{
+            _icon: {
+              width: '5',
+              height: '5',
+            },
+          }}
+          disabled={item.group_section === "N/A"}
+        >
+          <FaUserTimes />
+        </IconButton>
+      }
+      size='md'
+      open={open}
+      onOpenChange={(e) => setOpen(e.open)}
+      contentRef={contentRef}
+      disabled={!confirmRead}
+      onConfirm={handleRemove}
+    >
+      <Box>
+        <Text>
+          ¿Estás seguro de que deseas eliminar el registro del estudiante en el curso <b>{item?.course_name}</b> (Sección: <b>{item?.group_section}</b>)?
+        </Text>
+        <Alert status='warning' mt={4}>
+          <Text fontSize='sm'>
+            El estudiante ya no estará inscrito en este curso.<br />
+            <b>Esta acción es irreversible.</b>
+          </Text>
+        </Alert>
+        <Checkbox
+          isChecked={confirmRead}
+          onChange={(e) => setConfirmRead(e.target.checked)}
+          mt={4} 
+        >
+          <Text fontSize='sm'>
+            He leído y entiendo las consecuencias de eliminar este curso.
+          </Text>
+        </Checkbox>
+        {error && (
+            <Text fontSize='xs' color='red.500' mt={1}>
+              {error}
+            </Text>
+          )}
+      </Box>
+    </ConfirmModal>
+  );
+}
+
+RemoveStudentCourseModal.propTypes = {
+  item: PropTypes.object,
+}
 
 export const ViewCourseGroupSchedulesModal = ({ item, courseGroups }) => {
   const [open, setOpen] = useState(false);
@@ -119,7 +199,7 @@ ViewCourseGroupSchedulesModal.propTypes = {
   courseGroups: PropTypes.array,
 };
 
-export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
+export const CoursesListByPeriodCard = ({ data, handleRowClick, permissions = [] }) => {
 	const bgColor = useColorModeValue('white', 'gray.800');
 	const borderColor = useColorModeValue('gray.200', 'gray.600');
 	const headerBg = useColorModeValue('blue.50', 'blue.900');
@@ -131,8 +211,6 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
 		if (grade >= 11) return 'blue';
 		return 'red';
 	};
-
-  console.log(data.courses)
 
   // Filtrar cursos para mostrar solo los que tengan diferente group_section
   const uniqueCourses = data.courses.filter(
@@ -348,7 +426,12 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
                       borderRight={'1px solid'}
                       borderColor={borderColor}
                     >
-                      <ViewCourseGroupSchedulesModal item={course} courseGroups={data?.courses} />
+                      <Group>
+                        <ViewCourseGroupSchedulesModal item={course} courseGroups={data?.courses} />
+                        {permissions?.includes("students.students.removecourse") && (
+                          <RemoveStudentCourseModal item={course} />
+                        )}
+                      </Group>
                     </Table.Cell>
                     {/* <Table.Cell
                       borderRight={'1px solid'}
@@ -374,6 +457,7 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick }) => {
 CoursesListByPeriodCard.propTypes = {
 	data: PropTypes.object,
 	handleRowClick: PropTypes.func,
+  permissions: PropTypes.array,
 };
 
 export const CoursesByPeriodSection = ({
@@ -381,6 +465,7 @@ export const CoursesByPeriodSection = ({
 	dataCoursesByPeriod,
 	handleRowClick = () => {},
 	handleClickToProcessEnrollment = () => {},
+  permissions = [],
 }) => {
 	const borderColor = useColorModeValue('gray.200', 'gray.600');
 
@@ -471,6 +556,7 @@ export const CoursesByPeriodSection = ({
 								key={periodIndex}
 								data={periodData}
 								handleRowClick={handleRowClick}
+                permissions={permissions}
 							/>
 						))
 					)}
@@ -485,4 +571,5 @@ CoursesByPeriodSection.propTypes = {
 	dataCoursesByPeriod: PropTypes.object,
 	handleRowClick: PropTypes.func,
 	handleClickToProcessEnrollment: PropTypes.func,
+  permissions: PropTypes.array,
 };

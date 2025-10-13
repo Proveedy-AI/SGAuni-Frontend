@@ -93,6 +93,7 @@ ChangeConfigurationModal.propTypes = {
 
 export const ConfigurateCalificationCourseModal = ({
 	fetchData,
+  fetchStudents,
 	courseGroup,
 	data,
 	hasConfiguration,
@@ -308,6 +309,7 @@ export const ConfigurateCalificationCourseModal = ({
 				setHasConfigurationState(true);
 				setOpen(false);
 				fetchData && fetchData();
+        fetchStudents && fetchStudents();
 			},
 			onError: (error) => {
 				toaster.create({
@@ -740,6 +742,7 @@ export const ConfigurateCalificationCourseModal = ({
 
 ConfigurateCalificationCourseModal.propTypes = {
 	fetchData: PropTypes.func,
+  fetchStudents: PropTypes.func,
 	data: PropTypes.object,
 	courseGroup: PropTypes.object,
 	evaluationComponents: PropTypes.array,
