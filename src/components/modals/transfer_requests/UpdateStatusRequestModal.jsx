@@ -152,9 +152,10 @@ export const UpdateStatusRequestModal = ({ data, fetchData }) => {
 						setOpen(false);
 					},
 					onError: (error) => {
+						console.log(error);
 						toaster.create({
 							title: 'Error al actualizar la solicitud de traslado.',
-							description: error?.response?.data[0] || 'Inténtalo de nuevo más tarde.',
+							description: error?.response?.data?.error || 'Inténtalo de nuevo más tarde.',
 							type: 'error',
 						});
             
@@ -162,6 +163,7 @@ export const UpdateStatusRequestModal = ({ data, fetchData }) => {
 				}
 			);
 		} catch (err) {
+      console.log(err);
 			toaster.create({
 				title: 'Error inesperado',
 				description: err.message || 'No se pudo completar la acción.',

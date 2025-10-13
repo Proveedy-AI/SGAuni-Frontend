@@ -284,7 +284,6 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 				end_time: schedule.end_time,
 			})),
       type_schedule: formData?.type_schedule,
-      credits_per_group: formData?.credits_per_group
 		};
 
     if (!dataTypeSchedules?.results?.find((ts) => ts?.id === formData?.type_schedule)?.is_single) {

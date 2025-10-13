@@ -1,3 +1,4 @@
+import { useReadDataDirectorMain } from '@/hooks/users';
 import { Table, TR, TH, TD } from '@ag-media/react-pdf-table';
 import {
 	Document,
@@ -132,6 +133,13 @@ const styles = StyleSheet.create({
 
 export const GradesReportDocument = ({ dataGradesReport }) => {
 	const faviconUrl = `${window.location.origin}/favicon.png`;
+  const today = new Date();
+  const formattedDate = `${String(today.getDate()).padStart(2, '0')}/${String(
+    today.getMonth() + 1
+  ).padStart(2, '0')}/${today.getFullYear()}`;
+
+  const { data: dataDirector } = useReadDataDirectorMain();
+
 	return (
 		<PDFViewer height='600' width='100%'>
 			<Document>
@@ -272,13 +280,14 @@ export const GradesReportDocument = ({ dataGradesReport }) => {
 
 							{/* Footer con fechas y firmas */}
 							<View style={styles.dateLabel}>
-								<Text>FECHA DEL ACTA:</Text>
+								<Text>FECHA DEL ACTA: { formattedDate }</Text>
 							</View>
 
 							<View style={styles.footerContainer}>
 								<View style={styles.signatureBox}>
 									<View style={styles.signatureLine}></View>
 									<Text style={styles.signatureLabel}>PROFESOR</Text>
+                  <Text style={{fontSize: 8, marginTop: 2}}>{(courseInfo.teacher_name || '')}</Text>
 								</View>
 
 								<View style={styles.signatureBox}>
@@ -286,6 +295,7 @@ export const GradesReportDocument = ({ dataGradesReport }) => {
 									<Text style={styles.signatureLabel}>
 										DIRECTOR UNIDAD POSGRADO
 									</Text>
+                  <Text style={{fontSize: 8, marginTop: 2}}>{dataDirector?.degree} {dataDirector?.name}</Text>
 								</View>
 							</View>
 						</Page>

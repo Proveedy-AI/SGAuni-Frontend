@@ -27,15 +27,22 @@ import {
 	CoursesByPeriodSection,
 	GradesRecordSection,
 } from '../../mycourses/sections';
+import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 
 export const AcademicRegister = ({ dataStudent }) => {
 	const borderColor = useColorModeValue('gray.200', 'gray.600');
 	const [selectProgram, setSelectProgram] = useState(null);
 	const [tab, setTab] = useState('courses');
-	const { data: dataCoursesByPeriod, isLoading: isLoadingCoursesByPeriod } = useReadCoursesByPeriod(
+	const { data: dataCoursesByPeriod, isLoading: isLoadingCoursesByPeriod, refetch: refetchCoursesByPeriod } = useReadCoursesByPeriod(
 		dataStudent?.uuid,
 		selectProgram?.value
 	);
+
+  const { data: dataUser } = useReadUserLogged();
+  const roles = dataUser?.roles || [];
+  const permissions = roles
+    .flatMap((r) => r.permissions || [])
+    .map((p) => p.guard_name);
 
 	const {
 		data: dataAcademicTranscript,
@@ -234,6 +241,8 @@ export const AcademicRegister = ({ dataStudent }) => {
               <CoursesByPeriodSection
                 isLoadingCoursesByPeriod={isLoadingCoursesByPeriod}
                 dataCoursesByPeriod={dataCoursesByPeriod}
+                permissions={permissions}
+                fetchData={refetchCoursesByPeriod}
               />
 						)}
 					</VStack>
