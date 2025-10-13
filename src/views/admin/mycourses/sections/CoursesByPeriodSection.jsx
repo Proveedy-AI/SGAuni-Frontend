@@ -73,7 +73,7 @@ export const RemoveStudentCourseModal = ({ item, fetchData = () => {} }) => {
               height: '5',
             },
           }}
-          disabled={item.group_section === "N/A"}
+          disabled={item.group_section === "N/A" || item?.course_status_id !== 2}
         >
           <FaUserTimes />
         </IconButton>
