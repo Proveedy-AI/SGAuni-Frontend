@@ -73,7 +73,7 @@ export const RemoveStudentCourseModal = ({ item, fetchData = () => {} }) => {
               height: '5',
             },
           }}
-          disabled={item.group_section === "N/A"}
+          disabled={item.group_section === "N/A" || item?.course_status_id !== 2}
         >
           <FaUserTimes />
         </IconButton>
@@ -414,7 +414,7 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick, permissions = []
                       borderRight={'1px solid'}
                       borderColor={borderColor}
                     >
-                      {course.final_grade && (
+                      {course?.course_status_id !== 3 ? course.final_grade && (
                         <Badge
                           colorPalette={getGradeColor(course.final_grade)}
                           variant='solid'
@@ -422,6 +422,10 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick, permissions = []
                           borderRadius='md'
                         >
                           {course.final_grade}
+                        </Badge>
+                      ) : (
+                        <Badge colorPalette='gray' variant='solid' px={2} borderRadius='md'>
+                          R
                         </Badge>
                       )}
                     </Table.Cell>
