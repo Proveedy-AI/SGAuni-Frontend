@@ -372,8 +372,8 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick, permissions = []
 										if (e.target.closest('button') || e.target.closest('a'))
 											return;
                     if (course.group_section === "N/A") return;
-                    handleRowClick(course);
                     if (course.course_status_id === 3) return;
+                    handleRowClick(course);
                     }}
                     cursor='pointer'
                   >

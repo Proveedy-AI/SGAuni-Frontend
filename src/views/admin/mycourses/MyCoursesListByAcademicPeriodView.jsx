@@ -36,8 +36,12 @@ export const MyCoursesListByAcademicPeriodView = () => {
 		(program) => ({
 			value: program.program,
 			label: program.program_name,
+      academic_status: program.academic_status,
+			academic_status_display: program.academic_status_display,
 		})
 	);
+
+  console.log(dataUser?.student?.admission_programs);
 
 	const [programEnrolled, setProgramEnrolled] = useState(null);
 	const [tab, setTab] = useState('courses');
@@ -55,6 +59,7 @@ export const MyCoursesListByAcademicPeriodView = () => {
 
 	const { data: dataCoursesByPeriod, isLoading: isLoadingCoursesByPeriod } =
 		useReadCoursesByPeriod(studentUUID, programEnrolled?.value);
+  console.log({ dataCoursesByPeriod })
 
 	const isDownloadable = !isLoadingAcademicTranscript && dataAcademicTranscript;
 
@@ -146,7 +151,7 @@ export const MyCoursesListByAcademicPeriodView = () => {
 							{filteredAcademicProgressByProgram?.program_start_date}
 						</Text>
 						<Text color="gray.500">
-							<b>Fin de programa:</b> {filteredAcademicProgressByProgram?.program_end_date}
+							<b>Estado:</b> {programEnrolled?.academic_status_display}
 						</Text>
 					</SimpleGrid>
 				</Flex>
