@@ -29,6 +29,7 @@ export const ExpandableCourseCard = ({
 	const [gradeFormula, setGradeFormula] = useState('Cargando...');
 
 	const shouldFetch =
+    course.course_status_id !== 4 &&
 		!!course.id_course_selection &&
 		open &&
 		!gradesCache[course.id_course_selection];
@@ -86,8 +87,6 @@ export const ExpandableCourseCard = ({
 		return grade >= 10.5 ? 'green' : 'red';
 	};
 
-  console.log(dataCourseGrades?.data?.final_grade)
-
 	return (
 		<Box overflow='hidden'>
 			<Card.Root variant='outline'>
@@ -100,7 +99,11 @@ export const ExpandableCourseCard = ({
 								</Text>
 							</Box>
 
-              {course.final_grade && (
+              {course.course_status_id === 4 ? (
+                <Badge colorPalette='gray' size='sm'>
+                  {course.course_status}
+                </Badge>
+              ) : course.final_grade && (
                 <>
                   <Badge colorPalette={getGradeColor(course.final_grade)} size='sm'>
                     {getGradeStatus(course.final_grade)}
@@ -120,6 +123,7 @@ export const ExpandableCourseCard = ({
 									bg='white'
 									color='blue.500'
 									onClick={() => setOpen(!open)}
+                  disabled={course.course_status_id === 4}
 								>
 									{open ? <FiChevronUp /> : <FiChevronDown />}
 								</Button>
@@ -322,24 +326,35 @@ export const GradesRecordSection = ({ dataCoursesByPeriod, admin = false }) => {
 		if (!selectedPeriodData)
 			return { totalCourses: 0, credits: 0, average: 0, passed: 0 };
 
-		const courses = selectedPeriodData.courses;
-		const totalCourses = courses.length;
+    const uniqueCourses = selectedPeriodData.courses.filter(
+      (course, index, self) =>
+        index === self.findIndex(c => course.group_section !== "N/A" && c.group_section === course.group_section)
+    );
+
+    const convalidateCourses = selectedPeriodData.courses.filter(
+      (course) => course.group_section === "N/A"
+    );
+    
+		const courses = [...uniqueCourses, ...convalidateCourses];
+		const totalCourses = selectedPeriodData.total_courses;
+
 		const totalCredits = courses.reduce(
 			(sum, course) => sum + course.credits,
 			0
 		);
-		const passed = courses.filter(
+		const passed = uniqueCourses.filter(
 			(course) => course.final_grade >= 10.5
 		).length;
 		const average =
-			courses.reduce((sum, course) => sum + course.final_grade, 0) /
-			totalCourses;
+			uniqueCourses.reduce((sum, course) => sum + course.final_grade, 0) /
+			uniqueCourses.length;
 
 		return {
 			totalCourses,
 			credits: totalCredits,
 			average: average.toFixed(1),
 			passed,
+      courses,
 		};
 	};
 
@@ -456,15 +471,44 @@ export const GradesRecordSection = ({ dataCoursesByPeriod, admin = false }) => {
 						</Card.Header>
 						<Card.Body>
 							<VStack spacing={4} align='stretch'>
-								{selectedPeriodData.courses.map((course) => (
+                {
+                  statistics?.courses?.map((course) => (
 									<ExpandableCourseCard
-										key={course.id_course_selection}
-										course={course}
-										gradesCache={gradesCache}
-										setGradesCache={setGradesCache}
-										admin={admin}
-									/>
-								))}
+                      key={course.id_course_selection}
+                      course={course}
+                      gradesCache={gradesCache}
+                      setGradesCache={setGradesCache}
+                      admin={admin}
+                    />
+                  ))
+                }
+								{/* {selectedPeriodData.courses
+                  .filter(
+                    (course, index, self) => course.group_section !== "N/A" &&
+                      index === self.findIndex(c => c.group_section === course.group_section)
+                  )
+                  .map((course) => (
+									<ExpandableCourseCard
+                      key={course.id_course_selection}
+                      course={course}
+                      gradesCache={gradesCache}
+                      setGradesCache={setGradesCache}
+                      admin={admin}
+                    />
+                  ))
+                }
+                {selectedPeriodData.courses
+                  .filter((course) => course.group_section === "N/A")
+                  .map((course) => (
+									<ExpandableCourseCard
+                      key={course.id_course_selection}
+                      course={course}
+                      gradesCache={gradesCache}
+                      setGradesCache={setGradesCache}
+                      admin={admin}
+                    />
+                  ))
+                } */}
 							</VStack>
 						</Card.Body>
 					</Card.Root>

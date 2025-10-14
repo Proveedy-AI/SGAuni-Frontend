@@ -41,8 +41,6 @@ export const MyCoursesListByAcademicPeriodView = () => {
 		})
 	);
 
-  console.log(dataUser?.student?.admission_programs);
-
 	const [programEnrolled, setProgramEnrolled] = useState(null);
 	const [tab, setTab] = useState('courses');
 
@@ -59,7 +57,6 @@ export const MyCoursesListByAcademicPeriodView = () => {
 
 	const { data: dataCoursesByPeriod, isLoading: isLoadingCoursesByPeriod } =
 		useReadCoursesByPeriod(studentUUID, programEnrolled?.value);
-  console.log({ dataCoursesByPeriod })
 
 	const isDownloadable = !isLoadingAcademicTranscript && dataAcademicTranscript;
 

@@ -266,11 +266,8 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick, permissions = []
 					</Text>
 					<Text fontSize='sm' color='gray.600'>
 						<strong>Total Créditos:</strong>{' '}
-						{data.courses
-              .filter(
-                (course, index, self) =>
-                  index === self.findIndex(c => c.course_code === course.course_code)
-              )
+						{[uniqueCourses, ConvalidateCourses]
+              .flat()
               .reduce((sum, course) => {
 							// Obtener créditos del primer schedule si existe
 							return sum + (course?.credits || 0);
