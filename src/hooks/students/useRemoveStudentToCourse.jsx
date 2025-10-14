@@ -6,8 +6,8 @@ export const useRemoveStudentToCourse = () => {
 
   return useMutation({
     mutationFn: async (id) => {
-      const res = await axiosPrivate.delete(
-        `/api/v1/course-selections/${id}/withdrawal`
+      const res = await axiosPrivate.patch(
+        `/api/v1/course-selections/${id}/withdrawal/`
       );
       return res.data;
     },
