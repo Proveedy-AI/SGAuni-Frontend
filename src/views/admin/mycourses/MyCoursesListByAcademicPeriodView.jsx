@@ -146,7 +146,7 @@ export const MyCoursesListByAcademicPeriodView = () => {
 							{filteredAcademicProgressByProgram?.program_start_date}
 						</Text>
 						<Text color="gray.500">
-							<b>Fin de programa:</b> En curso
+							<b>Fin de programa:</b> {filteredAcademicProgressByProgram?.program_end_date}
 						</Text>
 					</SimpleGrid>
 				</Flex>

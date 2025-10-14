@@ -266,7 +266,12 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick, permissions = []
 					</Text>
 					<Text fontSize='sm' color='gray.600'>
 						<strong>Total Créditos:</strong>{' '}
-						{data.courses.reduce((sum, course) => {
+						{data.courses
+              .filter(
+                (course, index, self) =>
+                  index === self.findIndex(c => c.course_code === course.course_code)
+              )
+              .reduce((sum, course) => {
 							// Obtener créditos del primer schedule si existe
 							return sum + (course?.credits || 0);
 						}, 0)}
@@ -368,6 +373,7 @@ export const CoursesListByPeriodCard = ({ data, handleRowClick, permissions = []
 											return;
                     if (course.group_section === "N/A") return;
                     handleRowClick(course);
+                    if (course.course_status_id === 3) return;
                     }}
                     cursor='pointer'
                   >
