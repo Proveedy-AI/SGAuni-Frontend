@@ -69,8 +69,8 @@ export const ProcessEnrollmentModal = ({
 	} = useCreatePaymentPlansCredits();
 
   useEffect(() => {
-    if (selectedDocumentType?.value === 1 && dataUser?.num_doc) {
-      setNumDoc(dataUser.num_doc);
+    if (selectedDocumentType?.value === 1 && dataUser?.document_number) {
+      setNumDoc(dataUser.document_number);
     }
     if (selectedDocumentType?.value === 2) {
       setNumDoc('');
