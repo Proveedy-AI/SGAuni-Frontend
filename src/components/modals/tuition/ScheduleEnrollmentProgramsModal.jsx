@@ -1139,7 +1139,6 @@ CalendarView.propTypes = {
 };
 
 export const ScheduleEnrollmentProgramsModal = ({ data }) => {
-  console.log({ data })
 	const [open, setOpen] = useState(false);
 
 	const [courseToDelete, setCourseToDelete] = useState(null);
@@ -1191,6 +1190,7 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 		'Jueves',
 		'Viernes',
 		'Sábado',
+		'Domingo',
 	];
 
 	const normalizedData = allCourseSchedules.map((item) => ({
