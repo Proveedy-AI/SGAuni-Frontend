@@ -63,7 +63,8 @@ export const AddAdmissionsProccessForm = ({ fetchData }) => {
 			onError: (error) => {
 				console.log(error);
 				toaster.create({
-					title: error.response?.data?.[0] || 'Error al registrar el Proceso',
+					title: 'Error al registrar el Proceso',
+					description: error.response?.data?.admission_process_name[0] || 'Ocurrio un error en el servidor',
 					type: 'error',
 				});
 			},
