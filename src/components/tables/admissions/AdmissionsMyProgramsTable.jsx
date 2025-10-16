@@ -35,6 +35,9 @@ const Row = memo(
 						: startIndex + index + 1}
 				</Table.Cell>
 				<Table.Cell>{item.program_name}</Table.Cell>
+				{permissions.includes('admissions.programs.admin') && (
+					<Table.Cell>{item.coordinator_name}</Table.Cell>
+				)}
 				<Table.Cell>{formatDateString(item.semester_start_date)}</Table.Cell>
 				<Table.Cell>
 					{formatDateString(item.registration_start_date)}
@@ -150,6 +153,16 @@ export const AdmissionsMyProgramsTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
+							{permissions.includes('admissions.programs.admin') && (
+								<Table.ColumnHeader w={'10%'}>
+									<SortableHeader
+										label='Coordinador'
+										columnKey='coordinator_name'
+										sortConfig={sortConfig}
+										onSort={setSortConfig}
+									/>
+								</Table.ColumnHeader>
+							)}
 							<Table.ColumnHeader>Inicio Semestre</Table.ColumnHeader>
 							<Table.ColumnHeader>Inicio de Inscripciones</Table.ColumnHeader>
 							<Table.ColumnHeader>Fin de Inscripciones</Table.ColumnHeader>

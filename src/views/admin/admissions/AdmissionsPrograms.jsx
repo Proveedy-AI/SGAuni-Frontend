@@ -35,10 +35,12 @@ export const AdmissionsPrograms = () => {
 	let queryParams = { admission_process: Number(decrypted) };
 
 	// Según permisos agregamos el filtro
-	if (permissions.includes('admissions.programs.coord.view')) {
-		queryParams.coordinator = profile?.id;
-	} else if (permissions.includes('admissions.programs.director.view')) {
-		queryParams.director = profile?.id;
+	if (!permissions.includes('admissions.programs.admin')) {
+		if (permissions.includes('admissions.programs.coord.view')) {
+			queryParams.coordinator = profile?.id;
+		} else if (permissions.includes('admissions.programs.director.view')) {
+			queryParams.director = profile?.id;
+		}
 	}
 
 	const {
