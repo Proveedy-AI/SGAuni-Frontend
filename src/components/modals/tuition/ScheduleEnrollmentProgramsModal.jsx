@@ -1253,22 +1253,11 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 	const handleDelete = (course) => {
 		deleteCourseSchedule(course.id, {
 			onSuccess: () => {
-        deleteCouseGroup(course.course_group, {
-          onSuccess: () => {
-            toaster.create({
-              title: 'Curso eliminado correctamente',
-              type: 'success',
-            });
-            refetchCourseSchedule();
-            setCourseToDelete(null);
-          },
-          onError: (error) => {
-            toaster.create({
-              title: error.message,
-              type: 'error',
-            });
-          },
+        toaster.create({
+          title: 'Horario eliminado correctamente',
+          type: 'success',
         });
+        refetchCourseSchedule();
 			},
 			onError: (error) => {
 				toaster.create({
@@ -1277,6 +1266,20 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 				});
 			},
 		});
+
+
+    deleteCouseGroup(course.course_group, {
+      onSuccess: () => {
+        toaster.create({
+          title: 'Grupo eliminado correctamente',
+          type: 'success',
+        });
+        setCourseToDelete(null);
+      },
+      onError: (/*error*/) => {
+        //Se dará en caso se borra el horario y no el grupo, no mostrar error
+      },
+    });
 	};
 
 	const statusMap = {
@@ -1647,7 +1650,7 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 															<Span fontWeight='semibold' px='1'>
 																{courseToDelete?.course_name}
 															</Span>
-															de la lista de ubigeos?
+															de la lista?
 														</Text>
 													</ConfirmModal>
 												</HStack>
