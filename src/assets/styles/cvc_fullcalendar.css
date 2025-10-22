@@ -1,0 +1,27 @@
+.dark .fc-theme-standard .fc-popover {
+	background: #151a20;
+}
+
+.fc-theme-standard .fc-popover-header {
+	background: #e4e4e7;
+}
+
+.dark .fc-theme-standard .fc-popover-header {
+	background: #27272a;
+}
+
+.fc-col-header {
+	background: var(--fc-button-bg-color);
+}
+
+.fc .fc-col-header-cell-cushion {
+	color: white;
+}
+
+.fc-scrollgrid {
+	background: white;
+}
+
+.dark .fc-scrollgrid {
+	background: black;
+}
