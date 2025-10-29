@@ -143,7 +143,7 @@ export const MyPaymentAddRequests = () => {
 		(rule) => rule.payment_purpose === selectedPurpose?.value
 	);
 
-	const discounts = [
+	const discountsGroup = [
 		// 1. Global Discounts válidos para los propósitos seleccionados
 		...(Array.isArray(globalDiscounts)
 			? globalDiscounts
@@ -171,7 +171,8 @@ export const MyPaymentAddRequests = () => {
 			: []),
 
 		// 3. Descuento de la regla de pago
-		...(currentRule?.discount_percentage
+		...(currentRule?.discount_percentage &&
+		currentRule?.discount_percentage !== '0.00'
 			? [
 					{
 						id: `rule-${currentRule.payment_purpose}`,
@@ -181,6 +182,16 @@ export const MyPaymentAddRequests = () => {
 				]
 			: []),
 	];
+
+	const bestDiscount =
+		discountsGroup.length > 0
+			? discountsGroup.reduce((max, d) =>
+					d.percentage > max.percentage ? d : max
+				)
+			: null;
+
+	// 2️⃣ Si querés seguir usando "discounts", que sea solo el mejor
+	const discounts = bestDiscount ? [bestDiscount] : [];
 
 	const userRoles = dataUser.roles?.map((r) => r.name.toLowerCase());
 
@@ -196,7 +207,10 @@ export const MyPaymentAddRequests = () => {
 		const matchesFirstEnrollment =
 			!rule.only_first_enrollment ||
 			(rule.only_first_enrollment && isFirstEnrollment);
-		const isNotExcluded = rule.payment_purpose !== 4 && rule.payment_purpose !== 3 && rule.payment_purpose !== 10;
+		const isNotExcluded =
+			rule.payment_purpose !== 4 &&
+			rule.payment_purpose !== 3 &&
+			rule.payment_purpose !== 10;
 
 		return (
 			matchesProcess && matchesRole && matchesFirstEnrollment && isNotExcluded
@@ -215,7 +229,8 @@ export const MyPaymentAddRequests = () => {
 
 	const isPreMaestria =
 		!hasStudentRole &&
-		dataMyApplicants?.find((p) => p.id === Number(selectedProgram?.value))?.modality_id === 1;
+		dataMyApplicants?.find((p) => p.id === Number(selectedProgram?.value))
+			?.modality_id === 1;
 
 	const validateFields = () => {
 		const newErrors = {};

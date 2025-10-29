@@ -18,7 +18,6 @@ export default function TuitionSummaryCard({
 	baseAmount: providedBaseAmount,
 	discounts,
 	setDescription,
-	setDiscountValue,
 }) {
 	// 1. Calcular baseAmount
 	const baseAmount =
@@ -58,7 +57,6 @@ Total descuento: -S/ ${totalDiscountAmount.toFixed(2)}
 Monto final: S/ ${finalAmount.toFixed(2)}
 `.trim();
 
-		setDiscountValue(Number(totalPercentage * 100));
 		setDescription?.(summaryText);
 	}, [credits, pricePerCredit, providedBaseAmount, discounts, setDescription]);
 
@@ -164,5 +162,4 @@ TuitionSummaryCard.propTypes = {
 		})
 	),
 	setDescription: PropTypes.func,
-	setDiscountValue: PropTypes.func,
 };

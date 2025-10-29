@@ -119,7 +119,7 @@ export const ProcessEnrollmentModal = ({
 				num_document: numDoc,
 				description: description,
 				acepted_terms: acceptTerms,
-				discount_value: discountValue || '',
+				discount_value: discountValue || null,
 				amount_credits_total: amountCredits,
 			};
 
@@ -396,7 +396,7 @@ export const ProcessEnrollmentModal = ({
 												type='number'
 												placeholder='Solo para propósitos que lo permiten'
 												step='0.01'
-												value={discountValue || ''}
+												value={discountValue || null}
 												readOnly
 											/>
 										</Field>
@@ -597,7 +597,7 @@ export const ProcessEnrollmentModal = ({
 ProcessEnrollmentModal.propTypes = {
   dataUser: PropTypes.object,
 	paymentPlan: PropTypes.number,
-	discountValue: PropTypes.string,
+	discountValue: PropTypes.number,
 	baseAmount: PropTypes.number,
 	description: PropTypes.string,
 	amountCredits: PropTypes.number,

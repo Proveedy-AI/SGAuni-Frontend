@@ -11,6 +11,7 @@ import {
 	Badge,
 	Stack,
 	Center,
+	Spinner,
 } from '@chakra-ui/react';
 import {
 	FiAlertCircle,
@@ -30,7 +31,7 @@ import {
 	useReadPaymentRules,
 } from '@/hooks';
 import { useReadGraduateUni } from '@/hooks/person/useReadGraduateUni';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useReadUserLogged } from '@/hooks/users/useReadUserLogged';
 import { OptionsPlans } from './OptionsPlans';
 import { EncryptedStorage } from '@/components/CrytoJS/EncryptedStorage';
@@ -148,37 +149,68 @@ export const Step03SummaryEnrollment = ({
 		(rule) => rule.payment_purpose === paymentPlan
 	);
 
-	const discounts = [
-		// 1. Global Discounts válidos para los propósitos seleccionados
-		...(Array.isArray(globalDiscounts)
-			? globalDiscounts
-					.filter((d) => !d.requireGraduate || dataUser?.is_uni_graduate)
-					.map((d) => ({
-						id: `global-${d.id}`,
-						label: d.label,
-						percentage: Number(d.percentage * 100),
+	const discountsGroup = useMemo(
+		() => [
+			// 1. Global Discounts válidos para los propósitos seleccionados
+			...(Array.isArray(globalDiscounts)
+				? globalDiscounts
+						.filter((d) => !d.requireGraduate || dataUser?.is_uni_graduate)
+						.map((d) => ({
+							id: `global-${d.id}`,
+							label: d.label,
+							percentage: Number(d.percentage * 100),
+						}))
+				: []),
+			// 2. Becas válidas para los propósitos seleccionados
+			...(Array.isArray(studentScholarships)
+				? studentScholarships.map((s) => ({
+						id: `scholarship-${s.id}`,
+						label: s.label,
+						percentage: s.percentage * 100,
 					}))
-			: []),
-		// 2. Becas válidas para los propósitos seleccionados
-		...(Array.isArray(studentScholarships)
-			? studentScholarships.map((s) => ({
-					id: `scholarship-${s.id}`,
-					label: s.label,
-					percentage: s.percentage * 100,
-				}))
-			: []),
+				: []),
 
-		// 3. Descuento de la regla de pago
-		...(currentRule?.discount_percentage
-			? [
-					{
-						id: `rule-${currentRule.payment_purpose}`,
-						label: `Descuento por pago completo `,
-						percentage: currentRule?.discount_percentage * 100,
-					},
-				]
-			: []),
-	];
+			// 3. Descuento de la regla de pago
+			...(currentRule?.discount_percentage &&
+			currentRule?.discount_percentage !== '0.00'
+				? [
+						{
+							id: `rule-${currentRule.payment_purpose}`,
+							label: `Descuento por pago completo `,
+							percentage: currentRule?.discount_percentage * 100,
+						},
+					]
+				: []),
+		],
+		[
+			globalDiscounts,
+			dataUser?.is_uni_graduate,
+			studentScholarships,
+			currentRule?.discount_percentage,
+			currentRule?.payment_purpose,
+		]
+	);
+
+	const bestDiscount =
+		discountsGroup.length > 0
+			? discountsGroup.reduce((max, d) =>
+					d.percentage > max.percentage ? d : max
+				)
+			: null;
+
+	// 2️⃣ Si querés seguir usando "discounts", que sea solo el mejor
+	const discounts = bestDiscount ? [bestDiscount] : [];
+
+	useEffect(() => {
+		if (discountsGroup.length > 0) {
+			const bestDiscount = discountsGroup.reduce((max, d) =>
+				d.percentage > max.percentage ? d : max
+			);
+			setDiscountValue(Number(bestDiscount.percentage));
+		} else {
+			setDiscountValue('');
+		}
+	}, [discountsGroup]);
 
 	const handleConfirmEnrollment = () => {
 		confirmCourses(
@@ -225,512 +257,533 @@ export const Step03SummaryEnrollment = ({
 	// Color modes
 
 	return (
-		<VStack
-			gap={6}
-			align='stretch'
-			maxW={{ base: 'full', md: '80%' }}
-			mx='auto'
-		>
-			{isSomeRequestPending ? (
-				<Card.Root position='relative' overflow='hidden' border='0' shadow='lg'>
-					{/* Fondos decorativos */}
-					<Box position='absolute' inset='0' bg='orange.50' zIndex={0} />
-					<Box
-						position='absolute'
-						top='0'
-						right='0'
-						w='8rem'
-						h='8rem'
-						bg='orange.200'
-						rounded='full'
-						transform='translate(4rem, -4rem)'
-						zIndex={0}
-					/>
-					<Box
-						position='absolute'
-						bottom='0'
-						left='0'
-						w='6rem'
-						h='6rem'
-						bg='alpha(orange.200, 0.3)'
-						rounded='full'
-						transform='translate(-3rem, 3rem)'
-						zIndex={0}
-					/>
+		<>
+			<VStack
+				gap={6}
+				align='stretch'
+				maxW={{ base: 'full', md: '80%' }}
+				mx='auto'
+			>
+				{' '}
+				{!discountValue ? (
+					<Spinner size='lg' alignSelf='center' />
+				) : isSomeRequestPending ? (
+					<Card.Root
+						position='relative'
+						overflow='hidden'
+						border='0'
+						shadow='lg'
+					>
+						{/* Fondos decorativos */}
+						<Box position='absolute' inset='0' bg='orange.50' zIndex={0} />
+						<Box
+							position='absolute'
+							top='0'
+							right='0'
+							w='8rem'
+							h='8rem'
+							bg='orange.200'
+							rounded='full'
+							transform='translate(4rem, -4rem)'
+							zIndex={0}
+						/>
+						<Box
+							position='absolute'
+							bottom='0'
+							left='0'
+							w='6rem'
+							h='6rem'
+							bg='alpha(orange.200, 0.3)'
+							rounded='full'
+							transform='translate(-3rem, 3rem)'
+							zIndex={0}
+						/>
 
-					<Card.Body position='relative' p={8} zIndex={1}>
-						<VStack spacing={6} textAlign='center'>
-							{/* Icono principal */}
-							<Box position='relative'>
-								<Box
-									w={20}
-									h={20}
-									rounded='full'
-									bg='orange.500'
-									display='flex'
-									alignItems='center'
-									justifyContent='center'
-									shadow='lg'
-								>
-									<FiClock size={40} color='white' />
-								</Box>
-								<Box
-									position='absolute'
-									top={-1}
-									right={-1}
-									w={6}
-									h={6}
-									bg='orange.500'
-									rounded='full'
-									display='flex'
-									alignItems='center'
-									justifyContent='center'
-								>
-									<FiAlertCircle size={16} color='white' />
-								</Box>
-							</Box>
-
-							{/* Contenido principal */}
-							<VStack spacing={4} maxW='md'>
-								<VStack spacing={2}>
-									<HStack justify='center' spacing={2}>
-										<FiCreditCard size={24} color='#F97316' />
-										<Heading size='md' color='gray.800'>
-											Solicitud en proceso
-										</Heading>
-									</HStack>
+						<Card.Body position='relative' p={8} zIndex={1}>
+							<VStack spacing={6} textAlign='center'>
+								{/* Icono principal */}
+								<Box position='relative'>
 									<Box
-										w={16}
-										h={1}
+										w={20}
+										h={20}
 										rounded='full'
-										bgGradient='linear(to-r, orange.400, amber.500)'
-									/>
-								</VStack>
+										bg='orange.500'
+										display='flex'
+										alignItems='center'
+										justifyContent='center'
+										shadow='lg'
+									>
+										<FiClock size={40} color='white' />
+									</Box>
+									<Box
+										position='absolute'
+										top={-1}
+										right={-1}
+										w={6}
+										h={6}
+										bg='orange.500'
+										rounded='full'
+										display='flex'
+										alignItems='center'
+										justifyContent='center'
+									>
+										<FiAlertCircle size={16} color='white' />
+									</Box>
+								</Box>
 
-								<VStack spacing={1}>
-									<Text color='gray.600'>
-										Ya has iniciado una solicitud de pago que está pendiente de
-										completar.
-									</Text>
-									<Text color='gray.600'>
-										Finaliza el proceso o espera a que sea procesado antes de
-										elegir un nuevo plan.
-									</Text>
+								{/* Contenido principal */}
+								<VStack spacing={4} maxW='md'>
+									<VStack spacing={2}>
+										<HStack justify='center' spacing={2}>
+											<FiCreditCard size={24} color='#F97316' />
+											<Heading size='md' color='gray.800'>
+												Solicitud en proceso
+											</Heading>
+										</HStack>
+										<Box
+											w={16}
+											h={1}
+											rounded='full'
+											bgGradient='linear(to-r, orange.400, amber.500)'
+										/>
+									</VStack>
+
+									<VStack spacing={1}>
+										<Text color='gray.600'>
+											Ya has iniciado una solicitud de pago que está pendiente
+											de completar.
+										</Text>
+										<Text color='gray.600'>
+											Finaliza el proceso o espera a que sea procesado antes de
+											elegir un nuevo plan.
+										</Text>
+									</VStack>
 								</VStack>
 							</VStack>
-						</VStack>
-					</Card.Body>
-				</Card.Root>
-			) : selectedGroups?.paid_complete_master ? (
-				<Card.Root
-					position='relative'
-					overflow='hidden'
-					border='0'
-					boxShadow='lg'
-				>
-					{/* Fondos decorativos */}
-					<Box position='absolute' inset='0' bg='green.50' />
-					<Box
-						position='absolute'
-						top='-20'
-						right='-20'
-						w='40'
-						h='40'
-						bg='green.200'
-						opacity={0.3}
-						rounded='full'
-					/>
-					<Box
-						position='absolute'
-						bottom='-16'
-						left='-16'
-						w='32'
-						h='32'
-						bg='emerald.200'
-						opacity={0.2}
-						rounded='full'
-					/>
-
-					{/* Iconos decorativos */}
-					<Box position='absolute' top='4' left='4'>
-						<Icon
-							as={HiSparkles}
-							boxSize={6}
-							color='green.300'
-							className='animate-pulse'
+						</Card.Body>
+					</Card.Root>
+				) : selectedGroups?.paid_complete_master ? (
+					<Card.Root
+						position='relative'
+						overflow='hidden'
+						border='0'
+						boxShadow='lg'
+					>
+						{/* Fondos decorativos */}
+						<Box position='absolute' inset='0' bg='green.50' />
+						<Box
+							position='absolute'
+							top='-20'
+							right='-20'
+							w='40'
+							h='40'
+							bg='green.200'
+							opacity={0.3}
+							rounded='full'
 						/>
-					</Box>
-					<Box position='absolute' top='8' right='8'>
-						<Icon
-							as={HiSparkles}
-							boxSize={4}
-							color='emerald.300'
-							className='animate-pulse'
+						<Box
+							position='absolute'
+							bottom='-16'
+							left='-16'
+							w='32'
+							h='32'
+							bg='emerald.200'
+							opacity={0.2}
+							rounded='full'
 						/>
-					</Box>
 
-					<Card.Body position='relative' p={8}>
-						<VStack spacing={6} align='center' textAlign='center'>
-							{/* Icono principal */}
-							<Box position='relative'>
-								<Center w='20' h='20' bg='green.400' rounded='full' shadow='lg'>
-									<Icon as={LuGraduationCap} boxSize={10} color='white' />
-								</Center>
-								<Center
-									position='absolute'
-									top={-1}
-									right={-1}
-									w='6'
-									h='6'
-									bg='green.500'
-									rounded='full'
-								>
-									<Icon as={FiCheckCircle} boxSize={4} color='white' />
-								</Center>
-							</Box>
-
-							{/* Texto principal */}
-							<Stack spacing={4} maxW='md'>
-								<Box>
-									<Heading
-										size='md'
-										color='gray.800'
-										display='flex'
-										alignItems='center'
-										justifyContent='center'
-										gap={2}
-									>
-										<Icon as={FiCheckCircle} boxSize={6} color='green.500' />
-										Maestría pagada completamente
-									</Heading>
-									<Box
-										w='20'
-										h='1'
-										bgGradient='linear(to-r, emerald.400, green.500)'
-										rounded='full'
-										mx='auto'
-										mt={2}
-									/>
-								</Box>
-
-								<Text fontSize='sm' color='gray.600'>
-									Ya realizaste el pago completo de la maestría. No necesitas
-									generar nuevas solicitudes de pago.
-								</Text>
-								<Text fontSize='sm' color='gray.600'>
-									Puedes continuar con tu matrícula sin inconvenientes.
-								</Text>
-
-								<Badge
-									colorPalette='green'
-									rounded='full'
-									px={4}
-									py={1}
-									fontSize='sm'
-									fontWeight='medium'
-									alignSelf='center'
-								>
-									<Icon as={FiCheckCircle} boxSize={4} mr={1} />
-									Pago completado
-								</Badge>
-							</Stack>
-						</VStack>
-					</Card.Body>
-				</Card.Root>
-			) : selectedGroups?.paid_complete_master && hasFailedCourse ? (
-				<FailedCoursesCard
-					totalFailedCourses={repeatedCourses?.length}
-					totalFailedCredits={failedCoursesCredits}
-					repeatedCourses={repeatedCourses}
-					handleRequestPaymentOrder={handleRequestPaymentOrder}
-					paymentPlan={paymentPlan}
-				/>
-			) : discountValue >= 100 ? (
-				<Card.Root
-					position='relative'
-					overflow='hidden'
-					border='0'
-					boxShadow='lg'
-				>
-					{/* Fondos decorativos */}
-					<Box position='absolute' inset='0' bg='green.50' />
-					<Box
-						position='absolute'
-						top='-20'
-						right='-20'
-						w='40'
-						h='40'
-						bg='green.200'
-						opacity={0.3}
-						rounded='full'
-					/>
-					<Box
-						position='absolute'
-						bottom='-16'
-						left='-16'
-						w='32'
-						h='32'
-						bg='emerald.200'
-						opacity={0.2}
-						rounded='full'
-					/>
-
-					{/* Iconos decorativos */}
-					<Box position='absolute' top='4' left='4'>
-						<Icon
-							as={HiSparkles}
-							boxSize={6}
-							color='green.300'
-							className='animate-pulse'
-						/>
-					</Box>
-					<Box position='absolute' top='8' right='8'>
-						<Icon
-							as={HiSparkles}
-							boxSize={4}
-							color='emerald.300'
-							className='animate-pulse'
-						/>
-					</Box>
-
-					<Card.Body position='relative' p={8}>
-						<VStack spacing={6} align='center' textAlign='center'>
-							{/* Icono principal */}
-							<Box position='relative'>
-								<Center w='20' h='20' bg='green.400' rounded='full' shadow='lg'>
-									<Icon as={LuGraduationCap} boxSize={10} color='white' />
-								</Center>
-								<Center
-									position='absolute'
-									top={-1}
-									right={-1}
-									w='6'
-									h='6'
-									bg='green.500'
-									rounded='full'
-								>
-									<Icon as={FiCheckCircle} boxSize={4} color='white' />
-								</Center>
-							</Box>
-
-							{/* Texto principal */}
-							<Stack spacing={4} maxW='md'>
-								<Box>
-									<Heading
-										size='md'
-										color='gray.800'
-										display='flex'
-										alignItems='center'
-										justifyContent='center'
-										gap={2}
-									>
-										<Icon as={FiCheckCircle} boxSize={6} color='green.500' />
-										Beca completa Asignada
-									</Heading>
-									<Box
-										w='20'
-										h='1'
-										bgGradient='linear(to-r, emerald.400, green.500)'
-										rounded='full'
-										mx='auto'
-										mt={2}
-									/>
-								</Box>
-
-								<Text fontSize='sm' color='gray.600'>
-									Se le ha asignado una beca completa para su matrícula. No
-									necesita generar nuevas solicitudes de pago.
-								</Text>
-								<Text fontSize='sm' color='gray.600'>
-									Puedes continuar con tu matrícula sin inconvenientes.
-								</Text>
-
-								<Badge
-									colorPalette='green'
-									rounded='full'
-									px={4}
-									py={1}
-									fontSize='sm'
-									fontWeight='medium'
-									alignSelf='center'
-								>
-									<Icon as={FiCheckCircle} boxSize={4} mr={1} />
-									Beca completa Asignada
-								</Badge>
-							</Stack>
-						</VStack>
-					</Card.Body>
-				</Card.Root>
-			) : (
-				<Card.Root bg={'blue.50'} border='1px solid' borderColor='blue.200'>
-					<Card.Body p={6}>
-						<VStack gap={6}>
-							{/* Encabezado */}
-							<Box textAlign='center'>
-								<Heading size='md' mb={2}>
-									Elige tu Plan de Pago
-								</Heading>
-								<Text fontSize='sm' color='gray.600'>
-									Selecciona la opción que mejor se adapte a tus necesidades
-								</Text>
-							</Box>
-
-							{/* Opciones de Planes */}
-							<OptionsPlans
-								enrollmentItem={enrollmentItem}
-								paymentPlan={paymentPlan}
-								handlePlanChange={handlePlanChange}
-								semesterDiscountAmount={semesterDiscountAmount}
-								semesterBaseAmount={semesterBaseAmount}
-								savingsProgramAmount={savingsProgramAmount}
-								DiscountSemestreComplete={DiscountSemestreComplete}
-								fullProgramAmount={fullProgramAmount}
-								DiscountMasterComplete={DiscountMasterComplete}
+						{/* Iconos decorativos */}
+						<Box position='absolute' top='4' left='4'>
+							<Icon
+								as={HiSparkles}
+								boxSize={6}
+								color='green.300'
+								className='animate-pulse'
 							/>
-						</VStack>
-					</Card.Body>
-				</Card.Root>
-			)}
-			{(paymentPlan === 4 || paymentPlan === 999) && (
-				<Card.Root
-					bg='blue.100'
-					border='1px solid'
-					borderColor='blue.200'
-					borderRadius='xl'
-				>
-					<Card.Header pb={2}>
-						<Flex align='center' gap={2} color='blue.800'>
-							<Icon as={FiBookOpen} boxSize={5} />
-							<Heading fontSize={{ base: 'sm', md: 'lg' }}>
-								Resumen de Selección
-							</Heading>
-						</Flex>
-					</Card.Header>
+						</Box>
+						<Box position='absolute' top='8' right='8'>
+							<Icon
+								as={HiSparkles}
+								boxSize={4}
+								color='emerald.300'
+								className='animate-pulse'
+							/>
+						</Box>
 
-					<Card.Body pt={4}>
-						<VStack gap={2} align='stretch'>
-							<HStack justify='space-between'>
-								<Text fontSize='md' color='gray.600'>
-									Cursos seleccionados
-								</Text>
-								<Box
-									bg='white'
-									color='blue.600'
-									px={2}
-									py={1}
-									rounded='md'
-									fontWeight='bold'
-									minW='40px'
-									textAlign='center'
-								>
-									{totalCourses}
+						<Card.Body position='relative' p={8}>
+							<VStack spacing={6} align='center' textAlign='center'>
+								{/* Icono principal */}
+								<Box position='relative'>
+									<Center
+										w='20'
+										h='20'
+										bg='green.400'
+										rounded='full'
+										shadow='lg'
+									>
+										<Icon as={LuGraduationCap} boxSize={10} color='white' />
+									</Center>
+									<Center
+										position='absolute'
+										top={-1}
+										right={-1}
+										w='6'
+										h='6'
+										bg='green.500'
+										rounded='full'
+									>
+										<Icon as={FiCheckCircle} boxSize={4} color='white' />
+									</Center>
 								</Box>
-							</HStack>
 
-							<HStack justify='space-between'>
-								<Text fontSize='md' color='gray.600'>
-									Créditos Totales
-								</Text>
-								<Box
-									bg='white'
-									color='blue.600'
-									px={3}
-									py={1}
-									rounded='md'
-									fontWeight='bold'
-									minW='40px'
-									textAlign='center'
-								>
-									{totalCredits}
-								</Box>
-							</HStack>
+								{/* Texto principal */}
+								<Stack spacing={4} maxW='md'>
+									<Box>
+										<Heading
+											size='md'
+											color='gray.800'
+											display='flex'
+											alignItems='center'
+											justifyContent='center'
+											gap={2}
+										>
+											<Icon as={FiCheckCircle} boxSize={6} color='green.500' />
+											Maestría pagada completamente
+										</Heading>
+										<Box
+											w='20'
+											h='1'
+											bgGradient='linear(to-r, emerald.400, green.500)'
+											rounded='full'
+											mx='auto'
+											mt={2}
+										/>
+									</Box>
 
-							<HStack justify='space-between'>
-								<Text fontSize='md' color='gray.600'>
-									Horas semanales
-								</Text>
-								<Box
-									bg='white'
-									color='blue.600'
-									px={3}
-									py={1}
-									rounded='md'
-									fontWeight='bold'
-									minW='40px'
-									textAlign='center'
-								>
-									{totalWeeklyHours}h
-								</Box>
-							</HStack>
-						</VStack>
-					</Card.Body>
-				</Card.Root>
-			)}
+									<Text fontSize='sm' color='gray.600'>
+										Ya realizaste el pago completo de la maestría. No necesitas
+										generar nuevas solicitudes de pago.
+									</Text>
+									<Text fontSize='sm' color='gray.600'>
+										Puedes continuar con tu matrícula sin inconvenientes.
+									</Text>
 
-			{(paymentPlan === 4 || paymentPlan === 5 || paymentPlan === 999) && (
-				<TuitionSummaryCard
-					title={
-						paymentPlan === 4
-							? 'Pago por Semestre'
-							: paymentPlan === 5
-								? 'Pago por Maestría'
-								: 'Pago en Armadas'
-					}
-					credits={
-						paymentPlan === 4
-							? totalCredits
-							: paymentPlan === 5
-								? creditsInfo?.total_credits
-								: totalCredits
-					}
-					pricePerCredit={parseFloat(PriceCreditsToPay)}
-					discounts={discounts}
-					setDiscountValue={setDiscountValue}
-					setDescription={setDescription}
-				/>
-			)}
-
-			<Flex justify='space-between' pt={4}>
-				<Button
-					variant='outline'
-					leftIcon={<Icon as={FiArrowLeft} />}
-					onClick={onBack}
-				>
-					Regresar
-				</Button>
-				{isSomeRequestPending && (
-					<Button colorPalette='blue' onClick={onNext}>
-						Siguiente <Icon as={FiArrowRight} />
-					</Button>
-				)}
-				{(selectedGroups?.paid_complete_master || discountValue >= 100) && (
-					<Button colorPalette='blue' onClick={handleConfirmEnrollment}>
-						Procesar Matricula <Icon as={FiArrowRight} />
-					</Button>
-				)}
-
-				{((!isSomeRequestPending && !selectedGroups?.paid_complete_master) ||
-					paymentPlan === 9) && (
-					<ProcessEnrollmentModal
-            dataUser={dataUser}
+									<Badge
+										colorPalette='green'
+										rounded='full'
+										px={4}
+										py={1}
+										fontSize='sm'
+										fontWeight='medium'
+										alignSelf='center'
+									>
+										<Icon as={FiCheckCircle} boxSize={4} mr={1} />
+										Pago completado
+									</Badge>
+								</Stack>
+							</VStack>
+						</Card.Body>
+					</Card.Root>
+				) : selectedGroups?.paid_complete_master && hasFailedCourse ? (
+					<FailedCoursesCard
+						totalFailedCourses={repeatedCourses?.length}
+						totalFailedCredits={failedCoursesCredits}
+						repeatedCourses={repeatedCourses}
+						handleRequestPaymentOrder={handleRequestPaymentOrder}
 						paymentPlan={paymentPlan}
-						discountValue={discountValue}
-						baseAmount={baseAmount}
-						amountCredits={
+					/>
+				) : discountValue === 100 ? (
+					<Card.Root
+						position='relative'
+						overflow='hidden'
+						border='0'
+						boxShadow='lg'
+					>
+						{/* Fondos decorativos */}
+						<Box position='absolute' inset='0' bg='green.50' />
+						<Box
+							position='absolute'
+							top='-20'
+							right='-20'
+							w='40'
+							h='40'
+							bg='green.200'
+							opacity={0.3}
+							rounded='full'
+						/>
+						<Box
+							position='absolute'
+							bottom='-16'
+							left='-16'
+							w='32'
+							h='32'
+							bg='emerald.200'
+							opacity={0.2}
+							rounded='full'
+						/>
+
+						{/* Iconos decorativos */}
+						<Box position='absolute' top='4' left='4'>
+							<Icon
+								as={HiSparkles}
+								boxSize={6}
+								color='green.300'
+								className='animate-pulse'
+							/>
+						</Box>
+						<Box position='absolute' top='8' right='8'>
+							<Icon
+								as={HiSparkles}
+								boxSize={4}
+								color='emerald.300'
+								className='animate-pulse'
+							/>
+						</Box>
+
+						<Card.Body position='relative' p={8}>
+							<VStack spacing={6} align='center' textAlign='center'>
+								{/* Icono principal */}
+								<Box position='relative'>
+									<Center
+										w='20'
+										h='20'
+										bg='green.400'
+										rounded='full'
+										shadow='lg'
+									>
+										<Icon as={LuGraduationCap} boxSize={10} color='white' />
+									</Center>
+									<Center
+										position='absolute'
+										top={-1}
+										right={-1}
+										w='6'
+										h='6'
+										bg='green.500'
+										rounded='full'
+									>
+										<Icon as={FiCheckCircle} boxSize={4} color='white' />
+									</Center>
+								</Box>
+
+								{/* Texto principal */}
+								<Stack spacing={4} maxW='md'>
+									<Box>
+										<Heading
+											size='md'
+											color='gray.800'
+											display='flex'
+											alignItems='center'
+											justifyContent='center'
+											gap={2}
+										>
+											<Icon as={FiCheckCircle} boxSize={6} color='green.500' />
+											Beca completa Asignada
+										</Heading>
+										<Box
+											w='20'
+											h='1'
+											bgGradient='linear(to-r, emerald.400, green.500)'
+											rounded='full'
+											mx='auto'
+											mt={2}
+										/>
+									</Box>
+
+									<Text fontSize='sm' color='gray.600'>
+										Se le ha asignado una beca completa para su matrícula. No
+										necesita generar nuevas solicitudes de pago.
+									</Text>
+									<Text fontSize='sm' color='gray.600'>
+										Puedes continuar con tu matrícula sin inconvenientes.
+									</Text>
+
+									<Badge
+										colorPalette='green'
+										rounded='full'
+										px={4}
+										py={1}
+										fontSize='sm'
+										fontWeight='medium'
+										alignSelf='center'
+									>
+										<Icon as={FiCheckCircle} boxSize={4} mr={1} />
+										Beca completa Asignada
+									</Badge>
+								</Stack>
+							</VStack>
+						</Card.Body>
+					</Card.Root>
+				) : (
+					<Card.Root bg={'blue.50'} border='1px solid' borderColor='blue.200'>
+						<Card.Body p={6}>
+							<VStack gap={6}>
+								{/* Encabezado */}
+								<Box textAlign='center'>
+									<Heading size='md' mb={2}>
+										Elige tu Plan de Pago
+									</Heading>
+									<Text fontSize='sm' color='gray.600'>
+										Selecciona la opción que mejor se adapte a tus necesidades
+									</Text>
+								</Box>
+
+								{/* Opciones de Planes */}
+								<OptionsPlans
+									enrollmentItem={enrollmentItem}
+									paymentPlan={paymentPlan}
+									handlePlanChange={handlePlanChange}
+									semesterDiscountAmount={semesterDiscountAmount}
+									semesterBaseAmount={semesterBaseAmount}
+									savingsProgramAmount={savingsProgramAmount}
+									DiscountSemestreComplete={DiscountSemestreComplete}
+									fullProgramAmount={fullProgramAmount}
+									DiscountMasterComplete={DiscountMasterComplete}
+								/>
+							</VStack>
+						</Card.Body>
+					</Card.Root>
+				)}
+				{(paymentPlan === 4 || paymentPlan === 999) && (
+					<Card.Root
+						bg='blue.100'
+						border='1px solid'
+						borderColor='blue.200'
+						borderRadius='xl'
+					>
+						<Card.Header pb={2}>
+							<Flex align='center' gap={2} color='blue.800'>
+								<Icon as={FiBookOpen} boxSize={5} />
+								<Heading fontSize={{ base: 'sm', md: 'lg' }}>
+									Resumen de Selección
+								</Heading>
+							</Flex>
+						</Card.Header>
+
+						<Card.Body pt={4}>
+							<VStack gap={2} align='stretch'>
+								<HStack justify='space-between'>
+									<Text fontSize='md' color='gray.600'>
+										Cursos seleccionados
+									</Text>
+									<Box
+										bg='white'
+										color='blue.600'
+										px={2}
+										py={1}
+										rounded='md'
+										fontWeight='bold'
+										minW='40px'
+										textAlign='center'
+									>
+										{totalCourses}
+									</Box>
+								</HStack>
+
+								<HStack justify='space-between'>
+									<Text fontSize='md' color='gray.600'>
+										Créditos Totales
+									</Text>
+									<Box
+										bg='white'
+										color='blue.600'
+										px={3}
+										py={1}
+										rounded='md'
+										fontWeight='bold'
+										minW='40px'
+										textAlign='center'
+									>
+										{totalCredits}
+									</Box>
+								</HStack>
+
+								<HStack justify='space-between'>
+									<Text fontSize='md' color='gray.600'>
+										Horas semanales
+									</Text>
+									<Box
+										bg='white'
+										color='blue.600'
+										px={3}
+										py={1}
+										rounded='md'
+										fontWeight='bold'
+										minW='40px'
+										textAlign='center'
+									>
+										{totalWeeklyHours}h
+									</Box>
+								</HStack>
+							</VStack>
+						</Card.Body>
+					</Card.Root>
+				)}
+				{(paymentPlan === 4 || paymentPlan === 5 || paymentPlan === 999) && (
+					<TuitionSummaryCard
+						title={
+							paymentPlan === 4
+								? 'Pago por Semestre'
+								: paymentPlan === 5
+									? 'Pago por Maestría'
+									: 'Pago en Armadas'
+						}
+						credits={
 							paymentPlan === 4
 								? totalCredits
-								: paymentPlan === 9
-									? failedCoursesCredits
-									: creditsInfo?.total_credits
+								: paymentPlan === 5
+									? creditsInfo?.total_credits
+									: totalCredits
 						}
-						description={description}
-						onNext={onNext}
-						onConfirmEnrollment={handleConfirmEnrollment}
-						enrollmentItem={enrollmentItem}
+						pricePerCredit={parseFloat(PriceCreditsToPay)}
+						discounts={discounts}
+						setDescription={setDescription}
 					/>
 				)}
-			</Flex>
-		</VStack>
+				<Flex justify='space-between' pt={4}>
+					<Button
+						variant='outline'
+						leftIcon={<Icon as={FiArrowLeft} />}
+						onClick={onBack}
+					>
+						Regresar
+					</Button>
+					{isSomeRequestPending && (
+						<Button colorPalette='blue' onClick={onNext}>
+							Siguiente <Icon as={FiArrowRight} />
+						</Button>
+					)}
+					{(selectedGroups?.paid_complete_master || discountValue >= 100) && (
+						<Button colorPalette='blue' onClick={handleConfirmEnrollment}>
+							Procesar Matricula <Icon as={FiArrowRight} />
+						</Button>
+					)}
+
+					{((!isSomeRequestPending &&
+						!selectedGroups?.paid_complete_master &&
+						discountValue < 100) ||
+						paymentPlan === 9) && (
+						<ProcessEnrollmentModal
+							dataUser={dataUser}
+							paymentPlan={paymentPlan}
+							discountValue={Number(discountValue)}
+							baseAmount={baseAmount}
+							amountCredits={
+								paymentPlan === 4
+									? totalCredits
+									: paymentPlan === 9
+										? failedCoursesCredits
+										: creditsInfo?.total_credits
+							}
+							description={description}
+							onNext={onNext}
+							onConfirmEnrollment={handleConfirmEnrollment}
+							enrollmentItem={enrollmentItem}
+						/>
+					)}
+				</Flex>
+			</VStack>
+		</>
 	);
 };
 
