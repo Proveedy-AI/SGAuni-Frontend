@@ -470,11 +470,7 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 										<CompactFileUpload
 											name={`file-${rule.id}`}
 											onChange={(file) => handleFileChange(rule.id, file)}
-											defaultFile={
-												typeof documentsData[rule.id]?.file === 'string'
-													? documentsData[rule.id].file
-													: null
-											}
+											defaultFile={documentsData[rule.id]?.file ?? null}
 											onClear={() => handleFileChange(rule.id, null)}
 										/>
 									</Box>
@@ -589,11 +585,7 @@ export const DocumentsApplicant = ({ onValidationChange }) => {
 										<CompactFileUpload
 											name={`file-${rule.id}`}
 											onChange={(file) => handleFileChange(rule.id, file)}
-											defaultFile={
-												typeof documentsData[rule.id]?.file === 'string'
-													? documentsData[rule.id].file
-													: null
-											}
+											defaultFile={documentsData[rule.id]?.file ?? null}
 											onClear={() => handleFileChange(rule.id, null)}
 										/>
 									</Box>
