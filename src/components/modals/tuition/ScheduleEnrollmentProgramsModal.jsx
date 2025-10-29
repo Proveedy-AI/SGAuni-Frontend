@@ -455,7 +455,6 @@ const AddCourseModal = ({ open, setOpen, data, fetchData, permissions }) => {
 
 							<Field
 								label='Créditos:'
-								required
 								invalid={!!errors.credits}
 								errorText={errors.credits}
 							>
@@ -472,7 +471,6 @@ const AddCourseModal = ({ open, setOpen, data, fetchData, permissions }) => {
 
 							<Field
 								label='Ciclo:'
-								required
 								invalid={!!errors.cycle}
 								errorText={errors.cycle}
 							>
