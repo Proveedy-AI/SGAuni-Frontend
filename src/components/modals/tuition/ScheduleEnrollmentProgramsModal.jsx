@@ -71,6 +71,7 @@ import { useReadCurriculumMapsCourses } from '@/hooks/curriculum_maps_courses';
 import { useDeleteCourseGroups } from '@/hooks/course_groups';
 import { useReadScheduleTypes } from '@/hooks/schedule_types';
 import { ScheduleEnrollmentCoursesPdf } from '.';
+import { MdDateRange } from 'react-icons/md';
 
 const timeSlots = [
 	'07:00',
@@ -125,6 +126,8 @@ const AddCourseModal = ({ open, setOpen, data, fetchData, permissions }) => {
 		schedules: [{ day_of_week: null, start_time: '', end_time: '' }],
 		type_schedule: null,
 		credits_per_group: null,
+		start_date: null,
+		end_date: null,
 	});
 
 	// function calcMaxCreditsPerGroup() {
@@ -210,6 +213,20 @@ const AddCourseModal = ({ open, setOpen, data, fetchData, permissions }) => {
 				newErrors.end_time = 'La hora de fin es requerida';
 		}
 
+		// Validaciones de Fechas
+		if (!formData.start_date) newErrors.start_date = 'La fecha de inicio es requerida';
+		if (!formData.end_date) newErrors.end_date = 'La fecha de fin es requerida';
+		if (formData.start_date && formData.end_date) {
+			const start = new Date(formData.start_date);
+			const end = new Date(formData.end_date);
+			if (end < start) {
+				newErrors.end_date = 'La fecha de fin no puede ser anterior a la fecha de inicio';
+			}
+		}
+
+		// Días (duración) requerido y positivo
+
+
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
 	};
@@ -292,6 +309,8 @@ const AddCourseModal = ({ open, setOpen, data, fetchData, permissions }) => {
 				end_time: schedule.end_time,
 			})),
 			type_schedule: formData?.type_schedule,
+			start_date: formData.start_date || null,
+			end_date: formData.end_date || null,
 		};
 
 		if (
@@ -580,6 +599,47 @@ const AddCourseModal = ({ open, setOpen, data, fetchData, permissions }) => {
 						) : (
 							<Text color='gray.500'>No tiene prerrequisitos</Text>
 						)}
+					</Card.Body>
+				</Card.Root>
+
+        <Card.Root border='2px solid' borderColor='gray.200' w='full'>
+          <Card.Header>
+						<Flex align='center' gap={2}>
+							<MdDateRange size={20} className='text-green-600' />
+							<Heading size='sm'>Fechas</Heading>
+						</Flex>
+					</Card.Header>
+					<Card.Body>
+						<SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
+							<Field
+								label='Fecha de inicio'
+								required
+								invalid={!!errors.start_date}
+								errorText={errors.start_date}
+							>
+								<Input
+									type='date'
+									name='start_date'
+									value={formData.start_date || ''}
+									onChange={handleInputChange}
+								/>
+							</Field>
+
+							<Field
+								label='Fecha de fin'
+								required
+								invalid={!!errors.end_date}
+								errorText={errors.end_date}
+							>
+								<Input
+									type='date'
+									name='end_date'
+									value={formData.end_date || ''}
+									onChange={handleInputChange}
+								/>
+							</Field>
+
+						</SimpleGrid>
 					</Card.Body>
 				</Card.Root>
 
@@ -1509,10 +1569,26 @@ export const ScheduleEnrollmentProgramsModal = ({ data, permissions }) => {
 											onSort={setSortConfig}
 										/>
 									</Table.Cell>
+                  <Table.Cell>
+										<SortableHeader
+											label='Tipo de Horario'
+											columnKey='type_schedule'
+											sortConfig={sortConfig}
+											onSort={setSortConfig}
+										/>
+									</Table.Cell>
 									<Table.Cell>
 										<SortableHeader
 											label='Profesor'
 											columnKey='teacher_name'
+											sortConfig={sortConfig}
+											onSort={setSortConfig}
+										/>
+									</Table.Cell>
+                  <Table.Cell>
+										<SortableHeader
+											label='Fechas'
+											columnKey='dates'
 											sortConfig={sortConfig}
 											onSort={setSortConfig}
 										/>
@@ -1604,7 +1680,11 @@ export const ScheduleEnrollmentProgramsModal = ({ data, permissions }) => {
 												{course.course_name}
 											</Table.Cell>
 											<Table.Cell>{course.course_group_code}</Table.Cell>
+											<Table.Cell>{course.type_schedule}</Table.Cell>
 											<Table.Cell>{course.teacher_name}</Table.Cell>
+											<Table.Cell>{
+                        `${course.start_date} - ${course.end_date}`
+                      }</Table.Cell>
 											<Table.Cell>
 												{daysOfWeek2.find(
 													(day) => day.value === String(course.day_of_week)
