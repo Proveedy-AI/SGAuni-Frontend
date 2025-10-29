@@ -1452,10 +1452,26 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 											onSort={setSortConfig}
 										/>
 									</Table.Cell>
+                  <Table.Cell>
+										<SortableHeader
+											label='Tipo de Horario'
+											columnKey='type_schedule'
+											sortConfig={sortConfig}
+											onSort={setSortConfig}
+										/>
+									</Table.Cell>
 									<Table.Cell>
 										<SortableHeader
 											label='Profesor'
 											columnKey='teacher_name'
+											sortConfig={sortConfig}
+											onSort={setSortConfig}
+										/>
+									</Table.Cell>
+                  <Table.Cell>
+										<SortableHeader
+											label='Fechas'
+											columnKey='dates'
 											sortConfig={sortConfig}
 											onSort={setSortConfig}
 										/>
@@ -1547,7 +1563,11 @@ export const ScheduleEnrollmentProgramsReviewModal = ({
 												{course.course_name}
 											</Table.Cell>
 											<Table.Cell>{course.course_group_code}</Table.Cell>
+											<Table.Cell>{course.type_schedule}</Table.Cell>
 											<Table.Cell>{course.teacher_name}</Table.Cell>
+                      <Table.Cell>{
+                        `${course.start_date} - ${course.end_date}`
+                      }</Table.Cell>
 											<Table.Cell>
 												{daysOfWeek2.find(
 													(day) => day.value === String(course.day_of_week)
