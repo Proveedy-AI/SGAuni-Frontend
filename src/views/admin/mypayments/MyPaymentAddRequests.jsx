@@ -196,7 +196,7 @@ export const MyPaymentAddRequests = () => {
 		const matchesFirstEnrollment =
 			!rule.only_first_enrollment ||
 			(rule.only_first_enrollment && isFirstEnrollment);
-		const isNotExcluded = rule.payment_purpose !== 4;
+		const isNotExcluded = rule.payment_purpose !== 4 && rule.payment_purpose !== 3 && rule.payment_purpose !== 10;
 
 		return (
 			matchesProcess && matchesRole && matchesFirstEnrollment && isNotExcluded
