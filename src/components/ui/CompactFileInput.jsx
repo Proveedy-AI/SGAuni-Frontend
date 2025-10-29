@@ -43,6 +43,7 @@ export function CompactFileUpload({
 					const file = acceptedFiles[0];
 					const hasTempFile = !!file;
 					const hasDefaultFile = !!defaultFile;
+					const defaultIsFile = defaultFile && typeof defaultFile !== 'string';
 
 					const handleClear = () => {
 						clearFiles();
@@ -82,7 +83,7 @@ export function CompactFileUpload({
 										textOverflow='ellipsis'
 									>
 										{truncateFilename(
-											file?.name || defaultFile?.split('/').pop()
+											file?.name || (defaultIsFile ? defaultFile.name : defaultFile?.split('/').pop())
 										)}
 									</Text>
 									<Tooltip
@@ -94,7 +95,11 @@ export function CompactFileUpload({
 										<IconButton
 											as='a'
 											href={
-												hasTempFile ? URL.createObjectURL(file) : defaultFile
+												hasTempFile
+													? URL.createObjectURL(file)
+													: defaultIsFile
+													? URL.createObjectURL(defaultFile)
+													: defaultFile
 											}
 											target='_blank'
 											rel='noopener noreferrer'
@@ -167,6 +172,6 @@ CompactFileUpload.propTypes = {
 	accept: PropTypes.string,
 	placeholder: PropTypes.string,
 	onChange: PropTypes.func,
-	defaultFile: PropTypes.string,
+	defaultFile: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 	onClear: PropTypes.func, // <- para limpiar desde afuera si quieres
 };

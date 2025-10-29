@@ -73,7 +73,7 @@ export const ViewCourseGroupsModal = ({ item, hasView }) => {
                     </Table.Row>
                   )) : (
                     <Table.Row>
-                      <Table.Cell colSpan={2} textAlign='center'>
+                      <Table.Cell colSpan={3} textAlign='center'>
                         No hay grupos disponibles
                       </Table.Cell>
                     </Table.Row>

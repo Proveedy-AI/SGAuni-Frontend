@@ -28,7 +28,12 @@ import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
 import { format } from 'date-fns';
 import { LuGraduationCap } from 'react-icons/lu';
 
-export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
+export const AddAdmissionsProgramsForm = ({
+	id,
+	profileId,
+	fetchData,
+	permissions,
+}) => {
 	const contentRef = useRef();
 	const [open, setOpen] = useState(false);
 
@@ -43,14 +48,21 @@ export const AddAdmissionsProgramsForm = ({ id, profileId, fetchData }) => {
 	const [errors, setErrors] = useState({});
 	const { mutate: createAdmissionsPrograms, isPending } =
 		useCreateAdmissionsPrograms();
-	const { data: dataPrograms } = useReadPrograms(
-		{ coordinator_id: profileId },
-		{ enabled: open }
-	);
+
+	let queryParams = {};
+
+	// Según permisos agregamos el filtro
+	if (permissions && !permissions.includes('admissions.programs.admin')) {
+		queryParams.coordinator_id = profileId;
+	}
+	const { data: dataPrograms } = useReadPrograms(queryParams, {
+		enabled: open,
+	});
 
 	const validateFields = () => {
 		const newErrors = {};
-		if (!selectedMode) newErrors.selectedMode = 'Seleccione una modalidad de estudio';
+		if (!selectedMode)
+			newErrors.selectedMode = 'Seleccione una modalidad de estudio';
 		if (!selectedProgram) newErrors.selectedProgram = 'Seleccione un programa';
 		if (!registrationStart)
 			newErrors.registrationStart =
@@ -447,4 +459,5 @@ AddAdmissionsProgramsForm.propTypes = {
 	fetchData: PropTypes.func.isRequired,
 	id: PropTypes.string,
 	profileId: PropTypes.number,
+	permissions: PropTypes.array,
 };

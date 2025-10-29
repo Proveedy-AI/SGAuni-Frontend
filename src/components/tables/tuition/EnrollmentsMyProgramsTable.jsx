@@ -1,7 +1,5 @@
 import { HistoryStatusEnrollmentProgramsView } from '@/components/forms/enrollment_proccess/HistoryStatusEnrollmentProgramsView';
-import {
-	ScheduleEnrollmentProgramsModal,
-} from '@/components/modals/tuition';
+import { ScheduleEnrollmentProgramsModal } from '@/components/modals/tuition';
 import { SendAEnrollmentProgramtoConfirmForm } from '@/components/modals/tuition/SendAEnrollmentProgramtoConfirmForm';
 import { usePaginationSettings } from '@/components/navigation/usePaginationSettings';
 import { Pagination, Tooltip } from '@/components/ui';
@@ -22,6 +20,7 @@ const Row = memo(
 		startIndex,
 		index,
 		sortConfig,
+		permissions,
 		data,
 		setIsModalOpen,
 		setModalData,
@@ -42,6 +41,9 @@ const Row = memo(
 						: startIndex + index + 1}
 				</Table.Cell>
 				<Table.Cell>{item.program_name}</Table.Cell>
+				{permissions.includes('enrollments.programsEnrollments.admin') && (
+					<Table.Cell>{item.coordinator_name}</Table.Cell>
+				)}
 				<Table.Cell>{formatDateString(item.semester_start_date)}</Table.Cell>
 				<Table.Cell>
 					{formatDateString(item.registration_start_date)}
@@ -56,7 +58,7 @@ const Row = memo(
 				</Table.Cell>
 				<Table.Cell>
 					<HStack>
-						<ScheduleEnrollmentProgramsModal data={item} />
+						<ScheduleEnrollmentProgramsModal data={item} permissions={permissions} />
 						<SendAEnrollmentProgramtoConfirmForm
 							item={item}
 							fetchData={fetchData}
@@ -154,6 +156,19 @@ export const EnrollmentsMyProgramsTable = ({
 									onSort={setSortConfig}
 								/>
 							</Table.ColumnHeader>
+							{permissions.includes(
+								'enrollments.programsEnrollments.admin'
+							) && (
+								<Table.ColumnHeader>
+									<SortableHeader
+										label='Coordinador'
+										columnKey='program_name'
+										sortConfig={sortConfig}
+										onSort={setSortConfig}
+									/>
+								</Table.ColumnHeader>
+							)}
+
 							<Table.ColumnHeader>
 								<SortableHeader
 									label='Inicio Semestre'
