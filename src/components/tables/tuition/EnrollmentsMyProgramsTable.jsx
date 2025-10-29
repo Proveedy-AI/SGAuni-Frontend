@@ -58,7 +58,7 @@ const Row = memo(
 				</Table.Cell>
 				<Table.Cell>
 					<HStack>
-						<ScheduleEnrollmentProgramsModal data={item} />
+						<ScheduleEnrollmentProgramsModal data={item} permissions={permissions} />
 						<SendAEnrollmentProgramtoConfirmForm
 							item={item}
 							fetchData={fetchData}

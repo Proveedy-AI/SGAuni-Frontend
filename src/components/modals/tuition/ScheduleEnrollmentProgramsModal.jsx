@@ -112,7 +112,7 @@ const daysOfWeek2 = [
 	{ label: 'D', fullName: 'Domingo', value: '7' },
 ];
 
-const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
+const AddCourseModal = ({ open, setOpen, data, fetchData, permissions }) => {
 	const [formData, setFormData] = useState({
 		course_id: null,
 		prerequisite_ids: [],
@@ -123,30 +123,30 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 		teacher_id: '',
 		capacity: '',
 		schedules: [{ day_of_week: null, start_time: '', end_time: '' }],
-    type_schedule: null,
-    credits_per_group: null,
+		type_schedule: null,
+		credits_per_group: null,
 	});
 
-  // function calcMaxCreditsPerGroup() {
-  //   if (!formData?.group_code) return;
-  //   // Suma los créditos usados en ese grupo
-  //   const credits_used = allCourseGroups
-  //     ?.filter((g) => g.course_group_code === formData?.group_code)
-  //     ?.reduce((sum, g) => sum + (g.credits_per_group || 0), 0) || 0;
-  //   // Devuelve la resta entre los créditos del curso y los usados
-  //   console.log((formData.credits || 0) - credits_used);
-  //   return (formData.credits || 0) - credits_used;
-  // }
+	// function calcMaxCreditsPerGroup() {
+	//   if (!formData?.group_code) return;
+	//   // Suma los créditos usados en ese grupo
+	//   const credits_used = allCourseGroups
+	//     ?.filter((g) => g.course_group_code === formData?.group_code)
+	//     ?.reduce((sum, g) => sum + (g.credits_per_group || 0), 0) || 0;
+	//   // Devuelve la resta entre los créditos del curso y los usados
+	//   console.log((formData.credits || 0) - credits_used);
+	//   return (formData.credits || 0) - credits_used;
+	// }
 
-  const { data: dataTypeSchedules, isLoading: isLoadingTypeSchedules } = useReadScheduleTypes();
+	const { data: dataTypeSchedules, isLoading: isLoadingTypeSchedules } =
+		useReadScheduleTypes();
 
-  const TypeSchedulesOptions = 
-    dataTypeSchedules?.results
-      ?.filter((item) => item.enabled)
-      ?.map((item) => ({
-        label: item?.name,
-        value: item?.id,
-      })) 
+	const TypeSchedulesOptions = dataTypeSchedules?.results
+		?.filter((item) => item.enabled)
+		?.map((item) => ({
+			label: item?.name,
+			value: item?.id,
+		}));
 
 	const [errors, setErrors] = useState({});
 	const { data: dataUsers } = useReadUsers(
@@ -156,25 +156,25 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 		}
 	);
 
-  const { data: curriculumMap } = useReadCurriculumMaps(
-    { program: data?.program, is_current: true },
+	const { data: curriculumMap } = useReadCurriculumMaps(
+		{ program: data?.program, is_current: true },
 		{
 			enabled: open && !!data?.program,
 		}
-  )
+	);
 
-  const curriculumMapId = curriculumMap?.results?.[0]?.id;
+	const curriculumMapId = curriculumMap?.results?.[0]?.id;
 
-  const { data: dataCurriculumMapCourses } = useReadCurriculumMapsCourses(
-    { curriculum_map: curriculumMapId },
-    { enabled: !!curriculumMapId }
-  );
+	const { data: dataCurriculumMapCourses } = useReadCurriculumMapsCourses(
+		{ curriculum_map: curriculumMapId },
+		{ enabled: !!curriculumMapId }
+	);
 
 	const [selectedPrerequisites, setSelectedPrerequisites] = useState([]);
 
 	const validateFields = () => {
 		const newErrors = {};
-    //const maxCreditsPerGroup = calcMaxCreditsPerGroup();
+		//const maxCreditsPerGroup = calcMaxCreditsPerGroup();
 
 		if (!formData.course_id) newErrors.course_id = 'El curso es requerido';
 		if (!formData.group_code)
@@ -183,15 +183,23 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 		if (!formData.credits) newErrors.credits = 'Los créditos son requeridos';
 		if (!formData.cycle) newErrors.cycle = 'El ciclo es requerido';
 		if (!formData.capacity) newErrors.capacity = 'La capacidad es requerida';
-    if (!formData.type_schedule) newErrors.type_schedule = 'El tipo de horario es requerido';
+		if (!formData.type_schedule)
+			newErrors.type_schedule = 'El tipo de horario es requerido';
 		if (!formData.schedules?.length)
 			newErrors.schedules = 'Debe agregar al menos un horario';
 
-    if (!dataTypeSchedules?.results?.find((ts) => ts?.id === formData?.type_schedule)?.is_single && !formData.credits_per_group) newErrors.credits_per_group = 'La cantidad de créditos por grupo es requerido'
-    // if (
-    //   formData.credits_per_group < 0 &&
-    //   formData.credits_per_group > maxCreditsPerGroup
-    // ) newErrors.credits_per_group = `La cantidad de créditos por grupo debe ser entre 1 y ${maxCreditsPerGroup}`
+		if (
+			!dataTypeSchedules?.results?.find(
+				(ts) => ts?.id === formData?.type_schedule
+			)?.is_single &&
+			!formData.credits_per_group
+		)
+			newErrors.credits_per_group =
+				'La cantidad de créditos por grupo es requerido';
+		// if (
+		//   formData.credits_per_group < 0 &&
+		//   formData.credits_per_group > maxCreditsPerGroup
+		// ) newErrors.credits_per_group = `La cantidad de créditos por grupo debe ser entre 1 y ${maxCreditsPerGroup}`
 
 		if (formData.schedules?.[0]) {
 			if (!formData.schedules[0].day_of_week)
@@ -283,12 +291,16 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 				start_time: schedule.start_time,
 				end_time: schedule.end_time,
 			})),
-      type_schedule: formData?.type_schedule,
+			type_schedule: formData?.type_schedule,
 		};
 
-    if (!dataTypeSchedules?.results?.find((ts) => ts?.id === formData?.type_schedule)?.is_single) {
-      payload.credits_per_group = formData?.credits_per_group
-    }
+		if (
+			!dataTypeSchedules?.results?.find(
+				(ts) => ts?.id === formData?.type_schedule
+			)?.is_single
+		) {
+			payload.credits_per_group = formData?.credits_per_group;
+		}
 
 		createCourseSchedule(payload, {
 			onSuccess: () => {
@@ -301,7 +313,7 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 			},
 			onError: (error) => {
 				const backendError =
-					error.response?.data?.error || error.message || 'Error desconocido'
+					error.response?.data?.error || error.message || 'Error desconocido';
 				toaster.create({
 					title: 'Error al agregar curso',
 					description: backendError,
@@ -323,7 +335,6 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 			label: c.full_name,
 		}));
 
-
 	return (
 		<Modal
 			open={open}
@@ -331,7 +342,10 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 			trigger={
 				<Box>
 					<IconButton
-            disabled={data?.status === 4}
+						disabled={
+							data?.status === 4 &&
+							!permissions.includes('enrollments.programsEnrollments.admin')
+						}
 						variant='outline'
 						size='xs'
 						px={2}
@@ -373,7 +387,7 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 									value={
 										coursesOptions.find(
 											(opt) => opt.value === formData.course_id
-									) || null
+										) || null
 									}
 									onChange={(opt) => {
 										if (opt) {
@@ -452,7 +466,7 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 									type='number'
 									min={1}
 									disabled
-                  variant="flushed"
+									variant='flushed'
 								/>
 							</Field>
 
@@ -471,7 +485,7 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 									min={1}
 									max={10}
 									disabled
-                  variant="flushed"
+									variant='flushed'
 								/>
 							</Field>
 
@@ -489,16 +503,16 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 									min={1}
 								/>
 							</Field>
-              <Field
+							<Field
 								label='Tipo de horario:'
 								required
 								invalid={!!errors.type_schedule}
 								errorText={errors.type_schedule}
 							>
 								<ReactSelect
-                  options={TypeSchedulesOptions}
-                  loading={isLoadingTypeSchedules}
-                  value={
+									options={TypeSchedulesOptions}
+									loading={isLoadingTypeSchedules}
+									value={
 										TypeSchedulesOptions?.find(
 											(opt) => opt.value === formData.type_schedule
 										) || null
@@ -507,30 +521,35 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 									isClearable
 									isSearchable
 									placeholder='Selecciona un tipo de horario'
-                />
+								/>
 							</Field>
-              {
-                formData?.type_schedule &&
-                dataTypeSchedules?.results &&
-                !dataTypeSchedules?.results?.find((ts) => ts?.id === formData?.type_schedule)?.is_single &&
-              (
-                <Field
-                  label='Créditos por horario:'
-                  required
-                  invalid={!!errors.credits_per_group}
-                  errorText={errors.credits_per_group}
-                >
-                  <Input
-                    name='credits_per_group'
-                    value={formData.credits_per_group}
-                    onChange={handleInputChange}
-                    type='number'
-                    min={1}
-                  />
-                </Field>
-              )}
+							{formData?.type_schedule &&
+								dataTypeSchedules?.results &&
+								!dataTypeSchedules?.results?.find(
+									(ts) => ts?.id === formData?.type_schedule
+								)?.is_single && (
+									<Field
+										label='Créditos por horario:'
+										required
+										invalid={!!errors.credits_per_group}
+										errorText={errors.credits_per_group}
+									>
+										<Input
+											name='credits_per_group'
+											value={formData.credits_per_group}
+											onChange={handleInputChange}
+											type='number'
+											min={1}
+										/>
+									</Field>
+								)}
 							<Field label='¿Es obligatorio?'>
-								<RadioGroup value={formData.is_mandatory ? 'yes' : 'no'} isDisabled direction='row' spaceX={4}>
+								<RadioGroup
+									value={formData.is_mandatory ? 'yes' : 'no'}
+									isDisabled
+									direction='row'
+									spaceX={4}
+								>
 									<Radio value='yes'>Sí</Radio>
 									<Radio value='no'>No</Radio>
 								</RadioGroup>
@@ -550,7 +569,12 @@ const AddCourseModal = ({ open, setOpen, data, fetchData }) => {
 						{selectedPrerequisites && selectedPrerequisites.length > 0 ? (
 							<VStack align='start' spacing={1}>
 								{selectedPrerequisites.map((prereq, idx) => (
-									<Badge size="md" key={idx} colorPalette='blue' variant='subtle'>
+									<Badge
+										size='md'
+										key={idx}
+										colorPalette='blue'
+										variant='subtle'
+									>
 										{prereq}
 									</Badge>
 								))}
@@ -699,10 +723,11 @@ AddCourseModal.propTypes = {
 	setOpen: PropTypes.func,
 	data: PropTypes.object,
 	fetchData: PropTypes.func,
-  allCourseGroups: PropTypes.array,
+	allCourseGroups: PropTypes.array,
+	permissions: PropTypes.array,
 };
 
-const AddExcelScheduleModal = ({ open, setOpen, data, fetchData }) => {
+const AddExcelScheduleModal = ({ open, setOpen, data, fetchData, permissions }) => {
 	const [file, setFile] = useState(null);
 	const fileInputRef = useRef(null);
 	const [loading, setLoading] = useState(false);
@@ -832,7 +857,7 @@ const AddExcelScheduleModal = ({ open, setOpen, data, fetchData }) => {
 			trigger={
 				<Box>
 					<IconButton
-            disabled={data?.status === 4}
+						disabled={data?.status === 4 && !permissions.includes('enrollments.programsEnrollments.admin')}
 						variant='solid'
 						size='xs'
 						px={2}
@@ -941,9 +966,10 @@ AddExcelScheduleModal.propTypes = {
 	setOpen: PropTypes.func,
 	data: PropTypes.shape({
 		id: PropTypes.number,
-    status: PropTypes.number,
+		status: PropTypes.number,
 	}),
 	fetchData: PropTypes.func,
+	permissions: PropTypes.array,
 };
 
 const CalendarView = ({ data }) => {
@@ -1138,7 +1164,7 @@ CalendarView.propTypes = {
 	).isRequired,
 };
 
-export const ScheduleEnrollmentProgramsModal = ({ data }) => {
+export const ScheduleEnrollmentProgramsModal = ({ data, permissions }) => {
 	const [open, setOpen] = useState(false);
 
 	const [courseToDelete, setCourseToDelete] = useState(null);
@@ -1248,16 +1274,17 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 	};
 
 	const { mutate: deleteCourseSchedule, isPending } = useDeleteCourseSchedule();
-  const { mutate: deleteCouseGroup, isPending: isDeletingGroup } = useDeleteCourseGroups();
+	const { mutate: deleteCouseGroup, isPending: isDeletingGroup } =
+		useDeleteCourseGroups();
 
 	const handleDelete = (course) => {
 		deleteCourseSchedule(course.id, {
 			onSuccess: () => {
-        toaster.create({
-          title: 'Horario eliminado correctamente',
-          type: 'success',
-        });
-        refetchCourseSchedule();
+				toaster.create({
+					title: 'Horario eliminado correctamente',
+					type: 'success',
+				});
+				refetchCourseSchedule();
 			},
 			onError: (error) => {
 				toaster.create({
@@ -1267,19 +1294,18 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 			},
 		});
 
-
-    deleteCouseGroup(course.course_group, {
-      onSuccess: () => {
-        toaster.create({
-          title: 'Grupo eliminado correctamente',
-          type: 'success',
-        });
-        setCourseToDelete(null);
-      },
-      onError: (/*error*/) => {
-        //Se dará en caso se borra el horario y no el grupo, no mostrar error
-      },
-    });
+		deleteCouseGroup(course.course_group, {
+			onSuccess: () => {
+				toaster.create({
+					title: 'Grupo eliminado correctamente',
+					type: 'success',
+				});
+				setCourseToDelete(null);
+			},
+			onError: (/*error*/) => {
+				//Se dará en caso se borra el horario y no el grupo, no mostrar error
+			},
+		});
 	};
 
 	const statusMap = {
@@ -1310,17 +1336,22 @@ export const ScheduleEnrollmentProgramsModal = ({ data }) => {
 		>
 			{/* Botones de Acción */}
 			<HStack gap={3} pb={2} borderBottomWidth={1} justifyContent={'end'}>
-        <ScheduleEnrollmentCoursesPdf program={data} allCourseGroups={allCourseSchedules} />
+				<ScheduleEnrollmentCoursesPdf
+					program={data}
+					allCourseGroups={allCourseSchedules}
+				/>
 				<AddCourseModal
 					data={data}
+					permissions={permissions}
 					open={addCourseOpen}
 					fetchData={refetchCourseSchedule}
 					setOpen={setAddCourseOpen}
-          allCourseGroups={allCourseSchedules}
+					allCourseGroups={allCourseSchedules}
 				/>
 				<AddExcelScheduleModal
 					data={data}
 					open={addExcelOpen}
+					permissions={permissions}
 					setOpen={setAddExcelOpen}
 					fetchData={refetchCourseSchedule}
 				/>
@@ -1689,4 +1720,5 @@ ScheduleEnrollmentProgramsModal.propTypes = {
 	data: PropTypes.shape({
 		id: PropTypes.number.isRequired,
 	}).isRequired,
+	permissions: PropTypes.object,
 };
