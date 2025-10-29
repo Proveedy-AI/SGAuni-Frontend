@@ -25,20 +25,23 @@ export const TuitionMyPrograms = () => {
 	const decrypted = Encryptor.decrypt(decoded);
 	const { data } = useReadEnrollmentById(decrypted);
 	const { data: profile } = useReadUserLogged();
-	const {
-		data: dataEnrollmentsPrograms,
-		refetch: fetchEnrollmentsPrograms,
-		isLoading,
-	} = useReadEnrollmentsPrograms({
-		enrollment_period: Number(decrypted),
-		coordinator: profile?.id,
-	});
-
-	
 	const roles = profile?.roles || [];
 	const permissions = roles
 		.flatMap((r) => r.permissions || [])
 		.map((p) => p.guard_name);
+
+	let queryParams = { enrollment_period: Number(decrypted) };
+	if (
+		permissions &&
+		!permissions.includes('enrollments.programsEnrollments.admin')
+	) {
+		queryParams.coordinator_id = profile?.id;
+	}
+	const {
+		data: dataEnrollmentsPrograms,
+		refetch: fetchEnrollmentsPrograms,
+		isLoading,
+	} = useReadEnrollmentsPrograms(queryParams);
 
 	const [searchValue, setSearchValue] = useState('');
 	const [actionType, setActionType] = useState('create');

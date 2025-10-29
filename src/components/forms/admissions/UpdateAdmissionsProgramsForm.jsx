@@ -56,17 +56,22 @@ export const UpdateAdmissionsProgramsForm = ({
 	const [errors, setErrors] = useState({});
 	const { mutate: updateAdmissionsPrograms, isPending } =
 		useUpdateAdmissionsPrograms();
-	const { data: dataPrograms } = useReadPrograms(
-		{
-			coordinator_id: data?.coordinator,
-		},
-		{ enabled: open }
-	);
+
+	let queryParams = {};
+
+	// Según permisos agregamos el filtro
+	if (permissions && !permissions.includes('admissions.programs.admin')) {
+		queryParams.coordinator_id = data?.coordinator;
+	}
+	const { data: dataPrograms } = useReadPrograms(queryParams, {
+		enabled: open,
+	});
 
 	const validateFields = () => {
 		const newErrors = {};
 
-		if (!selectedMode) newErrors.selectedMode = 'Seleccione una modalidad de estudio';
+		if (!selectedMode)
+			newErrors.selectedMode = 'Seleccione una modalidad de estudio';
 		if (!selectedProgram) newErrors.selectedProgram = 'Seleccione un programa';
 		if (!registrationStart)
 			newErrors.registrationStart =
