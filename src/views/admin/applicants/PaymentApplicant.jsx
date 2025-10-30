@@ -37,9 +37,9 @@ export const PaymentApplicant = ({ onValidationChange }) => {
 		(role) => role.name === 'Estudiante'
 	);*/
 	const item = EncryptedStorage.load('selectedApplicant');
-	const isPreMaestria = item?.modality_id === 1;
+	const isPreMaestria = item?.requires_pre_master_exam;
 	const { data: PaymentRules } = useReadPaymentRules();
-
+	
 	const statusDisplay = [
 		{
 			id: 1,
@@ -311,11 +311,11 @@ export const PaymentApplicant = ({ onValidationChange }) => {
 									admisionRequest,
 									purposes[2]?.rule,
 									admisionOrder,
-									'Admisión - I',
+									'Derecho Admisión - I',
 									purposes[2]?.amount || 50
 								)
 							: renderRequestPrompt(
-									'Admisión - I',
+									'Derecho Admisión - I',
 									purposes[2]?.rule?.amount || 250,
 									true
 								))}
