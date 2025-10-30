@@ -228,9 +228,8 @@ export const MyPaymentAddRequests = () => {
 	];
 
 	const isPreMaestria =
-		!hasStudentRole &&
 		dataMyApplicants?.find((p) => p.id === Number(selectedProgram?.value))
-			?.modality_id === 1;
+			?.requires_pre_master_exam === true;
 
 	const validateFields = () => {
 		const newErrors = {};
